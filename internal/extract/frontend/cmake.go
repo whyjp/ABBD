@@ -58,16 +58,34 @@ type cmakeTarget struct {
 		IsGenerated       bool   `json:"isGenerated"`
 		CompileGroupIndex *int   `json:"compileGroupIndex"`
 	} `json:"sources"`
-	CompileGroups          []struct{ Language string } `json:"compileGroups"`
-	LinkLibraries          []cmakeTargetRef            `json:"linkLibraries"`
-	InterfaceLinkLibraries []cmakeTargetRef            `json:"interfaceLinkLibraries"`
-	Backtrace              *int                        `json:"backtrace"`
+	CompileGroups          []cmakeCompileGroup `json:"compileGroups"`
+	LinkLibraries          []cmakeTargetRef    `json:"linkLibraries"`
+	InterfaceLinkLibraries []cmakeTargetRef    `json:"interfaceLinkLibraries"`
+	Backtrace              *int                `json:"backtrace"`
 	Graph                  struct {
 		Nodes []struct {
 			File int `json:"file"`
 		} `json:"nodes"`
 		Files []string `json:"files"`
 	} `json:"backtraceGraph"`
+	// root is the top source directory a relative source path is under.
+	root string
+}
+
+// built is whether the target makes something a host or a user runs, and
+// is no test, example or bench.
+func (tg cmakeTarget) built() bool {
+	_, ok := targetArtifacts[tg.Type]
+	return ok && !tg.IsGeneratorProvided && !testDir(tg.Paths.Source)
+}
+
+// source is the absolute path of one of the target's sources.
+func (tg cmakeTarget) source(p string) string {
+	p = filepath.FromSlash(p)
+	if !filepath.IsAbs(p) {
+		p = filepath.Join(tg.root, p)
+	}
+	return p
 }
 
 // targetArtifacts maps a CMake target type to what the build makes. Object,
@@ -90,28 +108,9 @@ var notBuilt = map[string]bool{
 // Targets compiling the same sources, such as a static and a shared build of
 // one library, are one module.
 func cmake(t tree) (extract.Doc, error) {
-	version, err := cmakeVersion(t)
+	targets, _, err := cmakeTargets(t)
 	if err != nil {
 		return extract.Doc{}, err
-	}
-	build := t.buildDir(filepath.Join("cmake", version))
-	query := filepath.Join(build, ".cmake", "api", "v1", "query")
-	if err := os.MkdirAll(query, 0o755); err != nil {
-		return extract.Doc{}, err
-	}
-	if err := os.WriteFile(filepath.Join(query, "codemodel-v2"), nil, 0o644); err != nil {
-		return extract.Doc{}, err
-	}
-	if _, err := t.run("cmake", "-S", t.dir, "-B", build); err != nil {
-		return extract.Doc{}, err
-	}
-	reply := filepath.Join(build, ".cmake", "api", "v1", "reply")
-	var cm cmakeCodemodel
-	if err := readCodemodel(reply, &cm); err != nil {
-		return extract.Doc{}, err
-	}
-	if len(cm.Configurations) == 0 {
-		return extract.Doc{}, fmt.Errorf("the CMake code model has no configuration")
 	}
 	type group struct {
 		names     []string
@@ -126,29 +125,20 @@ func cmake(t tree) (extract.Doc, error) {
 	// interfaces are the INTERFACE libraries' own links. Such a library
 	// builds nothing and is no module, so a target linking it links them.
 	interfaces := map[string][]cmakeTargetRef{}
-	conf := cm.Configurations[0]
-	for _, ref := range slices.Concat(conf.Targets, conf.AbstractTargets) {
-		var tg cmakeTarget
-		if err := readJSON(filepath.Join(reply, ref.JSONFile), &tg); err != nil {
-			return extract.Doc{}, err
-		}
+	for _, tg := range targets {
 		if tg.Type == "INTERFACE_LIBRARY" {
 			interfaces[tg.ID] = tg.InterfaceLinkLibraries
 		}
-		a, ok := targetArtifacts[tg.Type]
-		if !ok || tg.IsGeneratorProvided || testDir(tg.Paths.Source) {
+		if !tg.built() {
 			continue
 		}
+		a := targetArtifacts[tg.Type]
 		var sources []string
 		for _, s := range tg.Sources {
-			p := filepath.FromSlash(s.Path)
-			if !filepath.IsAbs(p) {
-				p = filepath.Join(cm.Paths.Source, p)
-			}
 			if s.IsGenerated || !compiled(tg, s.CompileGroupIndex) {
 				continue
 			}
-			if r, ok := t.rel(p); ok {
+			if r, ok := t.rel(tg.source(s.Path)); ok {
 				sources = append(sources, r)
 			}
 		}

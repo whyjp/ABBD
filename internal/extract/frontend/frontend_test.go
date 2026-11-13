@@ -338,3 +338,42 @@ func TestEachCMakeVersionConfiguresItsOwnBuildTree(t *testing.T) {
 		t.Errorf("two CMake versions shared a build tree: %v", trees)
 	}
 }
+
+// The compile commands come from the file API on every generator: one per
+// source of a kept target, sorted, each ending in -c and the source, with
+// the target's include directories and defines as -I and -D. The tests
+// directory's target is left out, as its module is.
+func TestCMakeCompilesListsEachKeptSourceOnce(t *testing.T) {
+	if _, err := exec.LookPath("cmake"); err != nil {
+		t.Skip("cmake is not installed")
+	}
+	root, err := filepath.Abs(filepath.Join("testdata", "cmake"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cs, err := CMakeCompiles(root, root, t.TempDir())
+	if old := (oldCMake{}); errors.As(err, &old) {
+		t.Skip(err)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	var files []string
+	for _, c := range cs {
+		r, _ := filepath.Rel(root, c.File)
+		files = append(files, filepath.ToSlash(r))
+		if n := len(c.Args); n < 3 || c.Args[n-2] != "-c" || c.Args[n-1] != c.File || !filepath.IsAbs(c.Dir) {
+			t.Errorf("%s: args %q in %s, want a compiler first and -c %s last", r, c.Args, c.Dir, c.File)
+		}
+	}
+	if want := []string{"net/net.c", "plugin/plugin.c", "store/store.c", "tool/main.c"}; !slices.Equal(files, want) {
+		t.Errorf("files = %v, want %v", files, want)
+	}
+}
+
+func TestSplitFragmentKeepsQuotedBlanks(t *testing.T) {
+	got := splitFragment(`/DWIN32  -DNAME="a b" -O2`)
+	if want := []string{"/DWIN32", "-DNAME=a b", "-O2"}; !slices.Equal(got, want) {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
