@@ -243,3 +243,49 @@ func TestStatusHelpNamesTheOverviewAmongWhatFailsTheCheck(t *testing.T) {
 		t.Error("status --check fails on a STALE zone or line of the overview, and its help says so")
 	}
 }
+
+// A candidate whose relations quote no code, as a build model's edges do,
+// gets the line of its from box that calls what it runs to, said to be found
+// by name; one with no such line says so and where to look. The draft is a
+// whole file, so it stores as printed, and a candidate kept with its found
+// quote stores too.
+func TestTheOverviewDraftFindsAQuoteNoRelationGives(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("app/main.go", "package app\n\nfunc Main() {\n\tbilling.Charge()\n}\n")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.extract(`{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app"},{"path":"app/main.go"}]},
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}
+],"relations":[
+ {"from":"app","to":"billing","kind":"depends_on","via":"call"},
+ {"from":"app","to":"ledger","kind":"depends_on","via":"import"}
+]}`)
+	p.setup(0, "synced: 3 unit(s)", "--", exe)
+	draft := p.want(0, "", "overview")
+	contains(t, draft,
+		"# This whole output is FILE",
+		"# A zone names boxes from this list.",
+		`evidence: [{path: "app/main.go", lines: "4", quote: "billing.Charge()"}]}`,
+		"the quote is a line of app that names Charge",
+		"no line of app names what it runs to; quote the line where it crosses",
+	)
+	p.overview(0, "stored the overview: 0 zones, 0 lines", draft)
+	var cand string
+	for _, l := range strings.Split(draft, "\n") {
+		if strings.Contains(l, `quote: "billing.Charge()"`) {
+			cand = strings.TrimPrefix(l, "#   ")
+		}
+	}
+	kept := strings.Replace(draft, "lines: []", "lines:\n  "+strings.Replace(cand, `word: ""`, "word: 청구", 1), 1)
+	p.overview(0, "stored the overview: 0 zones, 1 lines", kept)
+}
+
+// A file with no frontmatter is refused with what an overview draft is.
+func TestAnOverviewDraftWithoutFrontmatterSaysWhatADraftIs(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.overview(1, "missing frontmatter: an overview draft is the whole file abbd overview prints", "zones: []\nlines: []\n")
+}

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -73,10 +74,10 @@ type cmakeTarget struct {
 }
 
 // built is whether the target makes something a host or a user runs, and
-// is no test, example or bench.
+// is no test, bench, example or vendored library.
 func (tg cmakeTarget) built() bool {
 	_, ok := targetArtifacts[tg.Type]
-	return ok && !tg.IsGeneratorProvided && !testDir(tg.Paths.Source)
+	return ok && !tg.IsGeneratorProvided && !testDir(tg.Paths.Source) && !notBuiltName(tg.Name)
 }
 
 // source is the absolute path of one of the target's sources.
@@ -96,11 +97,25 @@ var targetArtifacts = map[string]model.Artifact{
 }
 
 // notBuilt are directories whose targets serve tests and samples, the
-// counterpart of cargo's test, example and bench targets.
+// counterpart of cargo's test, example and bench targets, or hold someone
+// else's code a repository vendors.
 var notBuilt = map[string]bool{
 	"test": true, "tests": true, "example": true, "examples": true,
 	"bench": true, "benches": true, "benchmark": true, "benchmarks": true, "fuzz": true,
+	"third_party": true, "thirdparty": true, "3rdparty": true, "vendor": true, "external": true,
 }
+
+// notBuiltWords are the words of a target's name that say it is a test, a
+// bench or an example, as c_test, db_bench and leveldb_tests do where a
+// repository's top CMakeLists.txt defines them, so no directory tells.
+var notBuiltWords = map[string]bool{
+	"test": true, "tests": true, "unittest": true, "unittests": true, "bench": true, "benches": true,
+	"benchmark": true, "benchmarks": true, "example": true, "examples": true, "fuzz": true, "fuzzer": true,
+}
+
+// headerExt are the files a target lists that it does not compile but that
+// belong to it: its headers and templates.
+var headerExt = map[string]bool{".h": true, ".hh": true, ".hpp": true, ".hxx": true, ".inc": true, ".inl": true, ".ipp": true, ".tcc": true, ".in": true}
 
 // cmake asks CMake's file API for the code model: it writes the query into
 // a build tree outside the repository, configures, and makes each target a
@@ -133,13 +148,19 @@ func cmake(t tree) (extract.Doc, error) {
 			continue
 		}
 		a := targetArtifacts[tg.Type]
-		var sources []string
+		var sources, headers []string
 		for _, s := range tg.Sources {
-			if s.IsGenerated || !compiled(tg, s.CompileGroupIndex) {
+			if s.IsGenerated {
 				continue
 			}
-			if r, ok := t.rel(tg.source(s.Path)); ok {
+			r, ok := t.rel(tg.source(s.Path))
+			if !ok {
+				continue
+			}
+			if compiled(tg, s.CompileGroupIndex) {
 				sources = append(sources, r)
+			} else if headerExt[strings.ToLower(path.Ext(r))] {
+				headers = append(headers, r)
 			}
 		}
 		if len(sources) == 0 {
@@ -151,11 +172,11 @@ func cmake(t tree) (extract.Doc, error) {
 		g := bySources[key]
 		if g == nil {
 			g = &group{sources: sources}
-			for _, s := range sources {
-				g.anchors = append(g.anchors, model.Anchor{Path: path.Dir(s)})
-			}
 			bySources[key] = g
 			groups = append(groups, g)
+		}
+		for _, s := range slices.Concat(sources, headers) {
+			g.anchors = append(g.anchors, model.Anchor{Path: path.Dir(s)})
 		}
 		g.names = append(g.names, tg.Name)
 		g.artifacts = append(g.artifacts, a)
@@ -364,6 +385,12 @@ func compiled(tg cmakeTarget, group *int) bool {
 	return group != nil && *group < len(tg.CompileGroups) && tg.CompileGroups[*group].Language != "RC"
 }
 
+// notBuiltName reports whether a target's name says it is a test, a bench or
+// an example: a word of it, split at _, - and ., is one of notBuiltWords.
+func notBuiltName(name string) bool {
+	return slices.ContainsFunc(strings.FieldsFunc(strings.ToLower(name), func(r rune) bool { return r == '_' || r == '-' || r == '.' }), func(w string) bool { return notBuiltWords[w] })
+}
+
 func testDir(p string) bool {
 	return slices.ContainsFunc(strings.Split(filepath.ToSlash(p), "/"), func(s string) bool { return notBuilt[strings.ToLower(s)] })
 }
@@ -377,4 +404,59 @@ func readJSON(p string, v any) error {
 		return fmt.Errorf("%s: %w", filepath.Base(p), err)
 	}
 	return nil
+}
+
+var optionLine = regexp.MustCompile(`(?im)^\s*(?:cmake_dependent_option|option)\s*\(\s*([A-Za-z_][\w]*)`)
+
+// optionHint lists the option( names the project's CMake files declare,
+// those that name a build or a test first, so a failed configure says which
+// -D to pass instead of leaving the reader to guess it.
+func optionHint(dir string) string {
+	var names []string
+	filepath.WalkDir(dir, func(p string, d os.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+		if d.IsDir() {
+			if p != dir && (strings.HasPrefix(d.Name(), ".") || slices.Contains([]string{"third_party", "vendor", "external", "node_modules"}, d.Name())) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if d.Name() != "CMakeLists.txt" && !strings.HasSuffix(d.Name(), ".cmake") {
+			return nil
+		}
+		text, err := os.ReadFile(p)
+		if err != nil {
+			return nil
+		}
+		for _, m := range optionLine.FindAllStringSubmatch(string(text), -1) {
+			if !slices.Contains(names, m[1]) {
+				names = append(names, m[1])
+			}
+		}
+		return nil
+	})
+	if len(names) == 0 {
+		return ", or read the option names from `cmake -LH`"
+	}
+	like := func(n string) bool {
+		u := strings.ToUpper(n)
+		return strings.Contains(u, "BUILD") || strings.Contains(u, "TEST")
+	}
+	slices.SortStableFunc(names, func(a, b string) int {
+		switch {
+		case like(a) && !like(b):
+			return -1
+		case !like(a) && like(b):
+			return 1
+		}
+		return 0
+	})
+	more := ""
+	if len(names) > 12 {
+		more = fmt.Sprintf(" and %d more (`cmake -LH`)", len(names)-12)
+		names = names[:12]
+	}
+	return "\nThe project's options: " + strings.Join(names, ", ") + more
 }

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
@@ -25,13 +26,14 @@ and renders the blueprint. It never judges, blocks, asks or records a decision.
 abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
-abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [--root DIR]
+abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [-DNAME=VALUE...] [--root DIR]
                                      print the extraction JSON a bundled front-end reads from the
                                      build system's own model: cargo (Cargo.toml) or cmake
                                      (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
-                                     relative to the root, "." when left out; register it as
+                                     relative to the root, "." when left out; -D options are
+                                     CMake cache options for the configure; register it as
                                      abbd setup -- abbd extract cargo, or extend its output
-abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
+abbd relate RELATER[=DIR] [RELATER[=DIR]] [-DNAME=VALUE...] [--root DIR] [-- EXTRACT-ARGV...]
                                      print the extraction that EXTRACT-ARGV prints, or stdin,
                                      with the code-level relations a bundled relater reads
                                      between its units: go (go.mod; go/types, calls resolved
@@ -40,7 +42,8 @@ abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
                                      out, default and all features for x86_64-unknown-linux-gnu,
                                      a relation found under one only says so in when) or c (C and
                                      C++: DIR's compile_commands.json, else its CMakeLists.txt
-                                     configured in $ABBD_CACHE_DIR; clangd from $ABBD_LSP_C or
+                                     configured in $ABBD_CACHE_DIR with the -D options given as
+                                     to abbd extract; clangd from $ABBD_LSP_C or
                                      the PATH; tests left out; function-pointer tables become
                                      provides and consumes, or a callback from host to filler;
                                      code #if leaves out is named on stderr); files no
@@ -262,6 +265,7 @@ type opts struct {
 	responsibility   string
 	value, src       string
 	reason           string
+	cacheOpts        []string
 	base             string
 	unit             string
 	history          bool
@@ -430,6 +434,11 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 			return inv, fmt.Errorf("nothing after --")
 		}
 	}
+	if inv.name == "extract" || inv.name == "relate" {
+		// A -DNAME=VALUE is a CMake cache option, not a flag of abbd.
+		inv.o.cacheOpts = slices.DeleteFunc(slices.Clone(args), func(a string) bool { return !strings.HasPrefix(a, "-D") })
+		args = slices.DeleteFunc(args, func(a string) bool { return strings.HasPrefix(a, "-D") })
+	}
 	fs := flag.NewFlagSet(inv.name, flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	for _, f := range c.flags {
@@ -447,6 +456,10 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 }
 
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	if len(args) > 0 && slices.Contains([]string{"--help", "-h", "help"}, args[0]) {
+		fmt.Fprintln(stdout, usage)
+		return exitOK
+	}
 	inv, err := parse(args, stderr)
 	if err != nil {
 		fmt.Fprintln(stderr, "abbd:", err)
@@ -528,6 +541,9 @@ func (e env) sync() error {
 	}
 	for _, id := range res.Unmatched {
 		fmt.Fprintf(e.stdout, "%s unmatched\n", id)
+	}
+	if len(res.Unmatched) > 0 {
+		fmt.Fprintln(e.stdout, "unmatched: the extraction no longer reports these units; abbd keeps each, drawn nowhere and failing no check, so its ID returns if its code does. No command clears them, and none needs to")
 	}
 	e.attention(res.Units)
 	return nil

@@ -65,6 +65,22 @@ func SpecOf(what, s string, names []string) (Spec, error) {
 // cache holds the build trees a front-end configures, and must lie outside
 // root so a run never changes the code it reads.
 func Extract(root, cache string, specs []Spec) (extract.Doc, error) {
+	return ExtractWith(root, cache, specs, nil)
+}
+
+// ExtractWith is Extract with the cache options, each spelled -DNAME=VALUE,
+// that the cmake front-end passes to the configure of its build tree. A
+// repository that needs one to configure, such as an option that turns off
+// the part that wants git submodules, names it there.
+func ExtractWith(root, cache string, specs []Spec, defs []string) (extract.Doc, error) {
+	for _, d := range defs {
+		if !strings.HasPrefix(d, "-D") || len(d) < 3 {
+			return extract.Doc{}, fmt.Errorf("%q is no cache option: spell it -DNAME=VALUE", d)
+		}
+	}
+	if len(defs) > 0 && !slices.ContainsFunc(specs, func(s Spec) bool { return s.Name == "cmake" }) {
+		return extract.Doc{}, fmt.Errorf("%s is a CMake cache option, and no cmake front-end is named", defs[0])
+	}
 	root, err := filepath.Abs(root)
 	if err != nil {
 		return extract.Doc{}, err
@@ -86,7 +102,7 @@ func Extract(root, cache string, specs []Spec) (extract.Doc, error) {
 		if _, err := os.Stat(filepath.Join(dir, f.manifest)); err != nil {
 			return extract.Doc{}, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, f.manifest)
 		}
-		d, err := f.run(tree{root: root, dir: dir, cache: cache})
+		d, err := f.run(tree{root: root, dir: dir, cache: cache, defs: defs})
 		if err != nil {
 			return extract.Doc{}, fmt.Errorf("%s: %w", s.Name, err)
 		}
@@ -103,8 +119,21 @@ func Extract(root, cache string, specs []Spec) (extract.Doc, error) {
 }
 
 // tree is where a front-end runs: the repository root, its own directory
-// and the cache for build trees, all absolute.
-type tree struct{ root, dir, cache string }
+// and the cache for build trees, all absolute, and the cache options the
+// cmake front-end configures with.
+type tree struct {
+	root, dir, cache string
+	defs             []string
+}
+
+// relDir is the front-end's directory relative to the root.
+func relDir(t tree) string {
+	r, ok := t.rel(t.dir)
+	if !ok || r == "" {
+		return "."
+	}
+	return r
+}
 
 // rel gives an absolute path as the root-relative, forward-slash path an
 // anchor holds, and false for a path outside the root.
@@ -119,7 +148,7 @@ func (t tree) rel(abs string) (string, bool) {
 // buildDir is a build tree for the front-end's directory, the same on every
 // run so a reconfigure is quick.
 func (t tree) buildDir(name string) string {
-	h := sha256.Sum256([]byte(strings.ToLower(filepath.ToSlash(t.dir))))
+	h := sha256.Sum256([]byte(strings.ToLower(filepath.ToSlash(t.dir)) + "\n" + strings.Join(t.defs, "\n")))
 	return filepath.Join(t.cache, name, hex.EncodeToString(h[:6]))
 }
 

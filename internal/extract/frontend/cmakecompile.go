@@ -81,8 +81,8 @@ func configure(t tree) (string, error) {
 			return "", err
 		}
 	}
-	if _, err := t.run("cmake", "-S", t.dir, "-B", build); err != nil {
-		return "", err
+	if _, err := t.run(append([]string{"cmake", "-S", t.dir, "-B", build}, t.defs...)...); err != nil {
+		return "", fmt.Errorf("%w\nA configure that fails on a missing subdirectory, as git submodules not checked out leave, or on a missing package, needs the option that turns that part off: pass it as abbd extract cmake=%s -D<NAME>=OFF, or check the submodules out%s", err, relDir(t), optionHint(t.dir))
 	}
 	return filepath.Join(build, ".cmake", "api", "v1", "reply"), nil
 }
@@ -96,14 +96,15 @@ type Compile struct {
 }
 
 // CMakeCompiles configures the CMake project whose CMakeLists.txt sits in
-// dir, in the same build tree the cmake front-end uses, and returns how
+// dir with the cache options defs, in the same build tree the cmake
+// front-end uses for those options, and returns how
 // each C or C++ source of a target the front-end keeps is compiled. It
 // rebuilds the commands from the file API, which every generator writes,
 // rather than from compile_commands.json, which only the Makefile and Ninja
 // generators do. A source two targets compile takes the command of the
 // target whose name sorts first.
-func CMakeCompiles(root, dir, cache string) ([]Compile, error) {
-	t := tree{root: root, dir: dir, cache: cache}
+func CMakeCompiles(root, dir, cache string, defs []string) ([]Compile, error) {
+	t := tree{root: root, dir: dir, cache: cache, defs: defs}
 	targets, reply, err := cmakeTargets(t)
 	if err != nil {
 		return nil, err

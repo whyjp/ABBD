@@ -36,7 +36,7 @@ func run(t *testing.T, doc extract.Doc) []string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, _, err := Relate(fixture, t.TempDir(), doc, []frontend.Spec{s})
+	out, _, err := Relate(fixture, t.TempDir(), nil, doc, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +125,7 @@ func TestGoRelaterKeepsNonCodeRelationsBetweenUnitsItRead(t *testing.T) {
 
 func TestGoRelaterNamesFilesSkippedByBuildConstraints(t *testing.T) {
 	s, _ := ParseSpec("go")
-	_, unread, err := Relate(fixture, t.TempDir(), extract.Doc{Units: modules()}, []frontend.Spec{s})
+	_, unread, err := Relate(fixture, t.TempDir(), nil, extract.Doc{Units: modules()}, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -138,7 +138,7 @@ func TestGoRelationsPrintTheSameBytesEveryRun(t *testing.T) {
 	s, _ := ParseSpec("go")
 	var outs [2]bytes.Buffer
 	for i := range outs {
-		doc, _, err := Relate(fixture, t.TempDir(), extract.Doc{Units: modules()}, []frontend.Spec{s})
+		doc, _, err := Relate(fixture, t.TempDir(), nil, extract.Doc{Units: modules()}, []frontend.Spec{s})
 		if err != nil {
 			t.Fatal(err)
 		}

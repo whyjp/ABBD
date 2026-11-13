@@ -49,7 +49,7 @@ func relateC(t *testing.T, root, spec string, doc extract.Doc) (extract.Doc, []U
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, unread, err := Relate(root, t.TempDir(), doc, []frontend.Spec{s})
+	out, unread, err := Relate(root, t.TempDir(), nil, doc, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}

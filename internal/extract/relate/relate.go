@@ -108,11 +108,13 @@ type Unread struct {
 
 // Relate runs each relater over its directory under root and adds what it
 // finds to doc. cache holds what a relater keeps between runs, such as a
-// build tree or an index, outside root. A relater owns the depends_on relations between the units
+// build tree or an index, outside root, and defs are the CMake cache
+// options a relater that configures CMake passes, as the cmake front-end
+// does. A relater owns the depends_on relations between the units
 // whose code it read, so it replaces the extraction's there. It never makes
 // a unit, and adds a provides or consumes only where the extraction has none,
 // since the extraction owns its contracts.
-func Relate(root, cache string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, []Unread, error) {
+func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, []Unread, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
 		return doc, nil, err
@@ -133,7 +135,7 @@ func Relate(root, cache string, doc extract.Doc, specs []frontend.Spec) (extract
 		if !slices.ContainsFunc(r.manifests, func(m string) bool { _, err := os.Stat(filepath.Join(dir, m)); return err == nil }) {
 			return doc, nil, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, strings.Join(r.manifests, " or "))
 		}
-		f, err := r.run(tree{root: root, dir: dir, cache: cache}, o)
+		f, err := r.run(tree{root: root, dir: dir, cache: cache, defs: defs}, o)
 		if err != nil {
 			return doc, nil, fmt.Errorf("%s: %w", s.Name, err)
 		}
@@ -297,8 +299,11 @@ func (o owners) contract(path, symbol string) (string, bool) {
 }
 
 // tree is where a relater runs: the repository root, its own directory and
-// the cache, all absolute.
-type tree struct{ root, dir, cache string }
+// the cache, all absolute, and the CMake cache options.
+type tree struct {
+	root, dir, cache string
+	defs             []string
+}
 
 // rel gives an absolute path as the root-relative, forward-slash path an
 // anchor holds, and false for a path outside the root.

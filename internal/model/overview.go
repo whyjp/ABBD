@@ -353,11 +353,14 @@ type Tie struct {
 // its direction, as a draft offers it: the relations under it by kind and
 // via, strongest first, and the first quote of its strongest relation that
 // has one, a line a reader can cite or start from. Quote is empty when no
-// relation under it quotes code.
+// relation under it quotes code. Ends are the units each relation under it
+// runs from and to, strongest first and each pair once, where a reader looks
+// for a line to quote when Quote is empty.
 type LineCandidate struct {
 	From, To ID
 	Ties     []Tie
 	Quote    Evidence
+	Ends     [][2]ID
 }
 
 // Carry is the strongest carry among the relations under the line.
@@ -422,6 +425,9 @@ func LineCandidates(units []Unit) []LineCandidate {
 				i = len(c.Ties) - 1
 			}
 			c.Ties[i].N++
+			if end := [2]ID{r.from, r.To}; !slices.Contains(c.Ends, end) {
+				c.Ends = append(c.Ends, end)
+			}
 			if c.Quote.Path != "" {
 				continue
 			}

@@ -94,6 +94,9 @@ var reserved = map[Kind]bool{"DOM": true, "STATE": true, "TRN": true, "INV": tru
 
 func (k Kind) Dir() string { return kinds[k] }
 
+// Reserved reports a domain-layer prefix, which abbd knows and refuses.
+func (k Kind) Reserved() bool { return reserved[k] }
+
 func (k Kind) Validate() error {
 	if reserved[k] {
 		return fmt.Errorf("kind %s is reserved for the domain layer", k)

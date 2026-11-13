@@ -88,7 +88,7 @@ type cEntry struct {
 func cCompiles(t tree) ([]cEntry, error) {
 	db := filepath.Join(t.dir, "compile_commands.json")
 	if _, err := os.Stat(db); err != nil {
-		cs, err := frontend.CMakeCompiles(t.root, t.dir, t.cache)
+		cs, err := frontend.CMakeCompiles(t.root, t.dir, t.cache, t.defs)
 		if err != nil {
 			return nil, err
 		}

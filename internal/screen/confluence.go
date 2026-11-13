@@ -78,12 +78,16 @@ func runOf(a, b pt) (vertical bool, at, lo, hi int) {
 }
 
 // roadRuns groups the routes' runs into straight pieces of road.
-func roadRuns(ways [][]pt, rv roadView) []straightRun {
+func roadRuns(ways [][]pt, rv roadView) []straightRun { return roadRunsBy(ways, rv, false) }
+
+// roadRunsBy is roadRuns, with the runs that go each way along a track
+// grouped apart when byWay is set.
+func roadRunsBy(ways [][]pt, rv roadView, byWay bool) []straightRun {
 	style := rv.style
 	type key struct {
 		style    string
 		vertical bool
-		at       int
+		at, way  int
 	}
 	type seg struct {
 		lo, hi int
@@ -98,7 +102,10 @@ func roadRuns(ways [][]pt, rv roadView) []straightRun {
 				continue
 			}
 			v, at, lo, hi := runOf(w[j-1], w[j])
-			k := key{style[i], v, at}
+			k := key{style[i], v, at, 0}
+			if byWay {
+				k.way = heading(w[j-1], w[j])
+			}
 			if _, ok := by[k]; !ok {
 				keys = append(keys, k)
 			}
@@ -122,14 +129,18 @@ func roadRuns(ways [][]pt, rv roadView) []straightRun {
 		if keys[a].vertical != keys[b].vertical {
 			return keys[a].vertical
 		}
-		return keys[a].at < keys[b].at
+		if keys[a].at != keys[b].at {
+			return keys[a].at < keys[b].at
+		}
+		return keys[a].way < keys[b].way
 	})
 	var out []straightRun
 	for _, k := range keys {
 		ss := by[k]
 		sort.SliceStable(ss, func(a, b int) bool { return ss[a].lo < ss[b].lo })
+		first := len(out)
 		for _, s := range ss {
-			if n := len(out); n > 0 && out[n-1].style == k.style && out[n-1].vertical == k.vertical && out[n-1].at == k.at && s.lo <= out[n-1].hi {
+			if n := len(out); n > first && s.lo <= out[n-1].hi {
 				r := &out[n-1]
 				r.hi = max(r.hi, s.hi)
 				r.segs = append(r.segs, s.at)
@@ -615,6 +626,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		}
 		cost = d.cost(ways)
 	}
+	ways = r.twoLanes(ways, v)
 	if roadsDrawn != nil {
 		roadsDrawn(r.ways, ways)
 	}

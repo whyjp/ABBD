@@ -37,7 +37,7 @@ func (e env) relateExtraction(args []string) error {
 	if err := dec.Decode(&doc); err != nil {
 		return fmt.Errorf("the extraction to relate: %w", err)
 	}
-	doc, unread, err := relate.Relate(e.root, cacheDir(), doc, specs)
+	doc, unread, err := relate.Relate(e.root, cacheDir(), e.cacheOpts, doc, specs)
 	if err != nil {
 		return err
 	}

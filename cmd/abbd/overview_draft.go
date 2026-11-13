@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
 	"path"
+	"path/filepath"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
 )
@@ -48,14 +52,207 @@ func (e env) overviewDraft() error {
 	}
 	var w strings.Builder
 	w.WriteString("---\n")
-	writeOffers(&w, units, figs, prev)
+	writeOffers(&w, units, figs, prev, newQuoteFinder(e, units).find)
 	w.WriteString(front + "---\n" + caption)
 	_, err = io.WriteString(e.stdout, w.String())
 	return err
 }
 
+// quoteFinder looks for a line to quote under a line candidate no relation
+// under it quotes, reading each box's files once.
+type quoteFinder struct {
+	e     env
+	byID  map[model.ID]model.Unit
+	units []model.Unit
+	check *evidence.Checker
+	rests func([]model.ID, model.Evidence) bool
+	files map[model.ID][]string
+	text  map[string][]string
+}
+
+func newQuoteFinder(e env, units []model.Unit) quoteFinder {
+	q := quoteFinder{e: e, byID: map[model.ID]model.Unit{}, units: units, check: evidence.New(e.root), rests: model.Rests(units), files: map[model.ID][]string{}, text: map[string][]string{}}
+	for _, u := range units {
+		q.byID[u.ID] = u
+	}
+	return q
+}
+
+// find returns a line of the candidate's from box that names a unit a
+// relation under it runs to, and that its file holds once, with what it
+// matched. It looks for a line that calls a name before any line that names
+// one, and tries the relations strongest first, each by the needles in
+// order. It finds none when no such line exists.
+func (q quoteFinder) find(c model.LineCandidate) (model.Evidence, string, bool) {
+	files, ok := q.files[c.From]
+	if !ok {
+		files, _ = q.e.st.Read(q.units, c.From)
+		files = quotable(slices.Sorted(slices.Values(files)))
+		q.files[c.From] = files
+	}
+	for _, call := range []bool{true, false} {
+		for _, end := range c.Ends {
+			for _, n := range needles(q.byID[end[0]], q.byID[end[1]]) {
+				for _, f := range files {
+					if ev, ok := q.line(f, n, call, []model.ID{c.From, c.To}); ok {
+						return ev, n.name, true
+					}
+				}
+			}
+		}
+	}
+	return model.Evidence{}, "", false
+}
+
+// quotable are the files of a box a quote may come from: its code. Tests,
+// test fixtures and prose are no code of the box, and a data file such as
+// JSON or YAML counts only for a box that has no code of a language.
+func quotable(files []string) []string {
+	files = slices.DeleteFunc(files, noQuoteFile)
+	if slices.ContainsFunc(files, func(f string) bool { return !dataFile(f) }) {
+		files = slices.DeleteFunc(files, dataFile)
+	}
+	return files
+}
+
+// line is the first line of file f that n names, that calls it when call is
+// set, that the file holds once and that lies in the code of ends, as abbd
+// overview FILE takes a line's quote. A comment and the definition of a
+// function are no use of what they name.
+func (q quoteFinder) line(f string, n needle, call bool, ends []model.ID) (model.Evidence, bool) {
+	re := n.word
+	if call {
+		re = n.call
+	}
+	if re == nil {
+		return model.Evidence{}, false
+	}
+	lines, ok := q.text[f]
+	if !ok {
+		b, _ := os.ReadFile(filepath.Join(q.e.root, filepath.FromSlash(f)))
+		lines = strings.Split(string(b), "\n")
+		q.text[f] = lines
+	}
+	for i, line := range lines {
+		line = strings.TrimSpace(line)
+		if len(line) > 160 || !re.MatchString(line) || commentary.MatchString(line) || definition.MatchString(line) {
+			continue
+		}
+		ev := model.Evidence{Path: f, Lines: strconv.Itoa(i + 1), Quote: line}
+		if q.check.Check(ev).Live && q.check.Occurrences(ev) == 1 && q.rests(ends, ev) {
+			return ev, true
+		}
+	}
+	return model.Evidence{}, false
+}
+
+// commentary is a line of a comment in most languages, and definition the
+// line that defines a function, which names a function without using it.
+var (
+	commentary = regexp.MustCompile(`^(?://|/\*|\*|--|#(?:\s|$|[^a-z]|(?:todo|fixme|note|comment|xxx))|"""|;;)`)
+	definition = regexp.MustCompile(`^(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:func|fn|def|function)\b`)
+)
+
+// needle is one way the code of a box spells a unit it runs to: word
+// matches a line that spells it and call a line that calls it, nil where
+// the spelling is no call.
+type needle struct {
+	name       string
+	word, call *regexp.Regexp
+}
+
+// needles are what the code of from spells to by, most precise first: the
+// names identNames gives, which a line may call or only name, then, for any
+// language, the unit's place in the tree. Its anchor directories are what an
+// import line spells, as a path (Go, JS, C), dotted (Python, Java) or with
+// :: (Rust), and its last directory is what a qualified use spells, as
+// gitx.Head or gitx::head, even where that directory is a plain word.
+func needles(from, to model.Unit) []needle {
+	var out []needle
+	for _, name := range identNames(from, to) {
+		q := regexp.QuoteMeta(name)
+		out = append(out, needle{name, regexp.MustCompile(`\b` + q + `\b`), regexp.MustCompile(`\b` + q + `\(`)})
+	}
+	dirs := anchorDirs(to)
+	for _, d := range dirs {
+		segs := strings.Split(d, "/")
+		segs = segs[max(0, len(segs)-2):]
+		if len(segs) == 1 && oneSegment.MatchString(segs[0]) && !generic[segs[0]] {
+			// A top-level directory is found by an include or import path under it.
+			out = append(out, needle{segs[0] + "/", regexp.MustCompile(`["'<]` + regexp.QuoteMeta(segs[0]) + `/`), nil})
+		}
+		if len(segs) == 2 && !generic[segs[1]] {
+			out = append(out, needle{strings.Join(segs, "/"), regexp.MustCompile(`\b` + regexp.QuoteMeta(segs[0]) + `(?:/|\.|::)` + regexp.QuoteMeta(segs[1]) + `\b`), nil})
+		}
+	}
+	for _, d := range dirs {
+		last := path.Base(d)
+		if identName.MatchString(last) && !generic[last] {
+			use := `\b` + regexp.QuoteMeta(last) + `(?:\.|::)\w+`
+			out = append(out, needle{last + ".", regexp.MustCompile(use), regexp.MustCompile(use + `\s*\(`)})
+		}
+	}
+	return out
+}
+
+// anchorDirs are the directories the anchors of u lie in, each once: the
+// anchor itself for a directory, its directory for a file.
+func anchorDirs(u model.Unit) []string {
+	var out []string
+	for _, a := range u.Anchors {
+		d := path.Clean(a.Path)
+		if path.Ext(d) != "" {
+			d = path.Dir(d)
+		}
+		if d != "." && d != "/" && !slices.Contains(out, d) {
+			out = append(out, d)
+		}
+	}
+	return out
+}
+
+// identNames are the names the code of from spells to, most precise
+// first: the entries of to that from's relations to it use, the symbols to
+// anchors, its name as an identifier once dashes, dots and spaces become
+// underscores, as a package or crate is imported, then the files it anchors,
+// as an include or an import names a file. A plain lower-case word, such as
+// validate, names many unrelated things and is left out.
+func identNames(from, to model.Unit) []string {
+	var out []string
+	add := func(name string) {
+		if identName.MatchString(name) && !plainWord(name) && !slices.Contains(out, name) {
+			out = append(out, name)
+		}
+	}
+	for _, r := range from.Relations {
+		if r.To == to.ID {
+			for _, key := range r.Entries {
+				if i := slices.IndexFunc(to.Entries, func(e model.Entry) bool { return e.Key == key }); i >= 0 {
+					add(to.Entries[i].Name)
+				}
+			}
+		}
+	}
+	for _, a := range to.Anchors {
+		add(a.Symbol)
+	}
+	add(strings.NewReplacer("-", "_", ".", "_", " ", "_").Replace(to.Name.Value))
+	for _, a := range to.Anchors {
+		if base := path.Base(a.Path); a.Symbol == "" && path.Ext(base) != "" && !generic[strings.TrimSuffix(base, path.Ext(base))] && !slices.Contains(out, base) {
+			out = append(out, base)
+		}
+	}
+	return out
+}
+
+var identName = regexp.MustCompile(`^[A-Za-z_]\w{2,}$`)
+
+// generic are file names many packages share, which name no one unit.
+var generic = map[string]bool{"main": true, "index": true, "mod": true, "lib": true, "init": true, "__init__": true, "util": true, "utils": true, "common": true, "types": true, "config": true, "app": true}
+
 // writeOffers writes what the state offers an overview, as YAML comments.
-func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Overview) {
+// find gives a quote for a candidate no relation under it quotes.
+func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Overview, find func(model.LineCandidate) (model.Evidence, string, bool)) {
 	p, primary := figs.Primary()
 	layers := p.Claims()
 	byID := map[model.ID]model.Unit{}
@@ -73,6 +270,12 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	}
 	fmt.Fprintln(w, "# A draft of the overview. Choose from what follows, write the zones and")
 	fmt.Fprintln(w, "# lines below, and store it with abbd overview FILE. abbd reads past # lines.")
+	fmt.Fprintln(w, "# This whole output is FILE: save it as it is, keeping the --- line above and")
+	fmt.Fprintln(w, "# the one that closes the zones and lines, and abbd overview FILE stores it")
+	fmt.Fprintln(w, "# unchanged. The caption goes under the second ---.")
+	fmt.Fprintln(w, "#")
+	fmt.Fprintln(w, "# A zone names boxes from this list. A line runs between two of these boxes; an")
+	fmt.Fprintln(w, "# end may also be a unit inside one, and the line is drawn from that unit's box.")
 	fmt.Fprintf(w, "#\n# The boxes the overview draws (%d), and the stage of the primary flow each stands at:\n", len(boxes))
 	for _, id := range boxes {
 		at := "-"
@@ -106,11 +309,22 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	cands := model.LineCandidates(units)
 	fmt.Fprintf(w, "#\n# Line candidates (%d), one per pair of boxes a live relation joins in its direction,\n", len(cands))
 	fmt.Fprintln(w, "# strongest first: runs (posts_to, call, data, trait, callback), then wires (config,")
-	fmt.Fprintln(w, "# convention, load, spawn), then imports. Each gives its relations and a quote under it.")
+	fmt.Fprintln(w, "# convention, load, spawn), then imports. Each gives its relations and a quote under it:")
+	fmt.Fprintln(w, "# a relation's own quote, else a line of the from box that names the unit it runs to,")
+	fmt.Fprintln(w, "# found by name, which you read before you keep.")
 	for _, c := range cands {
-		ev := "[]"
-		if c.Quote.Path != "" {
-			q := c.Quote
+		ev, note := "[]", ""
+		q := c.Quote
+		if q.Path == "" {
+			var name string
+			var ok bool
+			if q, name, ok = find(c); ok {
+				note = fmt.Sprintf("\n#     no relation under it quotes code; the quote is a line of %s that names %s", byID[c.From].Name.Value, name)
+			} else {
+				note = fmt.Sprintf("\n#     no relation under it quotes code, and no line of %s names what it runs to; quote the line where it crosses, such as the call, the include or the file it writes", byID[c.From].Name.Value)
+			}
+		}
+		if q.Path != "" {
 			ev = fmt.Sprintf("[{path: %s, lines: %s, quote: %s}]", strconv.Quote(q.Path), strconv.Quote(q.Lines), strconv.Quote(q.Quote))
 		}
 		mark := ""
@@ -118,7 +332,7 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 			mark = "  # chosen below"
 		}
 		fmt.Fprintf(w, "#   - {from: %s, to: %s, word: \"\", evidence: %s}%s\n", c.From, c.To, ev, mark)
-		fmt.Fprintf(w, "#     %s -> %s: %s\n", byID[c.From].Name.Value, byID[c.To].Name.Value, tiesText(c))
+		fmt.Fprintf(w, "#     %s -> %s: %s%s\n", byID[c.From].Name.Value, byID[c.To].Name.Value, tiesText(c), note)
 	}
 	fmt.Fprintln(w, "#")
 }
@@ -203,3 +417,6 @@ func zoneOffers(units []model.Unit, boxes []model.ID, byID map[model.ID]model.Un
 	}
 	return out
 }
+
+// oneSegment is a top-level directory name an include path can start with.
+var oneSegment = regexp.MustCompile(`^[A-Za-z_]\w+$`)

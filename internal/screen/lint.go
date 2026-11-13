@@ -108,10 +108,15 @@ type Totals struct {
 	// the lines three or more abreast; a page the debt file names may not
 	// raise them, nor its ColourSwitches (gate.go).
 	ParallelInk int `json:"parallel_ink"`
-	Abreast     int `json:"abreast"`
-	Segments    int `json:"segments"`
-	Lines       int `json:"lines"`
-	ForkLevels  int `json:"fork_levels"`
+	// TwoLaneOff is the ink of lines that run opposite ways side by side
+	// other than as a two-lane road, and OppositeShared the ink two lines
+	// run on one track opposite ways (busy.go, #232).
+	TwoLaneOff     int `json:"two_lane_off"`
+	OppositeShared int `json:"opposite_shared"`
+	Abreast        int `json:"abreast"`
+	Segments       int `json:"segments"`
+	Lines          int `json:"lines"`
+	ForkLevels     int `json:"fork_levels"`
 	// InkCrossings are the points where ink passes through ink, however
 	// it is cut into paths, which a road cuts at other points than a bus
 	// (busy.go). The crossings above leave out those near a path's end.
@@ -153,6 +158,7 @@ func Sum(views []ViewLint) Totals {
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
+		t.TwoLaneOff, t.OppositeShared = t.TwoLaneOff+o.TwoLaneOff, t.OppositeShared+o.OppositeShared
 		t.ColourSwitches, t.Doglegs = t.ColourSwitches+o.ColourSwitches, t.Doglegs+o.Doglegs
 		t.Combs, t.Counts, t.Dots = t.Combs+o.Combs, t.Counts+o.Counts, t.Dots+o.Dots
 		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
@@ -352,6 +358,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.FlowMonotone = vl.Totals.Criteria["O4"]
 	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
+	vl.Totals.TwoLaneOff, vl.Totals.OppositeShared = twoLaneOff(s), oppositeShared(s)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	vl.Totals.Combs, vl.Totals.Counts, vl.Totals.Dots = combs(t.Ways), len(s.counts), len(s.junctions)
 	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
