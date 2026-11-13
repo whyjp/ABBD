@@ -7,11 +7,11 @@
 ceilings:
     against_axis: 16
     detours: 6
-    excess_turns: 139 # 133 until #242 added the internal/extract/relate module (the internal/extract page MOD-0017 and focus views MOD-0058, MOD-0060)
+    excess_turns: 139 # 133 until #265 added internal/extract/relate (internal/extract page MOD-0017 and its focus views); see #272
     overflow: 1
     placement: 43
     tees: 1
-    weighed: 275 # 269 until #242 added the internal/extract/relate module (the internal/extract page MOD-0017 and focus views MOD-0058, MOD-0060)
+    weighed: 274 # 268 until #265 added internal/extract/relate (internal/extract page MOD-0017 and its focus views); see #272
 debt:
     overview:
         R: 1
