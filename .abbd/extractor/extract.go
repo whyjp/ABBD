@@ -41,6 +41,7 @@ type unit struct {
 	Anchors   []anchor `json:"anchors"`
 	Digest    string   `json:"digest,omitempty"`
 	Entries   []entry  `json:"entries,omitempty"`
+	Parent    string   `json:"parent,omitempty"`
 }
 
 // entry is one part of a contract the code spells: a command's flag.
@@ -329,6 +330,12 @@ func modules() []unit {
 			continue
 		}
 		u := unit{Key: "mod-" + strings.TrimPrefix(dir, "internal/"), Kind: "MOD", Name: dir, Anchors: []anchor{{Path: dir}}}
+		for up := path.Dir(dir); up != "internal" && up != "."; up = path.Dir(up) {
+			if len(byDir[up]) > 0 {
+				u.Parent = "mod-" + strings.TrimPrefix(up, "internal/")
+				break
+			}
+		}
 		for _, p := range byDir[dir] {
 			u.Anchors = append(u.Anchors, anchor{Path: p})
 		}
