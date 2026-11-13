@@ -540,6 +540,8 @@ def port_slack(frm=None, to=None):
     nearest free x over the other end's span (edge_slacks): px of the one
     line's start, or a count of ends over the view."""
     def m(t, view):
+        if frm:
+            ways(t, view, frm, to)
         n = 0
         for v in views_of(t, view):
             got = [w for w in t.ways if w["view"] == v]
