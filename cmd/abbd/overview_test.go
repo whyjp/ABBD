@@ -115,7 +115,12 @@ func TestAnOverviewDraftIsCheckedBeforeItIsStored(t *testing.T) {
 	for _, c := range []struct{ from, to, want string }{
 		{"      units: [MOD-0002]", "      units: [MOD-0009]", "MOD-0009 is no longer in the state"},
 		{"      units: [MOD-0002]", "      units: []", "stage 장부 기록 names no unit"},
-		{"      units: [MOD-0002]", "      units: [MOD-0002, DATA-0001]", "DATA-0001 is held by stage 1 and, inside MOD-0001, by stage 2; a unit sits in one stage"},
+		{"      units: [MOD-0002]", "      units: [MOD-0002, DATA-0001]", "DATA-0001 sits inside MOD-0001, which the overview draws as one box; name MOD-0001"},
+		{"    units: [MOD-0001, MOD-0002]", "    units: [DATA-0001, MOD-0002]", "DATA-0001 sits inside MOD-0001, which the overview draws as one box; name MOD-0001"},
+		{"    - name: 청구 기록", "    - name: 장부 기록", "stages 1 and 2 are both named 장부 기록; give each stage a name of its own"},
+		{"    - name: 청구 기록", "    - name: 청구가 기록되고 장부가 그것을 매일 밤 읽는다", "stage 청구가 기록되고 장부가 그것을 매일 밤 읽는다: phrase"},
+		{"  - name: 돈", "  - name: ' 돈'", "one line, with no space at either end"},
+		{"  - from: MOD-0002\n    to: MOD-0001", "  - from: MOD-0001\n    to: DATA-0001", "DATA-0001 sits inside MOD-0001, so the line runs inside one box; join units the overview draws in two boxes"},
 		{"      units: [MOD-0002]", "      units: [MOD-0002, MOD-0001]", "MOD-0001 is named by stage 1 and by stage 2"},
 		{"  - from: MOD-0002\n    to: MOD-0001", "  - from: MOD-0001\n    to: MOD-0002", "no live relation runs from MOD-0001, or a unit inside it, to MOD-0002, or a unit inside it; a line draws a stored relation, in its direction, and the relations run from MOD-0002 to MOD-0001"},
 		{"  - from: MOD-0002\n    to: MOD-0001", "  - from: DATA-0001\n    to: MOD-0002", "no live relation runs from DATA-0001"},
@@ -160,5 +165,40 @@ func TestAnOverviewGoesStaleWithItsCodeAndItsRelations(t *testing.T) {
 	out = p.want(1, "STALE", "status", "--check")
 	if !strings.Contains(out, "no live relation runs from MOD-0002") {
 		t.Errorf("a line whose relations all vanished is reported, not drawn as if it held:\n%s", out)
+	}
+}
+
+// A stored overview whose units moved inside another, or left the state,
+// reads STALE: the stage names the box to use instead, the line whose ends
+// came to nest runs inside one box, and a stage whose unit is gone says so.
+func TestAnOverviewGoesStaleWhenItsUnitsMoveOrLeave(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.overview(0, "stored the overview", chargeOverview)
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	p.extract(strings.Replace(ledgerTopo, `"name":"ledger",`, `"name":"ledger","parent":"billing",`, 1))
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", chargesTable), "--", exe)
+	out := p.want(1, "STALE", "status", "--check")
+	for _, want := range []string{
+		"stale: overview stage 1 (장부 기록) is STALE: MOD-0002 sits inside MOD-0001, which the overview draws as one box; name MOD-0001; draw it again from the state",
+		"MOD-0002 sits inside MOD-0001, so the line runs inside one box",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("status names %q:\n%s", want, out)
+		}
+	}
+
+	p.extract(`{"units":[{"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]}]}`)
+	noLedger := strings.Replace(chargesTable, `,
+ {"key":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}`, "", 1)
+	noLedger = strings.Replace(noLedger, `,
+ {"from":"l","to":"t","kind":"consumes","via":"data","evidence":[{"path":"ledger/book.go","lines":"3-4","quote":"SELECT amount FROM charges"}]}`, "", 1)
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", noLedger), "--", exe)
+	out = p.want(1, "STALE", "status", "--check")
+	if !strings.Contains(out, "stale: overview stage 1 (장부 기록) is STALE: MOD-0002 is no longer in the state") {
+		t.Errorf("a stage whose unit left the state is STALE and says so:\n%s", out)
 	}
 }

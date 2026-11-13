@@ -40,15 +40,30 @@ type Zone struct {
 }
 
 // Kind makes the primary flow's stages a kind of figure part, whose stages
-// hold each unit once between them.
+// hold each unit once between them, each under a name of its own.
 func (Stage) Kind() FigureKind[Stage] {
-	return FigureKind[Stage]{Noun: "overview", Part: "stage", Parts: "stages", Min: 2, Max: StackLayers, Whole: holdOnce[Stage](0)}
+	return FigureKind[Stage]{Noun: "overview", Part: "stage", Parts: "stages", Min: 2, Max: StackLayers, Whole: holdNamedOnce[Stage]}
 }
 
 // Kind makes the overview's zones a kind of figure part, whose zones hold
-// each unit once between them.
+// each unit once between them, each under a name of its own.
 func (Zone) Kind() FigureKind[Zone] {
-	return FigureKind[Zone]{Noun: "overview", Part: "zone", Parts: "zones", Max: OverviewZones, Whole: holdOnce[Zone](0)}
+	return FigureKind[Zone]{Noun: "overview", Part: "zone", Parts: "zones", Max: OverviewZones, Whole: holdNamedOnce[Zone]}
+}
+
+// holdNamedOnce keeps each unit in one stage or zone, and each name on one,
+// since the name is the label the overview draws.
+func holdNamedOnce[C Claim[C]](cols []Column, parts []C, units []Unit) []Gap {
+	gaps := holdOnce[C](0)(cols, parts, units)
+	k := KindOf[C]()
+	for i, a := range parts {
+		for j, b := range parts[i+1:] {
+			if a.Label() == b.Label() {
+				gaps = append(gaps, Gap{Text: fmt.Sprintf("%s %d and %d are both named %s; give each %s a name of its own", k.Parts, i+1, i+j+2, a.Label(), k.Part), Parts: []int{i + 1, i + j + 2}})
+			}
+		}
+	}
+	return gaps
 }
 
 func (s Stage) Validate() error             { return s.validate("stage") }
@@ -58,11 +73,15 @@ func (z Zone) Requote(es []Evidence) Zone   { z.Evidence = es; return z }
 func (s Stage) Retire() Stage               { return s }
 func (z Zone) Retire() Zone                 { return z }
 
-// validate checks the group on its own: a name on one line, the units it
-// holds, each named once, and the code it rests on.
+// validate checks the group on its own: a name that fits on the drawing as
+// a phrase does, the units it holds, each named once, and the code it rests
+// on.
 func (h Holding) validate(part string) error {
-	if strings.TrimSpace(h.Name) == "" || strings.ContainsAny(h.Name, "\r\n") {
+	if strings.TrimSpace(h.Name) == "" {
 		return fmt.Errorf("a %s has a name, on one line", part)
+	}
+	if err := ValidatePhrase(h.Name, ""); err != nil {
+		return fmt.Errorf("%s %s: %w", part, h.Name, err)
 	}
 	if len(h.Units) == 0 {
 		return fmt.Errorf("%s %s names no unit; a %s holds the stored units it names", part, h.Name, part)
@@ -87,13 +106,16 @@ func (h Holding) Words() []Word      { return []Word{{"name", h.Name}} }
 func (h Holding) Quotes() []Evidence { return h.Evidence }
 
 // Gaps reads the group against the state, as a stack's layer is read: each
-// unit it names is present, and one quote at least lies in their code.
+// unit it names is present and is a box the overview draws, and one quote
+// at least lies in their code.
 func (h Holding) Gaps(units []Unit) []string {
 	st := stateOf(units)
 	var gaps []string
 	for _, id := range h.Units {
 		if _, ok := st[id]; !ok {
 			gaps = append(gaps, fmt.Sprintf("%s is no longer in the state", id))
+		} else if box := st.box(id); box != id {
+			gaps = append(gaps, fmt.Sprintf("%s sits inside %s, which the overview draws as one box; name %s", id, box, box))
 		}
 	}
 	if len(gaps) == 0 && !st.rests(h.Units, h.Evidence) {
@@ -176,8 +198,9 @@ func (l Line) Carries(units []Unit) []Carried {
 	return out
 }
 
-// Gaps reads the line against the state: both ends are present, a live
-// relation runs from one to the other in the line's direction, and one
+// Gaps reads the line against the state: both ends are present and sit in
+// two boxes the overview draws, so neither holds the other, a live relation
+// runs from one to the other in the line's direction, and one
 // quote at least lies in the code of an end, or in a file the evidence of a
 // relation under the line cites, where what crosses it is written.
 func (l Line) Gaps(units []Unit) []string {
@@ -190,6 +213,16 @@ func (l Line) Gaps(units []Unit) []string {
 	}
 	if len(gaps) > 0 {
 		return gaps
+	}
+	if box := st.box(l.From); box == st.box(l.To) {
+		inner, outer := l.From, l.To
+		if st.under(outer, inner) {
+			inner, outer = outer, inner
+		}
+		if !st.under(inner, outer) {
+			return []string{fmt.Sprintf("%s and %s both sit inside %s, so the line runs inside one box; join units the overview draws in two boxes", l.From, l.To, box)}
+		}
+		return []string{fmt.Sprintf("%s sits inside %s, so the line runs inside one box; join units the overview draws in two boxes", inner, outer)}
 	}
 	var crossed []string
 	for _, c := range l.Carries(units) {
@@ -206,7 +239,7 @@ func (l Line) Gaps(units []Unit) []string {
 		if len(Line{From: l.To, To: l.From}.Carries(units)) > 0 {
 			gap += fmt.Sprintf(", and the relations run from %s to %s", l.To, l.From)
 		}
-		gaps = append(gaps, gap)
+		gaps = append(gaps, gap+"; choose a line a stored relation runs under, or drop it")
 	}
 	if !st.rests([]ID{l.From, l.To}, l.Evidence) && !slices.ContainsFunc(l.Evidence, func(e Evidence) bool { return slices.Contains(crossed, e.Path) }) {
 		gaps = append(gaps, "none of the line's quotes is in the code of its ends or a unit inside them; cite the lines that show what crosses it")

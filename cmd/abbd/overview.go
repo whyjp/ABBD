@@ -25,7 +25,7 @@ func (e env) overview(args []string) error {
 			return fmt.Errorf("%s %s, so it is no overview; store one with abbd overview FILE", prev.File, prev.Why)
 		}
 		for _, l := range overviewStale(prev, nil) {
-			fmt.Fprintln(e.stderr, "abbd:", l)
+			fmt.Fprintln(e.stderr, "abbd:", l.text)
 		}
 		b, err := store.OverviewDraft(prev)
 		if err != nil {
@@ -100,22 +100,37 @@ func partCount[C any](n int, k model.FigureKind[C]) error {
 	return nil
 }
 
+// staleLine is why one part of the overview, or its parts taken together,
+// is STALE, and what a reader does about it: read the code again when the
+// code it cites changed, else draw it again from the state as it is now.
+type staleLine struct {
+	text string
+	code bool
+}
+
+func (l staleLine) fix() string {
+	if l.code {
+		return "read that code again and store the overview with abbd overview FILE"
+	}
+	return "draw it again from the state as it is now and store the overview with abbd overview FILE"
+}
+
 // overviewStale lists why each part of the overview is STALE: the code it
 // cites changed, or, when units is given, the state no longer bears it out.
-func overviewStale(o store.Overview, units []model.Unit) []string {
-	var out []string
+func overviewStale(o store.Overview, units []model.Unit) []staleLine {
+	var out []staleLine
 	for _, p := range overviewParts(o) {
 		why := p.changed
 		if units != nil {
 			why = p.why(units)
 		}
 		if len(why) > 0 {
-			out = append(out, fmt.Sprintf("%s is STALE: %s", p, strings.Join(why, ", ")))
+			out = append(out, staleLine{fmt.Sprintf("%s is STALE: %s", p, strings.Join(why, ", ")), len(p.changed) > 0})
 		}
 	}
 	if units != nil {
 		for _, g := range o.Gaps(units) {
-			out = append(out, "overview is STALE: "+g.Text)
+			out = append(out, staleLine{"overview is STALE: " + g.Text, false})
 		}
 	}
 	return out
@@ -162,7 +177,7 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 	stale := overviewStale(o, units)
 	fmt.Fprintf(e.stdout, "overview: primary flow %s in %d stages, %d zones, %d lines, %d STALE\n", o.Flow, len(o.Stages), len(o.Zones), len(o.Lines), len(stale))
 	for _, l := range stale {
-		fmt.Fprintln(e.stdout, "stale:", l+"; read that code again and store the overview with abbd overview FILE")
+		fmt.Fprintln(e.stdout, "stale:", l.text+"; "+l.fix())
 	}
 	if len(stale) == 0 {
 		return ""
