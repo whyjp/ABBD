@@ -55,6 +55,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 
 RG = "ripgrep overview"
 RG1 = "ripgrep overview focus MOD-0001 ripgrep"
+RG6 = "ripgrep overview focus MOD-0006 grep"
 R72 = "orca MOD-0072 desktop renderer UI"
 F73 = "orca MOD-0072 focus MOD-0073 renderer/app-shell"
 S98 = "orca MOD-0098 src/"
@@ -160,7 +161,10 @@ def steps(w):
 def on(fn, *names):
     """Sum fn over the view's lines that have every one of names at an end."""
     def m(t, view):
-        return sum(fn(w) for w in t.ways if w["view"] == t.view(view) and all(n in (w["from"], w["to"]) for n in names))
+        got = [w for w in t.ways if w["view"] == t.view(view) and all(n in (w["from"], w["to"]) for n in names)]
+        if names and not got:
+            raise Unmeasured(f"no traced line at {' and '.join(names)} on {view}")
+        return sum(fn(w) for w in got)
     return m
 
 
@@ -275,15 +279,35 @@ def along(s, t):
     return 0
 
 
+def listing(path):
+    if not os.path.isdir(path):
+        raise Unmeasured(f"no pages in {path}")
+    return sorted(os.listdir(path))
+
+
+def page_text(path):
+    try:
+        with open(path, encoding="utf8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise Unmeasured(f"no page {path}") from None
+
+
+def section(page, tag, path):
+    if tag not in page:
+        raise Unmeasured(f"no {tag} in {path}")
+    return page.index(tag)
+
+
 def doubled(fixture, unit):
     """Pairs of wires of one kind, not of one bundle (data-net), whose ink
     runs on one another, where neither names every line of the other, so
     the one drawn on top hides the other's lines from the pointer."""
     def m(t, view):
         t.view(view)
-        with open(os.path.join(t.pages, fixture, unit + ".html"), encoding="utf8") as f:
-            page = f.read()
-        at = page.index(f'id="m-{unit}"')
+        path = os.path.join(t.pages, fixture, unit + ".html")
+        page = page_text(path)
+        at = section(page, f'id="m-{unit}"', path)
         ws = []
         for kind, d, rest, title in WIRE.findall(page[at:page.index("</section>", at)]):
             net = re.search(r'data-net="(\d+)"', rest)
@@ -308,7 +332,7 @@ def page_map(t, view):
     key = (t.pages, fixture, sid)
     if key not in DRAWN:
         tag = f'id="{sid}"'
-        for name in sorted(os.listdir(os.path.join(t.pages, fixture))):
+        for name in listing(os.path.join(t.pages, fixture)):
             with open(os.path.join(t.pages, fixture, name), encoding="utf8") as f:
                 page = f.read()
             if tag in page:
@@ -549,9 +573,8 @@ def inked_titles(svg):
 
 
 def overview_svg(path):
-    with open(path, encoding="utf8") as f:
-        page = f.read()
-    at = page.index("<svg", page.index('id="overview"'))
+    page = page_text(path)
+    at = page.index("<svg", section(page, 'id="overview"', path))
     return page[at:page.index("</svg>", at)]
 
 
@@ -565,7 +588,7 @@ def titles_meet_ink(t, view):
     if view == SELF_STATE:
         page = os.path.join(t.out, "self-pages", "index.html")
         return inked_titles(overview_svg(page)) if os.path.exists(page) else None
-    return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in sorted(os.listdir(t.pages)))
+    return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in listing(t.pages))
 
 
 BESIDE = 10
@@ -707,7 +730,7 @@ def crossings(*names):
     with names, only crossings of a line from names[0] to one of the rest."""
     def m(t, view):
         got = [w for w in t.ways if w["view"] == t.view(view)]
-        mine = [w for w in got if w["from"] == names[0] and w["to"] in names[1:]] if names else got
+        mine = [w for to in names[1:] for w in ways(t, view, names[0], to)] if names else got
         return len({p for a in mine for b in got if b is not a and (a["from"], a["to"]) != (b["from"], b["to"])
                     for s in stretches(a) for q in stretches(b) for p in [crossing(s, q)] if p})
     return m
@@ -743,10 +766,12 @@ Q_SELF = "\"수평수직 병합이 덜 되어 복잡, 꺾임이 많음\""
 Case = namedtuple("Case", "id source view measure fn target note")
 
 CASES = [
-    Case("rg-regex-drop", "today; user-16, user-17", RG, "turns past 0 in one column, 2 in two, of grep -> grep-regex",
-         on(excess, GREP, REGEX), 0, "rows 67-70: the hairpin is gone, but grep-regex stands in grep's column and the line still turns twice"),
-    Case("rg-regex-hairpin", "today; user-16, user-17", RG, "turn-backs and doubled stretches of grep -> grep-regex",
-         on(lambda w: backs(w) + doubles(w), GREP, REGEX), 0, "guard: rows 69-70 took the ride past pcre2 cargo feature's drop and back"),
+    Case("rg-regex-drop", "today; user-16, user-17", RG6, "turns past 0 in one column, 2 in two, of grep -> grep-regex",
+         on(excess, GREP, REGEX), 0, "rows 67-70 of the overview: the hairpin is gone, but grep-regex stands in grep's column"
+         " and the line still turns twice; the density cut draws the line only in focus views since b95ffaf8"),
+    Case("rg-regex-hairpin", "today; user-16, user-17", RG6, "turn-backs and doubled stretches of grep -> grep-regex",
+         on(lambda w: backs(w) + doubles(w), GREP, REGEX), 0, "guard: rows 69-70 of the overview took the ride past"
+         " pcre2 cargo feature's drop and back; the density cut draws the line only in focus views since b95ffaf8"),
     Case("rg-doubled", "user-18", RG, "stretches of one line side by side within 12px for 24px",
          on(doubles), 0, "guard: two lanes of one line read as one doubled line"),
     Case("rg-matcher-out", "today", RG, "px grep -> grep-matcher runs past its ends' x span",
@@ -832,6 +857,10 @@ CASES = [
          " 2 each; the density cut draws both lines only here since b95ffaf8"),
     Case("rg-left-crossings", EYE, RG1, "crossings of ripgrep -> grep-searcher and grep-matcher",
          crossings(RIPGREP, SEARCHER, MATCHER), 0, Q_RG_LEFT + "; the overview's trunk at 428 ran through the middle of the drawing"),
+    Case("rg-left-overview-turns", EYE, RG, "turns of ripgrep -> grep-searcher", turns_of(RIPGREP, SEARCHER), 2,
+         Q_RG_LEFT + "; guard on the overview the user looked at, which since b95ffaf8 draws only this of the two, straight down at 978"),
+    Case("rg-left-overview-crossings", EYE, RG, "crossings of ripgrep -> grep-searcher", crossings(RIPGREP, SEARCHER), 1,
+         Q_RG_LEFT + "; guard: today only ripgrep -> grep-printer's track at y=228 crosses it; the flagged route via 388 crossed 3"),
     Case("rg-left-sideways", EYE, RG1, "px ripgrep -> grep-searcher and grep-matcher run sideways past the x span between their ends",
          x_slack(RIPGREP, SEARCHER, MATCHER), 0,
          "guard: on the overview the 505 they ran was their ends' x span; the way round must not add sideways for its fewer turns"),
