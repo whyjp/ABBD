@@ -66,15 +66,16 @@ type cited struct {
 }
 
 // via says how a relation the script reads arises, so the drawing tells a
-// design-only line from a run-time one: a package another names is called,
-// a command is called, a file contract carries data, a config is
-// read as config and an event calls back.
-func via(r relation, kind map[string]string) string {
+// design-only line from a run-time one: a package that calls a function or
+// method of another calls it, one that names only its types or values
+// imports it, a command is called, a file contract carries data, a config
+// is read as config and an event calls back.
+func via(r relation, kind map[string]string, calls map[relation]bool) string {
 	if r.Kind == "depends_on" {
-		// A dependency that names only types or values arises at build
-		// time, but drawing those dotted moves this repository's
-		// layering past its lint ceilings, so the render track decides it.
-		return "call"
+		if calls[r] {
+			return "call"
+		}
+		return "import"
 	}
 	switch kind[r.To] {
 	case "DATA":
@@ -114,6 +115,9 @@ var (
 	decls = map[string]map[string]string{}
 	// methods holds "dir.Name" for every method a package declares.
 	methods = map[string]bool{}
+	// funcs holds "dir.Name" for every package-level function a package
+	// declares, methods left out.
+	funcs = map[string]bool{}
 
 	// types maps "dir.Name" to its type spec and declaring file.
 	types = map[string]typeDecl{}
@@ -160,11 +164,13 @@ func run() error {
 	}
 
 	rels := map[relation]bool{}
-	refs := references(owners)
-	for from, tos := range refs {
-		for to := range tos {
+	calls := map[relation]bool{}
+	for from, tos := range references(owners) {
+		for to, call := range tos {
 			if from != to {
-				rels[relation{from, to, "depends_on"}] = true
+				r := relation{from, to, "depends_on"}
+				rels[r] = true
+				calls[r] = calls[r] || call
 			}
 		}
 	}
@@ -207,7 +213,7 @@ func run() error {
 		kind[u.Key] = u.Kind
 	}
 	for r := range rels {
-		out.Relations = append(out.Relations, cited{r, via(r, kind), featCites[r], featEntries[r]})
+		out.Relations = append(out.Relations, cited{r, via(r, kind, calls), featCites[r], featEntries[r]})
 	}
 	sort.Slice(out.Units, func(i, j int) bool { return out.Units[i].Key < out.Units[j].Key })
 	sort.Slice(out.Relations, func(i, j int) bool {
@@ -261,8 +267,12 @@ func parseTree(root string) error {
 			decls[sf.dir][name] = rel
 		}
 		for _, d := range f.Decls {
-			if fd, ok := d.(*ast.FuncDecl); ok && fd.Recv != nil {
-				methods[sf.dir+"."+fd.Name.Name] = true
+			if fd, ok := d.(*ast.FuncDecl); ok {
+				if fd.Recv != nil {
+					methods[sf.dir+"."+fd.Name.Name] = true
+				} else {
+					funcs[sf.dir+"."+fd.Name.Name] = true
+				}
 			}
 			if g, ok := d.(*ast.GenDecl); ok {
 				for _, s := range g.Specs {
@@ -350,7 +360,8 @@ func modules() []unit {
 	return append(out, cli)
 }
 
-// references maps each module to the modules whose symbols it uses.
+// references maps each module to the modules whose symbols it uses, true
+// where it names one of their functions or methods.
 func references(owners map[string]string) map[string]map[string]bool {
 	out := map[string]map[string]bool{}
 	for _, p := range sortedKeys(files) {
@@ -362,21 +373,25 @@ func references(owners map[string]string) map[string]map[string]bool {
 		if out[from] == nil {
 			out[from] = map[string]bool{}
 		}
-		for _, ref := range symbolRefs(f) {
+		refs := symbolRefs(f)
+		for _, ref := range sortedKeys(refs) {
 			dir, name, _ := strings.Cut(ref, ".")
 			if decl, ok := decls[dir][name]; ok && owners[decl] != "" {
-				out[from][owners[decl]] = true
+				to := owners[decl]
+				out[from][to] = out[from][to] || refs[ref]
 			}
 		}
 	}
 	return out
 }
 
-// symbolRefs lists "dir.Name" for every module symbol a file names: imported
-// package members through selectors, methods of imported packages by name,
-// and same-package names declared in another file. Matching by name can
-// overcount a local name that shares a declared one, never undercount.
-func symbolRefs(f *srcFile) []string {
+// symbolRefs maps "dir.Name" to whether the file calls it, for every module
+// symbol the file names: imported package members through selectors, which
+// it calls when they are package-level functions, methods of imported
+// packages by name, which it calls, and same-package names declared in
+// another file. Matching by name can overcount a local name that shares a
+// declared one, never undercount.
+func symbolRefs(f *srcFile) map[string]bool {
 	seen := map[string]bool{}
 	own := map[string]bool{}
 	for _, n := range topLevel(f.ast) {
@@ -387,23 +402,25 @@ func symbolRefs(f *srcFile) []string {
 		case *ast.SelectorExpr:
 			if x, ok := n.X.(*ast.Ident); ok {
 				if dir, ok := f.imports[x.Name]; ok {
-					seen[dir+"."+n.Sel.Name] = true
+					ref := dir + "." + n.Sel.Name
+					seen[ref] = seen[ref] || funcs[ref]
 					return false
 				}
 			}
 			for _, dir := range f.imports {
-				if methods[dir+"."+n.Sel.Name] {
-					seen[dir+"."+n.Sel.Name] = true
+				if ref := dir + "." + n.Sel.Name; methods[ref] {
+					seen[ref] = true
 				}
 			}
 		case *ast.Ident:
 			if decl, ok := decls[f.dir][n.Name]; ok && decl != f.path && !own[n.Name] {
-				seen[f.dir+"."+n.Name] = true
+				ref := f.dir + "." + n.Name
+				seen[ref] = seen[ref] || funcs[ref]
 			}
 		}
 		return true
 	})
-	return sortedKeys(seen)
+	return seen
 }
 
 // contract is how one contract is anchored and how its signature is read.
@@ -495,7 +512,7 @@ func consumers(u unit, owners map[string]string) []string {
 		if o == "" || o == prov {
 			continue
 		}
-		for _, ref := range symbolRefs(files[p]) {
+		for ref := range symbolRefs(files[p]) {
 			if targets[ref] {
 				found[o] = true
 			}

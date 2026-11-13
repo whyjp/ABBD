@@ -10,8 +10,8 @@ ceilings:
     excess_turns: 487
     overflow: 6
     placement: 122
-    tees: 14
-    weighed: 1209
+    tees: 13
+    weighed: 1208
 debt:
     MOD-0007 mobile app (Expo):
         R: 1
@@ -42,12 +42,12 @@ pages:
         abreast: 204
         against_axis: 5
         against_axis_ink: 1862
-        colour_switches: 45
+        colour_switches: 43
         combs: 0
         counts: 9
         density: 56
         doglegs: 21
-        dots: 11
+        dots: 10
         false_joins: 0
         label_repeats: 0
         labelled: 4

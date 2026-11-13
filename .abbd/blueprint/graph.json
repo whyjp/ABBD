@@ -225,6 +225,7 @@
         "internal/topology/diff.go Diff"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"Signatures []Signature `json:\\\"contract_signatures_changed\\\"`\""
       ]
@@ -261,6 +262,7 @@
         "internal/topology/diff.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
@@ -297,6 +299,7 @@
         "internal/topology/query.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
       ]
@@ -351,6 +354,7 @@
         "internal/group/group.go"
       ],
       "Parent": "MOD-0054",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"return path.Dir(u.Anchors[0].Path)\""
       ]
@@ -423,6 +427,7 @@
         "internal/topology/diff.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
       ]
@@ -441,6 +446,7 @@
         "internal/group/group.go"
       ],
       "Parent": "MOD-0054",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
@@ -459,6 +465,7 @@
         "internal/topology/impact.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
@@ -495,6 +502,7 @@
         "plugins/abbd/skills/abbd",
         "plugins/abbd/skills/abbd/SKILL.md abbd"
       ],
+      "Zone": "abbd 스킬",
       "Rank": {
         "Basis": "stack",
         "N": 3,
@@ -521,6 +529,7 @@
         "plugins/abbd/skills/abbd-setup",
         "plugins/abbd/skills/abbd-setup/SKILL.md abbd-setup"
       ],
+      "Zone": "abbd 스킬",
       "Rank": {
         "Basis": "stack",
         "N": 1,
@@ -542,6 +551,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by whether its evidence still holds\""
       ]
@@ -560,6 +570,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Open `.abbd/blueprint/index.html` for the modules the request touches\"",
         "plugins/abbd/skills/abbd/SKILL.md \"Ask the topology before grepping the code.\""
@@ -579,6 +590,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Record each coupling or unit a reader found that the state lacks\""
       ]
@@ -591,12 +603,14 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Records a purpose, responsibility or coupling the human states, with a source reference.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"When the human states a purpose, a responsibility or a coupling in the conversation\""
       ]
@@ -616,6 +630,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Put the topology difference in the reply and in the PR description\""
       ]
@@ -635,6 +650,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"for a CI job that labels the PR\""
       ]
@@ -654,6 +670,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"List unit candidates from the layout, entry points, manifests and schemas.\""
       ]
@@ -673,6 +690,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
       ]
@@ -692,6 +710,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
       ]
@@ -711,6 +730,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`not deterministic`: the script printed different output across three runs\""
       ]
@@ -730,6 +750,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the readers described the code\""
       ]
@@ -749,6 +770,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"## Extraction format\"",
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes`, `provides`, `runs_on`\""
@@ -810,6 +832,7 @@
         "plugins/abbd/skills/abbd/references/reader.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"ABBD reads code with this reader.\""
       ]
@@ -829,6 +852,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
       ]
@@ -841,14 +865,16 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 7), and only when a human is in the conversation.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 8), and only when a human is in the conversation.\""
       ]
     },
     {
@@ -1382,6 +1408,7 @@
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
         "cmd/abbd/overview.go",
+        "cmd/abbd/overview_draft.go",
         "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
@@ -1598,6 +1625,7 @@
         "internal/bootstrap",
         "internal/bootstrap/overlay.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -1623,6 +1651,7 @@
         "internal/bootstrap/overlay.go Overlay"
       ],
       "Parent": "MOD-0009",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"u.Purpose = supplemented(d.Purpose)\""
       ]
@@ -1645,6 +1674,7 @@
         "internal/bootstrap/overlay.go overlap"
       ],
       "Parent": "MOD-0009",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"its anchors match more than one %s equally\"",
         "internal/bootstrap/overlay.go \"keys[x.Key()] = true\""
@@ -1667,6 +1697,7 @@
         "internal/evidence",
         "internal/evidence/evidence.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -1691,6 +1722,7 @@
         "internal/evidence/evidence.go all"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"v.SetAbsent(model.EvidenceDead)\"",
         "internal/evidence/evidence.go \"e.Status, e.Since = model.Drifted, rev\""
@@ -1714,6 +1746,7 @@
         "internal/evidence/evidence.go Slack"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"const Slack = 3\"",
         "internal/evidence/evidence.go \"// A quote ending in a word must end where the code's word ends, so\""
@@ -1737,6 +1770,7 @@
         "internal/evidence/evidence.go load"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"// norm is the file with all whitespace removed, so formatting never kills\"",
         "internal/evidence/evidence.go \"bytes.ReplaceAll(b, []byte(\\\"\\\\r\\\\n\\\"), []byte(\\\"\\\\n\\\"))\""
@@ -1761,6 +1795,7 @@
         "internal/extract",
         "internal/extract/extract.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -1785,6 +1820,7 @@
         "internal/extract/extract.go parentCycle"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"parent %q is not the key of another module\"",
         "internal/extract/extract.go \"func parentCycle(units []Unit, key string) bool {\""
@@ -1809,6 +1845,7 @@
         "internal/extract/extract.go inferred"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
       ]
@@ -1830,6 +1867,7 @@
         "internal/extract/extract.go normalizePath"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
         "internal/extract/extract.go \"leaves the project root\""
@@ -1854,6 +1892,7 @@
         "internal/extract/extract.go parseUnits"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"dec.DisallowUnknownFields()\"",
         "internal/extract/extract.go \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
@@ -1878,6 +1917,7 @@
         "internal/gitx",
         "internal/gitx/gitx.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -1901,6 +1941,7 @@
         "internal/gitx/gitx.go MergeBase"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
@@ -1922,6 +1963,7 @@
         "internal/gitx/gitx.go Renames"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
         "internal/gitx/gitx.go \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
@@ -1946,6 +1988,7 @@
         "internal/gitx/gitx.go Snapshot"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
         "internal/gitx/gitx.go \"\\\":(exclude)\\\"+exclude\""
@@ -1970,6 +2013,7 @@
         "internal/identity",
         "internal/identity/identity.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -1994,6 +2038,7 @@
         "internal/identity/identity.go Reconcile"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"if ov \u003e= 2 || same {\"",
         "internal/identity/identity.go \"case p.identical != q.identical:\""
@@ -2018,6 +2063,7 @@
         "internal/identity/identity.go heldByHuman"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"func heldByHuman(units []model.Unit) map[model.ID]bool {\""
       ]
@@ -2042,6 +2088,7 @@
         "internal/identity/identity.go setRelations"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
         "internal/identity/identity.go \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
@@ -2550,6 +2597,7 @@
         "internal/topology/path.go",
         "internal/topology/query.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -2573,6 +2621,7 @@
         "internal/topology/diff.go Boundary"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func (d Diff) Boundary() bool {\""
       ]
@@ -2597,6 +2646,7 @@
         "internal/topology/diff.go between"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func Compare(base, now []model.Unit) Diff {\"",
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
@@ -2619,6 +2669,7 @@
         "internal/topology/impact.go ImpactOf"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
       ]
@@ -2640,6 +2691,7 @@
         "internal/topology/impact.go Links"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func Links(units []model.Unit) []Link {\""
       ]
@@ -2661,6 +2713,7 @@
         "internal/topology/query.go Explain"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"func Explain(units []model.Unit, id model.ID) Explanation {\""
       ]
@@ -2683,6 +2736,7 @@
         "internal/topology/query.go strength"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {\"",
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
@@ -2699,6 +2753,7 @@
         "internal/group",
         "internal/group/group.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -2742,6 +2797,7 @@
         "internal/narrative/language.go",
         "internal/narrative/narrative.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -2759,6 +2815,7 @@
         "internal/owners",
         "internal/owners/owners.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -2778,7 +2835,8 @@
         "internal/extract/frontend/cmake.go",
         "internal/extract/frontend/frontend.go"
       ],
-      "Parent": "MOD-0017"
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     },
     {
       "ID": "MOD-0060",
@@ -2792,7 +2850,8 @@
         "internal/extract/relate/golang.go",
         "internal/extract/relate/relate.go"
       ],
-      "Parent": "MOD-0017"
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     }
   ],
   "edges": [
@@ -3042,6 +3101,14 @@
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd scope\""
     },
     {
+      "From": "FEAT-0001",
+      "To": "IF-0031",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd overview\""
+    },
+    {
       "From": "FEAT-0002",
       "To": "IF-0001",
       "Kind": "consumes",
@@ -3200,6 +3267,14 @@
     },
     {
       "From": "FEAT-0002",
+      "To": "IF-0024",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd stack\""
+    },
+    {
+      "From": "FEAT-0002",
       "To": "IF-0026",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
@@ -3221,6 +3296,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd extract\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0031",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd overview\""
     },
     {
       "From": "FEAT-0002",
@@ -4384,7 +4467,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
+      "Via": "import",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -4605,7 +4688,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
+      "Via": "import",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -5071,7 +5154,7 @@
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
+      "Via": "import",
       "Phrase": "merge candidates",
       "PhraseOrigin": "INFERRED"
     },
@@ -5312,7 +5395,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call"
+      "Via": "import"
     },
     {
       "From": "MOD-0058",
@@ -5333,7 +5416,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call"
+      "Via": "import"
     },
     {
       "From": "MOD-0060",
@@ -5366,7 +5449,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 23,
+        "Uses": 24,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5500,7 +5583,8 @@
             "lint",
             "review",
             "brief",
-            "scope"
+            "scope",
+            "overview"
           ]
         }
       ],
@@ -5760,7 +5844,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 23,
+        "Uses": 25,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5888,7 +5972,7 @@
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
           "Understanding": {
-            "Reader": "concept-orch (Claude Opus 5.5)",
+            "Reader": "pstack poteto-mode 0.15.36",
             "Stale": false,
             "Blocks": [
               {
@@ -5904,7 +5988,7 @@
                 "Kind": "p",
                 "Parts": [
                   {
-                    "Text": "The stance at the top of the /abbd-setup skill: setup asks the human one thing only, how dense the overview should be, and only when a human is in the conversation. The first state it commits is the baseline, which the human reads in the blueprint and the PR, and setup needs nothing but the abbd CLI and the reader, with pstack as an optional engine.",
+                    "Text": "/abbd-setup 스킬 맨 위의 태도다. setup은 사람에게 overview를 얼마나 촘촘히 그릴지 한 가지만 묻고, 그것도 대화에 사람이 있을 때만 묻는다. 처음 커밋하는 상태가 기준선이고, 사람은 그것을 청사진과 PR에서 읽는다. setup은 abbd CLI와 리더만 있으면 되고, pstack은 고를 수 있는 엔진이다.",
                     "Code": false
                   }
                 ]
@@ -5936,9 +6020,11 @@
             "record evidence",
             "retract",
             "flow",
+            "stack",
             "lint",
             "brief",
             "extract",
+            "overview",
             "relate"
           ]
         }
@@ -7525,7 +7611,23 @@
                 "Code": true
               },
               {
-                "Text": "에 저장한다. 주 흐름은 그 파일에 따로 두지 않고 주 흐름 stack을 쓴다. status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 주 흐름 단계(그 stack의 layer)와 구역을 프로젝트 언어로 찍는다.",
+                "Text": "에 저장한다. FILE 없는 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd overview",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/overview_draft.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 저장된 구역과 선 위에 YAML 주석으로 쓸 거리를 찍는다. overview가 그리는 상자와 각 상자가 서는 단계, 주 흐름의 단계, stack 층과 폴더에서 온 구역 후보, 살아 있는 relation이 잇는 상자 쌍마다의 선 후보를 강한 순으로 relation 수와 인용과 함께 찍는다. 주 흐름은 그 파일에 따로 두지 않고 주 흐름 stack을 쓴다. status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 주 흐름 단계(그 stack의 layer)와 구역을 프로젝트 언어로 찍는다. 어느 단계도 이름 짓지 않은 상자는 안의 unit을 이름 짓는 첫 단계에 서므로, explain은 그 단계와 그 unit을 찍는다.",
                 "Code": false
               }
             ]
@@ -13121,7 +13223,39 @@
                 "Code": true
               },
               {
-                "Text": "의 검사를 거친다.",
+                "Text": "의 검사를 거친다. ",
+                "Code": false
+              },
+              {
+                "Text": "cmake",
+                "Code": true
+              },
+              {
+                "Text": " front-end는 무엇이든 구성하기 전에 PATH의 CMake에 ",
+                "Code": false
+              },
+              {
+                "Text": "cmake -E capabilities",
+                "Code": true
+              },
+              {
+                "Text": "로 버전을 묻고, 4.2보다 낮으면 구성이 먼저 실패하는 곳에서도 거부한다(",
+                "Code": false
+              },
+              {
+                "Text": "cmakeVersion",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "oldCMake",
+                "Code": true
+              },
+              {
+                "Text": "). 빌드 트리 이름에 그 버전을 넣으므로, 옛 CMake가 만든 트리를 그것을 다시 쓰지 못하는 새 CMake가 만나는 일이 없다.",
                 "Code": false
               }
             ]
@@ -19833,15 +19967,7 @@
                 "Code": false
               },
               {
-                "Text": "Zone",
-                "Code": true
-              },
-              {
-                "Text": "과 ",
-                "Code": false
-              },
-              {
-                "Text": "Line",
+                "Text": "StandsAt",
                 "Code": true
               },
               {
@@ -19849,11 +19975,74 @@
                 "Code": false
               },
               {
-                "Text": "overview.go",
+                "Text": "layer.go",
                 "Code": true
               },
               {
-                "Text": ")은 overview가 따로 저장하는 구역과 고른 선이다. 주 흐름은 주 흐름 stack이 맡으므로 여기에는 단계 타입이 없다. ",
+                "Text": ")은 어느 파트도 이름 짓지 않은 상자가 서는 첫 파트와 그 안에서 이름 지어진 unit을 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "Home",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "figure.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 unit의 anchor가 함께 놓인 가장 깊은 디렉터리다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Overview의 구역과 선",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Zone",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Line",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "LineCandidates",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/model/overview.go",
+                "Code": true
+              },
+              {
+                "Text": "): overview가 따로 저장하는 구역과 고른 선이다. 주 흐름은 주 흐름 stack이 맡으므로 여기에는 단계 타입이 없다. ",
                 "Code": false
               },
               {
@@ -19933,7 +20122,47 @@
                 "Code": true
               },
               {
-                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다.",
+                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다. 최상위 계약은 overview가 제공자 상자 위의 칩으로 그리므로, 그 계약을 쓰는 relation은 제공자 상자에 닿는 것으로 센다(",
+                "Code": false
+              },
+              {
+                "Text": "reaches",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "providers",
+                "Code": true
+              },
+              {
+                "Text": "). 제공자와 사용자는 module이나 feature 상자만 세고, 계약을 스스로 제공하는 상자의 사용은 세지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Boxes",
+                "Code": true
+              },
+              {
+                "Text": "는 overview가 상자로 그리는 module, feature, 제공자 없는 계약을 주고, ",
+                "Code": false
+              },
+              {
+                "Text": "LineCandidates",
+                "Code": true
+              },
+              {
+                "Text": "는 살아 있는 relation이 방향대로 잇는 상자 쌍을 ",
+                "Code": false
+              },
+              {
+                "Text": "Carry",
+                "Code": true
+              },
+              {
+                "Text": " 순(runs, wires, imports)으로, 같은 순위에서는 그 순위의 relation 수와 전체 수로 매겨 첫 인용과 함께 준다.",
                 "Code": false
               }
             ]
@@ -22175,6 +22404,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "overview",
+                "Code": true
+              },
+              {
                 "Text": ") 뒤에 돈다. 빈 저장소에서는 아무것도 그리지 않는다. 모든 파일을 쓰고 ",
                 "Code": false
               },
@@ -23184,7 +23421,31 @@
                 "Code": true
               },
               {
-                "Text": "는 뷰의 주 흐름을 고른다. 저장된 흐름 가운데 단계가 뷰 위에서 가장 멀리 이어지는 것으로, 다음 단계마다 그려진 선이 이어 주는 상자에 있어야 한다. 저장된 흐름이 없으면 다른 상자가 쓰지 않는 유일한 상자에서 시작해, 관계가 엄격히 가장 많은 선을 따라가다 동률에서 멈추는 선 사슬이다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 다만 개요에서는 첫 상자를 한 번 떠나거나 아예 떠나지 않는 저장된 흐름이 그 한 홉을 그리고, 도착한 상자에서 이어지는 단계들을 그 상자 옆 알약에 번호로 적는다(",
+                "Text": "는 뷰의 주 흐름을 고른다. 저장된 흐름 가운데 단계가 뷰 위에서 가장 멀리 이어지는 것으로, 다음 단계마다 그려진 선이 이어 주는 상자에 있어야 한다. 저장된 흐름이 없으면 다른 상자가 쓰지 않는 유일한 상자에서 시작해, 관계가 엄격히 가장 많은 선을 따라가다 동률에서 멈추는 선 사슬이다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
+                "Code": false
+              },
+              {
+                "Text": "leadHops",
+                "Code": true
+              },
+              {
+                "Text": " 한 곳에서 하고 상자와 선의 끝만 읽으므로, 경로를 잡기 전에도 성립한다. 그래서 ",
+                "Code": false
+              },
+              {
+                "Text": "leadLines",
+                "Code": true
+              },
+              {
+                "Text": "가 개요와 안쪽 뷰의 요청 가운데 리드가 탈 선을 ",
+                "Code": false
+              },
+              {
+                "Text": "wireReq.lead",
+                "Code": true
+              },
+              {
+                "Text": "로 미리 표시하고, 도로가 그것을 읽는다. 다만 개요에서는 첫 상자를 한 번 떠나거나 아예 떠나지 않는 저장된 흐름이 그 한 홉을 그리고, 도착한 상자에서 이어지는 단계들을 그 상자 옆 알약에 번호로 적는다(",
                 "Code": false
               },
               {
@@ -23228,7 +23489,7 @@
                 "Code": false
               },
               {
-                "Text": "home",
+                "Text": "model.Home",
                 "Code": true
               },
               {
@@ -24615,11 +24876,35 @@
                 "Code": false
               },
               {
-                "Text": "clearSpine",
+                "Text": "flowRank",
                 "Code": true
               },
               {
-                "Text": "은 척추 행에서 다른 상자를 위(단계가 쓰지 않는 것)나 아래(단계가 쓰는 것)로 비키며, 척추 행은 감싸이지 않는다. ",
+                "Text": "가 순위를 매긴다. 단계는 사이에 자리를 둔 행에 고정되고(가로면 척추 한 행), 틀의 위와 아래도 고정되며, 다른 상자는 단계에 대해서도 선대로 선다. 자기를 쓰는 상자 아래, 아무도 쓰지 않으면 자기가 쓰는 가장 높은 것 바로 위다. 그래서 한 단계에서 다음 단계로 가는 사슬 위 상자는 두 단계 행 사이에 서고 선이 거슬러 오르지 않는다(O3). 가로에서 단계가 쓰고, 자기를 되돌아 닿지 않는 단계를 쓰는 상자는 척추 어느 쪽에 서도 오르므로 ",
+                "Code": false
+              },
+              {
+                "Text": "inline",
+                "Code": true
+              },
+              {
+                "Text": "이 그 단계 바로 앞 척추 행에 세운다. 그러면 행이 ",
+                "Code": false
+              },
+              {
+                "Text": "spineRoom",
+                "Code": true
+              },
+              {
+                "Text": "을 넘을 때는 흐름을 세로로 놓는다. 척추 행은 감싸이지 않는다. 첫 정렬이 끝난 뒤 단계가 자기 행 순서를 정하므로, 단계 둘 이상을 담은 행을 그대로 묶어 둔 채(",
+                "Code": false
+              },
+              {
+                "Text": "layered.fixed",
+                "Code": true
+              },
+              {
+                "Text": ") 나머지 행을 다시 정렬해 척추 아래 행이 척추 순서를 따른다. ",
                 "Code": false
               },
               {
@@ -24667,7 +24952,15 @@
                 "Code": true
               },
               {
-                "Text": "는 주 흐름을 먼저 놓고, 흐름을 놓는 뷰의 리드는 다른 저장된 흐름보다 이것을 따르며 첫 단계 상자에서 시작한다. 번호는 리드 위 상자에서 다음 단계 상자로 가는 머리 하나짜리 선에만 붙으므로 모든 번호가 단계 순서로 읽힌다. 단계 순서를 거스르는 선이나 머리 둘인 선으로만 닿는 단계는 번호 없이 리드에 들고 리드는 거기서 이어간다. 척추에서 이웃한 두 단계 상자 사이 선은 버스를 타지 않고 마주 보는 옆변 사이 곧은 홉으로 그린다(",
+                "Text": "는 주 흐름을 먼저 놓고, 흐름을 놓는 뷰에서 ",
+                "Code": false
+              },
+              {
+                "Text": "leadHops",
+                "Code": true
+              },
+              {
+                "Text": "는 다른 저장된 흐름보다 이것을 고르며, 리드는 첫 단계 상자에서 시작한다. 번호는 리드 위 상자에서 다음 단계 상자로 가는 머리 하나짜리 선에만 붙으므로 모든 번호가 단계 순서로 읽힌다. 단계 순서를 거스르는 선이나 머리 둘인 선으로만 닿는 단계는 번호 없이 리드에 들고 리드는 거기서 이어간다. 한 행에 나란히 선 두 단계 상자 사이 선은, 척추에서든 세로 흐름의 한 단계 행에서든, 버스를 타지 않고 마주 보는 옆변 사이 곧은 홉으로 그린다(",
                 "Code": false
               },
               {
@@ -24675,7 +24968,15 @@
                 "Code": true
               },
               {
-                "Text": "). 같은 쌍의 선은 ",
+                "Text": "). 척추에서 이웃하지 않은 두 단계 사이 선은 척추 위 틈으로 윗변에서 윗변으로 가므로(",
+                "Code": false
+              },
+              {
+                "Text": "plan.over",
+                "Code": true
+              },
+              {
+                "Text": "), 단계가 아래 상자로 내리는 선들을 가로지르지 않는다. 같은 쌍의 선은 ",
                 "Code": false
               },
               {
@@ -24691,7 +24992,31 @@
                 "Code": true
               },
               {
-                "Text": "는 점선 여부가 같은 선들만 한 stub으로 합치므로, 실선 stub에서 갈라지는 점선은 갈림으로 센다.",
+                "Text": "는 점선 여부가 같은 선들만 한 stub으로 합치므로, 실선 stub에서 갈라지는 점선은 갈림으로 센다. 흐름을 놓는 뷰에서 뒤 단계가 앞 단계로 가는 선은 단계 순서가 정한 대로 거슬러 가므로, 규칙 13은 실은 선이 모두 그런 획을 거슬러 가는 선의 수에서 빼고 그 순서는 O4에 맡긴다(",
+                "Code": false
+              },
+              {
+                "Text": "measureBy",
+                "Code": true
+              },
+              {
+                "Text": "). 빼는 것은 수뿐이라 그 획도 점선이어야 하고, 실선으로 그리면 거슬러 가는데 실선인 선으로 규칙 13에 걸린다. 끝 하나라도 단계가 아닌 거스르는 선은 그대로 센다. ",
+                "Code": false
+              },
+              {
+                "Text": "leadHops",
+                "Code": true
+              },
+              {
+                "Text": "가 고른 흐름이 주 흐름이면 ",
+                "Code": false
+              },
+              {
+                "Text": "Lead.Primary",
+                "Code": true
+              },
+              {
+                "Text": "가 서고, 그림 아래 열쇠는 그것을 저장된 흐름이 아니라 stack으로 부른다.",
                 "Code": false
               }
             ]
@@ -25201,7 +25526,7 @@
                 "Code": true
               },
               {
-                "Text": "(96px) 이상 나란히 달리는, 같은 종류와 점선 여부를 가진 긴 구간을 ",
+                "Text": "(96px) 이상 나란히 달리는, 같은 종류의 긴 구간을 ",
                 "Code": false
               },
               {
@@ -25209,7 +25534,15 @@
                 "Code": true
               },
               {
-                "Text": "(64px) 거리까지 합친다. 도로 곁 도로를 늘리지 않는 곳에서만 합치므로 격자가 트랙 몇 개 떨어뜨려 놓은 레인들이 한 고속도로가 된다. 그런 합침마다 가까운 옮김을 다시 돌리는데, 긴 합침이 옮긴 구간이 먼 갈라짐이라 막혔던 가까운 합침을 열 수 있기 때문이다. 옮길 구간이 없으면 ",
+                "Text": "(64px) 거리까지 합친다(",
+                "Code": false
+              },
+              {
+                "Text": "oneKind",
+                "Code": true
+              },
+              {
+                "Text": "). 도로 곁 도로를 늘리지 않는 곳에서만 합치므로 격자가 트랙 몇 개 떨어뜨려 놓은 레인들이 한 고속도로가 된다. 그런 합침마다 가까운 옮김을 다시 돌리는데, 긴 합침이 옮긴 구간이 먼 갈라짐이라 막혔던 가까운 합침을 열 수 있기 때문이다. 옮길 구간이 없으면 ",
                 "Code": false
               },
               {
@@ -25249,7 +25582,31 @@
                 "Code": true
               },
               {
-                "Text": ").",
+                "Text": "). 실선과 점선을 함께 실은 구간은 점선을 뺀 채로도 옮겨질 수 있다(",
+                "Code": false
+              },
+              {
+                "Text": "solidPart",
+                "Code": true
+              },
+              {
+                "Text": "). 다만 선의 첫 구간이나 끝 구간을 쥔 구간, 곧 상자의 스텁은 통째로만 옮겨진다. 쪼개면 한 상자에서 스텁 둘이 나란히 떠나기 때문이다. 다른 옮김이 모두 자리 잡은 뒤 마지막 단계는 ",
+                "Code": false
+              },
+              {
+                "Text": "roadView.dotting",
+                "Code": true
+              },
+              {
+                "Text": "을 켜서 ",
+                "Code": false
+              },
+              {
+                "Text": "roadCost",
+                "Code": true
+              },
+              {
+                "Text": "가 갈래의 높이를 점선 여부별로 따로 센다. 그래서 점선 가지가 실선 형제들의 트랙에 아직 오르지 않은 곳에서는 점선 가지가 제 트랙을 지키고 실선 이웃들은 도로에 합류한다.",
                 "Code": false
               }
             ]
@@ -25275,7 +25632,15 @@
                 "Code": true
               },
               {
-                "Text": "), 뷰가 교차, 꺾임, 갈래 높이, 티, 두 양식의 가까운 쌍, 먼 갈라짐(J1), 자기 잉크 30px도 없이 남은 점선을 얻지 않을 때만 남는다. 뷰는 수십만 개의 옮김을 재므로, 옮김을 뷰 전체를 다시 세어 재는 일은 없다. ",
+                "Text": "), 뷰가 교차, 꺾임, 갈래 높이, 티, 두 양식의 가까운 쌍, 먼 갈라짐(J1), 자기 잉크 30px도 없이 남은 점선을 얻지 않을 때만 남는다. 뷰의 리드가 타는 점선은 이 셈에서 빠진다(",
+                "Code": false
+              },
+              {
+                "Text": "roadView.dotted",
+                "Code": true
+              },
+              {
+                "Text": "). 홉이 그 선을 실선 흐름 잉크로 칠하므로 어느 트랙에서도 점이 보이지 않고, 실선 도로 곁에 제 트랙을 두면 실선 하나를 더 그릴 뿐이기 때문이다. 이 저장소의 개요에서 store→identity가 주 흐름의 홉 4이므로 CLI 도로를 탄다. 뷰는 수십만 개의 옮김을 재므로, 옮김을 뷰 전체를 다시 세어 재는 일은 없다. ",
                 "Code": false
               },
               {
@@ -30132,7 +30497,31 @@
                 "Code": true
               },
               {
-                "Text": ")로 쓰고 읽는다. 그 파일은 구역과 고른 선만 담고, 모르는 field가 있는 frontmatter는 거부한다. 주 흐름은 ",
+                "Text": ")로 쓰고 읽는다. 그 파일은 구역과 고른 선만 담고, 모르는 field가 있는 frontmatter는 거부하고, 초안에 ",
+                "Code": false
+              },
+              {
+                "Text": "flow",
+                "Code": true
+              },
+              {
+                "Text": " 키가 있으면 주 흐름은 ",
+                "Code": false
+              },
+              {
+                "Text": "primary: true",
+                "Code": true
+              },
+              {
+                "Text": "로 표시된 stack이라고 알리며 거부한다(",
+                "Code": false
+              },
+              {
+                "Text": "ParseOverviewDraft",
+                "Code": true
+              },
+              {
+                "Text": "). 주 흐름은 ",
                 "Code": false
               },
               {
@@ -35158,6 +35547,268 @@
           ]
         }
       ]
+    }
+  ],
+  "zones": [
+    {
+      "name": "abbd 스킬",
+      "units": [
+        "FEAT-0001",
+        "FEAT-0002"
+      ]
+    },
+    {
+      "name": "읽는 쪽",
+      "units": [
+        "MOD-0017",
+        "MOD-0013",
+        "MOD-0022",
+        "MOD-0056",
+        "MOD-0057"
+      ]
+    },
+    {
+      "name": "토폴로지 규칙",
+      "units": [
+        "MOD-0026",
+        "MOD-0009",
+        "MOD-0054",
+        "MOD-0047"
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0001",
+      "word": "abbd sync 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 38
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "MOD-0001",
+      "word": "abbd setup 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 30
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "FEAT-0001",
+      "word": "abbd 스킬의 리더",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0055",
+      "word": "pstack how 탐색",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0017",
+      "word": "스크립트 출력 Parse",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0009",
+      "word": "보충 doc Overlay",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0009",
+      "to": "MOD-0017",
+      "word": "extract.Result 덧입힘",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "data",
+        "import"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0022",
+      "word": "작업 트리 Snapshot",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0026",
+      "word": "저장본과 추출 Reconcile",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0013",
+      "word": "단위 인용 Apply",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0054",
+      "word": "단위 Fallback 배치",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0041",
+      "word": "SaveUnits 단위 파일",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "data"
+      ],
+      "relations": 9
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0034",
+      "word": "청사진 Build",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0041",
+      "word": "LoadUnits 단위 읽기",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "convention",
+        "data"
+      ],
+      "relations": 12
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0047",
+      "word": "topology.Explain 질의",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0047",
+      "word": "EntryUses 항목 사용처",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0057",
+      "word": "owners.Read 소유자",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0056",
+      "word": "narrative.Lines 줄",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
     }
   ]
 }

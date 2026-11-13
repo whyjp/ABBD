@@ -146,7 +146,12 @@ abbd overview FILE|- [--root DIR]
                                      draws stored relations in its direction and cites code; each
                                      part is stamped with the lines around its quotes, so it goes
                                      STALE when that code changes or the state moves under it
-abbd overview [--root DIR]           print the stored overview as a draft to edit and store again
+abbd overview [--root DIR]           print a draft to write the overview from: the stored zones
+                                     and lines, under comments that list the overview's boxes and
+                                     the stage each stands at, the primary flow's stages, zone
+                                     candidates from the stacks' layers and the folders, and each
+                                     pair of boxes a live relation joins, strongest first (runs,
+                                     wires, imports), with its relations and a quote to cite
 abbd explain QUERY [--history] [--root DIR]
                                      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, a reader's text;
@@ -210,9 +215,9 @@ abbd status [--check] [--verbose] [--root DIR]
                                      whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
-                                     text, a note, a flow's step, a stack's layer or a table's row
-                                     is STALE, an evidence item drifted or a phrase names no
-                                     line, for a hook or CI;
+                                     text, a note, a flow's step, a stack's layer, a table's row
+                                     or a zone or line of the overview is STALE, an evidence item
+                                     drifted or a phrase names no line, for a hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
                                      error, or a state that does not say what it drew), and

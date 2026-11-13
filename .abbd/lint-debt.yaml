@@ -7,11 +7,11 @@
 ceilings:
     against_axis: 16
     detours: 6
-    excess_turns: 139 # 133 until #242 added the internal/extract/relate module (the internal/extract page MOD-0017 and focus views MOD-0058, MOD-0060)
+    excess_turns: 139 # 133 until #265 added internal/extract/relate (internal/extract page MOD-0017 and its focus views); see #272
     overflow: 1
     placement: 43
     tees: 1
-    weighed: 275 # 269 until #242 added the internal/extract/relate module (the internal/extract page MOD-0017 and focus views MOD-0058, MOD-0060)
+    weighed: 274 # 268 until #265 added internal/extract/relate (internal/extract page MOD-0017 and its focus views); see #272
 debt:
     overview:
         R: 1
@@ -149,7 +149,6 @@ prose:
         FEAT-0025 responsibility: 34251c66
         FEAT-0026 phrase depends_on MOD-0055: 5850b944
         FEAT-0026 responsibility: 8dbdce18
-        FEAT-0026 text: 6b724b95
         IF-0001 note entries.base: 87a82831
         IF-0001 note entries.check: d07c367f
         IF-0001 purpose: 0e1812a7
@@ -366,7 +365,6 @@ prose:
         MOD-0054 phrase depends_on MOD-0030: 8e8be360
         MOD-0055 responsibility: b0a5f86c
         flow sync: 39f936e0
-        flow sync step MOD-0004: 580c41e9
         flow sync step MOD-0007: cb1082aa
         flow sync step MOD-0013: e6c1d195
         flow sync step MOD-0017: 239d3934
@@ -390,7 +388,6 @@ prose:
         table cli-files: 7a7ca9fd
         table cli-files columns: 4f87fbe9
         table cli-files row MOD-0002: 1e148bc4
-        table cli-files row MOD-0004: 45ba4a13
         table cli-files row MOD-0005: 5a4dd08b
         table cli-files row MOD-0006: c2889a62
         table cli-files row MOD-0007: 7c88244a
