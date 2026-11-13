@@ -269,21 +269,31 @@ func (s script) parentOf(d extract.Unit, doc extract.Result) int {
 	return -1
 }
 
-// groups reports whether the supplement places script unit i inside d, by a
-// supplement unit that restates i and names d's key as its parent.
+// groups reports whether the supplement places script unit i inside d with at
+// least one other script unit. A script unit counts as placed when the
+// restatement the overlay keeps for it, the first one, names d's key as its
+// parent; a later restatement is dropped and vouches for nothing. A grouping
+// of one member only renames that member.
 func (s script) groups(d extract.Unit, i int, doc extract.Result) bool {
 	if d.Key == "" || !d.Kind.Holds() {
 		return false
 	}
+	seen := map[int]bool{}
+	members := map[int]bool{}
 	for _, m := range doc.Units {
-		if m.Parent != d.Key || len(m.Evidence) > 0 {
+		if len(m.Evidence) > 0 {
 			continue
 		}
-		if j, err := s.match(m); err == nil && j == i {
-			return true
+		j, err := s.match(m)
+		if err != nil || seen[j] {
+			continue
+		}
+		seen[j] = true
+		if m.Parent == d.Key {
+			members[j] = true
 		}
 	}
-	return false
+	return members[i] && len(members) >= 2
 }
 
 func sameAnchors(a, b []model.Anchor) bool {

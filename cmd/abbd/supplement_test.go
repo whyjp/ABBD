@@ -199,4 +199,25 @@ func TestSupplementGroupingQuotesItsMembersCode(t *testing.T) {
  {"key":"grp:context","kind":"MOD","name":"request context",
   "evidence":[{"path":"pkg/globals.py","lines":"2","quote":"current_app = _cv_app.get"}]},
  `+member("f:ctx", "ctx.py", "_cv_app = ContextVar('flask.app_ctx')")+`]}`), "--", exe)
+
+	r, exe := bare(t)
+	r.code("pkg/globals.py", "from .ctx import _cv_app\ncurrent_app = _cv_app.get\n")
+	r.code("pkg/ctx.py", "_cv_app = ContextVar('flask.app_ctx')\n")
+	r.extract(`{"units":[
+ {"key":"f:globals","kind":"MOD","name":"globals","anchors":[{"path":"pkg/globals.py"}]},
+ {"key":"f:ctx","kind":"MOD","name":"ctx","anchors":[{"path":"pkg/ctx.py"}]}]}`)
+	r.setup(1, "would merge into it", "--supplement", r.file(t, "sup.json", `{"units":[`+group+`,
+ `+member("f:ctx", "ctx.py", "_cv_app = ContextVar('flask.app_ctx')")+`,
+ {"key":"f:globals","kind":"MOD","name":"globals","anchors":[{"path":"pkg/globals.py"}]},
+ {"key":"f:globals2","kind":"MOD","name":"globals again","anchors":[{"path":"pkg/globals.py"}],"parent":"grp:context",
+  "parent_evidence":[{"path":"pkg/globals.py","quote":"from .ctx import _cv_app"}]}]}`), "--", exe)
+
+	s2, exe := bare(t)
+	s2.code("pkg/globals.py", "from .ctx import _cv_app\ncurrent_app = _cv_app.get\n")
+	s2.code("pkg/ctx.py", "_cv_app = ContextVar('flask.app_ctx')\n")
+	s2.extract(`{"units":[
+ {"key":"f:globals","kind":"MOD","name":"globals","anchors":[{"path":"pkg/globals.py"}]},
+ {"key":"f:ctx","kind":"MOD","name":"ctx","anchors":[{"path":"pkg/ctx.py"}]}]}`)
+	s2.setup(1, "would merge into it", "--supplement", s2.file(t, "sup.json", `{"units":[`+group+`,
+ `+member("f:globals", "globals.py", "from .ctx import _cv_app")+`]}`), "--", exe)
 }
