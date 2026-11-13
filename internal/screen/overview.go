@@ -281,8 +281,17 @@ const (
 func kindWord(k model.Kind) string {
 	return map[model.Kind]string{
 		model.Module: "모듈", model.Interface: "인터페이스", model.Event: "이벤트",
-		model.Data: "데이터", model.Config: "설정", model.Feature: "기능",
+		model.Data: "데이터", model.Config: "설정", model.Feature: "기능", model.Exec: "실행",
 	}[k]
+}
+
+// boxTag is the line under a box's name: the build artifact a module is, or
+// how an execution context runs, such as "TICK · 1".
+func boxTag(u model.Unit) string {
+	if r, ok := u.Ran(); ok {
+		return r.Words()
+	}
+	return model.Words(u.Built())
 }
 
 // gist is the first clause of a unit's sentence, so a box says what it does
@@ -1112,7 +1121,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: model.Words(u.Built()), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		bands := o.chipBands[m]
 		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2

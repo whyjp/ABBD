@@ -50,7 +50,7 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 // The English key stays the CSS class and the word the CLI prints.
 var labels = map[string]string{
 	"stated": "사람", "inferred": "판독", "extracted": "추출",
-	"MOD": "모듈", "IF": "인터페이스", "EVT": "이벤트", "DATA": "데이터", "CFG": "설정", "FEAT": "기능",
+	"MOD": "모듈", "IF": "인터페이스", "EVT": "이벤트", "DATA": "데이터", "CFG": "설정", "FEAT": "기능", "EXEC": "실행",
 }
 
 // tips say what each origin word means; the page shows them on hover.
