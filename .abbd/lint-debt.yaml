@@ -25,5 +25,5 @@ pages:
         dots: 0
         false_joins: 0
         label_repeats: 0
-        labelled: 12
+        labelled: 12 # 13 until #236 joined an unphrased call to the extract-model line; see #252
         parallel_ink: 511
