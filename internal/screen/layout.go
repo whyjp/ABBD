@@ -1111,8 +1111,21 @@ func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[l
 		}
 		return s * gap
 	}
+	last := 0
 	for id, s := range f.stage {
 		rank[id] = level(s)
+		last = max(last, rank[id])
+	}
+	// The frame's edges hold the top and the bottom, so what the outside
+	// uses stands above the stages and what uses the outside below them.
+	fixed := func(v string) bool { return f.stage[v] > 0 || v == frameTopNode || v == frameBottomNode }
+	for _, n := range nodes {
+		switch n.id {
+		case frameTopNode:
+			rank[n.id] = 0
+		case frameBottomNode:
+			rank[n.id] = last + gap
+		}
 	}
 	ins := map[string][]string{}
 	linked := map[string]bool{}
@@ -1127,7 +1140,7 @@ func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[l
 	for range len(order) {
 		moved := false
 		for _, v := range order {
-			if f.stage[v] > 0 || !linked[v] {
+			if fixed(v) || !linked[v] {
 				continue
 			}
 			r := 0
@@ -1157,20 +1170,18 @@ func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[l
 		flowRank(nodes, order, out, keep, rank, f)
 		return
 	}
+	// A box no line ties to the others keeps its rank from the lines,
+	// above every stage's row, so it never stands in a stage's row.
 	used := map[int]bool{}
 	for _, v := range order {
-		if f.stage[v] > 0 || linked[v] {
-			used[rank[v]] = true
-		}
+		used[rank[v]] = true
 	}
 	at := map[int]int{}
 	for i, r := range slices.Sorted(maps.Keys(used)) {
 		at[r] = i
 	}
 	for _, v := range order {
-		if f.stage[v] > 0 || linked[v] {
-			rank[v] = at[rank[v]]
-		}
+		rank[v] = at[rank[v]]
 	}
 }
 

@@ -432,3 +432,29 @@ func TestTheRowsUnderASpineFollowItsOrder(t *testing.T) {
 		}
 	}
 }
+
+// On an inside, a unit that joins no stage, only the world outside the
+// module, stands off the spine's row, as the overview keeps it.
+func TestAnInsideKeepsItsSpineToTheStages(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "core"),
+		inside("MOD-0002", "MOD-0001"),
+		inside("MOD-0003", "MOD-0001", rel("MOD-0002", model.DependsOn)),
+		inside("MOD-0004", "MOD-0001", rel("MOD-0003", model.DependsOn), rel("MOD-0009", model.DependsOn)),
+		inside("MOD-0006", "MOD-0001", rel("MOD-0009", model.DependsOn)),
+		called("MOD-0005", "cli", rel("MOD-0002", model.DependsOn)),
+		called("MOD-0009", "lib"),
+	}
+	m := Build(Input{Units: units, Figures: primaryStack(band("bridge", "MOD-0002"), band("manager", "MOD-0003"), band("ipc", "MOD-0004"))})
+	for _, ins := range m.Insides {
+		if ins.ID != "MOD-0001" {
+			continue
+		}
+		bs := boxes(ins.Drawing)
+		if o, s := bs["MOD-0006"], bs["MOD-0002"]; o.Y == s.Y {
+			t.Errorf("a unit tied only to the outside %+v stands in the spine's row %+v", o, s)
+		}
+		return
+	}
+	t.Fatal("no inside of MOD-0001")
+}
