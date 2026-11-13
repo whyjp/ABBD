@@ -6248,7 +6248,6 @@
         "Provides": 33,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6754,7 +6753,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7324,7 +7323,7 @@
                 "Code": false
               },
               {
-                "Text": "abbd relate go[=DIR]",
+                "Text": "abbd relate go|rust[=DIR]",
                 "Code": true
               },
               {
@@ -7344,7 +7343,23 @@
                 "Code": true
               },
               {
-                "Text": "으로 읽고, 빌드 제약 탓에 건너뛴 Go 파일이 있으면 그 수를 표준 오류에 알린다. 상태는 읽지도 쓰지도 않으므로, 등록하면 ",
+                "Text": "으로 읽는다. ",
+                "Code": false
+              },
+              {
+                "Text": "relate.Relate",
+                "Code": true
+              },
+              {
+                "Text": "가 relater마다 ",
+                "Code": false
+              },
+              {
+                "Text": "Unread",
+                "Code": true
+              },
+              {
+                "Text": "를 돌려주면, relater 이름과 읽지 못한 파일 수와 이유를 표준 오류에 한 줄로 밝히고 그 파일 경로를 줄마다 나열한다. 읽지 못한 파일은 go에서는 빌드 제약이 뺀 파일이고, rust에서는 어느 설정으로도 컴파일되지 않은 파일이다. 상태는 읽지도 쓰지도 않으므로, 등록하면 ",
                 "Code": false
               },
               {
@@ -7368,7 +7383,23 @@
                 "Code": true
               },
               {
-                "Text": "로 읽는다.",
+                "Text": "로 읽는다. 사용법 글이 rust의 ",
+                "Code": false
+              },
+              {
+                "Text": "Cargo.toml",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "$ABBD_LSP_RUST",
+                "Code": true
+              },
+              {
+                "Text": "나 PATH의 rust-analyzer를 알린다.",
                 "Code": false
               }
             ]
@@ -12777,7 +12808,6 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -12907,7 +12937,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -13793,7 +13823,15 @@
                 "Code": true
               },
               {
-                "Text": " 하나다. ",
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "rust",
+                "Code": true
+              },
+              {
+                "Text": " 둘이다. ",
                 "Code": false
               },
               {
@@ -13809,7 +13847,7 @@
                 "Code": true
               },
               {
-                "Text": " spec마다 그 디렉터리에 ",
+                "Text": " spec마다 그 디렉터리에 relater의 매니페스트(",
                 "Code": false
               },
               {
@@ -13817,7 +13855,63 @@
                 "Code": true
               },
               {
-                "Text": "가 있는지 보고, go/types로 패키지를 읽고 VTA로 호출을 풀어(테스트는 빼고, 어느 호스트에서나 같도록 GOOS=linux, GOARCH=amd64, CGO_ENABLED=0으로 고정) call, import, trait 사실을 모은다. 읽은 코드가 두 끝 unit에 모두 닿는 코드 근거 ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Cargo.toml",
+                "Code": true
+              },
+              {
+                "Text": ")가 있는지 보고, 읽은 사실(call, import, trait, macro)을 모은다. ",
+                "Code": false
+              },
+              {
+                "Text": "go",
+                "Code": true
+              },
+              {
+                "Text": "는 go/types로 패키지를 읽고 VTA로 호출을 풀며(테스트는 빼고, 어느 호스트에서나 같도록 GOOS=linux, GOARCH=amd64, CGO_ENABLED=0으로 고정), ",
+                "Code": false
+              },
+              {
+                "Text": "rust",
+                "Code": true
+              },
+              {
+                "Text": "는 Cargo 워크스페이스를 rust-analyzer(",
+                "Code": false
+              },
+              {
+                "Text": "$ABBD_LSP_RUST",
+                "Code": true
+              },
+              {
+                "Text": "나 PATH)로 읽는다. rust는 언어 서버 클라이언트인 MOD-0061 ",
+                "Code": false
+              },
+              {
+                "Text": "internal/extract/lsp",
+                "Code": true
+              },
+              {
+                "Text": "로 서버를 stdio로 띄워 색인이 끝나길 기다린 뒤 심볼의 참조와 구현을 묻는다. 타깃은 ",
+                "Code": false
+              },
+              {
+                "Text": "x86_64-unknown-linux-gnu",
+                "Code": true
+              },
+              {
+                "Text": "로 고정하고, 테스트와 빌드 스크립트와 proc macro는 켜지 않는다. 워크스페이스에 feature가 있으면 기본 feature와 모든 feature를 차례로 읽어 합치고, 한쪽에서만 찾은 relation은 그 설정 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "when",
+                "Code": true
+              },
+              {
+                "Text": "에 단다. 읽은 코드가 두 끝 unit에 모두 닿는 코드 근거 ",
                 "Code": false
               },
               {
@@ -13825,7 +13919,23 @@
                 "Code": true
               },
               {
-                "Text": "(via가 비었거나 call, trait, import)은 추출의 것을 대신하고, 설정이나 spawn 같은 그 밖의 relation은 건드리지 않는다. unit은 만들지 않으며, ",
+                "Text": "(via가 비었거나 call, trait, macro, import)은 추출의 것을 대신하고, 설정이나 spawn 같은 그 밖의 relation은 건드리지 않는다. 다만 컴파일되지 않은 코드를 가진 unit은 일부만 읽은 것이므로, 그 unit에서 나가는 추출의 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": "은 relater가 그 link의 흔적을 찾았을 때만 대신하고 아니면 남긴다. 읽지 못한 코드는 relater 이름과 이유와 경로로 이뤄진 ",
+                "Code": false
+              },
+              {
+                "Text": "Unread",
+                "Code": true
+              },
+              {
+                "Text": "로 돌려준다. unit은 만들지 않으며, ",
                 "Code": false
               },
               {
@@ -13841,7 +13951,7 @@
                 "Code": true
               },
               {
-                "Text": "는 추출에 아직 없는 곳에만 더한다. 한 link는 가장 좋은 via(call, trait, import 순서)의 relation 하나가 되고, 인용은 직접 호출을 먼저 최대 세 줄이다. ",
+                "Text": "는 추출에 아직 없는 곳에만 더한다. 한 link는 가장 좋은 via(call, trait, macro, import 순서)의 relation 하나가 되고, 인용은 직접 호출을 먼저 최대 세 줄이다. ",
                 "Code": false
               },
               {
@@ -13873,7 +13983,15 @@
                 "Code": true
               },
               {
-                "Text": "는 relater 하나가 읽은 사실과 그 코드가 닿은 unit의 묶음이고, ",
+                "Text": "는 relater 하나가 읽은 사실과 그 코드가 닿은 unit, link별 ",
+                "Code": false
+              },
+              {
+                "Text": "when",
+                "Code": true
+              },
+              {
+                "Text": ", 읽지 못한 파일의 묶음이고, ",
                 "Code": false
               },
               {
@@ -13889,7 +14007,7 @@
                 "Code": true
               },
               {
-                "Text": "는 Go의 타입과 그것이 바뀌어 담기는 interface의 짝이며, trait 사실은 두 패키지가 import로 이어졌거나 이 짝이 있을 때만 나온다.",
+                "Text": "는 Go의 타입과 그것이 바뀌어 담기는 interface의 짝이며, go의 trait 사실은 두 패키지가 import로 이어졌거나 이 짝이 있을 때만 나온다.",
                 "Code": false
               }
             ]
