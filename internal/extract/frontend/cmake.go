@@ -256,7 +256,7 @@ func (t tree) defined(tg cmakeTarget) (string, bool) {
 	return t.rel(p)
 }
 
-// links are the targets a target links. Code model 2.9 (CMake 3.31) lists
+// links are the targets a target links. Code model 2.9 (CMake 4.2) lists
 // them apart from targets that add_dependencies only builds first; an older
 // one lists both together, and each stays a link.
 func links(cm cmakeCodemodel, tg cmakeTarget) []cmakeTargetRef {

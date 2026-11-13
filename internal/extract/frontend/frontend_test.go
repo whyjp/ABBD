@@ -212,7 +212,7 @@ func TestACycleOfInterfaceLibrariesEnds(t *testing.T) {
 	}
 }
 
-func TestACodeModelOlderThanCMake331LinksEveryDependency(t *testing.T) {
+func TestACodeModelOlderThanCMake42LinksEveryDependency(t *testing.T) {
 	tg := cmakeTarget{Dependencies: []cmakeTargetRef{{"core"}, {"gen"}}, LinkLibraries: []cmakeTargetRef{{"core"}}}
 	var cm cmakeCodemodel
 	cm.Version.Major, cm.Version.Minor = 2, 8
