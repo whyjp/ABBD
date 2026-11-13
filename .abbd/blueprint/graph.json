@@ -6214,6 +6214,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -6517,6 +6518,69 @@
               },
               {
                 "Text": ".",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "lint report",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/lint.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/phrases.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd lint",
+                "Code": true
+              },
+              {
+                "Text": " holds the drawings of the blueprint, or of one view, to the debt file, and over every view also lists the units no box describes (",
+                "Code": false
+              },
+              {
+                "Text": "undescribed",
+                "Code": true
+              },
+              {
+                "Text": ") and the overview lines whose relations carry no live phrase (",
+                "Code": false
+              },
+              {
+                "Text": "unphrased",
+                "Code": true
+              },
+              {
+                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import.",
                 "Code": false
               }
             ]
@@ -15464,6 +15528,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -17486,7 +17551,15 @@
                 "Code": true
               },
               {
-                "Text": " gives its word in the blueprint, such as 호출.",
+                "Text": " gives its word in the blueprint, such as 호출, and ",
+                "Code": false
+              },
+              {
+                "Text": "Via.Plain",
+                "Code": true
+              },
+              {
+                "Text": " names call and import, whose word a line's solid or dotted ink already says, so the blueprint keeps it in the line's tooltip.",
                 "Code": false
               }
             ]
@@ -23875,7 +23948,7 @@
                 "Code": true
               },
               {
-                "Text": " takes the first), else the ",
+                "Text": " takes the first), else the word of the ",
                 "Code": false
               },
               {
@@ -23883,7 +23956,7 @@
                 "Code": true
               },
               {
-                "Text": " word they all share (호출, 데이터, ...), which also stands in when no first name fits ",
+                "Text": " they all share (데이터, 설정, ...), which also stands in when no first name fits ",
                 "Code": false
               },
               {
@@ -23899,7 +23972,39 @@
                 "Code": true
               },
               {
-                "Text": " tells the two apart). Where a phrase's word, or such a majority via word, already stands within ",
+                "Text": " tells the two apart). A plain via, call or import (",
+                "Code": false
+              },
+              {
+                "Text": "model.Via.Plain",
+                "Code": true
+              },
+              {
+                "Text": "), says no word at rest, since the line's solid or dotted ink already says it: ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": " adds ",
+                "Code": false
+              },
+              {
+                "Text": "via 호출",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "via 임포트",
+                "Code": true
+              },
+              {
+                "Text": " to the line's tooltip instead, and a bus whose lines share only a plain via keeps its ×N. Where a phrase's word, or such a majority via word, already stands within ",
                 "Code": false
               },
               {
