@@ -20285,7 +20285,31 @@
                 "Code": true
               },
               {
-                "Text": " chip on the provider. A thick ",
+                "Text": " chip on the provider. ",
+                "Code": false
+              },
+              {
+                "Text": "spread",
+                "Code": true
+              },
+              {
+                "Text": " sets a box's chips left to right by the mean x their lines lead to, and chips that lead to one x by the least ID of the places they lead to (",
+                "Code": false
+              },
+              {
+                "Text": "attach.to",
+                "Code": true
+              },
+              {
+                "Text": "), never by the contracts they carry, so a chip keeps its place when its line gains a contract (",
+                "Code": false
+              },
+              {
+                "Text": "TestAChipKeepsItsPlaceWhenItsLineGainsAContract",
+                "Code": true
+              },
+              {
+                "Text": "). A thick ",
                 "Code": false
               },
               {
