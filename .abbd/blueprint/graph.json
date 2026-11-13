@@ -7886,6 +7886,77 @@
                 "Code": false
               }
             ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "핵심 unit 읽기",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "key units",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/keyunits.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/overview_draft.go",
+                "Code": true
+              },
+              {
+                "Text": "): brief의 목록은 줄머리가 ",
+                "Code": false
+              },
+              {
+                "Text": "type Kind string",
+                "Code": true
+              },
+              {
+                "Text": "처럼 이름 하나와 타입 식 하나로 끝나는 선언이나 중괄호가 다음 줄에 오는 ",
+                "Code": false
+              },
+              {
+                "Text": "struct Name",
+                "Code": true
+              },
+              {
+                "Text": "도 선언으로 읽고, 도움말 문장 같은 ",
+                "Code": false
+              },
+              {
+                "Text": "type names and kinds",
+                "Code": true
+              },
+              {
+                "Text": "는 선언으로 읽지 않으며, overview draft의 인용 찾기는 최상위 디렉터리 unit을 ",
+                "Code": false
+              },
+              {
+                "Text": "\"db/dbformat.h\"",
+                "Code": true
+              },
+              {
+                "Text": " 같은 include 경로로 찾는다.",
+                "Code": false
+              }
+            ]
           }
         ]
       },
@@ -14049,7 +14120,7 @@
                 "Code": true
               },
               {
-                "Text": " 캐시 옵션을 configure에 넘기고, 구성이 실패하면 빠진 하위 디렉터리를 끄는 옵션을 알린다. 이름에 ",
+                "Text": " 캐시 옵션을 configure에 넘기고, 구성이 실패하면 빠진 하위 디렉터리를 끄는 옵션을 알리고 프로젝트의 CMake 파일이 선언한 option( 이름을 build·test 쪽부터 나열한다. 이름에 ",
                 "Code": false
               },
               {
