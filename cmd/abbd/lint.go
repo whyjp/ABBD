@@ -182,7 +182,7 @@ func printLint(e env, r lintReport) {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
 	}
 	for _, d := range r.Direction {
-		fmt.Fprintf(e.stdout, "lint: direction: %s %s looks reversed: its entries are callback slots, %s provides it and %d units consume it via call. The modules that implement or register a plug point provide it, and the host that calls through it consumes it\n", d.Contract, d.Name, d.Provider, len(d.Callers))
+		fmt.Fprintf(e.stdout, "lint: direction: %s %s looks reversed: its entries are callback slots, %s provides it and %d units consume it via call. The modules that implement or register a plug point provide it, and the host that calls through it consumes it. It is a heuristic: a trait or table with one real implementation and several callers trips it too, and then the relations stand\n", d.Contract, d.Name, d.Provider, len(d.Callers))
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {

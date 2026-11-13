@@ -20,8 +20,10 @@ type Reversed struct {
 }
 
 // slot matches an entry shaped as a callback slot: a C function pointer,
-// such as "void (*)(void *data)", or a trait method, such as "fn build(&self)".
-var slot = regexp.MustCompile(`\(\s*\*|^(pub(\([^)]*\))?\s+)?(async\s+)?(unsafe\s+)?fn\b`)
+// such as "void (*)(void *data)", a Rust fn pointer, such as "fn(&mut Ctx)",
+// or a trait method, which takes self, such as "fn build(&self)". A free
+// function takes no self: a plain call, not a slot.
+var slot = regexp.MustCompile(`\(\s*\*|\bfn\s*\(|\bfn\s+\w+[^(]*\(\s*&?('\w+\s+)?(mut\s+)?self\b`)
 
 // plugPoint reports whether u is an interface most of whose entries are
 // callback slots a host calls through.
@@ -39,7 +41,9 @@ func plugPoint(u model.Unit) bool {
 }
 
 // ReversedPlugPoints lists the plug-point contracts with exactly one
-// provider and two or more units that consume them via call, by contract.
+// provider and two or more other units that consume them via call, by
+// contract. A host that provides a table and calls through it is not one of
+// its callers.
 func ReversedPlugPoints(units []model.Unit) []Reversed {
 	present := model.Present(units)
 	providers, callers := map[model.ID][]model.ID{}, map[model.ID][]model.ID{}
@@ -56,7 +60,11 @@ func ReversedPlugPoints(units []model.Unit) []Reversed {
 	}
 	var out []Reversed
 	for _, u := range present {
-		if p, c := providers[u.ID], callers[u.ID]; plugPoint(u) && len(p) == 1 && len(c) >= 2 {
+		p := providers[u.ID]
+		if !plugPoint(u) || len(p) != 1 {
+			continue
+		}
+		if c := slices.DeleteFunc(slices.Clone(callers[u.ID]), func(id model.ID) bool { return id == p[0] }); len(c) >= 2 {
 			out = append(out, Reversed{Contract: u.ID, Name: u.Name.Value, Provider: p[0], Callers: slices.Sorted(slices.Values(c))})
 		}
 	}
