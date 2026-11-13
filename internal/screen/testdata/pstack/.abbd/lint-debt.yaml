@@ -14,6 +14,8 @@ ceilings:
 pages:
     overview:
         abreast: 0
+        against_axis: 0
+        against_axis_ink: 0
         colour_switches: 0
         combs: 0
         counts: 1

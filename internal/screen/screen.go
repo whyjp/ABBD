@@ -149,6 +149,9 @@ type UnitRow struct {
 	// them.
 	Notes   []Note   `json:",omitempty"`
 	Entries *Entries `json:",omitempty"`
+	// Rank is where the unit's box stands on the overview, for a unit the
+	// overview draws.
+	Rank *Rank `json:",omitempty"`
 }
 
 type Model struct {
@@ -305,7 +308,28 @@ func Build(in Input) Model {
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
+	o.rank(&m)
 	return m
+}
+
+// rank gives each unit the overview draws its Rank there, and each unit a
+// module's inside draws its Rank on that inside.
+func (o *overview) rank(m *Model) {
+	on := o.tree.ranks(m.Overview)
+	for i, u := range m.Units {
+		if r, ok := on[u.ID]; ok {
+			m.Units[i].Rank = &r
+		}
+	}
+	for i := range m.Insides {
+		ins := &m.Insides[i]
+		on := o.tree.ranks(ins.Drawing)
+		for j, u := range ins.Units {
+			if r, ok := on[u.ID]; ok {
+				ins.Units[j].Rank = &r
+			}
+		}
+	}
 }
 
 // Badge says where a value came from: read from code, stated by a human, or

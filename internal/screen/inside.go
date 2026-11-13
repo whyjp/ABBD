@@ -90,6 +90,9 @@ type InsideUnit struct {
 	Notes         []Note `json:",omitempty"`
 	// Concepts are the items of its module's text that name it.
 	Concepts []Block `json:",omitempty"`
+	// Rank is where the unit's box stands on its module's inside, for a
+	// unit the inside draws.
+	Rank *Rank `json:",omitempty"`
 }
 
 const (

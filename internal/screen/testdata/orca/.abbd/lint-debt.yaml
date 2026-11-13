@@ -25,6 +25,8 @@ debt:
 pages:
     MOD-0072 desktop renderer UI:
         abreast: 0
+        against_axis: 15
+        against_axis_ink: 6235
         colour_switches: 31
         combs: 0
         counts: 14
@@ -37,6 +39,8 @@ pages:
         parallel_ink: 493
     MOD-0098 src/:
         abreast: 204
+        against_axis: 5
+        against_axis_ink: 1862
         colour_switches: 45
         combs: 0
         counts: 9

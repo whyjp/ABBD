@@ -75,6 +75,10 @@ var paged = []struct {
 	// coupling no relation makes. A page bound keeps a record from taking
 	// them on as debt.
 	{"false_joins", func(t Totals) int { return t.Criteria["J3"] }, false},
+	// lines against the axis are ones a reader follows backward, against
+	// the order the view is read in.
+	{"against_axis", func(t Totals) int { return t.AgainstAxis }, false},
+	{"against_axis_ink", func(t Totals) int { return t.AgainstAxisInk }, false},
 }
 
 // past says a page total got breaks its bound c.
