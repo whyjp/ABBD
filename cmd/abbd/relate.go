@@ -37,12 +37,16 @@ func (e env) relateExtraction(args []string) error {
 	if err := dec.Decode(&doc); err != nil {
 		return fmt.Errorf("the extraction to relate: %w", err)
 	}
-	doc, unread, err := relate.Relate(e.root, doc, specs)
+	doc, unread, err := relate.Relate(e.root, cacheDir(), doc, specs)
 	if err != nil {
 		return err
 	}
 	for _, u := range unread {
-		fmt.Fprintf(e.stderr, "relate: %s: %d files were not read, %s:\n", u.Relater, len(u.Paths), u.Why)
+		if u.Gated {
+			fmt.Fprintf(e.stderr, "relate: %s: %d files hold code %s, so the relations in it are missing:\n", u.Relater, len(u.Paths), u.Why)
+		} else {
+			fmt.Fprintf(e.stderr, "relate: %s: %d files were not read, %s:\n", u.Relater, len(u.Paths), u.Why)
+		}
 		for _, p := range u.Paths {
 			fmt.Fprintf(e.stderr, "  %s\n", p)
 		}

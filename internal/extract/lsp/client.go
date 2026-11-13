@@ -542,6 +542,26 @@ func (c *Client) Implementations(ctx context.Context, abs string, pos Position) 
 	return c.locations(ctx, "textDocument/implementation", abs, pos)
 }
 
+// Declarations are where the name at pos is declared, apart from its
+// definition.
+func (c *Client) Declarations(ctx context.Context, abs string, pos Position) ([]Location, error) {
+	return c.locations(ctx, "textDocument/declaration", abs, pos)
+}
+
+// WorkspaceSymbols are the symbols whose names match query, from the
+// server's index of the whole workspace; an empty query matches every
+// symbol on a server that allows it.
+func (c *Client) WorkspaceSymbols(ctx context.Context, query string) ([]SymbolInformation, error) {
+	var out []SymbolInformation
+	if err := c.Call(ctx, "workspace/symbol", map[string]any{"query": query}, &out); err != nil {
+		return nil, err
+	}
+	for i := range out {
+		out[i].Location.Range = c.fromServer(out[i].Location.URI, out[i].Location.Range)
+	}
+	return out, nil
+}
+
 // Definitions are where the name at pos is declared.
 func (c *Client) Definitions(ctx context.Context, abs string, pos Position) ([]Location, error) {
 	return c.locations(ctx, "textDocument/definition", abs, pos)
