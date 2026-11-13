@@ -382,3 +382,12 @@ func TestSubmoduleCheckoutLeavesTheStateCurrent(t *testing.T) {
 		t.Fatalf("a new pin is a change to the superproject and should stale the state:\n%s", s)
 	}
 }
+
+// abbd version names the build, so a log can say which abbd ran.
+func TestVersionPrintsTheBuild(t *testing.T) {
+	t.Parallel()
+	var out, errb bytes.Buffer
+	if code := run([]string{"version"}, strings.NewReader(""), &out, &errb); code != 0 || !strings.HasPrefix(out.String(), "abbd ") {
+		t.Fatalf("abbd version: exit %d, out %q, err %q", code, out.String(), errb.String())
+	}
+}

@@ -9,9 +9,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io/fs"
 	"maps"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -776,3 +778,43 @@ func (s Store) SaveScope(sc Scope) error {
 
 // ProjectDir is the project root the store sits in.
 func (s Store) ProjectDir() string { return filepath.Dir(s.root) }
+
+// Naming lists the files of the state, past the unit's own file, that name
+// id: another unit's claim on it, a text, a note, a figure or the overview.
+// The blueprint, the compare copy, the merge candidates, the lint debt and
+// the sync state are left out, since each follows the units.
+func (s Store) Naming(u model.Unit) ([]string, error) {
+	word := regexp.MustCompile(`\b` + regexp.QuoteMeta(string(u.ID)) + `\b`)
+	own := s.path(u.Kind.Dir(), string(u.ID)+".md")
+	skip := map[string]bool{"blueprint": true, "compare": true, "candidates.yaml": true, "lint-debt.yaml": true, "state.yaml": true}
+	var out []string
+	err := filepath.WalkDir(s.root, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if rel, _ := filepath.Rel(s.root, p); skip[filepath.ToSlash(rel)] {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if d.IsDir() || p == own {
+			return nil
+		}
+		b, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		if word.Match(b) {
+			rel, _ := filepath.Rel(filepath.Dir(s.root), p)
+			out = append(out, filepath.ToSlash(rel))
+		}
+		return nil
+	})
+	return out, err
+}
+
+// RemoveUnit deletes the unit's file. Its number stays taken.
+func (s Store) RemoveUnit(u model.Unit) error {
+	return os.Remove(s.path(u.Kind.Dir(), string(u.ID)+".md"))
+}

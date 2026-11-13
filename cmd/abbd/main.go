@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime/debug"
 	"slices"
 	"strings"
 
@@ -113,6 +114,8 @@ abbd forget ID.SLOT[.KEY] [--root DIR]
                                      it removed; ID.SLOT[.KEY] names the file under
                                      .abbd/understanding, so a STALE, orphaned or misfiled note
                                      goes by the name abbd status gives it
+abbd forget ID [--root DIR]          remove a unit sync lists as unmatched, once nothing else in
+                                     the state names it; its number stays taken
 abbd flow KEY FILE|- [--source REF] [--root DIR]
                                      store an ordered flow: a question, and two to 16 steps, each a
                                      unit, what it does, an optional note and fails line, the
@@ -216,6 +219,7 @@ abbd lint [VIEW] [--json] [--list] [--record [--keep-level VIEW=REASON ...]] [--
                                      their debt and ceilings; the first --record refuses while a
                                      view with hard breaches has a level line, unless
                                      --keep-level names that view and why it stays
+abbd version                         the build's module version and commit
 abbd status [--check] [--verbose] [--root DIR]
                                      whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
@@ -395,6 +399,38 @@ var commands = map[string]command{
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
+	"version":         {pos: []int{0}, run: func(e env, _ []string) error { return e.version() }},
+}
+
+// version prints the module version and the commit the binary was built
+// from, with +dirty when the checkout had changes, as the Go toolchain
+// stamps them, so a log can say which abbd ran.
+func (e env) version() error {
+	_, err := fmt.Fprintln(e.stdout, "abbd", buildVersion())
+	return err
+}
+
+func buildVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "(unknown)"
+	}
+	v, rev, dirty := info.Main.Version, "", false
+	for _, s := range info.Settings {
+		switch s.Key {
+		case "vcs.revision":
+			rev = s.Value[:min(12, len(s.Value))]
+		case "vcs.modified":
+			dirty = s.Value == "true"
+		}
+	}
+	if rev != "" {
+		v += " " + rev
+		if dirty {
+			v += "+dirty"
+		}
+	}
+	return v
 }
 
 type invocation struct {
@@ -537,7 +573,7 @@ func (e env) sync() error {
 		fmt.Fprintf(e.stdout, "%s unmatched\n", id)
 	}
 	if len(res.Unmatched) > 0 {
-		fmt.Fprintln(e.stdout, "unmatched: the extraction no longer reports these units; abbd keeps each, drawn nowhere and failing no check, so its ID returns if its code does. No command clears them, and none needs to")
+		fmt.Fprintln(e.stdout, "unmatched: the extraction no longer reports these units; abbd keeps each, drawn nowhere and failing no check, so its ID returns if its code does; abbd forget ID removes one nothing else in the state names, and its number stays taken")
 	}
 	e.attention(res.Units)
 	return nil

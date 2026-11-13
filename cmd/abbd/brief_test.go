@@ -75,3 +75,20 @@ func TestLintAndBriefNameTheBoxesThatSayOnlyTheirKind(t *testing.T) {
 	p.code("billing/charge.go", "package billing\n\n// Charge bills a card once. It never retries.\nfunc Charge() { _ = 1 }\n")
 	p.want(0, "\"Charge bills a card once.\" (from `billing/charge.go`)", "brief", "MOD-0001")
 }
+
+// The brief's reading list leaves a module's tests and test data out, as
+// the reader does, and says how many it left.
+func TestBriefLeavesTestsOutOfTheFilesToRead(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("billing/charge_test.go", "package billing\n\nfunc TestCharge() {}\n")
+	p.code("billing/testdata/in.json", "{}\n")
+	p.extract(`{"units":[{"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing"}]}]}`)
+	p.setup(0, "synced: 1 unit(s)", "--", exe)
+	out := p.want(0, "", "brief", "MOD-0001")
+	contains(t, out, "- `billing/charge.go` (", "- and 2 files of tests and test data, left out\n")
+	if strings.Contains(out, "charge_test.go") || strings.Contains(out, "in.json") {
+		t.Fatalf("the brief lists a test file:\n%s", out)
+	}
+}
