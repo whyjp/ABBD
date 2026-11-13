@@ -183,6 +183,9 @@ func (e env) explain(s string) error {
 		if l.Via != "" {
 			line += " via " + string(l.Via)
 		}
+		if c := l.ConditionLabel(); c != "" {
+			line += " " + c
+		}
 		if l.Drifted {
 			line += " (drifted: refresh or retract it)"
 		}
@@ -320,7 +323,7 @@ func (e env) path(a, b string) error {
 		}
 		fmt.Fprintf(e.stdout, "  %s %s %s%s\n", arrow, next, name[next], h.Label())
 		if h.Shares != "" {
-			verb := map[model.RelationKind]string{model.Consumes: "consume", model.DependsOn: "depend on"}[h.Kind]
+			verb := map[model.RelationKind]string{model.Consumes: "consume", model.DependsOn: "depend on", model.RunsOn: "run on"}[h.Kind]
 			provider := ""
 			if h.Provider != "" {
 				provider = fmt.Sprintf(", which %s %s provides", h.Provider, name[h.Provider])

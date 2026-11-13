@@ -29,6 +29,7 @@ type rawUnit struct {
 	Responsibility string           `json:"responsibility,omitempty"`
 	Digest         string           `json:"digest,omitempty"`
 	Artifacts      []model.Artifact `json:"artifacts,omitempty"`
+	Run            string           `json:"run,omitempty"`
 	Parent         string           `json:"parent,omitempty"`
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
@@ -41,6 +42,7 @@ type rawRelation struct {
 	Kind     model.RelationKind `json:"kind"`
 	Via      model.Via          `json:"via,omitempty"`
 	Phrase   string             `json:"phrase,omitempty"`
+	When     string             `json:"when,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
 	Entries  []string           `json:"entries,omitempty"`
 }
@@ -76,6 +78,8 @@ type Relation struct {
 	Evidence []model.Evidence
 	// Entries are the keys of the entries of To the relation narrows to.
 	Entries []string
+	// When is the condition the relation holds under.
+	When string
 }
 
 // Placement is one writer's claim on the unit, by key, that contains another.
@@ -96,6 +100,7 @@ type Unit struct {
 	Responsibility *model.Fact
 	Digest         string
 	Artifact       *model.Fact
+	Run            *model.Fact
 	Entries        []model.Entry
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
@@ -146,6 +151,11 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		}
 	}
 	res := Result{Units: units}
+	type edge struct {
+		from, to string
+		kind     model.RelationKind
+	}
+	whens := map[edge]string{}
 	for i, rr := range raw.Relations {
 		from, okf := kinds[rr.From]
 		to, okt := kinds[rr.To]
@@ -170,11 +180,26 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if rr.Phrase != "" && !foreignParents {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s) carries a phrase; a phrase is a reader's words, so the supplement gives it and the script does not", i, rr.From, rr.To)
 		}
+		if err := model.ValidateWhen(rr.When); err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
+		e := edge{rr.From, rr.To, rr.Kind}
+		if w, ok := whens[e]; ok && w != rr.When {
+			fix := `its conditions joined as "a | b", and no condition when any listing has none`
+			if model.Scope(w) || model.Scope(rr.When) {
+				fix = "with its condition if it has one; a link scope is not a condition, so leave the scope out"
+			}
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): the edge is listed again with condition %q after %q; give it once, %s", i, rr.From, rr.To, rr.When, w, fix)
+		}
+		whens[e] = rr.When
 		if err := model.ValidatePhrase(rr.Phrase, rr.Via); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
 		evidence, err := NormalizeEvidence(rr.Evidence)
 		if err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
+		if err := rr.Kind.Quoted(len(evidence)); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
 		keys, err := entryKeys(rr.Entries, entries[rr.To])
@@ -199,7 +224,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 			}
 			continue
 		}
-		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys})
+		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys, When: rr.When})
 	}
 	return res, nil
 }
@@ -280,6 +305,17 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 		if len(ru.Artifacts) > 0 && ru.Kind != model.Module {
 			return nil, raw, fmt.Errorf("unit %d (%s): only a module is a build artifact", i, ru.Name)
 		}
+		var run *model.Fact
+		if ru.Run != "" {
+			if ru.Kind != model.Exec {
+				return nil, raw, fmt.Errorf("unit %d (%s): only an execution context carries a run", i, ru.Name)
+			}
+			r, err := model.ParseRun(ru.Run)
+			if err != nil {
+				return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+			}
+			run = inferred(r.String())
+		}
 		es, err := normalizeEntries(ru.Kind, ru.Entries)
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
@@ -295,6 +331,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
 			Artifact:       said(ru.Artifacts),
+			Run:            run,
 			Parent:         ru.Parent,
 			ParentEvidence: parentEvidence,
 			Evidence:       evidence,
