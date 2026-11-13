@@ -422,6 +422,19 @@ type LintDebt struct {
 	Views    map[string]map[string]int `yaml:"debt,omitempty"`
 	Pages    map[string]map[string]int `yaml:"pages,omitempty"`
 	Levels   map[string]string         `yaml:"levels,omitempty"`
+	// Prose is the stored prose that does not read in the project's
+	// language, carried until each text is written again.
+	Prose *ProseDebt `yaml:"prose,omitempty"`
+}
+
+// ProseDebt names the texts abbd lint lets stand in another language than
+// Language, and why. Owed maps the key lint reports each text under to a
+// digest of its words, so a text written again under that key is no longer
+// owed. It holds only while project.yaml names the same language.
+type ProseDebt struct {
+	Language model.Language    `yaml:"language"`
+	Reason   string            `yaml:"reason"`
+	Owed     map[string]string `yaml:"owed"`
 }
 
 // LoadLintDebt reads what the drawings owe. With no file they owe nothing
@@ -432,6 +445,9 @@ func (s Store) LoadLintDebt() (LintDebt, error) {
 }
 
 // lintDebtHead opens the lint debt file, which abbd lint --record writes.
+// The file holds what the drawings owe and, under prose, the stored texts
+// not yet in the project's language, which ProseDebt documents. The header
+// names the drawings alone, so every fixture's recorded file keeps it.
 const lintDebtHead = `# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
 # abbd lint fails on a hard breach past its view's debt, on a weighed sum
 # or a count of tees, excess turns or detours past its ceiling, and on a
@@ -559,6 +575,19 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// Language is the BCP-47 tag of the language a person reads the
+	// stored prose in, such as ko. Loading refuses a tag that is no
+	// BCP-47 tag. The zero Language leaves the choice to the OS.
+	Language model.Language `yaml:"language,omitempty"`
+}
+
+// Lang is the language readers write the prose in: the one project.yaml
+// sets, else the one the OS names for its user.
+func (p Project) Lang() model.Language {
+	if p.Language != "" {
+		return p.Language
+	}
+	return model.DefaultLanguage()
 }
 
 // Cut says whether the overview draws its primary links only.

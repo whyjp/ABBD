@@ -102,6 +102,7 @@ func (e env) understand(ref string, args []string) error {
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
 	readText(e.stdout, string(id), text)
 	e.checkText(e.stdout, units, id, text, true)
+	e.checkLanguage(string(id)+"'s text", text)
 	if s := strings.TrimSpace(e.sentence); s != "" {
 		// The reader who read the module again says its one line too,
 		// stamped with the same code as the text. A person's line outranks
@@ -117,6 +118,7 @@ func (e env) understand(ref string, args []string) error {
 			return err
 		}
 		fmt.Fprintf(e.stdout, "responsibility of %s is now %q, INFERRED, against code %s\n", id, s, digest)
+		e.checkLanguage(string(id)+"'s responsibility", s)
 	}
 	return nil
 }
@@ -201,6 +203,7 @@ func (e env) note(r model.NoteRef, args []string) error {
 		fmt.Fprintf(e.stdout, "dropped the why %s stated, since the decision now cites other code; ask again and store it with abbd record fact %s --value WHY --source WHERE\n", prev.Why.Source, r)
 	}
 	readText(e.stdout, r.String(), text)
+	e.checkLanguage(r.String(), text)
 	return nil
 }
 
