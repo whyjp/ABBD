@@ -13,7 +13,8 @@ import (
 // half an hour. The work is pinned by allocations, which are the same run
 // to run and on a busy machine where time is not: the build makes about
 // 123M in about 30s, where a whole recount for every move made 131M for
-// half as many boxes. The time bound is generous, for a loaded machine.
+// half as many boxes. The time bound is generous, for a loaded machine,
+// and off under the race detector.
 // Mallocs counts the whole process, so this test must never call
 // t.Parallel.
 func TestAHundredBoxRoadDrawingBuildsQuickly(t *testing.T) {
@@ -31,7 +32,7 @@ func TestAHundredBoxRoadDrawingBuildsQuickly(t *testing.T) {
 	if n > 160_000_000 {
 		t.Errorf("100 boxes on roads took %d allocations to build, past 160M", n)
 	}
-	if took > 3*time.Minute {
+	if !raceOn && took > 3*time.Minute {
 		t.Errorf("100 boxes on roads took %v to build, past 3m", took)
 	}
 }

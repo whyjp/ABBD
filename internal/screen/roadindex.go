@@ -325,12 +325,17 @@ func forkCount(group []int, ways [][]pt) int {
 func teesIn(group []int, ways [][]pt) []pt {
 	var out []pt
 	for _, i := range group {
-		// A route drops straight where all its points stand at one x.
+		// A route drops straight where it straightens to one upright run;
+		// straight can leave a fold that a second pass removes. straight
+		// keeps the ends, so ends at two x never drop straight.
 		w := ways[i]
-		if slices.ContainsFunc(w, func(p pt) bool { return p.x != w[0].x }) {
+		if w[0].x != w[len(w)-1].x {
 			continue
 		}
-		x, lo, hi := w[0].x, min(w[0].y, w[len(w)-1].y), max(w[0].y, w[len(w)-1].y)
+		if w = straight(w); len(w) != 2 {
+			continue
+		}
+		x, lo, hi := w[0].x, min(w[0].y, w[1].y), max(w[0].y, w[1].y)
 		for _, j := range group {
 			if j == i {
 				continue
