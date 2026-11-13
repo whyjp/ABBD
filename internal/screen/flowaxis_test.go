@@ -564,3 +564,57 @@ func TestTwoUnitsOfAStageDownTheFlowJoinStraightAcross(t *testing.T) {
 	}
 	t.Fatal("no line between the two units of stage 1")
 }
+
+// rowsOf is how many rows a drawing's boxes stand in.
+func rowsOf(d Drawing) int {
+	ys := map[int]bool{}
+	for _, b := range d.Boxes {
+		ys[b.Y] = true
+	}
+	return len(ys)
+}
+
+// A spine ranks as one box: what its stages use stands below it, and a
+// chain of boxes that only reaches below it closes up beside it, as the
+// view without a primary flow stands, not in rows of its own above it.
+func TestTheRowsCloseUpAroundASpine(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "sources", deps("MOD-0002", "MOD-0003")...),
+		called("MOD-0002", "sinks", deps("MOD-0003")...),
+		called("MOD-0003", "foundation"),
+		called("MOD-0004", "topology", deps("MOD-0005")...),
+		called("MOD-0005", "observability", deps("MOD-0003")...),
+	}
+	plain := rowsOf(Build(Input{Units: units}).Overview)
+	m := Build(Input{Units: units, Figures: primaryStack(band("sources", "MOD-0001"), band("sinks", "MOD-0002"))})
+	if n := rowsOf(m.Overview); n > plain {
+		t.Errorf("the overview with sources and sinks marked stands in %d rows, %d without them", n, plain)
+	}
+	bs := boxes(m.Overview)
+	if s, lib := bs["MOD-0001"], bs["MOD-0003"]; lib.Y <= s.Y {
+		t.Errorf("the library the stages use %+v stands below the spine %+v", lib, s)
+	}
+}
+
+// The spine never wraps: a box the lines rank into its row stands just
+// below it when the row would not fit with it.
+func TestASpineTooFullForItsNeighboursSendsThemBelow(t *testing.T) {
+	units := []model.Unit{called("MOD-0009", "shared runtime library")}
+	var stages []store.Part[model.Layer]
+	var ids []string
+	for i := 1; i <= 8; i++ {
+		id := model.ID(fmt.Sprintf("MOD-%04d", i))
+		units = append(units, called(id, fmt.Sprint("a rather long module name ", i), deps("MOD-0009")...))
+		if i <= 3 {
+			stages = append(stages, band(fmt.Sprint("stage ", i), id))
+			ids = append(ids, string(id))
+		}
+	}
+	bs := boxes(Build(Input{Units: units, Figures: primaryStack(stages...)}).Overview)
+	spine := bs["MOD-0001"]
+	for id, b := range bs {
+		if b.Y == spine.Y && !slices.Contains(ids, id) {
+			t.Errorf("%s %+v stands in the spine's row %+v", id, b, spine)
+		}
+	}
+}

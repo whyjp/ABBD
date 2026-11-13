@@ -200,17 +200,12 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 		return strings.Compare(a[1], b[1])
 	})
-	// A cycle cannot be layered. The nodes are put in an order that leaves
-	// as few edges as it can pointing backwards (Eades, Lin and Smyth: peel
-	// sinks to the back and sources to the front, else the node with the most
-	// more outgoing than incoming edges); those edges are left out of the
-	// ranking only.
-	keep := map[ledge]bool{}
-	// A folding tactic leaves out of the ranking the edges of two places
-	// that use each other: one line with a head at each end joins them and
-	// reads both ways, so neither has to stand a row above the other.
-	// idle says the tactic's flags changed nothing here.
-	idle := true
+	// A cycle cannot be layered (feedback). A folding tactic leaves out of
+	// the ranking the edges of two places that use each other: one line with
+	// a head at each end joins them and reads both ways, so neither has to
+	// stand a row above the other. idle says the tactic's flags changed
+	// nothing here.
+	idle := t.fold || t.entry
 	both := func(v, w string) bool {
 		if !t.fold || !slices.Contains(out[w], v) {
 			return false
@@ -218,151 +213,42 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		idle = false
 		return true
 	}
-	if !t.fold && !t.entry {
-		idle = false
+	ids := make([]string, len(nodes))
+	for i, n := range nodes {
+		ids[i] = n.id
 	}
-	{
-		in := map[string]map[string]bool{}
-		outs := map[string]map[string]bool{}
-		left := map[string]bool{}
-		for _, n := range nodes {
-			left[n.id] = true
-			in[n.id], outs[n.id] = map[string]bool{}, map[string]bool{}
-		}
-		for v, ws := range out {
-			for _, w := range ws {
-				if !both(v, w) {
-					outs[v][w], in[w][v] = true, true
-				}
+	var pick func(ids, front []string, score func(string) int, best string) string
+	// An entering tactic breaks the cycle at the node the places already
+	// ranked use most, where a reader comes into it.
+	if t.entry {
+		pick = func(ids, front []string, score func(string) int, best string) string {
+			placed := map[string]bool{}
+			for _, f := range front {
+				placed[f] = true
 			}
-		}
-		var front, back []string
-		remove := func(v string) {
-			delete(left, v)
-			for w := range outs[v] {
-				delete(in[w], v)
-			}
-			for w := range in[v] {
-				delete(outs[w], v)
-			}
-		}
-		for len(left) > 0 {
-			var ids []string
-			for v := range left {
-				ids = append(ids, v)
-			}
-			slices.Sort(ids)
-			moved := false
-			for _, v := range ids {
-				if len(outs[v]) == 0 {
-					back = append([]string{v}, back...)
-					remove(v)
-					moved = true
-				}
-			}
-			for _, v := range ids {
-				if left[v] && len(in[v]) == 0 {
-					front = append(front, v)
-					remove(v)
-					moved = true
-				}
-			}
-			if moved {
-				continue
-			}
-			score := func(v string) int { return len(outs[v]) - len(in[v]) }
-			best := ids[0]
-			for _, v := range ids {
-				if score(v) > score(best) {
-					best = v
-				}
-			}
-			// An entering tactic breaks the cycle at the node the places
-			// already ranked use most, where a reader comes into it.
-			if t.entry {
-				placed := map[string]bool{}
-				for _, f := range front {
-					placed[f] = true
-				}
-				from := func(v string) int {
-					n := 0
-					for u, ws := range out {
-						if placed[u] && slices.Contains(ws, v) {
-							n++
-						}
-					}
-					return n
-				}
-				entry := ids[0]
-				for _, v := range ids {
-					if fv, fe := from(v), from(entry); fv > fe || fv == fe && score(v) > score(entry) {
-						entry = v
+			from := func(v string) int {
+				n := 0
+				for u, ws := range out {
+					if placed[u] && slices.Contains(ws, v) {
+						n++
 					}
 				}
-				if entry != best {
-					idle = false
-				}
-				best = entry
+				return n
 			}
-			front = append(front, best)
-			remove(best)
-		}
-		at := map[string]int{}
-		for i, v := range append(front, back...) {
-			at[v] = i
-		}
-		for v, ws := range out {
-			for _, w := range ws {
-				if at[v] < at[w] && !both(v, w) {
-					keep[ledge{v, w}] = true
+			entry := ids[0]
+			for _, v := range ids {
+				if fv, fe := from(v), from(entry); fv > fe || fv == fe && score(v) > score(entry) {
+					entry = v
 				}
 			}
-		}
-	}
-	indeg := map[string]int{}
-	for e := range keep {
-		indeg[e.to]++
-	}
-	rank := map[string]int{}
-	var queue []string
-	for _, n := range nodes {
-		if indeg[n.id] == 0 {
-			queue = append(queue, n.id)
-		}
-	}
-	var order []string
-	for len(queue) > 0 {
-		v := queue[0]
-		queue = queue[1:]
-		order = append(order, v)
-		for _, w := range out[v] {
-			if !keep[ledge{v, w}] {
-				continue
+			if entry != best {
+				idle = false
 			}
-			rank[w] = max(rank[w], rank[v]+1)
-			if indeg[w]--; indeg[w] == 0 {
-				queue = append(queue, w)
-			}
+			return entry
 		}
 	}
-	// A node nothing uses sits just above the highest thing it uses rather
-	// than on the top layer, so the top layer does not collect every root.
-	for i := len(order) - 1; i >= 0; i-- {
-		v := order[i]
-		low := -1
-		for _, w := range out[v] {
-			if keep[ledge{v, w}] && (low < 0 || rank[w] < low) {
-				low = rank[w]
-			}
-		}
-		used := false
-		for _, n := range nodes {
-			used = used || keep[ledge{n.id, v}]
-		}
-		if !used && low > 0 {
-			rank[v] = low - 1
-		}
-	}
+	keep := feedback(ids, out, both, pick)
+	rank, order := longest(ids, out, keep)
 	// A node that uses what sits below the frame sinks to just above the
 	// highest other thing it uses, so its line down stays short.
 	for i := len(order) - 1; i >= 0; i-- {
@@ -1036,6 +922,133 @@ func setName(name string, px, pad, minW, maxW int) ([]string, int) {
 	return []string{a, b}, max(minW, max(textWidth(a, px), textWidth(b, px))+pad)
 }
 
+// feedback says which edges of out, between ids, rank: those that point
+// forward in an order that leaves as few of them as it can pointing
+// backwards (Eades, Lin and Smyth: peel sinks to the back and sources to the
+// front, else the node with the most more outgoing than incoming edges, or
+// the one pick names). An edge skip names takes no part. A cycle cannot be
+// layered, so the edges left pointing backwards are left out of the ranking
+// only.
+func feedback(ids []string, out map[string][]string, skip func(v, w string) bool, pick func(ids, front []string, score func(string) int, best string) string) map[ledge]bool {
+	in := map[string]map[string]bool{}
+	outs := map[string]map[string]bool{}
+	left := map[string]bool{}
+	for _, v := range ids {
+		left[v] = true
+		in[v], outs[v] = map[string]bool{}, map[string]bool{}
+	}
+	for _, v := range ids {
+		for _, w := range out[v] {
+			if left[w] && !skip(v, w) {
+				outs[v][w], in[w][v] = true, true
+			}
+		}
+	}
+	var front, back []string
+	remove := func(v string) {
+		delete(left, v)
+		for w := range outs[v] {
+			delete(in[w], v)
+		}
+		for w := range in[v] {
+			delete(outs[w], v)
+		}
+	}
+	for len(left) > 0 {
+		rest := slices.Sorted(maps.Keys(left))
+		moved := false
+		for _, v := range rest {
+			if len(outs[v]) == 0 {
+				back = append([]string{v}, back...)
+				remove(v)
+				moved = true
+			}
+		}
+		for _, v := range rest {
+			if left[v] && len(in[v]) == 0 {
+				front = append(front, v)
+				remove(v)
+				moved = true
+			}
+		}
+		if moved {
+			continue
+		}
+		score := func(v string) int { return len(outs[v]) - len(in[v]) }
+		best := rest[0]
+		for _, v := range rest {
+			if score(v) > score(best) {
+				best = v
+			}
+		}
+		if pick != nil {
+			best = pick(rest, front, score, best)
+		}
+		front = append(front, best)
+		remove(best)
+	}
+	at := map[string]int{}
+	for i, v := range append(front, back...) {
+		at[v] = i
+	}
+	keep := map[ledge]bool{}
+	for _, v := range ids {
+		for _, w := range out[v] {
+			if _, ok := at[w]; ok && at[v] < at[w] && !skip(v, w) {
+				keep[ledge{v, w}] = true
+			}
+		}
+	}
+	return keep
+}
+
+// longest ranks ids by the longest path down the kept edges, and gives the
+// order it ranked them in. A node nothing uses sits just above the highest
+// thing it uses rather than on the top layer, so the top layer does not
+// collect every root.
+func longest(ids []string, out map[string][]string, keep map[ledge]bool) (map[string]int, []string) {
+	indeg := map[string]int{}
+	used := map[string]bool{}
+	for e := range keep {
+		indeg[e.to]++
+		used[e.to] = true
+	}
+	rank := map[string]int{}
+	var queue, order []string
+	for _, v := range ids {
+		if indeg[v] == 0 {
+			queue = append(queue, v)
+		}
+	}
+	for len(queue) > 0 {
+		v := queue[0]
+		queue = queue[1:]
+		order = append(order, v)
+		for _, w := range out[v] {
+			if !keep[ledge{v, w}] {
+				continue
+			}
+			rank[w] = max(rank[w], rank[v]+1)
+			if indeg[w]--; indeg[w] == 0 {
+				queue = append(queue, w)
+			}
+		}
+	}
+	for i := len(order) - 1; i >= 0; i-- {
+		v := order[i]
+		low := -1
+		for _, w := range out[v] {
+			if keep[ledge{v, w}] && (low < 0 || rank[w] < low) {
+				low = rank[w]
+			}
+		}
+		if !used[v] && low > 0 {
+			rank[v] = low - 1
+		}
+	}
+	return rank, order
+}
+
 // flowAxis is how a view laid the primary flow out. The layout records it,
 // and lint and graph.json read it. across says the stages read left to right
 // along one row, the spine; else each stage has rows of its own, top down.
@@ -1106,25 +1119,27 @@ func pinStages(nodes []lnode, f *flowAxis) {
 	}
 }
 
-// flowRank ranks the boxes of a view that lays the primary flow out. The
-// stages hold their rows: across, the one spine row, else a row to a stage
-// in stage order. Every other box stands by the lines as tier has it,
-// against the stages too: below the boxes that use it, else just above
-// the highest it uses, so it stands between the stages it joins. A box
-// that a stage uses and that itself uses a stage, across, would climb to
-// the spine from below whichever side it took: it stands in the spine row,
-// just before the first stage it uses, as the flow passes through it.
+// flowRank ranks the boxes of a view that lays the primary flow out.
+// Across, the stages stand in one row, the spine, and every other box is
+// ranked against them as against one box (spineRank). Down, each stage
+// holds a row of its own in stage order, and every other box stands by the
+// lines as tier has it, against the stages too: below the boxes that use
+// it, else just above the highest it uses, so it stands between the stages
+// it joins.
 func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int, f *flowAxis) {
-	gap := len(nodes) + 2
-	level := func(s int) int {
-		if f.across {
-			return gap
+	if f.across {
+		spineRank(order, out, keep, rank, f)
+		if inline(nodes, out, rank, f) {
+			closeRanks(order, rank)
+			return
 		}
-		return s * gap
+		f.across = false
+		pinStages(nodes, f)
 	}
+	gap := len(nodes) + 2
 	last := 0
 	for id, s := range f.stage {
-		rank[id] = level(s)
+		rank[id] = s * gap
 		last = max(last, rank[id])
 	}
 	// The frame's edges hold the top and the bottom, so what the outside
@@ -1175,14 +1190,12 @@ func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[l
 			break
 		}
 	}
-	if f.across && !inline(nodes, out, rank, f) {
-		f.across = false
-		pinStages(nodes, f)
-		flowRank(nodes, order, out, keep, rank, f)
-		return
-	}
-	// A box no line ties to the others keeps its rank from the lines,
-	// above every stage's row, so it never stands in a stage's row.
+	closeRanks(order, rank)
+}
+
+// closeRanks closes up the ranks no box holds. A box no line ties to the
+// others keeps its rank from the lines.
+func closeRanks(order []string, rank map[string]int) {
 	used := map[int]bool{}
 	for _, v := range order {
 		used[rank[v]] = true
@@ -1196,11 +1209,67 @@ func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[l
 	}
 }
 
+// spineRank ranks a view whose flow reads across as arrange ranks any view,
+// but with the stages taken as one node, the spine: the cycles through the
+// stages are broken against the spine, not by the order of the whole view,
+// so a box a stage uses and that uses a stage stands on one side of the
+// whole spine, and every box ranks by the rows it joins. A box stands below
+// the spine when no stage uses it, beside the stages in its row only where
+// the lines rank it there. Edges a folding tactic left out stay out. The
+// ranks are doubled so that inline can stand a box just below the spine.
+func spineRank(order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int, f *flowAxis) {
+	const spine = "flow:spine"
+	of := func(v string) string {
+		if f.stage[v] > 0 {
+			return spine
+		}
+		return v
+	}
+	ids := []string{spine}
+	cout := map[string][]string{}
+	ranked := map[ledge]bool{}
+	for _, v := range order {
+		if f.stage[v] == 0 {
+			ids = append(ids, v)
+		}
+		for _, w := range out[v] {
+			e := ledge{of(v), of(w)}
+			if e.from == e.to {
+				continue
+			}
+			if !slices.Contains(cout[e.from], e.to) {
+				cout[e.from] = append(cout[e.from], e.to)
+			}
+			if keep[ledge{v, w}] || !keep[ledge{w, v}] && !slices.Contains(out[w], v) {
+				ranked[e] = true
+			}
+		}
+	}
+	for k := range cout {
+		slices.Sort(cout[k])
+	}
+	skip := func(a, b string) bool { return !ranked[ledge{a, b}] }
+	// The spine wins a tie to break a cycle at, so the boxes the stages use
+	// stand below them.
+	first := func(rest, _ []string, score func(string) int, best string) string {
+		if slices.Contains(rest, spine) && score(spine) == score(best) {
+			return spine
+		}
+		return best
+	}
+	r, _ := longest(ids, cout, feedback(ids, cout, skip, first))
+	for _, v := range order {
+		rank[v] = 2 * r[of(v)]
+	}
+}
+
 // inline stands in the spine row each box below it that a stage uses and
 // that uses a stage which does not reach it back, so its line would climb
 // to close no cycle: just before the first such stage, its tier and step
 // putting it there (huddle). Where the row would not fit spineRoom with
-// them, it says false and moves none: the flow reads down instead.
+// them, it says false and moves none: the flow reads down instead. A box
+// the lines rank into the spine's row stands just below it where the row
+// would not fit spineRoom with it, since the spine never wraps.
 func inline(nodes []lnode, out map[string][]string, rank map[string]int, f *flowAxis) bool {
 	spine := 0
 	for id := range f.stage {
@@ -1262,6 +1331,37 @@ func inline(nodes []lnode, out map[string][]string, rank map[string]int, f *flow
 	for i, first := range at {
 		rank[nodes[i].id] = spine
 		nodes[i].tier, nodes[i].step = 1, step[first]-1
+	}
+	// A box tied to nothing in the view but the world outside stands off
+	// the spine's row, as the overview keeps it.
+	outside := func(v string) bool {
+		for _, w := range out[v] {
+			if w != frameTopNode && w != frameBottomNode {
+				return false
+			}
+		}
+		for u, ws := range out {
+			if u != frameTopNode && u != frameBottomNode && slices.Contains(ws, v) {
+				return false
+			}
+		}
+		return true
+	}
+	var beside []string
+	for _, n := range nodes {
+		if rank[n.id] == spine && n.tier != 1 && n.id != frameTopNode && n.id != frameBottomNode {
+			if outside(n.id) {
+				rank[n.id] = spine + 1
+				continue
+			}
+			beside = append(beside, n.id)
+			width += n.w + gapX
+		}
+	}
+	if width > spineRoom {
+		for _, id := range beside {
+			rank[id] = spine + 1
+		}
 	}
 	return true
 }
