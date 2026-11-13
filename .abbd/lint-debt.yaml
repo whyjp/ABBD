@@ -8,9 +8,11 @@ ceilings:
     against_axis: 16
     detours: 6
     excess_turns: 133
+    opposite_shared: 1607
     overflow: 1
     placement: 43
     tees: 1
+    two_lane_off: 0
     weighed: 268
 debt:
     overview:
@@ -29,7 +31,8 @@ pages:
         false_joins: 0
         label_repeats: 0
         labelled: 12 # 13 until #236 joined an unphrased call to the extract-model line; see #252
-        parallel_ink: 511
+        parallel_ink: 0
+        two_lane_off: 0
 prose:
     language: ko
     reason: written before project.yaml named ko; each text is written in ko when it is next read again, stale or touched
