@@ -110,7 +110,7 @@ func TestAnOverviewDraftIsCheckedBeforeItIsStored(t *testing.T) {
 		{"    word: 청구 금액", "    word: 장부가 매일 밤 청구 금액을 모두 읽는다", "at most 4 words"},
 		{"    word: 청구 금액", "    word: ''", "says no word"},
 		{"    units: [MOD-0001, MOD-0002]", "    unit: [MOD-0001, MOD-0002]", "field unit not found"},
-		{"zones:", "flow:\n  name: 청구\nzones:", "field flow not found"},
+		{"zones:", "flow:\n  name: 청구\nzones:", "unknown field flow; the primary flow is the stack marked primary: true, stored with abbd stack"},
 		{"SELECT amount", "SELECT price", "the code does not hold"},
 	} {
 		draft := strings.Replace(chargeOverview, c.from, c.to, 1)
@@ -119,7 +119,6 @@ func TestAnOverviewDraftIsCheckedBeforeItIsStored(t *testing.T) {
 		}
 		p.overview(1, c.want, draft)
 	}
-	p.want(1, "there is no overview", "overview")
 }
 
 // A stored overview whose quotes moved, or whose line lost every relation
@@ -182,5 +181,65 @@ func TestAnOverviewGoesStaleWhenItsUnitsMoveOrLeave(t *testing.T) {
 	out = p.want(1, "STALE", "status", "--check")
 	if !strings.Contains(out, "stale: overview zone 1 (돈) is STALE: MOD-0002 is no longer in the state") {
 		t.Errorf("a zone whose unit left the state is STALE and says so:\n%s", out)
+	}
+}
+
+// abbd overview with no FILE prints a draft a writer chooses from: the
+// boxes with the stage each stands at, the primary flow's stages, and each
+// pair of boxes a live relation joins, ready to keep once it says a word.
+// A candidate kept as printed stores, and the draft then marks it chosen.
+func TestTheOverviewDraftOffersWhatAWriterChoosesFrom(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.stack(0, "marked stack charge the primary flow", strings.Replace(chargeStack, "layers:\n", "primary: true\nlayers:\n", 1))
+	draft := p.want(0, "", "overview")
+	for _, want := range []string{
+		"# The boxes the overview draws (2)",
+		"MOD-0001   billing",
+		"stage 2 billing",
+		"# The primary flow is stack charge (What are the layers of the charge path?), its layers the stages:",
+		"#   1 books: MOD-0002",
+		"# Line candidates (1)",
+		"#     ledger -> billing: runs 1 (consumes data 1)",
+		"zones: []\nlines: []\n---",
+	} {
+		if !strings.Contains(draft, want) {
+			t.Errorf("the draft holds %q:\n%s", want, draft)
+		}
+	}
+	var cand string
+	for _, l := range strings.Split(draft, "\n") {
+		if strings.HasPrefix(l, "#   - {from: MOD-0002, to: MOD-0001") {
+			cand = strings.TrimPrefix(l, "#   ")
+		}
+	}
+	if !strings.Contains(cand, `quote: "SELECT amount`) {
+		t.Fatalf("the candidate cites the quote of the relation under it: %q\n%s", cand, draft)
+	}
+	kept := strings.Replace(draft, "lines: []", "lines:\n  "+strings.Replace(cand, `word: ""`, "word: 청구 금액", 1), 1)
+	p.overview(0, "stored the overview: 0 zones, 1 lines", kept)
+	again := p.want(0, "word: 청구 금액", "overview")
+	if !strings.Contains(again, "#   - {from: MOD-0002, to: MOD-0001, word: \"\", evidence: [{path: \"ledger/book.go\"") || !strings.Contains(again, "# chosen below") {
+		t.Errorf("the draft marks a candidate already chosen:\n%s", again)
+	}
+}
+
+// A box no stage names stands at the first stage that names a unit inside
+// it, as the overview draws it, and explain says so and names that unit.
+func TestExplainGivesTheStageABoxStandsAtThroughAUnitInsideIt(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.code(".abbd/project.yaml", p.read("project.yaml")+"language: ko\n")
+	inner := strings.Replace(strings.Replace(chargeStack, "layers:\n", "primary: true\nlayers:\n", 1), "    units: [MOD-0001]", "    units: [DATA-0001]", 1)
+	inner = strings.Replace(inner, `      - {path: billing/charge.go, lines: "4", symbol: Charge, quote: "func Charge() {}"}`, `      - {path: billing/charge.go, lines: "3", quote: "INSERT INTO charges"}`, 1)
+	p.stack(0, "marked stack charge the primary flow", inner)
+	p.want(0, "주 흐름 charge 2/2단계 billing, 안의 DATA-0001로", "explain", "MOD-0001")
+}
+
+// abbd status's help names the overview's parts among what fails --check.
+func TestStatusHelpNamesTheOverviewAmongWhatFailsTheCheck(t *testing.T) {
+	t.Parallel()
+	if !strings.Contains(usage, "a table's row\n                                     or a zone or line of the overview is STALE") {
+		t.Error("status --check fails on a STALE zone or line of the overview, and its help says so")
 	}
 }
