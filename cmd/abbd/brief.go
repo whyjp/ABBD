@@ -85,6 +85,11 @@ func (e env) brief(ref string) error {
 	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
 	list(w, "Boxes that say only their kind: each draft comes from a Go doc comment or a file's header comment; keep it only where the code bears it out, and store the line in the supplement, or a module's or feature's with abbd understand --sentence", e.drafts(byID, name, drawnWith(id, ex)))
 	list(w, "Run-time binding sites: record the tie each makes as a coupling with its quote, via load, spawn, trait, callback or config, and a registry as a contract its members provide", bindingSites(e.root, files))
+	flows, err := e.flowText(units, id)
+	if err != nil {
+		return err
+	}
+	list(w, "Where it sits in the primary flow: say so in the Overview", flows)
 	list(w, "Contracts and neighbours", contracts)
 	var couplings []string
 	for _, l := range ex.Inferred {

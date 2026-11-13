@@ -18,9 +18,7 @@ type Explanation struct {
 // Explain gathers what the topology holds about one present unit.
 func Explain(units []model.Unit, id model.ID) Explanation {
 	ex := Explanation{}
-	parent := map[model.ID]model.ID{}
 	for _, u := range model.Present(units) {
-		parent[u.ID] = u.Parent
 		switch {
 		case u.ID == id:
 			ex.Unit = u
@@ -28,15 +26,7 @@ func Explain(units []model.Unit, id model.ID) Explanation {
 			ex.Inside = append(ex.Inside, ref(u))
 		}
 	}
-	own := func(x model.ID) bool {
-		for seen := map[model.ID]bool{}; x != "" && !seen[x]; x = parent[x] {
-			if x == id {
-				return true
-			}
-			seen[x] = true
-		}
-		return false
-	}
+	own := owner(units, id)
 	for _, l := range Links(units) {
 		switch {
 		case l.Origin == model.Inferred:

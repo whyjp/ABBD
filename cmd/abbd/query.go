@@ -95,6 +95,13 @@ func (e env) explain(s string) error {
 	if u.Parent != "" {
 		fmt.Fprintf(w, "inside %s %s\n", u.Parent, name[u.Parent])
 	}
+	flows, err := e.flowText(units, u.ID)
+	if err != nil {
+		return err
+	}
+	for _, l := range flows {
+		fmt.Fprintln(w, l)
+	}
 	if as := u.Built(); len(as) > 0 {
 		fmt.Fprintf(w, "artifacts: %s (%s; %s)\n", strings.ReplaceAll(model.ArtifactSet(as), ",", ", "), model.Words(as), origin(u.Artifact))
 	}
