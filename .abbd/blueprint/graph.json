@@ -8159,7 +8159,47 @@
                 "Code": true
               },
               {
-                "Text": "는 선언으로 읽지 않으며, overview draft의 인용 찾기는 최상위 디렉터리 unit을 ",
+                "Text": "는 선언으로 읽지 않으며, ",
+                "Code": false
+              },
+              {
+                "Text": "Result",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Debug",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "File",
+                "Code": true
+              },
+              {
+                "Text": " 같은 언어 공통 이름은 세지 않되 모듈이 스스로 선언한 ",
+                "Code": false
+              },
+              {
+                "Text": "Writer",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Path",
+                "Code": true
+              },
+              {
+                "Text": "는 센다. 그리고 overview draft의 인용 찾기는 최상위 디렉터리 unit을 ",
                 "Code": false
               },
               {
