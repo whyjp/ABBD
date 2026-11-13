@@ -4,6 +4,8 @@
 # placement debt more than 2% past its ceiling.
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
+# prose names the texts not yet written in project.yaml's language; lint
+# fails on any other, and each leaves the list when it is written again.
 ceilings:
     detours: 6
     excess_turns: 133
@@ -27,3 +29,264 @@ pages:
         label_repeats: 0
         labelled: 13
         parallel_ink: 583
+prose:
+    language: ko
+    reason: written before project.yaml named ko; each text is written in ko when it is next read again, stale or touched
+    owed:
+        - project purpose
+        - CFG-0001 purpose
+        - CFG-0001 responsibility
+        - CFG-0002 purpose
+        - CFG-0002 responsibility
+        - DATA-0001 purpose
+        - DATA-0001 responsibility
+        - DATA-0001 phrases
+        - DATA-0002 purpose
+        - DATA-0002 responsibility
+        - DATA-0003 purpose
+        - DATA-0003 responsibility
+        - DATA-0004 purpose
+        - DATA-0004 responsibility
+        - DATA-0005 purpose
+        - DATA-0006 purpose
+        - DATA-0006 responsibility
+        - DATA-0007 purpose
+        - DATA-0007 responsibility
+        - DATA-0008 purpose
+        - DATA-0008 responsibility
+        - DATA-0009 purpose
+        - DATA-0009 responsibility
+        - DATA-0010 responsibility
+        - DATA-0011 responsibility
+        - DATA-0012 responsibility
+        - DATA-0013 responsibility
+        - DATA-0014 responsibility
+        - DATA-0015 responsibility
+        - DATA-0017 responsibility
+        - DATA-0018 responsibility
+        - DATA-0019 responsibility
+        - DATA-0020 responsibility
+        - DATA-0021 responsibility
+        - DATA-0022 responsibility
+        - DATA-0023 responsibility
+        - FEAT-0001 purpose
+        - FEAT-0001 responsibility
+        - FEAT-0001 phrases
+        - FEAT-0002 purpose
+        - FEAT-0002 responsibility
+        - FEAT-0002 phrases
+        - FEAT-0003 responsibility
+        - FEAT-0003 phrases
+        - FEAT-0004 responsibility
+        - FEAT-0004 phrases
+        - FEAT-0006 responsibility
+        - FEAT-0006 phrases
+        - FEAT-0007 responsibility
+        - FEAT-0007 phrases
+        - FEAT-0008 responsibility
+        - FEAT-0008 phrases
+        - FEAT-0009 responsibility
+        - FEAT-0009 phrases
+        - FEAT-0011 responsibility
+        - FEAT-0011 phrases
+        - FEAT-0012 responsibility
+        - FEAT-0012 phrases
+        - FEAT-0013 responsibility
+        - FEAT-0014 responsibility
+        - FEAT-0014 phrases
+        - FEAT-0016 responsibility
+        - FEAT-0016 phrases
+        - FEAT-0017 responsibility
+        - FEAT-0017 phrases
+        - FEAT-0018 responsibility
+        - FEAT-0020 responsibility
+        - FEAT-0023 responsibility
+        - FEAT-0023 phrases
+        - FEAT-0025 responsibility
+        - FEAT-0025 phrases
+        - FEAT-0026 responsibility
+        - FEAT-0026 phrases
+        - IF-0001 purpose
+        - IF-0001 responsibility
+        - IF-0002 purpose
+        - IF-0002 responsibility
+        - IF-0003 purpose
+        - IF-0003 responsibility
+        - IF-0004 purpose
+        - IF-0004 responsibility
+        - IF-0005 purpose
+        - IF-0005 responsibility
+        - IF-0006 purpose
+        - IF-0006 responsibility
+        - IF-0007 purpose
+        - IF-0007 responsibility
+        - IF-0008 purpose
+        - IF-0008 responsibility
+        - IF-0009 purpose
+        - IF-0009 responsibility
+        - IF-0010 purpose
+        - IF-0010 responsibility
+        - IF-0011 purpose
+        - IF-0011 responsibility
+        - IF-0012 purpose
+        - IF-0012 responsibility
+        - IF-0013 purpose
+        - IF-0013 responsibility
+        - IF-0014 purpose
+        - IF-0014 responsibility
+        - IF-0015 purpose
+        - IF-0015 responsibility
+        - IF-0016 purpose
+        - IF-0016 responsibility
+        - IF-0017 purpose
+        - IF-0017 responsibility
+        - MOD-0001 purpose
+        - MOD-0001 responsibility
+        - MOD-0001 phrases
+        - MOD-0002 purpose
+        - MOD-0002 responsibility
+        - MOD-0002 phrases
+        - MOD-0003 purpose
+        - MOD-0003 responsibility
+        - MOD-0004 purpose
+        - MOD-0004 responsibility
+        - MOD-0004 phrases
+        - MOD-0005 purpose
+        - MOD-0005 responsibility
+        - MOD-0005 phrases
+        - MOD-0006 purpose
+        - MOD-0006 responsibility
+        - MOD-0006 phrases
+        - MOD-0007 purpose
+        - MOD-0007 responsibility
+        - MOD-0007 phrases
+        - MOD-0008 purpose
+        - MOD-0008 responsibility
+        - MOD-0008 phrases
+        - MOD-0009 purpose
+        - MOD-0009 responsibility
+        - MOD-0009 phrases
+        - MOD-0010 purpose
+        - MOD-0010 responsibility
+        - MOD-0011 purpose
+        - MOD-0011 responsibility
+        - MOD-0013 purpose
+        - MOD-0013 responsibility
+        - MOD-0013 phrases
+        - MOD-0014 purpose
+        - MOD-0014 responsibility
+        - MOD-0015 purpose
+        - MOD-0015 responsibility
+        - MOD-0016 purpose
+        - MOD-0016 responsibility
+        - MOD-0017 purpose
+        - MOD-0017 responsibility
+        - MOD-0017 phrases
+        - MOD-0018 purpose
+        - MOD-0018 responsibility
+        - MOD-0019 purpose
+        - MOD-0019 responsibility
+        - MOD-0020 purpose
+        - MOD-0020 responsibility
+        - MOD-0020 phrases
+        - MOD-0021 purpose
+        - MOD-0021 responsibility
+        - MOD-0022 purpose
+        - MOD-0022 responsibility
+        - MOD-0023 purpose
+        - MOD-0023 responsibility
+        - MOD-0024 purpose
+        - MOD-0024 responsibility
+        - MOD-0025 purpose
+        - MOD-0025 responsibility
+        - MOD-0026 purpose
+        - MOD-0026 responsibility
+        - MOD-0026 phrases
+        - MOD-0027 purpose
+        - MOD-0027 responsibility
+        - MOD-0027 phrases
+        - MOD-0028 purpose
+        - MOD-0028 responsibility
+        - MOD-0029 purpose
+        - MOD-0029 responsibility
+        - MOD-0030 purpose
+        - MOD-0030 responsibility
+        - MOD-0031 purpose
+        - MOD-0031 responsibility
+        - MOD-0032 purpose
+        - MOD-0032 responsibility
+        - MOD-0033 purpose
+        - MOD-0033 responsibility
+        - MOD-0034 purpose
+        - MOD-0034 responsibility
+        - MOD-0034 phrases
+        - MOD-0035 purpose
+        - MOD-0035 responsibility
+        - MOD-0036 purpose
+        - MOD-0036 responsibility
+        - MOD-0037 purpose
+        - MOD-0037 responsibility
+        - MOD-0037 phrases
+        - MOD-0038 purpose
+        - MOD-0038 responsibility
+        - MOD-0039 purpose
+        - MOD-0039 responsibility
+        - MOD-0039 phrases
+        - MOD-0040 purpose
+        - MOD-0040 responsibility
+        - MOD-0040 phrases
+        - MOD-0041 purpose
+        - MOD-0041 responsibility
+        - MOD-0041 phrases
+        - MOD-0042 purpose
+        - MOD-0042 responsibility
+        - MOD-0043 purpose
+        - MOD-0043 responsibility
+        - MOD-0043 phrases
+        - MOD-0044 purpose
+        - MOD-0044 responsibility
+        - MOD-0045 purpose
+        - MOD-0045 responsibility
+        - MOD-0046 purpose
+        - MOD-0046 responsibility
+        - MOD-0047 purpose
+        - MOD-0047 responsibility
+        - MOD-0047 phrases
+        - MOD-0048 purpose
+        - MOD-0048 responsibility
+        - MOD-0049 purpose
+        - MOD-0049 responsibility
+        - MOD-0050 purpose
+        - MOD-0050 responsibility
+        - MOD-0051 purpose
+        - MOD-0051 responsibility
+        - MOD-0052 purpose
+        - MOD-0052 responsibility
+        - MOD-0053 purpose
+        - MOD-0053 responsibility
+        - MOD-0054 phrases
+        - MOD-0055 responsibility
+        - FEAT-0026 text
+        - MOD-0005 text
+        - MOD-0009 text
+        - MOD-0013 text
+        - MOD-0017 text
+        - MOD-0022 text
+        - MOD-0026 text
+        - MOD-0034 text
+        - MOD-0047 text
+        - DATA-0006 note semantics
+        - DATA-0006 note states
+        - DATA-0006 note decisions.revision-stays
+        - DATA-0006 note entries.blueprint
+        - DATA-0006 note entries.fingerprint
+        - DATA-0006 note entries.high-water
+        - DATA-0006 note entries.rendered
+        - IF-0001 note entries.base
+        - IF-0001 note entries.check
+        - IF-0001 note entries.json
+        - IF-0003 note entries.check
+        - IF-0004 note entries.features
+        - flow sync
+        - stack cli
+        - table cli-files
