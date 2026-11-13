@@ -119,6 +119,11 @@ func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend
 	if err != nil {
 		return doc, nil, err
 	}
+	// A language server reports paths with symlinks resolved, as macOS's
+	// /var under /private/var, so the root is read the same way.
+	if root, err = filepath.EvalSymlinks(root); err != nil {
+		return doc, nil, err
+	}
 	if cache, err = filepath.Abs(cache); err != nil {
 		return doc, nil, err
 	}
