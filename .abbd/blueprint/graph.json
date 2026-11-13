@@ -5771,7 +5771,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6235,17 +6234,8 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0001 ---",
-                "Code": false
-              }
-            ]
-          },
           {
             "Kind": "h",
             "Parts": [
