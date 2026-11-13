@@ -60,6 +60,10 @@ func (e env) brief(ref string) error {
 	}
 	fmt.Fprintf(w, "\n## Read first\n\n%s\n\nRead what this section lists, rewrite every TODO above, check the draft as the reader's Before you store sections say, then delete this section and store the text with abbd understand %s FILE --reader WHO.\n\n### Files, entry first\n\n", languageLine(lang), id)
 	files, quotes := e.st.Read(units, id)
+	// Tests and their fixtures are no design of the module, as the reader
+	// leaves them out.
+	all := len(files)
+	files = slices.DeleteFunc(files, func(f string) bool { return testFile(f) || fixtureFile(f) })
 	slices.SortStableFunc(files, func(a, b string) int { return entryRank(a) - entryRank(b) })
 	for _, f := range files {
 		size := "gone"
@@ -67,6 +71,9 @@ func (e env) brief(ref string) error {
 			size = fmt.Sprintf("%d bytes", fi.Size())
 		}
 		fmt.Fprintf(w, "- `%s` (%s)\n", f, size)
+	}
+	if n := all - len(files); n > 0 {
+		fmt.Fprintf(w, "- and %s of tests and test data, left out\n", plural(n, "file"))
 	}
 	for _, q := range quotes {
 		fmt.Fprintf(w, "- the lines around %s\n", q)

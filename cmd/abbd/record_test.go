@@ -25,7 +25,7 @@ func TestSyncSummarizesAndListsOnlyWhatNeedsAttention(t *testing.T) {
 	if !strings.HasPrefix(out, "synced: 3 unit(s), 1 matched, 1 new, 1 unmatched\nMOD-0003 new\nMOD-0002 unmatched\n") {
 		t.Fatalf("a sync that changes units names each change:\n%s", out)
 	}
-	contains(t, out, "unmatched: the extraction no longer reports these units", "No command clears them, and none needs to")
+	contains(t, out, "unmatched: the extraction no longer reports these units", "abbd forget ID removes one nothing else in the state names")
 }
 
 // sync converges: run on the same tree it rewrites nothing, and after the

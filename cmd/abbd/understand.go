@@ -278,10 +278,14 @@ func (e env) reread(r model.NoteRef, args []string) error {
 // forget removes the note whose file ref names, with the human's why it
 // holds, and says what it was. It goes by the file and not by the slot, so a
 // note abbd no longer reads as its slot's, orphaned or misfiled, goes too.
+// A bare ID forgets a unit sync lists as unmatched.
 func (e env) forget(ref string) error {
 	unit, slot, ok := strings.Cut(ref, ".")
+	if _, _, err := model.ParseID(ref); !ok && err == nil {
+		return e.forgetUnit(model.ID(ref))
+	}
 	if !ok || unit == "" || slot == "" {
-		return fmt.Errorf("name the note as ID.SLOT[.KEY], as abbd status prints it")
+		return fmt.Errorf("name the note as ID.SLOT[.KEY], as abbd status prints it, or an unmatched unit as ID")
 	}
 	notes, _, err := e.st.LoadNotes()
 	if err != nil {
@@ -394,4 +398,33 @@ func stampSentences(st store.Store, stored, units []model.Unit) {
 			f.now.Digest = digest
 		}
 	}
+}
+
+// forgetUnit removes a unit the extraction no longer reports, once nothing
+// else in the state names it, so sync stops listing it as unmatched. Its
+// number stays taken, so a unit that comes back takes a new ID.
+func (e env) forgetUnit(id model.ID) error {
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	i := slices.IndexFunc(units, func(u model.Unit) bool { return u.ID == id })
+	switch {
+	case i < 0:
+		return fmt.Errorf("there is no unit %s", id)
+	case !units[i].Absent:
+		return fmt.Errorf("%s is present, and abbd forget removes a unit only once sync lists it as unmatched; name a note as ID.SLOT[.KEY], as abbd status prints it", id)
+	}
+	naming, err := e.st.Naming(units[i])
+	if err != nil {
+		return err
+	}
+	if len(naming) > 0 {
+		return fmt.Errorf("%s is still named in %s; remove or retract what names it first", id, strings.Join(naming, ", "))
+	}
+	if err := e.st.RemoveUnit(units[i]); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "forgot %s %s: sync no longer lists it as unmatched, and its number stays taken\n", id, units[i].Name.Value)
+	return nil
 }
