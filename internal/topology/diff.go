@@ -593,9 +593,10 @@ func between(units map[model.ID]model.Unit) map[string]Relation {
 	return out
 }
 
-// runs lists the live runs_on and posts_to relations, keyed by edge. A
-// reader writes most of them, so they are listed whoever wrote them, and
-// the reader's lists leave them out.
+// runs lists the live runs_on and posts_to relations, keyed by edge, each
+// with every quote it rests on, so a posts_to shows its producer and its
+// consumer. A reader writes most of them, so they are listed whoever wrote
+// them, and the reader's lists leave them out.
 func runs(units map[model.ID]model.Unit) map[string]Coupling {
 	out := map[string]Coupling{}
 	for _, u := range units {
@@ -604,9 +605,11 @@ func runs(units map[model.ID]model.Unit) map[string]Coupling {
 				continue
 			}
 			c := Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
-			if len(r.Evidence) > 0 {
-				c.Quote = r.Evidence[0].String()
+			var qs []string
+			for _, e := range r.Evidence {
+				qs = append(qs, e.String())
 			}
+			c.Quote = strings.Join(qs, ", ")
 			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = c
 		}
 	}
@@ -622,9 +625,11 @@ func inferred(units map[model.ID]model.Unit) map[string]Coupling {
 				continue
 			}
 			c := Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
-			if len(r.Evidence) > 0 {
-				c.Quote = r.Evidence[0].String()
+			var qs []string
+			for _, e := range r.Evidence {
+				qs = append(qs, e.String())
 			}
+			c.Quote = strings.Join(qs, ", ")
 			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = c
 		}
 	}
