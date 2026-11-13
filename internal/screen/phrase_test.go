@@ -13,7 +13,8 @@ import (
 // and only a phrase at least half of them carry.
 // A bus counts its lines instead of relations. A name too wide gives way to
 // the next phrase's. A line with no phrase that fits falls back to the via
-// word its relations share. The tooltip keeps every phrase and its share.
+// its relations share, but says nothing for a plain one such as 호출, which
+// the line's style says already. The tooltip keeps every phrase and its share.
 func TestALineSaysWhatCrossesIt(t *testing.T) {
 	long := strings.Repeat("x", model.PhraseMax)
 	tr := tree{
@@ -34,8 +35,8 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		{[]string{"a", "c"}, "Cypher"},
 		{[]string{"c", "a"}, "Cypher"},
 		{[]string{"a", "b", "c", "e"}, "Cypher"},
-		{[]string{"a", "c", "e"}, "호출"},
-		{[]string{"a", "d", "c", "x"}, "호출"},
+		{[]string{"a", "c", "e"}, ""},
+		{[]string{"a", "d", "c", "x"}, ""},
 		{[]string{"a", "d", "c", "x", "y"}, ""},
 		{[]string{"a", "x"}, "Cypher"},
 		{[]string{"c", "x", "y"}, ""},
@@ -45,7 +46,7 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		{[]string{"x"}, ""},
 		{[]string{"l"}, long},
 		{[]string{"l", "e"}, long},
-		{[]string{"m"}, "호출"},
+		{[]string{"m"}, ""},
 		{[]string{"l", "d"}, long},
 		{[]string{"k"}, "COMP_WORDS"},
 		{[]string{"w", "v"}, "EnableDecoderUseNumber"},
@@ -76,13 +77,18 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		{[][]string{{"a"}, {"b"}}, "Cypher"},
 		{[][]string{{"a", "e"}, {"b"}}, "Cypher"},
 		{[][]string{{"a", "e"}, {"x"}}, "Cypher"},
-		{[][]string{{"a", "e"}, {"x"}, {"c"}}, "호출"},
+		{[][]string{{"a", "e"}, {"x"}, {"c"}}, ""},
 		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}}, "schema fetch"},
-		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}, {"y"}}, "호출"},
+		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}, {"y"}}, ""},
 		{[][]string{{"c"}, {"b"}, {"d"}, {"x"}, {"y"}}, ""},
 	} {
 		if got, _ := word(tr, tc.lines); got != tc.want {
 			t.Errorf("a bus of %v says %q, want %q, the phrase most of its lines carry if half do, else the via word most carry if half do", tc.lines, got, tc.want)
+		}
+	}
+	for _, lines := range [][][]string{{{"a", "c", "e"}}, {{"a", "d", "c", "x"}}, {{"m"}}, {{"a", "e"}, {"x"}, {"c"}}, {{"c"}, {"b"}, {"c"}, {"x"}, {"y"}}} {
+		if got := via(tr, lines); got != "call" {
+			t.Errorf("%v falls back to via %q, want call, kept for its tooltip", lines, got)
 		}
 	}
 	if got := said(tr, [][]string{{"a", "c"}, {"b"}, {"x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/3", "schema fetch (사람) 1/3"}) {
