@@ -224,6 +224,10 @@ func parseTree(root string) error {
 		if err != nil {
 			return err
 		}
+		// The go tool never builds a testdata directory, so its Go is a fixture, not a package.
+		if d.IsDir() && d.Name() == "testdata" {
+			return filepath.SkipDir
+		}
 		if d.IsDir() || !strings.HasSuffix(p, ".go") || strings.HasSuffix(p, "_test.go") {
 			return nil
 		}
