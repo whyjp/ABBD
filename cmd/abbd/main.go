@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
@@ -25,11 +26,12 @@ and renders the blueprint. It never judges, blocks, asks or records a decision.
 abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
-abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [--root DIR]
+abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [-DNAME=VALUE...] [--root DIR]
                                      print the extraction JSON a bundled front-end reads from the
                                      build system's own model: cargo (Cargo.toml) or cmake
                                      (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
-                                     relative to the root, "." when left out; register it as
+                                     relative to the root, "." when left out; -D options are
+                                     CMake cache options for the configure; register it as
                                      abbd setup -- abbd extract cargo, or extend its output
 abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
                                      print the extraction that EXTRACT-ARGV prints, or stdin,
@@ -257,6 +259,7 @@ type opts struct {
 	responsibility   string
 	value, src       string
 	reason           string
+	cacheOpts        []string
 	base             string
 	unit             string
 	history          bool
@@ -425,6 +428,11 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 			return inv, fmt.Errorf("nothing after --")
 		}
 	}
+	if inv.name == "extract" {
+		// A -DNAME=VALUE is a CMake cache option, not a flag of abbd.
+		inv.o.cacheOpts = slices.DeleteFunc(slices.Clone(args), func(a string) bool { return !strings.HasPrefix(a, "-D") })
+		args = slices.DeleteFunc(args, func(a string) bool { return strings.HasPrefix(a, "-D") })
+	}
 	fs := flag.NewFlagSet(inv.name, flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	for _, f := range c.flags {
@@ -442,6 +450,10 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 }
 
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	if len(args) > 0 && slices.Contains([]string{"--help", "-h", "help"}, args[0]) {
+		fmt.Fprintln(stdout, usage)
+		return exitOK
+	}
 	inv, err := parse(args, stderr)
 	if err != nil {
 		fmt.Fprintln(stderr, "abbd:", err)
@@ -523,6 +535,9 @@ func (e env) sync() error {
 	}
 	for _, id := range res.Unmatched {
 		fmt.Fprintf(e.stdout, "%s unmatched\n", id)
+	}
+	if len(res.Unmatched) > 0 {
+		fmt.Fprintln(e.stdout, "unmatched: the extraction no longer reports these units; abbd keeps each, drawn nowhere and failing no check, so its ID returns if its code does. No command clears them, and none needs to")
 	}
 	e.attention(res.Units)
 	return nil

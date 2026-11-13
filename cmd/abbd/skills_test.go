@@ -420,3 +420,12 @@ func TestStatusCheckFailsOnAnUnknownStateWithTheRealCause(t *testing.T) {
 		t.Fatalf("a sync cannot fingerprint without git:\n%s", out)
 	}
 }
+
+// A state holding a kind this abbd does not know was written by a newer
+// abbd, and the refusal says to run that one, not that the state is broken.
+func TestAKindFromANewerAbbdNamesTheBinaryAsTheCause(t *testing.T) {
+	t.Parallel()
+	p := semanticProject(t)
+	p.code(".abbd/architecture/MOD-0001.md", strings.Replace(p.read("architecture/MOD-0001.md"), "kind: MOD", "kind: NEWKIND", 1))
+	p.want(1, `unknown kind "NEWKIND": a newer abbd wrote this state, so run that abbd`, "status")
+}

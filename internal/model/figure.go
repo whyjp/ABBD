@@ -115,14 +115,13 @@ func (st state) under(id, top ID) bool {
 // the overview draws it in. A unit whose parent is not present sits at the
 // top level, as the overview draws it.
 func (st state) box(id ID) ID {
-	for seen := map[ID]bool{}; !seen[id]; seen[id] = true {
+	for seen := map[ID]bool{id: true}; ; seen[id] = true {
 		p := st[id].Parent
-		if _, ok := st[p]; !ok {
-			break
+		if _, ok := st[p]; !ok || seen[p] {
+			return id
 		}
 		id = p
 	}
-	return id
 }
 
 // within reports whether id is one of tops or a unit inside one.
@@ -135,6 +134,14 @@ func (st state) within(id ID, tops []ID) bool {
 // contract one of them provides anchors so. A file two units share lends a
 // quote only to the unit whose anchor names it best, and a root anchor of .
 // only the files no closer anchor names.
+// Rests reports, over units, whether a quote lies in the code of the units
+// tops, or of a unit inside them, as a part of a figure or the overview must
+// cite.
+func Rests(units []Unit) func(tops []ID, quote Evidence) bool {
+	st := stateOf(units)
+	return func(tops []ID, quote Evidence) bool { return st.rests(tops, []Evidence{quote}) }
+}
+
 func (st state) rests(tops []ID, quotes []Evidence) bool {
 	provides := func(c ID) bool {
 		for _, u := range st {

@@ -59,7 +59,7 @@ func decodeOverview(front []byte) (storedOverview, error) {
 func ParseOverviewDraft(b []byte) (Overview, error) {
 	front, body, err := splitFrontmatter(b)
 	if err != nil {
-		return Overview{}, err
+		return Overview{}, fmt.Errorf("%w: an overview draft is the whole file abbd overview prints, its zones and lines between a --- line at the top and another before the caption", err)
 	}
 	var keys map[string]any
 	if yaml.Unmarshal(front, &keys) == nil {
