@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2861,6 +2861,14 @@
     },
     {
       "From": "FEAT-0002",
+      "To": "IF-0002",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd evidence\""
+    },
+    {
+      "From": "FEAT-0002",
       "To": "IF-0003",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
@@ -2983,6 +2991,14 @@
       "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0021",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd retract\""
     },
     {
       "From": "FEAT-0002",
@@ -5418,7 +5434,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 19,
+        "Uses": 21,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5542,6 +5558,7 @@
           "Head": "abbd",
           "Names": [
             "diff",
+            "evidence",
             "status",
             "impact",
             "sync",
@@ -5551,6 +5568,7 @@
             "exit codes",
             "migrate",
             "record evidence",
+            "retract",
             "flow",
             "lint",
             "brief"
@@ -8040,7 +8058,10 @@
                   "Ref": "IF-0003.entries.check",
                   "Title": "항목",
                   "Key": "check",
-                  "Stale": false,
+                  "Stale": true,
+                  "Changed": [
+                    "cmd/abbd/evidence.go (the lines around it changed)"
+                  ],
                   "Blocks": [
                     {
                       "Kind": "p",
@@ -8684,6 +8705,11 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
