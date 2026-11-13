@@ -127,7 +127,7 @@ func randomRoute(r *rand.Rand, grid, step int) []pt {
 }
 
 func (v roadView) fullCost(ways [][]pt) roadCost {
-	c := roadCost{far: v.fullFarSplits(ways), forks: len(v.forks(ways)), tees: v.fullTees(ways), unseen: v.fullUnseen(ways), combs: v.fullCombs(ways)}
+	c := roadCost{far: v.fullFarSplits(ways), forks: len(v.forks(ways, v.dotting)), tees: v.fullTees(ways), unseen: v.fullUnseen(ways), combs: v.fullCombs(ways)}
 	for _, w := range ways {
 		c.turns += max(0, len(straight(w))-2)
 	}

@@ -645,6 +645,13 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		reqs = append(reqs, r)
 	}
+	if focus == "" {
+		var boxes []model.ID
+		for _, u := range inner {
+			boxes = append(boxes, u.ID)
+		}
+		leadLines(t, o.walks, l.axis, boxes, false, reqs, func(i int) []string { return lines[i].rels })
+	}
 	routed := l.route(reqs)
 	paths := routed.drawn
 	weighed(read, routed, reqs)

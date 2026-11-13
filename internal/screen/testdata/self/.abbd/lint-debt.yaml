@@ -11,7 +11,7 @@ ceilings:
     overflow: 0
     placement: 40
     tees: 4
-    weighed: 346
+    weighed: 345
 debt:
     MOD-0030 internal/model:
         R: 1

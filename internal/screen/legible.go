@@ -423,7 +423,14 @@ func (m Metrics) String() string {
 		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx, bends %d, most bends %d, length %dpx", m.Braid, m.Detour, m.MaxDetour, m.Bends, m.MaxBends, m.Length)
 }
 
-func measure(s sheet) Metrics {
+func measure(s sheet) Metrics { return measureBy(s, nil) }
+
+// measureBy is measure, but a back stroke whose every route turns is
+// left out of rule 13's count of back lines, though it must still be
+// dashed: on a view that lays a primary flow out, a line from a later
+// stage to an earlier one runs back by the order the flow's stages set,
+// which O4 judges, not by the layout.
+func measureBy(s sheet, turns func(route int) bool) Metrics {
 	m := Metrics{Width: int(s.width), Wires: s.groups}
 	for _, sh := range s.shapes {
 		// A twin is a unit the focus view draws a second time.
@@ -708,11 +715,22 @@ func measure(s sheet) Metrics {
 				forward = forward || dist(way[len(way)-1], b) < 1 && forwardOf(w.class, way[0], b)
 			}
 		}
+		routes, turned := 0, 0
+		for _, c := range strings.Fields(w.class) {
+			if k, err := strconv.Atoi(strings.TrimPrefix(c, "r")); err == nil && c[0] == 'r' && turns != nil {
+				routes++
+				if turns(k) {
+					turned++
+				}
+			}
+		}
 		switch {
 		case forward:
 			m.Forward++
 		default:
-			m.Back++
+			if routes == 0 || turned < routes {
+				m.Back++
+			}
 			if !strings.Contains(" "+w.class+" ", " back ") {
 				m.BackPlain++
 			}

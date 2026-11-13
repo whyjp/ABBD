@@ -195,3 +195,18 @@ func Breaches(layers []Layer, units []Unit) []Breach {
 	})
 	return out
 }
+
+// StandsAt is where the overview stands a box no part holds: the first
+// part, from 1, that names a unit inside id, and that unit. It is 0 when no
+// part names one.
+func StandsAt[C Claim[C]](parts []C, units []Unit, id ID) (int, ID) {
+	st := stateOf(units)
+	for i, p := range parts {
+		for _, n := range p.Names() {
+			if n != id && st.under(n, id) {
+				return i + 1, n
+			}
+		}
+	}
+	return 0, ""
+}
