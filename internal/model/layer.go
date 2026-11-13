@@ -29,7 +29,7 @@ type Layer struct {
 // Kind makes a stack's layers a kind of figure, whose layers hold each unit
 // once between them.
 func (Layer) Kind() FigureKind[Layer] {
-	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce}
+	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce, Primary: true}
 }
 
 // Validate checks the layer on its own: a name and a role, one line each, the

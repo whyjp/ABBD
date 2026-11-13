@@ -51,6 +51,15 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 	if err := checkFigure(e, &f, units); err != nil {
 		return err
 	}
+	if f.Primary {
+		figs, err := store.LoadKind[C](e.st)
+		if err != nil {
+			return err
+		}
+		if other := slices.DeleteFunc(store.Marked(figs), func(m model.FigureKey) bool { return m == k }); len(other) > 0 {
+			return fmt.Errorf("%s %s is marked the primary flow; store it without primary: true first", kind.Noun, other[0])
+		}
+	}
 	for i := range f.Parts {
 		f.Parts[i].Writer, f.Parts[i].Source = e.writer(), e.sourceRef()
 	}
@@ -65,6 +74,9 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "stored %s %s, %d %s, %s, each %s stamped with the lines around the quotes it cites\n", kind.Noun, k, len(f.Parts), kind.Parts, f.Origin(), kind.Part)
+	if f.Primary {
+		fmt.Fprintf(e.stdout, "marked %s %s the primary flow: its %s are the stages every view reads in order\n", kind.Noun, k, kind.Parts)
+	}
 	if len(kept) > 0 {
 		fmt.Fprintf(e.stdout, "kept the human's %s %s\n", kind.Parts, kept)
 	}
@@ -94,6 +106,8 @@ func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit
 	switch {
 	case f.Question == "" || strings.ContainsAny(f.Question, "\r\n"):
 		return fmt.Errorf("a %s answers one question, on one line, in its question field", kind.Noun)
+	case f.Primary && !kind.Primary:
+		return fmt.Errorf("a %s cannot be marked primary; mark the stack whose layers are the flow's stages", kind.Noun)
 	case kind.MaxColumns == 0 && len(f.Columns) > 0:
 		return fmt.Errorf("a %s has no columns; drop the columns field", kind.Noun)
 	case len(f.Columns) < kind.MinColumns:
@@ -368,6 +382,10 @@ func statusFigures[C model.Claim[C]](e env, units []model.Unit, figs []store.Fig
 			lines = append(lines, fmt.Sprintf("stale: %s %s: %s; store the %s again with abbd %s %s FILE", kind.Noun, f.Key, g.Text, kind.Noun, kind.Noun, f.Key))
 		}
 	}
+	marked := store.Marked(figs)
+	if len(marked) > 1 {
+		lines = append(lines, fmt.Sprintf("conflict: %ss %v are each marked the primary flow, so the blueprint lays out by neither; store all but one without primary: true", kind.Noun, marked))
+	}
 	fmt.Fprintf(e.stdout, "%s: %d %s(s), %d %s(s), %d STALE\n", kind.Dir, len(figs), kind.Noun, parts, kind.Part, stale)
 	dir := store.FigureDir[C]()
 	for _, f := range strays {
@@ -377,6 +395,9 @@ func statusFigures[C model.Claim[C]](e env, units []model.Unit, figs []store.Fig
 	}
 	for _, l := range lines {
 		fmt.Fprintln(e.stdout, l)
+	}
+	if len(marked) > 1 {
+		return fmt.Sprintf("%d %ss are marked the primary flow, and one at most may be", len(marked), kind.Noun)
 	}
 	if stale == 0 {
 		return ""

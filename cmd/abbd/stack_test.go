@@ -218,3 +218,33 @@ func TestAReaderMendsAHumansStackTheStateBrokeAsAWhole(t *testing.T) {
 	}
 	p.want(0, "stacks: 1 stack(s), 2 layer(s), 0 STALE", "status", "--check")
 }
+
+// A stack marked primary keeps its mark through the store and the printed
+// draft. A second marked stack and a marked flow are refused, and a double
+// mark left by a hand merge fails status.
+func TestOneStackAtMostIsMarkedThePrimaryFlow(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	primary := strings.Replace(chargeStack, "layers:\n", "primary: true\nlayers:\n", 1)
+	p.stack(0, "marked stack charge the primary flow", primary)
+	if stored := p.read("stacks/charge.md"); !strings.Contains(stored, "primary: true") {
+		t.Errorf("the stored stack keeps its mark:\n%s", stored)
+	}
+	if out := p.want(0, "primary: true", "stack", "charge"); !strings.Contains(out, "layers:") {
+		t.Errorf("the printed draft keeps the mark:\n%s", out)
+	}
+	p.want(1, "stack charge is marked the primary flow; store it without primary: true first", "stack", "other", p.file(t, "other.md", primary))
+	p.want(0, "stored stack other", "stack", "other", p.file(t, "plain.md", chargeStack))
+	if stored := p.read("stacks/other.md"); strings.Contains(stored, "primary") {
+		t.Errorf("an unmarked stack writes no primary key:\n%s", stored)
+	}
+	p.want(0, "marked stack charge the primary flow", "stack", "charge", p.file(t, "again.md", primary))
+	flow := strings.Replace(chargeFlow, "steps:\n", "primary: true\nsteps:\n", 1)
+	p.want(1, "a flow cannot be marked primary", "flow", "charge", p.file(t, "flow.md", flow))
+
+	merged := strings.Replace(p.read("stacks/other.md"), "format: 1\n", "format: 1\nprimary: true\n", 1)
+	if err := os.WriteFile(filepath.Join(p.root, ".abbd", "stacks", "other.md"), []byte(merged), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	p.want(1, "conflict: stacks [charge other] are each marked the primary flow", "status", "--check")
+}

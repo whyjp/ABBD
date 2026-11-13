@@ -30,13 +30,16 @@ func ParseFigureKey[C Claim[C]](s string) (FigureKey, error) {
 // stored figure with any reads STALE. It is nil when each claim stands
 // alone. Renamed is true for a kind whose word fields are the column names
 // of the figure's own head, which a draft may rename, so a claim's words
-// compare by their text alone, whatever field holds them.
+// compare by their text alone, whatever field holds them. Primary is true
+// for a kind one figure of which may be marked the repository's primary
+// flow, its claims the flow's stages in order.
 type FigureKind[C any] struct {
 	Noun, Dir, Part, Parts, Long string
 	Min, Max                     int
 	MinColumns, MaxColumns       int
 	Whole                        func(cols []Column, claims []C, units []Unit) []Gap
 	Renamed                      bool
+	Primary                      bool
 }
 
 // Gap is one thing that keeps a figure's claims, taken together, from being
