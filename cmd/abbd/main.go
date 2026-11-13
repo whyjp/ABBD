@@ -128,6 +128,16 @@ abbd table KEY FILE|- [--source REF] [--root DIR]
                                      how many cells under a unit's column the stored relations
                                      do not bear out
 abbd table KEY [--root DIR]          print the stored table as a draft to edit and store again
+abbd overview FILE|- [--root DIR]
+                                     store the overview's zones and chosen lines; its primary
+                                     flow is the stack marked primary: true; up to 8 zones and
+                                     up to 20 lines; a zone is a short name, the overview boxes it
+                                     holds and the code it cites, a unit in one zone at most; a
+                                     line joins units in two overview boxes, carries a short word,
+                                     draws stored relations in its direction and cites code; each
+                                     part is stamped with the lines around its quotes, so it goes
+                                     STALE when that code changes or the state moves under it
+abbd overview [--root DIR]           print the stored overview as a draft to edit and store again
 abbd explain QUERY [--history] [--root DIR]
                                      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, a reader's text;
@@ -350,6 +360,7 @@ var commands = map[string]command{
 	"forget":          {flags: []string{"root"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.forget(pos[0]) }},
 	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
+	"overview":        {flags: []string{"root"}, pos: []int{0, 1}, writes: true, run: func(e env, pos []string) error { return e.overview(pos) }},
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"extract":         {flags: []string{"root"}, pos: []int{1, 2}, run: func(e env, pos []string) error { return e.extractBundled(pos) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
