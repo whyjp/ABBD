@@ -15342,6 +15342,7 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15463,7 +15464,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -17485,31 +17486,7 @@
                 "Code": true
               },
               {
-                "Text": " gives its word in the blueprint, such as 호출. ",
-                "Code": false
-              },
-              {
-                "Text": "Via.Plain",
-                "Code": true
-              },
-              {
-                "Text": " marks the vias whose word a line's style already says, ",
-                "Code": false
-              },
-              {
-                "Text": "call",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "import",
-                "Code": true
-              },
-              {
-                "Text": ", which the blueprint shows only in a line's tooltip.",
+                "Text": " gives its word in the blueprint, such as 호출.",
                 "Code": false
               }
             ]
@@ -19156,6 +19133,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20358,7 +20336,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -23861,43 +23839,11 @@
                 "Code": false
               },
               {
-                "Text": "via",
-                "Code": true
-              },
-              {
-                "Text": " picks it, and ",
-                "Code": false
-              },
-              {
                 "Text": "allVia",
                 "Code": true
               },
               {
-                "Text": " tells the two apart). A plain via (",
-                "Code": false
-              },
-              {
-                "Text": "model.Via.Plain",
-                "Code": true
-              },
-              {
-                "Text": ": 호출, 임포트) says nothing the line's solid or dotted ink does not, so ",
-                "Code": false
-              },
-              {
-                "Text": "word",
-                "Code": true
-              },
-              {
-                "Text": " gives no word for it, the line's tooltip gains ",
-                "Code": false
-              },
-              {
-                "Text": "via 호출",
-                "Code": true
-              },
-              {
-                "Text": ", and a bus whose lines share only that word keeps its ×N. Where a phrase's word, or such a majority via word, already stands within ",
+                "Text": " tells the two apart). Where a phrase's word, or such a majority via word, already stands within ",
                 "Code": false
               },
               {
