@@ -6842,7 +6842,15 @@
                 "Code": true
               },
               {
-                "Text": ". Explain also names a module's set of build artifacts and who said it, and each coupling's condition, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
+                "Text": ". Explain also names a module's set of build artifacts and who said it, and each coupling's condition, and diff names an artifact that changed and, through ",
+                "Code": false
+              },
+              {
+                "Text": "words.go",
+                "Code": true
+              },
+              {
+                "Text": ", the sentences of each module text, note and flow step that were lost or gained since the base. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
