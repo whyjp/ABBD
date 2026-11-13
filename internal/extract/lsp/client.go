@@ -44,6 +44,11 @@ type Server struct {
 	// progress or status counts as ready, for a server that reports
 	// neither. Zero waits for one.
 	Quiet time.Duration
+	// TextDocument adds the server's own text document capabilities, such
+	// as an extension it sends notifications for only when asked.
+	TextDocument map[string]any
+	// Note receives every notification the client does not track itself.
+	Note func(method string, params json.RawMessage)
 }
 
 // Client is a running server.
@@ -147,6 +152,10 @@ func Start(ctx context.Context, s Server) (*Client, error) {
 		"workspace":    map[string]any{"configuration": true},
 		"general":      map[string]any{"positionEncodings": []string{"utf-8", "utf-16"}},
 		"experimental": map[string]any{"serverStatusNotification": true},
+	}
+	td := caps["textDocument"].(map[string]any)
+	for k, v := range s.TextDocument {
+		td[k] = v
 	}
 	root := URI(s.Root)
 	params := map[string]any{
@@ -364,8 +373,15 @@ func (c *Client) answer(id json.RawMessage, method string, params json.RawMessag
 	c.send(map[string]any{"jsonrpc": "2.0", "id": id, "result": result})
 }
 
-// note tracks the server's progress reports, which say when it is busy.
+// note tracks the server's progress reports, which say when it is busy,
+// and hands any other notification to Server.Note.
 func (c *Client) note(method string, params json.RawMessage) {
+	if method != "$/progress" && method != "experimental/serverStatus" {
+		if c.srv.Note != nil {
+			c.srv.Note(method, params)
+		}
+		return
+	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	switch method {
