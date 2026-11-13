@@ -82,9 +82,9 @@ type Totals struct {
 	// AgainstAxis is the lines that run against the axis the view reads
 	// by, and AgainstAxisInk their ink in px: the lines rule 13 draws back,
 	// each taken the way its relation is used, so a provides line climbing
-	// to its contract's chip on the frame top runs with the axis, and none
-	// between two boxes that use each other. A page the debt file names may
-	// not raise them (gate.go).
+	// to its contract's chip on the frame top runs with the axis. A page
+	// the debt file names may not raise them, and the views together may
+	// not raise the lines past their ceiling (gate.go).
 	AgainstAxis    int `json:"against_axis"`
 	AgainstAxisInk int `json:"against_axis_ink"`
 	// Weighed is the crossings, one more for each excess turn and
@@ -903,10 +903,11 @@ func backWay(pts []fpt) bool {
 // againstAxis counts the routes of d that run against the reading axis, and
 // sums their ink. A route is Back by backWay's rule taken the way its
 // relation is used: from a provides line's contract to its provider. A
-// mutual line is used both ways, so it runs against neither.
+// mutual line leaves the upper of its two boxes, or the left one in a row
+// (overview.go, before), so it never runs back.
 func againstAxis(d Drawing) (n, ink int) {
 	for _, r := range d.ways {
-		if r.Back && !r.Both {
+		if r.Back {
 			n++
 			ink += runLength(r.D)
 		}

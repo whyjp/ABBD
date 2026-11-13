@@ -308,14 +308,14 @@ func Build(in Input) Model {
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
-	o.rank(&m)
+	rank(&m)
 	return m
 }
 
 // rank gives each unit the overview draws its Rank there, and each unit a
 // module's inside draws its Rank on that inside.
-func (o *overview) rank(m *Model) {
-	on := o.tree.ranks(m.Overview)
+func rank(m *Model) {
+	on := ranks(m.Overview)
 	for i, u := range m.Units {
 		if r, ok := on[u.ID]; ok {
 			m.Units[i].Rank = &r
@@ -323,7 +323,7 @@ func (o *overview) rank(m *Model) {
 	}
 	for i := range m.Insides {
 		ins := &m.Insides[i]
-		on := o.tree.ranks(ins.Drawing)
+		on := ranks(ins.Drawing)
 		for j, u := range ins.Units {
 			if r, ok := on[u.ID]; ok {
 				ins.Units[j].Rank = &r
