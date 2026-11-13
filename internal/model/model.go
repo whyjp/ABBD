@@ -659,6 +659,10 @@ func isExec(k Kind) bool      { return k == Exec }
 // depends_on.
 func (k RelationKind) Uses() bool { return k == Consumes || k == DependsOn }
 
+// RunTime reports whether a relation of kind k says what runs on an
+// execution context or what is handed to one.
+func (k RelationKind) RunTime() bool { return k == RunsOn || k == PostsTo }
+
 // Quoted checks that a claim of kind k cites enough evidence items.
 func (k RelationKind) Quoted(n int) error {
 	if q := ends[k].quotes; n < q {

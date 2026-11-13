@@ -15,6 +15,8 @@ type Ref struct {
 	Kind model.Kind         `json:"kind"`
 	Name string             `json:"name"`
 	Why  model.AbsentReason `json:"why,omitempty"`
+	// Run is how an execution context runs, as its unit stores it.
+	Run string `json:"run,omitempty"`
 }
 
 // Changed is one field of a unit that changed: its name, its parent, its
@@ -106,7 +108,13 @@ type Diff struct {
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
 	RelationsRemoved []Relation `json:"relations_removed"`
-	InferredAdded    []Coupling `json:"inferred_added"`
+	// RunsAdded and RunsRemoved are live runs_on and posts_to relations,
+	// whoever wrote them, by the units they join: a module's code that runs on a thread it
+	// owns joins it to its own inside unit, which a relation between
+	// top-level units would not show.
+	RunsAdded     []Coupling `json:"runs_added"`
+	RunsRemoved   []Coupling `json:"runs_removed"`
+	InferredAdded []Coupling `json:"inferred_added"`
 	// InferredDead are reader's couplings that were live and whose
 	// evidence is now dead, so the blueprint no longer draws them.
 	InferredDead []Coupling `json:"inferred_dead"`
@@ -156,6 +164,17 @@ func Compare(base, now []model.Unit) Diff {
 			d.RelationsRemoved = append(d.RelationsRemoved, was[k])
 		}
 	}
+	wasRun, isRun := runs(b), runs(n)
+	for _, k := range keys(isRun) {
+		if _, ok := wasRun[k]; !ok {
+			d.RunsAdded = append(d.RunsAdded, isRun[k])
+		}
+	}
+	for _, k := range keys(wasRun) {
+		if _, ok := isRun[k]; !ok {
+			d.RunsRemoved = append(d.RunsRemoved, wasRun[k])
+		}
+	}
 	d.UsesAdded, d.UsesRemoved = newUses(b, n, was, is), newUses(n, b, is, was)
 	d.UsesWidened, d.UsesNarrowed = widened(b, n, was, is), widened(n, b, is, was)
 	old := inferred(b)
@@ -192,12 +211,15 @@ func (d *Diff) fields(old, u model.Unit) {
 	nr, ro := val(u.Responsibility)
 	oa, _ := val(old.Artifact)
 	na, ao := val(u.Artifact)
+	orun, _ := val(old.Run)
+	nrun, runo := val(u.Run)
 	for _, c := range []Changed{
 		{Field: "name", Old: old.Name.Value, New: u.Name.Value, Origin: u.Name.Origin},
 		{Field: "parent", Old: string(old.Parent), New: string(u.Parent), Origin: u.ParentOrigin},
 		{Field: "purpose", Old: op, New: np, Origin: no},
 		{Field: "responsibility", Old: or, New: nr, Origin: ro},
 		{Field: "artifact", Old: oa, New: na, Origin: ao},
+		{Field: "run", Old: orun, New: nrun, Origin: runo},
 	} {
 		if c.Old != c.New {
 			c.Ref = ref(u)
@@ -344,10 +366,10 @@ func (d Diff) Boundary() bool {
 func (d Diff) Lines() []string {
 	var out []string
 	for _, r := range d.UnitsAdded {
-		out = append(out, fmt.Sprintf("+ unit %s %s", r.ID, r.Name))
+		out = append(out, fmt.Sprintf("+ %s %s %s%s", unitWord(r), r.ID, r.Name, runOf(r)))
 	}
 	for _, r := range d.UnitsRemoved {
-		s := fmt.Sprintf("- unit %s %s", r.ID, r.Name)
+		s := fmt.Sprintf("- %s %s %s%s", unitWord(r), r.ID, r.Name, runOf(r))
 		if r.Why != "" {
 			s += " (" + string(r.Why) + ")"
 		}
@@ -399,6 +421,16 @@ func (d Diff) Lines() []string {
 	for _, r := range d.RelationsRemoved {
 		out = append(out, "- relation "+r.line())
 	}
+	for _, c := range d.RunsAdded {
+		s := "+ run " + c.line() + viaOf(c.Via)
+		if c.Quote != "" {
+			s += ": " + c.Quote
+		}
+		out = append(out, s)
+	}
+	for _, c := range d.RunsRemoved {
+		out = append(out, "- run "+c.line()+viaOf(c.Via))
+	}
 	for _, u := range d.UsesAdded {
 		out = append(out, fmt.Sprintf("+ entry use %s %s %s %s (%s %s %s)", u.From, u.Kind, u.To, u.Entry, u.FromName, u.Kind, u.ToName))
 	}
@@ -435,6 +467,29 @@ func (d Diff) Lines() []string {
 		out = append(out, s)
 	}
 	return out
+}
+
+// unitWord names an execution context apart from the other units, since a
+// reviewer weighs a new thread or pool on its own.
+func unitWord(r Ref) string {
+	if r.Kind == model.Exec {
+		return "exec"
+	}
+	return "unit"
+}
+
+func runOf(r Ref) string {
+	if r.Run == "" {
+		return ""
+	}
+	return ": " + r.Run
+}
+
+func viaOf(v model.Via) string {
+	if v == "" {
+		return ""
+	}
+	return " via " + string(v)
 }
 
 func orTop(p string) string {
@@ -481,7 +536,13 @@ func keys[V any](m map[string]V) []string {
 	return out
 }
 
-func ref(u model.Unit) Ref { return Ref{ID: u.ID, Kind: u.Kind, Name: u.Name.Value} }
+func ref(u model.Unit) Ref {
+	r := Ref{ID: u.ID, Kind: u.Kind, Name: u.Name.Value}
+	if u.Run != nil {
+		r.Run = u.Run.Value
+	}
+	return r
+}
 
 func sig(u model.Unit) string {
 	if u.Signature == nil {
@@ -508,7 +569,7 @@ func between(units map[model.ID]model.Unit) map[string]Relation {
 	out := map[string]Relation{}
 	for _, u := range units {
 		for _, r := range u.Relations {
-			if _, ok := units[r.To]; !ok || !r.Counts() {
+			if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {
 				continue
 			}
 			e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}
@@ -520,12 +581,32 @@ func between(units map[model.ID]model.Unit) map[string]Relation {
 	return out
 }
 
+// runs lists the live runs_on and posts_to relations, keyed by edge. A
+// reader writes most of them, so they are listed whoever wrote them, and
+// the reader's lists leave them out.
+func runs(units map[model.ID]model.Unit) map[string]Coupling {
+	out := map[string]Coupling{}
+	for _, u := range units {
+		for _, r := range u.Relations {
+			if _, ok := units[r.To]; !ok || r.Dead || !r.Kind.RunTime() {
+				continue
+			}
+			c := Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
+			if len(r.Evidence) > 0 {
+				c.Quote = r.Evidence[0].String()
+			}
+			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = c
+		}
+	}
+	return out
+}
+
 // inferred lists the live reader's couplings, keyed by edge.
 func inferred(units map[model.ID]model.Unit) map[string]Coupling {
 	out := map[string]Coupling{}
 	for _, u := range units {
 		for _, r := range u.Relations {
-			if _, ok := units[r.To]; !ok || !r.Guess() || r.Dead {
+			if _, ok := units[r.To]; !ok || !r.Guess() || r.Dead || r.Kind.RunTime() {
 				continue
 			}
 			c := Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
@@ -544,7 +625,7 @@ func deadInferred(units map[model.ID]model.Unit) map[string]Coupling {
 	out := map[string]Coupling{}
 	for _, u := range units {
 		for _, r := range u.Relations {
-			if _, ok := units[r.To]; !ok || !r.Guess() || !r.Dead {
+			if _, ok := units[r.To]; !ok || !r.Guess() || !r.Dead || r.Kind.RunTime() {
 				continue
 			}
 			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
