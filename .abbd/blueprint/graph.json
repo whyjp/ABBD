@@ -6214,6 +6214,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -6517,6 +6518,69 @@
               },
               {
                 "Text": ".",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "lint report",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/lint.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/phrases.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd lint",
+                "Code": true
+              },
+              {
+                "Text": " holds the drawings of the blueprint, or of one view, to the debt file, and over every view also lists the units no box describes (",
+                "Code": false
+              },
+              {
+                "Text": "undescribed",
+                "Code": true
+              },
+              {
+                "Text": ") and the overview lines whose relations carry no live phrase (",
+                "Code": false
+              },
+              {
+                "Text": "unphrased",
+                "Code": true
+              },
+              {
+                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import.",
                 "Code": false
               }
             ]
@@ -15343,7 +15407,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15465,7 +15528,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -17487,7 +17551,15 @@
                 "Code": true
               },
               {
-                "Text": " gives its word in the blueprint, such as 호출.",
+                "Text": " gives its word in the blueprint, such as 호출, and ",
+                "Code": false
+              },
+              {
+                "Text": "Via.Plain",
+                "Code": true
+              },
+              {
+                "Text": " names call and import, whose word a line's solid or dotted ink already says, so the blueprint keeps it in the line's tooltip.",
                 "Code": false
               }
             ]
