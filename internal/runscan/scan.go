@@ -116,11 +116,12 @@ func ScanFile(p string, src []byte) []Record {
 	}
 	var out []Record
 	seen := map[int]bool{}
+	lower := bytes.ToLower(code)
 	for _, e := range Catalog {
 		if e.Lang != lang {
 			continue
 		}
-		for _, m := range e.Pattern.FindAllSubmatchIndex(code, -1) {
+		for _, m := range f.matches(e, lower) {
 			at := m[0]
 			if i := e.Pattern.SubexpIndex("at"); i > 0 && m[2*i] >= 0 {
 				at = m[2*i]
@@ -382,4 +383,42 @@ var goRecvChan = regexp.MustCompile(`^[A-Za-z_][\w.]*`)
 func isSpace(c byte) bool { return c == ' ' || c == '\t' || c == '\n' || c == '\r' }
 func isWord(c byte) bool {
 	return c == '_' || c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+}
+
+// matches runs the entry's pattern only around the lines that hold one of
+// its needles, a line either side so a call split over lines still matches,
+// and returns the match offsets in the whole file.
+func (f file) matches(e Entry, lower []byte) [][]int {
+	var windows [][2]int
+	for n := range f.starts {
+		if !slices.ContainsFunc(e.Needles, func(s string) bool { return bytes.Contains(lower[f.starts[n]:f.lineEnd(n)], []byte(s)) }) {
+			continue
+		}
+		w := [2]int{f.starts[max(n-1, 0)], f.lineEnd(min(n+1, len(f.starts)-1))}
+		if k := len(windows) - 1; k >= 0 && w[0] <= windows[k][1] {
+			windows[k][1] = w[1]
+			continue
+		}
+		windows = append(windows, w)
+	}
+	var out [][]int
+	for _, w := range windows {
+		for _, m := range e.Pattern.FindAllSubmatchIndex(f.code[w[0]:w[1]], -1) {
+			for i := range m {
+				if m[i] >= 0 {
+					m[i] += w[0]
+				}
+			}
+			out = append(out, m)
+		}
+	}
+	return out
+}
+
+// lineEnd is the offset just past line n's newline, counted from 0.
+func (f file) lineEnd(n int) int {
+	if n+1 < len(f.starts) {
+		return f.starts[n+1]
+	}
+	return len(f.code)
 }
