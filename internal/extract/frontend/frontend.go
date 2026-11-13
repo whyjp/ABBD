@@ -42,10 +42,15 @@ func Names() []string {
 // DIR relative to the repository root.
 type Spec struct{ Name, Dir string }
 
-func ParseSpec(s string) (Spec, error) {
+func ParseSpec(s string) (Spec, error) { return SpecOf("front-end", s, Names()) }
+
+// SpecOf reads NAME[=DIR] for one of names, which are what kind of tool
+// the command line names, such as a front-end or a relater.
+func SpecOf(what, s string, names []string) (Spec, error) {
 	name, dir, _ := strings.Cut(s, "=")
-	if _, ok := frontends[name]; !ok {
-		return Spec{}, fmt.Errorf("unknown front-end %q: use %s, as FRONTEND or FRONTEND=DIR", name, strings.Join(Names(), " or "))
+	if !slices.Contains(names, name) {
+		w := strings.ToUpper(strings.ReplaceAll(what, "-", ""))
+		return Spec{}, fmt.Errorf("unknown %s %q: use %s, as %s or %s=DIR", what, name, strings.Join(names, " or "), w, w)
 	}
 	dir = filepath.ToSlash(filepath.Clean(cmp.Or(dir, ".")))
 	if filepath.IsAbs(dir) || dir == ".." || strings.HasPrefix(dir, "../") {

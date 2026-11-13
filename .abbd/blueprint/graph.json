@@ -1363,6 +1363,18 @@
       ]
     },
     {
+      "ID": "IF-0032",
+      "Kind": "IF",
+      "Name": "abbd relate",
+      "Signature": "abbd relate pos{1,2} --argv",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/relate.go relateExtraction"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1400,6 +1412,7 @@
         "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
+        "cmd/abbd/relate.go",
         "cmd/abbd/review.go",
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
@@ -2824,6 +2837,21 @@
       ],
       "Parent": "MOD-0017",
       "Zone": "읽는 쪽"
+    },
+    {
+      "ID": "MOD-0060",
+      "Kind": "MOD",
+      "Name": "internal/extract/relate",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/extract/relate",
+        "internal/extract/relate/golang.go",
+        "internal/extract/relate/relate.go"
+      ],
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     }
   ],
   "edges": [
@@ -3276,6 +3304,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd overview\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0032",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd relate\""
     },
     {
       "From": "FEAT-0003",
@@ -3950,6 +3986,13 @@
     },
     {
       "From": "MOD-0001",
+      "To": "IF-0032",
+      "Kind": "provides",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
@@ -4160,6 +4203,13 @@
     {
       "From": "MOD-0001",
       "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0060",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
       "Via": "call"
@@ -5353,6 +5403,34 @@
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
       "Via": "call"
+    },
+    {
+      "From": "MOD-0060",
+      "To": "DATA-0002",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "data"
+    },
+    {
+      "From": "MOD-0060",
+      "To": "MOD-0017",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "import"
+    },
+    {
+      "From": "MOD-0060",
+      "To": "MOD-0030",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0060",
+      "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     }
   ],
   "modules": [
@@ -5766,7 +5844,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 24,
+        "Uses": 25,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5946,7 +6024,8 @@
             "lint",
             "brief",
             "extract",
-            "overview"
+            "overview",
+            "relate"
           ]
         }
       ],
@@ -6142,9 +6221,10 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 32,
+        "Provides": 33,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6650,7 +6730,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -10167,6 +10247,28 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0032",
+          "Name": "abbd relate",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0032",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -10199,7 +10301,8 @@
             "brief",
             "scope",
             "extract",
-            "overview"
+            "overview",
+            "relate"
           ]
         },
         {
@@ -12571,6 +12674,7 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -12658,11 +12762,29 @@
             "N": 2,
             "Of": 2
           }
+        },
+        {
+          "ID": "MOD-0060",
+          "Name": "internal/extract/relate",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/extract/relate",
+            "internal/extract/relate/golang.go",
+            "internal/extract/relate/relate.go"
+          ],
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -35819,7 +35941,7 @@
         "call",
         "convention"
       ],
-      "relations": 29
+      "relations": 30
     },
     {
       "from": "FEAT-0002",
@@ -35857,7 +35979,7 @@
         "call",
         "data"
       ],
-      "relations": 5
+      "relations": 6
     },
     {
       "from": "MOD-0001",
