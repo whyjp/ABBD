@@ -287,11 +287,12 @@ type roadView struct {
 	from, to []string
 	dest     []int
 	position func(y int) int
-	// forkGroups are the routes of one style and dotting from one place into
-	// one row, since a dotted branch need not share its solid siblings' track,
-	// and fromGroups those from one place, each in order, with the group
-	// each route is in.
+	// forkGroups are the routes of one style from one place into one row,
+	// and of one dotting too when dotting is set, since a dotted branch need
+	// not share its solid siblings' track; fromGroups are those from one
+	// place, each in order, with the group each route is in.
 	forkGroups, fromGroups [][]int
+	dotting                bool
 	forkOf, fromOf         []int
 }
 
@@ -305,7 +306,7 @@ func (v roadView) grouped() roadView {
 	forks, froms := map[fork]int{}, map[string]int{}
 	v.forkOf, v.fromOf = make([]int, len(v.style)), make([]int, len(v.style))
 	for i := range v.style {
-		f := fork{v.style[i], v.from[i], v.plan[i], v.dest[i]}
+		f := fork{v.style[i], v.from[i], v.dotting && v.plan[i], v.dest[i]}
 		g, ok := forks[f]
 		if !ok {
 			g = len(v.forkGroups)
@@ -390,8 +391,8 @@ func (v roadView) combed(ways [][]pt, a, b straightRun) bool {
 // forks are pairs of routes that leave one place for boxes in one row and
 // turn off their stem onto flat runs at different heights, as forkLevels
 // reads them, by route. byDotting pairs only routes of one dotting, as
-// roadCost counts forks; the moves still try to put a branch of either
-// dotting onto its siblings' track.
+// roadCost counts forks when v.dotting is set; the moves still try to put a
+// branch of either dotting onto its siblings' track.
 func (v roadView) forks(ways [][]pt, byDotting bool) [][2]int {
 	type fork struct {
 		style, from string
@@ -585,6 +586,23 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 			ways[i] = straight(ways[i])
 		}
 		cost = v.cost(ways)
+	}
+	// Last, a fork's heights count apart by dotting, so solid branches may
+	// join a road their dotted sibling may not ride, where no move of a
+	// whole fork has set the dotted branch on their track already.
+	d := v
+	d.dotting, d.forkGroups, d.fromGroups = true, nil, nil
+	d = d.grouped()
+	for n, cost := 0, d.cost(ways); n < roadMoves; n++ {
+		next, ok := r.step(ways, d, cost, false)
+		if !ok {
+			break
+		}
+		ways = next
+		for i := range ways {
+			ways[i] = straight(ways[i])
+		}
+		cost = d.cost(ways)
 	}
 	if roadsDrawn != nil {
 		roadsDrawn(r.ways, ways)

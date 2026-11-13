@@ -15,7 +15,7 @@ func TestADottedBranchLetsItsSolidNeighboursJoinARoad(t *testing.T) {
 	}
 	box := func(lo, hi int) end { return end{node: "box", lo: lo, hi: hi} }
 	v := roadView{
-		style: []string{"0", "0", "0"}, plan: []bool{false, false, true}, kinds: []string{"k", "k", "k"},
+		dotting: true, style: []string{"0", "0", "0"}, plan: []bool{false, false, true}, kinds: []string{"k", "k", "k"},
 		ends: [][2]end{{box(80, 120), box(580, 620)}, {box(280, 320), box(480, 520)}, {box(280, 320), box(130, 170)}},
 		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3},
 		position: func(y int) int { return y / 16 },
