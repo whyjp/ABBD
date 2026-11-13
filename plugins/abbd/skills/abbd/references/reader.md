@@ -2,7 +2,7 @@
 
 ABBD reads code with this reader. Both skills follow it for every reading step: a module's text, a slot note, a flow, a coupling, and setup's slices. It needs nothing but the abbd CLI and the agent's own tools.
 
-Write everything you store in the language the first line of `abbd brief`'s `## Read first` names, keeping identifiers, paths and quotes verbatim.
+Write everything you store in the language the first line of the `## Read first` of `abbd brief <MOD-ID>` names, keeping identifiers, paths and quotes verbatim.
 
 pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36/skills/how/SKILL.md` exists (check with Glob; never assume), you may use pstack `how` to explore a module this reader calls complex, and pstack `swarm` to fan out setup's slices. Another pstack version counts as absent; say so in one line. Whichever engine explored, what you store passes the contract below, so rewrite how's output to it. Name who read when you store: `--reader "abbd reader"`, or `--reader "pstack how 0.15.36"` when how explored.
 

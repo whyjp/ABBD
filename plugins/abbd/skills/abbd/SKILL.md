@@ -8,7 +8,7 @@ argument-hint: "[unit or question]"
 
 **Reader.** ABBD reads code with its own reader, `references/reader.md` in this skill. Follow it for every reading step below. It needs only the abbd CLI, and it says when pstack may serve as an optional engine.
 
-**Language.** A person reads every text you store to judge an agent's change, so write all prose in the language `abbd brief` names, the `language` of `.abbd/project.yaml`: module texts, purposes, responsibilities, slot notes, decisions, phrases, and flow, stack and table texts. Keep code identifiers, paths, IDs and quotes verbatim. `abbd lint` names each stored text not yet in that language. Write such a text in it whenever you read it again, stale or touched, and never translate texts you did not read again.
+**Language.** A person reads every text you store to judge an agent's change, so write all prose in the language `abbd brief <MOD-ID>` names, the `language` of `.abbd/project.yaml`: module texts, purposes, responsibilities, slot notes, decisions, phrases, and flow, stack and table texts. Keep code identifiers, paths, IDs and quotes verbatim. `abbd lint` names each stored text not yet in that language. Write such a text in it whenever you read it again, stale or touched, and never translate texts you did not read again.
 
 `.abbd/` holds the architecture topology of the merged code as its final state: top-level modules and the contracts between them, the units inside each module, and a reader's account of each module. `.abbd/blueprint/index.html` draws it for a human. `abbd` is a lever that extracts, checks evidence, keeps IDs, stores the topology, answers queries and renders the blueprint. It never judges, blocks or asks. If the repository has no `.abbd/`, run the abbd-setup skill first.
 
