@@ -8,7 +8,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -265,5 +267,74 @@ func TestASpecNamedTwiceRunsOnceAndTwoSpecsMakingOneRefFail(t *testing.T) {
 		if !strings.Contains(err.Error(), s) {
 			t.Errorf("error %q does not name %s", err, s)
 		}
+	}
+}
+
+// fakeCMake puts a cmake first on PATH that reports the given version to
+// -E capabilities and records the arguments of any other call in the file it
+// returns, then fails as an old CMake does when it cannot find a compiler.
+func fakeCMake(t *testing.T, major, minor int, version string) string {
+	t.Helper()
+	dir, calls := t.TempDir(), filepath.Join(t.TempDir(), "calls")
+	caps := `{"version":{"string":"` + version + `","major":` + strconv.Itoa(major) + `,"minor":` + strconv.Itoa(minor) + `}}`
+	name, script := "cmake", "#!/bin/sh\nif [ \"$1\" = -E ]; then printf '%s' '"+caps+"'; exit 0; fi\necho \"$@\" >> \"$FAKE_CMAKE_CALLS\"\nexit 1\n"
+	if runtime.GOOS == "windows" {
+		name, script = "cmake.bat", "@echo off\r\nif \"%1\"==\"-E\" (\r\necho "+caps+"\r\nexit /b 0\r\n)\r\necho %* >> \"%FAKE_CMAKE_CALLS%\"\r\nexit /b 1\r\n"
+	}
+	if err := os.WriteFile(filepath.Join(dir, name), []byte(script), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	t.Setenv("FAKE_CMAKE_CALLS", calls)
+	return calls
+}
+
+func configuredWith(t *testing.T, calls string) string {
+	t.Helper()
+	b, err := os.ReadFile(calls)
+	if err != nil {
+		t.Fatalf("cmake was never asked to configure: %v", err)
+	}
+	return string(b)
+}
+
+func TestACMakeOlderThan42IsRefusedBeforeItConfigures(t *testing.T) {
+	calls := fakeCMake(t, 4, 1, "4.1.2")
+	root, err := filepath.Abs(filepath.Join("testdata", "cmake"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = Extract(root, t.TempDir(), []Spec{{"cmake", "."}})
+	var old oldCMake
+	if !errors.As(err, &old) {
+		t.Fatalf("got %v, want the refusal of an old CMake", err)
+	}
+	for _, want := range []string{"CMake 4.1.2", "4.2 or later", "winget install Kitware.CMake", "supplement"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("refusal %q does not say %q", err, want)
+		}
+	}
+	if _, err := os.Stat(calls); err == nil {
+		t.Error("an old CMake was asked to configure")
+	}
+}
+
+func TestEachCMakeVersionConfiguresItsOwnBuildTree(t *testing.T) {
+	root, err := filepath.Abs(filepath.Join("testdata", "cmake"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cache := t.TempDir()
+	trees := map[string]bool{}
+	for _, v := range [][3]any{{4, 2, "4.2.1"}, {4, 3, "4.3.0"}} {
+		calls := fakeCMake(t, v[0].(int), v[1].(int), v[2].(string))
+		if _, err := Extract(root, cache, []Spec{{"cmake", "."}}); err == nil {
+			t.Fatal("the fake cmake configured")
+		}
+		argv := strings.Fields(configuredWith(t, calls))
+		trees[argv[slices.Index(argv, "-B")+1]] = true
+	}
+	if len(trees) != 2 {
+		t.Errorf("two CMake versions shared a build tree: %v", trees)
 	}
 }

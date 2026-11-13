@@ -47,6 +47,7 @@ jobs:
           cmake --version
           log="$RUNNER_TEMP/frontend.log"
           go test -count=1 -v ./internal/extract/frontend > "$log" || { cat "$log"; exit 1; }
+          grep -- '^--- ' "$log"
           if grep -- '--- SKIP' "$log"; then exit 1; fi
       - name: Digest the synced .abbd output
         if: success() || failure()
