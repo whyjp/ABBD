@@ -54,7 +54,7 @@ func (e env) brief(ref string) error {
 		}
 	}
 
-	fmt.Fprintf(w, "\n## Read first\n\nRead what this section lists, rewrite every TODO above, delete this section, then store the text with abbd understand %s FILE --reader WHO.\n\n### Files, entry first\n\n", id)
+	fmt.Fprintf(w, "\n## Read first\n\nRead what this section lists, rewrite every TODO above, check the draft as the reader's Before you store sections say, then delete this section and store the text with abbd understand %s FILE --reader WHO.\n\n### Files, entry first\n\n", id)
 	files, quotes := e.st.Read(units, id)
 	slices.SortStableFunc(files, func(a, b string) int { return entryRank(a) - entryRank(b) })
 	for _, f := range files {
