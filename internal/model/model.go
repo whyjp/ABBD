@@ -202,6 +202,11 @@ type Unit struct {
 	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
 	Digest string `yaml:"digest,omitempty"`
+	// Artifact is the set of what the build makes of a module, such as a
+	// shared library or a plugin module the host loads, as ArtifactSet keeps
+	// it, with whoever said it: the script that reads the build, or the
+	// supplement where no script does.
+	Artifact *Fact `yaml:"artifact,omitempty"`
 	// Relations is the shown claim on each edge. Hidden holds the other
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
@@ -535,6 +540,7 @@ var viaSynonyms = map[Via][]string{
 	"callback":      {"callbacks", "hook"},
 	"macro":         {"macros"},
 	"build-feature": {"build feature", "feature flag"},
+	"link":          {"links", "linked", "linking", "link time"},
 	"convention":    {"conventions", "naming"},
 	"load":          {"loads", "dynamic load", "plugin load", "dlopen"},
 	"spawn":         {"spawns", "process", "subprocess", "exec"},
@@ -631,19 +637,70 @@ func (k RelationKind) Joins(from, to Kind) error {
 	return nil
 }
 
+// Artifact is what a build makes of a module: an executable, a static or
+// shared library, a module the host loads at run time, or a Rust cdylib.
+type Artifact string
+
+var artifactWords = map[Artifact]string{
+	"exe": "실행 파일", "static": "정적 라이브러리", "shared": "공유 라이브러리", "module": "로드 모듈", "cdylib": "cdylib",
+}
+
+// Built is the set of build artifacts the unit is, sorted, or none. A crate
+// may build as a cdylib and a staticlib at once.
+func (u Unit) Built() []Artifact {
+	if u.Artifact == nil || u.Artifact.Value == "" {
+		return nil
+	}
+	var out []Artifact
+	for _, a := range strings.Split(u.Artifact.Value, ",") {
+		out = append(out, Artifact(a))
+	}
+	return out
+}
+
+// ArtifactSet is a set of artifacts as a unit stores it: sorted, without
+// repeats, joined by commas.
+func ArtifactSet(as []Artifact) string {
+	var ss []string
+	for _, a := range as {
+		ss = append(ss, string(a))
+	}
+	slices.Sort(ss)
+	return strings.Join(slices.Compact(ss), ",")
+}
+
+// Words says a set of artifacts in the blueprint's words.
+func Words(as []Artifact) string {
+	var ws []string
+	for _, a := range as {
+		ws = append(ws, a.Word())
+	}
+	return strings.Join(ws, " · ")
+}
+
+// Word is the artifact in the blueprint's words, or "" for none.
+func (a Artifact) Word() string { return artifactWords[a] }
+
+func (a Artifact) Validate() error {
+	if _, ok := artifactWords[a]; a != "" && !ok {
+		return fmt.Errorf("unknown artifact %q: use exe, static, shared, module or cdylib", a)
+	}
+	return nil
+}
+
 // Via says how a coupling arises, so a human sees why two units are tied.
 type Via string
 
 var vias = map[Via]bool{
 	"import": true, "trait": true, "callback": true, "macro": true, "config": true,
 	"build-feature": true, "data": true, "convention": true, "call": true,
-	"load": true, "spawn": true,
+	"load": true, "spawn": true, "link": true,
 }
 
 var viaWords = map[Via]string{
 	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
 	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
-	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행",
+	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행", "link": "링크",
 }
 
 // plain are the vias whose word a line's style already says: a solid line
@@ -659,7 +716,7 @@ func (v Via) Plain() bool { return plain[v] }
 
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {
-		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load or spawn", v)
+		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load, spawn or link", v)
 	}
 	return nil
 }
