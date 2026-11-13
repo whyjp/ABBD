@@ -785,7 +785,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "ABBD's own recipe for reading a module and storing what it found; it needs only the abbd CLI and uses pstack as an optional engine when installed.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/references/reader.md"
@@ -1320,6 +1321,7 @@
         "cmd/abbd/impact.go",
         "cmd/abbd/install.go",
         "cmd/abbd/keyunits.go",
+        "cmd/abbd/language.go",
         "cmd/abbd/lint.go",
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
@@ -1974,6 +1976,9 @@
         "internal/model/entry.go",
         "internal/model/figure.go",
         "internal/model/flow.go",
+        "internal/model/language.go",
+        "internal/model/language_other.go",
+        "internal/model/language_windows.go",
         "internal/model/layer.go",
         "internal/model/model.go",
         "internal/model/slot.go",
@@ -2597,6 +2602,7 @@
       "Responsibility": null,
       "Anchors": [
         "internal/narrative",
+        "internal/narrative/language.go",
         "internal/narrative/narrative.go"
       ]
     },
@@ -2842,6 +2848,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd review\""
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd brief\""
     },
     {
       "From": "FEAT-0001",
@@ -5076,7 +5090,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 22,
+        "Uses": 23,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5174,6 +5188,7 @@
             "table",
             "lint",
             "review",
+            "brief",
             "scope"
           ]
         }
@@ -6248,7 +6263,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The abbd CLI is the only program that writes or reads the ",
+                "Text": "abbd CLI는 ",
                 "Code": false
               },
               {
@@ -6256,23 +6271,55 @@
                 "Code": true
               },
               {
-                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Text": " 상태를 읽고 쓰는 프로그램이다. 명령줄 하나를 동사 하나로 바꿔 실행하고, 쓰기 동사가 성공하거나 ",
                 "Code": false
               },
               {
-                "Text": "abbd status",
+                "Text": "retract",
                 "Code": true
               },
               {
-                "Text": " counts in its ",
+                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table이다. 읽기 동사는 explain, brief, path, impact, diff, review, evidence, status, lint다. 다만 ",
                 "Code": false
               },
               {
-                "Text": "via:",
+                "Text": "install",
                 "Code": true
               },
               {
-                "Text": " line the live relations that name no via, which the drawing reads as run-time. Its reading verbs are abbd install, abbd explain, abbd brief, abbd path, abbd impact, abbd diff, abbd review, abbd evidence, abbd status and abbd lint. Every verb keeps abbd exit codes: 0 on success, 1 when the command fails, 64 when the line does not parse.",
+                "Text": "은 ",
+                "Code": false
+              },
+              {
+                "Text": "CLAUDE.md",
+                "Code": true
+              },
+              {
+                "Text": "를 쓰고, ",
+                "Code": false
+              },
+              {
+                "Text": "scope",
+                "Code": true
+              },
+              {
+                "Text": "는 커밋하지 않는 scope 파일을 쓰며, ",
+                "Code": false
+              },
+              {
+                "Text": "lint --record",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/lint-debt.yaml",
+                "Code": true
+              },
+              {
+                "Text": "을 쓴다. 모든 동사는 abbd exit codes를 지킨다. 성공하면 0, 명령이 실패하면 1, 명령줄을 해석하지 못하면 64다.",
                 "Code": false
               }
             ]
@@ -6281,7 +6328,31 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "It provides sync state, module understanding and slot notes, and the CLAUDE.md abbd block written by abbd install. It uses project.yaml for the registered extraction argv, extraction JSON from that script, unit files, blueprint files, the relation key and the evidence citation. The work below each verb lives in its neighbours: identity reconcile, evidence checks, git queries, topology, rendering and the store. The CLI never judges, blocks, asks or records a decision; a decision's reason needs a human's ",
+                "Text": "이 모듈은 sync state, module understanding, slot notes, 그리고 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd install",
+                "Code": true
+              },
+              {
+                "Text": "이 쓰는 CLAUDE.md abbd block을 제공한다. project.yaml의 추출 argv와 ",
+                "Code": false
+              },
+              {
+                "Text": "language",
+                "Code": true
+              },
+              {
+                "Text": ", 그 스크립트가 내는 extraction JSON, unit files, blueprint files, relation key, evidence citation을 쓴다. 저장된 산문은 project.yaml이 정한 언어로 읽혀야 한다. brief가 그 언어를 먼저 알리고, 저장 명령은 다른 언어로 읽히는 글에 ",
+                "Code": false
+              },
+              {
+                "Text": "language:",
+                "Code": true
+              },
+              {
+                "Text": " 줄을 찍고, lint는 그런 글을 실패로 잡는다. 각 동사 아래 일은 이웃 모듈이 맡는다. ID 조정, 증거 확인, git 질의, 토폴로지, 렌더링, 저장소가 그렇다. CLI는 스스로 결정을 내리거나 기록하지 않는다. 결정의 이유는 사람의 ",
                 "Code": false
               },
               {
@@ -6289,7 +6360,7 @@
                 "Code": true
               },
               {
-                "Text": ", and a wrong code fact is fixed in the extractor, not retracted here. The test binary doubles as the extraction script: run with no arguments, as a repository's extract command, it prints ",
+                "Text": "가 있어야 저장되고, 틀린 코드 사실은 여기서 철회하지 않고 추출기에서 고친다. 테스트 바이너리는 추출 스크립트를 겸한다. 인자 없이 실행하면 그 저장소 옆에 ",
                 "Code": false
               },
               {
@@ -6297,7 +6368,7 @@
                 "Code": true
               },
               {
-                "Text": " beside that repository, so the tests share no environment variable and run in parallel.",
+                "Text": "을 출력하므로, 테스트는 환경 변수를 나누지 않고 병렬로 돈다.",
                 "Code": false
               }
             ]
@@ -6315,7 +6386,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "Running a command and syncing",
+                "Text": "명령 실행과 sync",
                 "Code": false
               }
             ]
@@ -6345,7 +6416,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "과 ",
                 "Code": false
               },
               {
@@ -6353,15 +6424,15 @@
                 "Code": true
               },
               {
-                "Text": " walk the ",
+                "Text": "가 ",
                 "Code": false
               },
               {
-                "Text": "commands",
+                "Text": "command",
                 "Code": true
               },
               {
-                "Text": " table, join two-word verbs such as record relation, accept flags between positionals, and allow the ",
+                "Text": " 표를 훑어 record relation 같은 두 단어 동사를 잇고, 위치 인자 사이의 플래그를 받으며, ",
                 "Code": false
               },
               {
@@ -6369,7 +6440,23 @@
                 "Code": true
               },
               {
-                "Text": " split only for setup. A parse error prints the usage and exits 64; a writing verb that succeeds calls ",
+                "Text": " 분리는 setup에만 허용한다. 플래그는 ",
+                "Code": false
+              },
+              {
+                "Text": "opts",
+                "Code": true
+              },
+              {
+                "Text": "에, 저장소와 출력은 ",
+                "Code": false
+              },
+              {
+                "Text": "env",
+                "Code": true
+              },
+              {
+                "Text": "에 담긴다. 해석 오류는 사용법을 찍고 64로 끝난다. 쓰기 동사가 성공하면 ",
                 "Code": false
               },
               {
@@ -6377,7 +6464,7 @@
                 "Code": true
               },
               {
-                "Text": ", and a ",
+                "Text": "를 부르고, ",
                 "Code": false
               },
               {
@@ -6385,7 +6472,7 @@
                 "Code": true
               },
               {
-                "Text": " retract still publishes before it exits 1.",
+                "Text": "인 retract도 그린 뒤 1로 끝난다. 그 밖의 실패는 그리지 않고 1을 낸다. 스레드나 타이머는 없고, 해제할 자원도 없다.",
                 "Code": false
               }
             ]
@@ -6407,7 +6494,15 @@
                 "Code": true
               },
               {
-                "Text": "): runs the script named in project.yaml, parses its JSON, reconciles IDs across git renames, applies evidence, adds directory groups, stamps sentences, then saves units, candidates and state.yaml. The revision moves only when the tree fingerprint does, and an extraction with zero units is refused when units are stored.",
+                "Text": "): project.yaml이 지정한 스크립트를 ",
+                "Code": false
+              },
+              {
+                "Text": "exec.Command",
+                "Code": true
+              },
+              {
+                "Text": "로 띄우고(타임아웃 없음), JSON을 파싱하고, git 이름 변경을 따라 ID를 조정하고, 증거를 적용하고, 디렉터리 그룹을 더하고, 문장을 찍은 뒤 유닛, 후보, state.yaml을 저장한다. 리비전은 트리 지문이 바뀌었거나 저장된 리비전이 없을 때만 움직인다. 유닛이 저장된 상태에서 유닛 0개짜리 추출은 거부한다. 스크립트 실패는 그 stderr를 담아 실패하고, 재시도하지 않는다.",
                 "Code": false
               }
             ]
@@ -6429,7 +6524,23 @@
                 "Code": true
               },
               {
-                "Text": "): runs the extraction three times, the last with reseeded hash seeds, and names the first differing line on a mismatch. It reads ",
+                "Text": "): 추출을 세 번 돌리되 마지막은 ",
+                "Code": false
+              },
+              {
+                "Text": "PYTHONHASHSEED",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "PERL_HASH_SEED",
+                "Code": true
+              },
+              {
+                "Text": "를 바꿔 돌리고, 어긋나면 처음 다른 줄을 짚는다. ",
                 "Code": false
               },
               {
@@ -6437,21 +6548,24 @@
                 "Code": true
               },
               {
-                "Text": " relative to the root, folds it over the script output, saves the argv only after the proof, and syncs as setup.",
+                "Text": "를 루트 기준으로 읽어 스크립트 출력 위에 접고, 증명 뒤에야 argv를 저장하며, setup으로 sync한다. ",
                 "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
+              },
+              {
+                "Text": "--",
+                "Code": true
+              },
+              {
+                "Text": "가 없으면 저장된 argv를 다시 쓴다. ",
+                "Code": false
+              },
               {
                 "Text": "migrate",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": " (",
+                "Text": "(",
                 "Code": false
               },
               {
@@ -6459,7 +6573,15 @@
                 "Code": true
               },
               {
-                "Text": "): converts an old-format state once, handing each inferred claim to the supplement or to a reader, and refuses the whole migration if the graph would change.",
+                "Text": ")는 옛 형식 상태를 한 번 바꾼다. supplement가 쓴 주장(",
+                "Code": false
+              },
+              {
+                "Text": "claims",
+                "Code": true
+              },
+              {
+                "Text": ")을 supplement나 reader에게 나눠 주고, 그래프가 바뀌면 전체를 거부한다.",
                 "Code": false
               }
             ]
@@ -6481,7 +6603,7 @@
                 "Code": true
               },
               {
-                "Text": "): the marked text that tells an assistant to query the blueprint first, sync, diff and commit ",
+                "Text": "): 어시스턴트에게 블루프린트를 먼저 묻고, sync하고, diff를 남기고, ",
                 "Code": false
               },
               {
@@ -6489,23 +6611,7 @@
                 "Code": true
               },
               {
-                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file. The block says the blueprint is drawn at ",
-                "Code": false
-              },
-              {
-                "Text": ".abbd/blueprint/index.html",
-                "Code": true
-              },
-              {
-                "Text": " and that ",
-                "Code": false
-              },
-              {
-                "Text": "abbd sync",
-                "Code": true
-              },
-              {
-                "Text": " keeps it current, since the pages are committed.",
+                "Text": "를 커밋하라고 이르는 표시된 글이다. 표시는 혼자 한 줄에 있고 펜스 밖에 있을 때만 센다. 짝 없는 표시는 오류이고, install은 줄바꿈과 파일의 나머지를 지킨다.",
                 "Code": false
               }
             ]
@@ -6527,15 +6633,7 @@
                 "Code": true
               },
               {
-                "Text": "): loads the screen input with the tree snapshot, writes the blueprint files, and records the inputs and rendered hashes in the state. It does nothing when there are no units. The pages are committed with the state, so a fresh clone has them; a checkout that lacks them reads NOT DRAWN in status without failing ",
-                "Code": false
-              },
-              {
-                "Text": "--check",
-                "Code": true
-              },
-              {
-                "Text": ".",
+                "Text": "): 트리 스냅숏과 함께 화면 입력을 읽어 블루프린트 파일을 쓰고, 입력과 렌더 해시를 상태에 남긴다. 유닛이 없으면 아무것도 하지 않는다.",
                 "Code": false
               }
             ]
@@ -6544,70 +6642,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "Lint",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "lint report",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": " (",
-                "Code": false
-              },
-              {
-                "Text": "cmd/abbd/lint.go",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "cmd/abbd/phrases.go",
-                "Code": true
-              },
-              {
-                "Text": "): ",
-                "Code": false
-              },
-              {
-                "Text": "abbd lint",
-                "Code": true
-              },
-              {
-                "Text": " holds the drawings of the blueprint, or of one view, to the debt file, and over every view also lists the units no box describes (",
-                "Code": false
-              },
-              {
-                "Text": "undescribed",
-                "Code": true
-              },
-              {
-                "Text": ") and the overview lines whose relations carry no live phrase (",
-                "Code": false
-              },
-              {
-                "Text": "unphrased",
-                "Code": true
-              },
-              {
-                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Reading and recording",
+                "Text": "읽기와 기록",
                 "Code": false
               }
             ]
@@ -6629,7 +6664,7 @@
                 "Code": true
               },
               {
-                "Text": "): resolve a unit by ID, name, file, symbol or phrase, listing near matches, then print explain, path and impact. Explain shows the module text CURRENT or STALE against its code digest; impact seeds every unit anchored at a file and groups by feature with ",
+                "Text": "): 유닛을 ID, 이름, 파일, 심볼, 문구로 찾고 가까운 후보를 나열한 뒤 explain, path, impact를 찍는다. explain은 코드 다이제스트에 견줘 모듈 글을 CURRENT나 STALE로 보이고, impact는 파일에 걸린 유닛을 모두 씨앗으로 삼아 ",
                 "Code": false
               },
               {
@@ -6637,7 +6672,7 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": "로 기능별로 묶는다.",
                 "Code": false
               }
             ]
@@ -6667,213 +6702,7 @@
                 "Code": true
               },
               {
-                "Text": "): ",
-                "Code": false
-              },
-              {
-                "Text": "abbd scope IDS --why TEXT",
-                "Code": true
-              },
-              {
-                "Text": " declares the units a task means to touch, and ",
-                "Code": false
-              },
-              {
-                "Text": "abbd review",
-                "Code": true
-              },
-              {
-                "Text": " sets what the change did beside them (",
-                "Code": false
-              },
-              {
-                "Text": "scopeLines",
-                "Code": true
-              },
-              {
-                "Text": ": units outside the scope, named by their top-level unit, and declared units it left alone); its ",
-                "Code": false
-              },
-              {
-                "Text": "--markdown",
-                "Code": true
-              },
-              {
-                "Text": " comment draws one line per pair of modules (",
-                "Code": false
-              },
-              {
-                "Text": "edgeLabel",
-                "Code": true
-              },
-              {
-                "Text": "). Review names a STALE ",
-                "Code": false
-              },
-              {
-                "Text": "constraints",
-                "Code": true
-              },
-              {
-                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there, and ",
-                "Code": false
-              },
-              {
-                "Text": "understand",
-                "Code": true
-              },
-              {
-                "Text": " stores a ",
-                "Code": false
-              },
-              {
-                "Text": "relations",
-                "Code": true
-              },
-              {
-                "Text": " note like any keyed slot.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Key units",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "abbd brief",
-                "Code": true
-              },
-              {
-                "Text": " lists a module's key units by fan-in (",
-                "Code": false
-              },
-              {
-                "Text": "keyUnits",
-                "Code": true
-              },
-              {
-                "Text": ": the types and distinctive functions its non-test files declare, ranked by how often the repository's tracked files in the same languages name them outside the module, dunders left out, through one git grep of at most 40 names that gives up after 20 seconds), and ",
-                "Code": false
-              },
-              {
-                "Text": "understand",
-                "Code": true
-              },
-              {
-                "Text": " reports each the text never names; ",
-                "Code": false
-              },
-              {
-                "Text": "status",
-                "Code": true
-              },
-              {
-                "Text": " leaves that search out, since it runs in CI. Here they are ",
-                "Code": false
-              },
-              {
-                "Text": "env",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "opts",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "command",
-                "Code": true
-              },
-              {
-                "Text": ", which carry a verb's flags and run it, ",
-                "Code": false
-              },
-              {
-                "Text": "claims",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "target",
-                "Code": true
-              },
-              {
-                "Text": " in migrate and record, ",
-                "Code": false
-              },
-              {
-                "Text": "presentUnit",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "textModule",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "partial",
-                "Code": true
-              },
-              {
-                "Text": ". Explain also names a module's set of build artifacts and who said it, and each coupling's condition, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
-                "Code": false
-              },
-              {
-                "Text": "binding.go",
-                "Code": true
-              },
-              {
-                "Text": "): a load by name, a process started, a registry, a compiled-in bundle, up to five of each kind. Lint also names each overview line, the box pair its distinct drawn relations join, where none carries a live phrase (",
-                "Code": false
-              },
-              {
-                "Text": "phrases.go",
-                "Code": true
-              },
-              {
-                "Text": "), a contract counted on its provider's box. For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
-                "Code": false
-              },
-              {
-                "Text": "draft.go",
-                "Code": true
-              },
-              {
-                "Text": "), never from code, a README, a licence or a generated mark,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
-                "Code": false
-              },
-              {
-                "Text": "record fact",
-                "Code": true
-              },
-              {
-                "Text": " refuses one on any other keyed slot. diff compares the units at a base with now, and ",
+                "Text": "): diff는 기준 리비전의 유닛과 지금을 비교하고, ",
                 "Code": false
               },
               {
@@ -6881,23 +6710,23 @@
                 "Code": true
               },
               {
-                "Text": " exits 1 only on a boundary change. ",
+                "Text": "에서는 경계 변경만이 실패가 된다. ",
                 "Code": false
               },
               {
-                "Text": "--page",
+                "Text": "abbd scope IDS --why TEXT",
                 "Code": true
               },
               {
-                "Text": " draws the base's pages again through ",
+                "Text": "가 손댈 유닛을 선언하면 review가 변경을 그 옆에 둔다. 범위 밖 유닛과 손대지 않은 선언 유닛을 짚고, STALE인 ",
                 "Code": false
               },
               {
-                "Text": "pagesAt",
+                "Text": "constraints",
                 "Code": true
               },
               {
-                "Text": ", from the state checked out at that revision, since git holds no pages. Evidence and status (",
+                "Text": " 노트를 다시 읽을 제약으로 이른다. evidence와 status(",
                 "Code": false
               },
               {
@@ -6905,7 +6734,15 @@
                 "Code": true
               },
               {
-                "Text": ") report liveness and freshness without writing, and review, lint, stack and table print what a change reaches and what the drawings breach.",
+                "Text": ")는 ",
+                "Code": false
+              },
+              {
+                "Text": "checkEvidence",
+                "Code": true
+              },
+              {
+                "Text": "로 생존과 신선도를 쓰지 않고 보고한다.",
                 "Code": false
               }
             ]
@@ -6927,7 +6764,56 @@
                 "Code": true
               },
               {
-                "Text": "): record relation, unit, parent, fact and evidence, and retract, check every quote live and keep EXTRACTED over USER_STATED over INFERRED. A phrase on a shown line stores only a note, and a duplicate unit on the same code is refused.",
+                "Text": "): record relation, unit, parent, fact, evidence와 retract다. 받는 인용은 모두 지금 트리에 있어야 하고, 관계에서는 EXTRACTED가 USER_STATED를, USER_STATED가 INFERRED를 이긴다. 같은 코드의 중복 유닛은 거부한다. ",
+                "Code": false
+              },
+              {
+                "Text": "target",
+                "Code": true
+              },
+              {
+                "Text": "은 record evidence와 retract가 다루는 유닛, 필드, 엣지, ",
+                "Code": false
+              },
+              {
+                "Text": ".phrase",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": ".when",
+                "Code": true
+              },
+              {
+                "Text": "이고, ",
+                "Code": false
+              },
+              {
+                "Text": "partial",
+                "Code": true
+              },
+              {
+                "Text": "은 retract가 일부만 거부됐음을 뜻한다. reader의 문구가 프로젝트 언어로 읽히지 않으면 ",
+                "Code": false
+              },
+              {
+                "Text": "language:",
+                "Code": true
+              },
+              {
+                "Text": " 줄을 찍는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "글, 노트, 그림",
                 "Code": false
               }
             ]
@@ -6949,7 +6835,182 @@
                 "Code": true
               },
               {
-                "Text": "): understand stores a module text stamped with its code digest, refusing placeholder lines, extra sections and unchanged words on changed code, and reports long, unmentioned and misplaced names. Brief prints the skeleton a reader fills, slot notes cite quotes held once, and flow, stack and table share one figure writer.",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/brief.go",
+                "Code": true
+              },
+              {
+                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글은 거부한다. 긴 섹션, 역사 문구, 이름 없는 유닛, 다른 유닛의 경로를 보고한다. brief는 reader가 채울 뼈대를 찍고 ",
+                "Code": false
+              },
+              {
+                "Text": "## Read first",
+                "Code": true
+              },
+              {
+                "Text": " 첫 줄에 쓸 언어를 밝힌다. 그 아래에 fan-in 순 핵심 유닛(",
+                "Code": false
+              },
+              {
+                "Text": "keyunits.go",
+                "Code": true
+              },
+              {
+                "Text": ", 20초 제한의 git grep), 런타임 결합 줄(",
+                "Code": false
+              },
+              {
+                "Text": "binding.go",
+                "Code": true
+              },
+              {
+                "Text": "), doc 주석에서 뽑은 상자 초안(",
+                "Code": false
+              },
+              {
+                "Text": "draft.go",
+                "Code": true
+              },
+              {
+                "Text": ")을 덧붙인다. 노트는 한 번만 나오는 인용을 인용하고, flow, stack, table은 그림 작성기 하나를 나눠 쓴다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "언어와 lint",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "언어 관문과 lint 보고",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/language.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/lint.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/phrases.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "languageLine",
+                "Code": true
+              },
+              {
+                "Text": "이 쓸 언어를 알리고, ",
+                "Code": false
+              },
+              {
+                "Text": "checkLanguage",
+                "Code": true
+              },
+              {
+                "Text": "는 글의 산문 글자 중 그 언어 문자의 비율이 문턱 아래일 때 ",
+                "Code": false
+              },
+              {
+                "Text": "language:",
+                "Code": true
+              },
+              {
+                "Text": " 줄만 찍고 거부하지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "foreignProse",
+                "Code": true
+              },
+              {
+                "Text": "는 agent가 쓴 사실과 문구, 모듈 글, 노트, 그림 문장 가운데 그 언어로 읽히지 않는 것을 모은다. lint는 블루프린트나 한 뷰의 그림을 부채 파일에 견준다. 모든 뷰를 볼 때는 설명 없는 상자와, 그린 관계에 살아 있는 문구가 없는 개요 줄(",
+                "Code": false
+              },
+              {
+                "Text": "pair",
+                "Code": true
+              },
+              {
+                "Text": "로 묶음)을 나열한다. project.yaml이 ",
+                "Code": false
+              },
+              {
+                "Text": "language",
+                "Code": true
+              },
+              {
+                "Text": "를 정하면 ",
+                "Code": false
+              },
+              {
+                "Text": "proseGate",
+                "Code": true
+              },
+              {
+                "Text": "가 부채가 지지 않은 외국어 글을 실패로, 이제 읽히는 글을 내릴 수 있는 부채로 이른다. ",
+                "Code": false
+              },
+              {
+                "Text": "lint --record",
+                "Code": true
+              },
+              {
+                "Text": "는 그 목록을 ",
+                "Code": false
+              },
+              {
+                "Text": "proseDebt",
+                "Code": true
+              },
+              {
+                "Text": "로 ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/lint-debt.yaml",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "prose",
+                "Code": true
+              },
+              {
+                "Text": "에 남긴다.",
                 "Code": false
               }
             ]
@@ -15784,7 +15845,7 @@
                 "Code": true
               },
               {
-                "Text": " is ABBD's vocabulary. It holds the Go types for everything stored under ",
+                "Text": "은 ABBD의 어휘다. ",
                 "Code": false
               },
               {
@@ -15792,7 +15853,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -15800,7 +15861,7 @@
                 "Code": true
               },
               {
-                "Text": ", the rules that decide which values are legal, and the table that decides which writer's claim shows. It imports only the standard library. ",
+                "Text": " 아래 저장되는 모든 것의 Go 타입, 어떤 값이 합법인지 정하는 규칙, 어느 작성자의 주장이 보일지 정하는 표를 가진다. 표준 라이브러리만 import한다. ",
                 "Code": false
               },
               {
@@ -15808,7 +15869,7 @@
                 "Code": true
               },
               {
-                "Text": " holds origins, kinds, IDs, units, facts, evidence, relations and edges. ",
+                "Text": "는 origin, kind, ID, unit, fact, evidence, relation, edge를, ",
                 "Code": false
               },
               {
@@ -15816,7 +15877,7 @@
                 "Code": true
               },
               {
-                "Text": " holds writers, evidence status, the precedence table, parent claims, masks and ",
+                "Text": "는 writer, evidence 상태, 우선순위 표, parent 주장, mask, ",
                 "Code": false
               },
               {
@@ -15824,7 +15885,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": "를 가진다. ",
                 "Code": false
               },
               {
@@ -15832,7 +15893,7 @@
                 "Code": true
               },
               {
-                "Text": " holds what every kind of figure shares, and ",
+                "Text": "는 모든 그림 종류가 공유하는 것을, ",
                 "Code": false
               },
               {
@@ -15848,7 +15909,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -15856,7 +15917,31 @@
                 "Code": true
               },
               {
-                "Text": " hold the three kinds: a flow's steps, a stack's layers and a table's rows. The stack adds its rules for holding units and for breaches, and the table its rules for a grid and for reading its cells against the relations. Every other internal package but ",
+                "Text": "는 flow의 step, stack의 layer, table의 row를 가진다. ",
+                "Code": false
+              },
+              {
+                "Text": "slot.go",
+                "Code": true
+              },
+              {
+                "Text": "는 slot과 note 주소를, ",
+                "Code": false
+              },
+              {
+                "Text": "entry.go",
+                "Code": true
+              },
+              {
+                "Text": "는 계약의 항목을, ",
+                "Code": false
+              },
+              {
+                "Text": "language.go",
+                "Code": true
+              },
+              {
+                "Text": "는 사람이 저장된 산문을 읽는 언어를 가진다. ",
                 "Code": false
               },
               {
@@ -15864,7 +15949,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -15872,7 +15957,15 @@
                 "Code": true
               },
               {
-                "Text": " imports it (",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "owners",
+                "Code": true
+              },
+              {
+                "Text": "를 뺀 모든 internal 패키지(",
                 "Code": false
               },
               {
@@ -15936,7 +16029,7 @@
                 "Code": true
               },
               {
-                "Text": "), and so does ",
+                "Text": ")와 ",
                 "Code": false
               },
               {
@@ -15944,7 +16037,32 @@
                 "Code": true
               },
               {
-                "Text": ". It does no I/O, runs no git and renders nothing.",
+                "Text": "가 이것을 import한다. 제공하는 계약은 ",
+                "Code": false
+              },
+              {
+                "Text": "relation key",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "IF-0015",
+                "Code": true
+              },
+              {
+                "Text": ")이고, 다른 모듈의 계약은 쓰지 않는다. 파일을 읽거나 쓰지 않고, git을 돌리지 않으며, 아무것도 그리지 않는다. 바깥과 닿는 곳은 ",
+                "Code": false
+              },
+              {
+                "Text": "DefaultLanguage",
+                "Code": true
+              },
+              {
+                "Text": "가 환경 변수와 OS 로캘을 읽는 것뿐이다.",
                 "Code": false
               }
             ]
@@ -15953,7 +16071,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "The package exists to keep provenance",
+                "Text": "패키지는 출처를 지키려고 있다",
                 "Code": false
               }
             ]
@@ -15962,7 +16080,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The package exists to keep provenance honest. Every fact, relation and parent claim stores the ",
+                "Text": "모든 fact, relation, parent 주장은 그것을 만든 ",
                 "Code": false
               },
               {
@@ -15970,7 +16088,7 @@
                 "Code": true
               },
               {
-                "Text": " that made it, and its origin follows from the writer and is never stored. ",
+                "Text": "를 저장하고, origin은 writer에서 파생될 뿐 저장되지 않는다. ",
                 "Code": false
               },
               {
@@ -15978,7 +16096,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -15986,7 +16104,7 @@
                 "Code": true
               },
               {
-                "Text": " are EXTRACTED, ",
+                "Text": "은 EXTRACTED, ",
                 "Code": false
               },
               {
@@ -15994,7 +16112,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -16002,7 +16120,7 @@
                 "Code": true
               },
               {
-                "Text": " are INFERRED, and ",
+                "Text": "는 INFERRED, ",
                 "Code": false
               },
               {
@@ -16010,7 +16128,7 @@
                 "Code": true
               },
               {
-                "Text": " is USER_STATED. A value with an unknown or empty writer fails validation, so no empty value can mean EXTRACTED. ",
+                "Text": "은 USER_STATED다. writer가 모르는 값이거나 비어 있으면 검증에 실패하므로, 빈 값이 EXTRACTED를 뜻할 수 없다. ",
                 "Code": false
               },
               {
@@ -16018,7 +16136,7 @@
                 "Code": true
               },
               {
-                "Text": " enforces the consequences. A human's fact, parent, relation or mask needs a ",
+                "Text": "가 그 결과를 강제한다. human의 fact, parent, relation, mask에는 ",
                 "Code": false
               },
               {
@@ -16026,7 +16144,7 @@
                 "Code": true
               },
               {
-                "Text": ", and no other writer may carry one. A why-field is never the script's or the group's. A unit whose name a reader or the supplement wrote needs evidence, and so does an INFERRED parent or relation, while an EXTRACTED parent cites none. Only contracts carry a ",
+                "Text": "가 필요하고 다른 writer는 그것을 가질 수 없다. why-field는 script나 group의 것이 될 수 없다. reader나 supplement가 이름을 쓴 unit, INFERRED parent와 relation에는 evidence가 필요하고, EXTRACTED parent는 아무것도 인용하지 않는다. ",
                 "Code": false
               },
               {
@@ -16034,15 +16152,7 @@
                 "Code": true
               },
               {
-                "Text": ", a parent must be another module or feature, and a unit holds at most one parent claim per writer and one relation claim per writer, kind and end. An absent unit needs a known reason, and a present one has none. ",
-                "Code": false
-              },
-              {
-                "Text": "RelationKind.Joins",
-                "Code": true
-              },
-              {
-                "Text": " checks that an edge joins legal kinds. ",
+                "Text": "는 계약만 가지고, parent는 다른 module이나 feature여야 한다. absent unit은 알려진 사유가 필요하고 present unit은 사유가 없다. ",
                 "Code": false
               },
               {
@@ -16050,7 +16160,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -16058,7 +16168,7 @@
                 "Code": true
               },
               {
-                "Text": " read what ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -16066,7 +16176,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -16074,15 +16184,7 @@
                 "Code": true
               },
               {
-                "Text": " get on the command line. ",
-                "Code": false
-              },
-              {
-                "Text": "Resolve",
-                "Code": true
-              },
-              {
-                "Text": " derives the read model every other package uses. Downstream code branches on small predicates. ",
+                "Text": "가 명령줄에서 받는 것을 읽는다. 하위 코드는 작은 술어로 분기한다. ",
                 "Code": false
               },
               {
@@ -16090,23 +16192,23 @@
                 "Code": true
               },
               {
-                "Text": " is true for an EXTRACTED or USER_STATED claim that is not dead, and only ",
+                "Text": "는 죽지 않은 EXTRACTED 또는 USER_STATED 주장에서 참이고, ",
                 "Code": false
               },
               {
-                "Text": "topology.Compare",
+                "Text": "topology",
                 "Code": true
               },
               {
-                "Text": " calls it, to decide which relations between modules ",
+                "Text": "의 diff와 ",
                 "Code": false
               },
               {
-                "Text": "abbd diff --check",
+                "Text": "cmd/abbd",
                 "Code": true
               },
               {
-                "Text": " sees. Its comment says a reader's coupling is listed instead of drawn, but ",
+                "Text": "의 review가 이를 부른다. ",
                 "Code": false
               },
               {
@@ -16114,7 +16216,7 @@
                 "Code": true
               },
               {
-                "Text": " draws INFERRED edges that are not dead too. ",
+                "Text": "은 죽지 않은 INFERRED edge도 그린다. ",
                 "Code": false
               },
               {
@@ -16122,7 +16224,7 @@
                 "Code": true
               },
               {
-                "Text": " drops absent units and sorts by ID.",
+                "Text": "는 absent unit을 거른다.",
                 "Code": false
               }
             ]
@@ -16144,24 +16246,7 @@
                 "Code": true
               },
               {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "model.go",
-                "Code": true
-              },
-              {
-                "Text": "): one design unit. It has an ",
-                "Code": false
-              },
-              {
-                "Text": "ID",
-                "Code": true
-              },
-              {
-                "Text": ", a ",
+                "Text": "과 ",
                 "Code": false
               },
               {
@@ -16169,7 +16254,32 @@
                 "Code": true
               },
               {
-                "Text": ", a ",
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/model/model.go",
+                "Code": true
+              },
+              {
+                "Text": "): 설계 unit 하나로, ",
+                "Code": false
+              },
+              {
+                "Text": "ID",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Kind",
+                "Code": true
+              },
+              {
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16177,7 +16287,7 @@
                 "Code": true
               },
               {
-                "Text": " fact and at least one ",
+                "Text": " fact, 하나 이상의 ",
                 "Code": false
               },
               {
@@ -16185,23 +16295,7 @@
                 "Code": true
               },
               {
-                "Text": ". It may have a ",
-                "Code": false
-              },
-              {
-                "Text": "SupplementRef",
-                "Code": true
-              },
-              {
-                "Text": ", stored as ",
-                "Code": false
-              },
-              {
-                "Text": "supplement_ref",
-                "Code": true
-              },
-              {
-                "Text": ", the ",
+                "Text": "를 가지고, ",
                 "Code": false
               },
               {
@@ -16209,7 +16303,7 @@
                 "Code": true
               },
               {
-                "Text": " claims of each writer, its own ",
+                "Text": " 주장, 자신의 ",
                 "Code": false
               },
               {
@@ -16217,7 +16311,7 @@
                 "Code": true
               },
               {
-                "Text": ", the why-fields ",
+                "Text": ", why-field인 ",
                 "Code": false
               },
               {
@@ -16225,7 +16319,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -16233,7 +16327,7 @@
                 "Code": true
               },
               {
-                "Text": ", a contract ",
+                "Text": ", 계약의 ",
                 "Code": false
               },
               {
@@ -16249,7 +16343,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16257,7 +16351,7 @@
                 "Code": true
               },
               {
-                "Text": ", the shown ",
+                "Text": ", 보이는 ",
                 "Code": false
               },
               {
@@ -16265,7 +16359,7 @@
                 "Code": true
               },
               {
-                "Text": ", the ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16273,7 +16367,7 @@
                 "Code": true
               },
               {
-                "Text": " claims, ",
+                "Text": " 주장, ",
                 "Code": false
               },
               {
@@ -16281,7 +16375,24 @@
                 "Code": true
               },
               {
-                "Text": ", and ",
+                "Text": "를 가질 수 있다. ",
+                "Code": false
+              },
+              {
+                "Text": "unit absent flag",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "DATA-0015",
+                "Code": true
+              },
+              {
+                "Text": ")는 ",
                 "Code": false
               },
               {
@@ -16289,7 +16400,7 @@
                 "Code": true
               },
               {
-                "Text": " with an ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -16297,7 +16408,7 @@
                 "Code": true
               },
               {
-                "Text": " (",
+                "Text": "(",
                 "Code": false
               },
               {
@@ -16329,7 +16440,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16337,39 +16448,7 @@
                 "Code": true
               },
               {
-                "Text": "). The derived ",
-                "Code": false
-              },
-              {
-                "Text": "Parent",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "ParentOrigin",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "ParentWriter",
-                "Code": true
-              },
-              {
-                "Text": " and the user-owned ",
-                "Code": false
-              },
-              {
-                "Text": "Notes",
-                "Code": true
-              },
-              {
-                "Text": " stay out of the YAML. ",
+                "Text": ")이고, ",
                 "Code": false
               },
               {
@@ -16377,69 +16456,23 @@
                 "Code": true
               },
               {
-                "Text": " sets or clears both absence fields. ",
+                "Text": "가 둘을 함께 바꾸며 ",
                 "Code": false
               },
               {
-                "Text": "Claims",
+                "Text": "Present",
                 "Code": true
               },
               {
-                "Text": " lists shown and hidden relation claims together. ",
+                "Text": "로 걸러진다. ",
                 "Code": false
               },
-              {
-                "Text": "EachEvidence",
-                "Code": true
-              },
-              {
-                "Text": " visits every stored item with its claim's writer, and ",
-                "Code": false
-              },
-              {
-                "Text": "EachShownEvidence",
-                "Code": true
-              },
-              {
-                "Text": " only the unit's own, the winning parent's and the shown relations' items. ",
-                "Code": false
-              },
-              {
-                "Text": "ShownParent",
-                "Code": true
-              },
-              {
-                "Text": " returns the parent claim that won. ",
-                "Code": false
-              },
-              {
-                "Text": "Semantic",
-                "Code": true
-              },
-              {
-                "Text": " reports an INFERRED name.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
               {
                 "Text": "Kind",
                 "Code": true
               },
               {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "model.go",
-                "Code": true
-              },
-              {
-                "Text": "): ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -16447,7 +16480,7 @@
                 "Code": true
               },
               {
-                "Text": ", the contract kinds ",
+                "Text": ", 계약 kind ",
                 "Code": false
               },
               {
@@ -16471,7 +16504,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16479,7 +16512,7 @@
                 "Code": true
               },
               {
-                "Text": " (",
+                "Text": "(",
                 "Code": false
               },
               {
@@ -16487,7 +16520,7 @@
                 "Code": true
               },
               {
-                "Text": "), and ",
+                "Text": "), ",
                 "Code": false
               },
               {
@@ -16495,39 +16528,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
-                "Code": false
-              },
-              {
-                "Text": "Dir()",
-                "Code": true
-              },
-              {
-                "Text": " sends features to ",
-                "Code": false
-              },
-              {
-                "Text": "features",
-                "Code": true
-              },
-              {
-                "Text": " and the rest to ",
-                "Code": false
-              },
-              {
-                "Text": "architecture",
-                "Code": true
-              },
-              {
-                "Text": ". ",
-                "Code": false
-              },
-              {
-                "Text": "Validate",
-                "Code": true
-              },
-              {
-                "Text": " rejects the reserved ",
+                "Text": "이고 예약어 ",
                 "Code": false
               },
               {
@@ -16551,7 +16552,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16559,31 +16560,97 @@
                 "Code": true
               },
               {
-                "Text": " and any unknown kind. ",
+                "Text": "를 거부한다. ",
                 "Code": false
               },
               {
-                "Text": "Holds()",
-                "Code": true
+                "Text": "unit kind directories",
+                "Code": false,
+                "Bold": true
               },
               {
-                "Text": " is true for ",
+                "Text": "(",
                 "Code": false
               },
               {
-                "Text": "MOD",
+                "Text": "DATA-0012",
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ")는 ",
                 "Code": false
               },
               {
-                "Text": "FEAT",
+                "Text": "Dir()",
                 "Code": true
               },
               {
-                "Text": ", the two kinds that may contain others.",
+                "Text": "로, feature는 ",
+                "Code": false
+              },
+              {
+                "Text": "features",
+                "Code": true
+              },
+              {
+                "Text": ", 나머지는 ",
+                "Code": false
+              },
+              {
+                "Text": "architecture",
+                "Code": true
+              },
+              {
+                "Text": "에 둔다. ",
+                "Code": false
+              },
+              {
+                "Text": "unit ID format",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "IF-0016",
+                "Code": true
+              },
+              {
+                "Text": ")은 ",
+                "Code": false
+              },
+              {
+                "Text": "KIND-NNNN",
+                "Code": true
+              },
+              {
+                "Text": "이며 ",
+                "Code": false
+              },
+              {
+                "Text": "FormatID",
+                "Code": true
+              },
+              {
+                "Text": "가 네 자리로 채우고 ",
+                "Code": false
+              },
+              {
+                "Text": "ParseID",
+                "Code": true
+              },
+              {
+                "Text": "가 kind를 되읽는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Semantic",
+                "Code": true
+              },
+              {
+                "Text": "은 INFERRED 이름을 알린다.",
                 "Code": false
               }
             ]
@@ -16592,7 +16659,23 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "ID",
+                "Text": "Fact",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Origin",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Writer",
                 "Code": true
               },
               {
@@ -16601,7 +16684,7 @@
                 "Bold": true
               },
               {
-                "Text": "model.go",
+                "Text": "internal/model/claims.go",
                 "Code": true
               },
               {
@@ -16609,35 +16692,109 @@
                 "Code": false
               },
               {
-                "Text": "KIND-NNNN",
+                "Text": "Fact",
                 "Code": true
               },
               {
-                "Text": ", such as ",
+                "Text": "는 ",
                 "Code": false
               },
               {
-                "Text": "MOD-0007",
+                "Text": "Value",
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ", ",
                 "Code": false
               },
               {
-                "Text": "FormatID",
+                "Text": "Writer",
                 "Code": true
               },
               {
-                "Text": " pads to four digits and ",
+                "Text": ", human만 가지는 ",
                 "Code": false
               },
               {
-                "Text": "ParseID",
+                "Text": "Source",
                 "Code": true
               },
               {
-                "Text": " accepts four or more.",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": "를 가진다. ",
+                "Code": false
+              },
+              {
+                "Text": "fact origins",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "MOD-0033",
+                "Code": true
+              },
+              {
+                "Text": ")는 EXTRACTED, INFERRED, USER_STATED이고 ",
+                "Code": false
+              },
+              {
+                "Text": "Writer.Origin()",
+                "Code": true
+              },
+              {
+                "Text": "이 writer에서 파생시키며, 모르는 writer에는 빈 값을 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "Said",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "Stated",
+                "Code": true
+              },
+              {
+                "Text": "가 fact를 만들고 ",
+                "Code": false
+              },
+              {
+                "Text": "Guess",
+                "Code": true
+              },
+              {
+                "Text": "는 INFERRED 값을 알린다. ",
+                "Code": false
+              },
+              {
+                "Text": "guess versus topology rule",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "MOD-0031",
+                "Code": true
+              },
+              {
+                "Text": ")은 이름이 INFERRED면 unit이 semantic이고, relation은 살아 있고 EXTRACTED 또는 USER_STATED일 때만 topology로 센다는 규칙이다.",
                 "Code": false
               }
             ]
@@ -16646,195 +16803,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "Fact",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Fact",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "model.go",
-                "Code": true
-              },
-              {
-                "Text": "): a ",
-                "Code": false
-              },
-              {
-                "Text": "Value",
-                "Code": true
-              },
-              {
-                "Text": ", its ",
-                "Code": false
-              },
-              {
-                "Text": "Writer",
-                "Code": true
-              },
-              {
-                "Text": ", a ",
-                "Code": false
-              },
-              {
-                "Text": "Source",
-                "Code": true
-              },
-              {
-                "Text": " for a human only, and a ",
-                "Code": false
-              },
-              {
-                "Text": "Digest",
-                "Code": true
-              },
-              {
-                "Text": ": the code of a module or feature when a script's or a reader's sentence about it was first kept. ",
-                "Code": false
-              },
-              {
-                "Text": "Origin",
-                "Code": true
-              },
-              {
-                "Text": " is derived by ",
-                "Code": false
-              },
-              {
-                "Text": "Writer.Origin()",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false
-              },
-              {
-                "Text": "claims.go",
-                "Code": true
-              },
-              {
-                "Text": "), which is empty for a writer ABBD does not know. ",
-                "Code": false
-              },
-              {
-                "Text": "Said",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Stated",
-                "Code": true
-              },
-              {
-                "Text": " build one, and ",
-                "Code": false
-              },
-              {
-                "Text": "Guess",
-                "Code": true
-              },
-              {
-                "Text": " reports an INFERRED value.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Anchor",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "model.go",
-                "Code": true
-              },
-              {
-                "Text": "): the ",
-                "Code": false
-              },
-              {
-                "Text": "Path",
-                "Code": true
-              },
-              {
-                "Text": " and optional ",
-                "Code": false
-              },
-              {
-                "Text": "Symbol",
-                "Code": true
-              },
-              {
-                "Text": " a unit's identity hangs on. ",
-                "Code": false
-              },
-              {
-                "Text": "Key()",
-                "Code": true
-              },
-              {
-                "Text": " is ",
-                "Code": false
-              },
-              {
-                "Text": "path#symbol",
-                "Code": true
-              },
-              {
-                "Text": ", and ",
-                "Code": false
-              },
-              {
-                "Text": "SortAnchors",
-                "Code": true
-              },
-              {
-                "Text": " dedups and sorts by it. ",
-                "Code": false
-              },
-              {
-                "Text": "Closeness",
-                "Code": true
-              },
-              {
-                "Text": " says how closely the anchor names the code a quote lies in, or -1 when it does not hold it: a symbol anchor holds only a quote that names its symbol in its file and is closest, then a file anchor, then a directory anchor, deeper first, and ",
-                "Code": false
-              },
-              {
-                "Text": ".",
-                "Code": true
-              },
-              {
-                "Text": " holds every file least closely. ",
-                "Code": false
-              },
-              {
-                "Text": "Evidence.Anchor",
-                "Code": true
-              },
-              {
-                "Text": " turns an item into one.",
+                "Text": "Evidence와 Anchor",
                 "Code": false
               }
             ]
@@ -16847,24 +16816,41 @@
                 "Code": true
               },
               {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "Anchor",
+                "Code": true
+              },
+              {
                 "Text": " (",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": "model.go",
+                "Text": "internal/model/model.go",
                 "Code": true
               },
               {
-                "Text": "): a verbatim ",
+                "Text": "): ",
                 "Code": false
               },
               {
-                "Text": "Quote",
+                "Text": "evidence citation",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "IF-0017",
                 "Code": true
               },
               {
-                "Text": " at a ",
+                "Text": ")은 ",
                 "Code": false
               },
               {
@@ -16872,7 +16858,15 @@
                 "Code": true
               },
               {
-                "Text": ", with optional ",
+                "Text": "의 원문 그대로인 ",
+                "Code": false
+              },
+              {
+                "Text": "Quote",
+                "Code": true
+              },
+              {
+                "Text": "에 선택적 ",
                 "Code": false
               },
               {
@@ -16880,7 +16874,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -16888,7 +16882,23 @@
                 "Code": true
               },
               {
-                "Text": ", and the ",
+                "Text": "을 더한 것으로, 명령줄에서 ",
+                "Code": false
+              },
+              {
+                "Text": "PATH:LINES:QUOTE",
+                "Code": true
+              },
+              {
+                "Text": "로 쓰고 ",
+                "Code": false
+              },
+              {
+                "Text": "ParseEvidence",
+                "Code": true
+              },
+              {
+                "Text": "가 읽는다. sync가 저장하는 ",
                 "Code": false
               },
               {
@@ -16904,7 +16914,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16912,7 +16922,7 @@
                 "Code": true
               },
               {
-                "Text": " that sync stores and the JSON never sets. A status is live (empty), ",
+                "Text": "이 붙으며, 상태는 살아 있음(빈 값), ",
                 "Code": false
               },
               {
@@ -16920,7 +16930,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -16928,39 +16938,24 @@
                 "Code": true
               },
               {
-                "Text": ", and a dead item needs a reason. ",
+                "Text": "이고 dead에는 사유가 필요하다. ",
                 "Code": false
               },
               {
-                "Text": "Same",
-                "Code": true
+                "Text": "evidence line range text",
+                "Code": false,
+                "Bold": true
               },
               {
-                "Text": " compares path and quote only. ",
+                "Text": "(",
                 "Code": false
               },
               {
-                "Text": "Span",
+                "Text": "DATA-0019",
                 "Code": true
               },
               {
-                "Text": " parses ",
-                "Code": false
-              },
-              {
-                "Text": "Lines",
-                "Code": true
-              },
-              {
-                "Text": ", and ",
-                "Code": false
-              },
-              {
-                "Text": "Validate",
-                "Code": true
-              },
-              {
-                "Text": " accepts only a range such as ",
+                "Text": ")는 ",
                 "Code": false
               },
               {
@@ -16968,7 +16963,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": "이나 ",
                 "Code": false
               },
               {
@@ -16976,7 +16971,15 @@
                 "Code": true
               },
               {
-                "Text": " that starts at 1 or later. ",
+                "Text": " 같은 형식으로 ",
+                "Code": false
+              },
+              {
+                "Text": "Span",
+                "Code": true
+              },
+              {
+                "Text": "이 해석하고, ",
                 "Code": false
               },
               {
@@ -16984,7 +16987,24 @@
                 "Code": true
               },
               {
-                "Text": " also refuses paths under ",
+                "Text": "는 1 이상에서 시작하는 범위만 받는다. ",
+                "Code": false
+              },
+              {
+                "Text": "citable evidence paths",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "DATA-0020",
+                "Code": true
+              },
+              {
+                "Text": ")는 ",
                 "Code": false
               },
               {
@@ -16992,7 +17012,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": "나 ",
                 "Code": false
               },
               {
@@ -17000,7 +17020,15 @@
                 "Code": true
               },
               {
-                "Text": ", because those files repeat the quote. ",
+                "Text": " 아래 경로를 거부하는 규칙으로, 그 파일들이 인용문을 되풀이하기 때문이다. ",
+                "Code": false
+              },
+              {
+                "Text": "Same",
+                "Code": true
+              },
+              {
+                "Text": "은 경로와 인용문만 비교한다. ",
                 "Code": false
               },
               {
@@ -17008,74 +17036,43 @@
                 "Code": true
               },
               {
-                "Text": " (",
+                "Text": "는 항목이 하나라도 살아 있으면 live, 아니면 drifted가 있으면 drifted, 아니면 dead이고, 항목이 없는 주장은 live다. ",
                 "Code": false
               },
               {
-                "Text": "claims.go",
+                "Text": "Anchor",
                 "Code": true
               },
               {
-                "Text": ") makes a claim live while any item is live, else drifted while any is drifted, else dead, and a claim with no items is live.",
+                "Text": "는 unit의 정체가 걸린 ",
                 "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
+              },
               {
-                "Text": "Slot and NoteRef",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Slot",
+                "Text": "Path",
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 선택적 ",
                 "Code": false
               },
               {
-                "Text": "NoteRef",
+                "Text": "Symbol",
                 "Code": true
               },
               {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "slot.go",
-                "Code": true
-              },
-              {
-                "Text": "): ",
+                "Text": "이고, ",
                 "Code": false
               },
               {
-                "Text": "Slots",
+                "Text": "Key()",
                 "Code": true
               },
               {
-                "Text": " is the one list of slots a module or a contract takes (",
+                "Text": "는 ",
                 "Code": false
               },
               {
-                "Text": "Kind.HoldsNotes",
-                "Code": true
-              },
-              {
-                "Text": "), in the order the blueprint shows them, each with its Korean heading. ",
-                "Code": false
-              },
-              {
-                "Text": "decisions",
+                "Text": "path#symbol",
                 "Code": true
               },
               {
@@ -17083,91 +17080,27 @@
                 "Code": false
               },
               {
-                "Text": "constraints",
+                "Text": "SortAnchors",
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "가 중복을 지우고 정렬한다. ",
                 "Code": false
               },
               {
-                "Text": "entries",
+                "Text": "Closeness",
                 "Code": true
               },
               {
-                "Text": " are keyed, so each holds one note per key; ",
+                "Text": "는 인용문이 놓인 코드를 anchor가 얼마나 가깝게 가리키는지 재며, symbol anchor, file anchor, 깊은 directory anchor 순으로 가깝고, ",
                 "Code": false
               },
               {
-                "Text": "constraints",
+                "Text": ".",
                 "Code": true
               },
               {
-                "Text": " holds a constraint or invariant the code keeps, quoting the lines that keep it, and ",
-                "Code": false
-              },
-              {
-                "Text": "relations",
-                "Code": true
-              },
-              {
-                "Text": " holds why each relation of the unit exists, keyed by ",
-                "Code": false
-              },
-              {
-                "Text": "RelationKey",
-                "Code": true
-              },
-              {
-                "Text": " (its kind and target in lower case). ",
-                "Code": false
-              },
-              {
-                "Text": "ParseNoteRef",
-                "Code": true
-              },
-              {
-                "Text": " names both kinds of address in its refusal. A note in ",
-                "Code": false
-              },
-              {
-                "Text": "entries",
-                "Code": true
-              },
-              {
-                "Text": " describes one entry of a contract, and ",
-                "Code": false
-              },
-              {
-                "Text": "NoteRef.Unheld",
-                "Code": true
-              },
-              {
-                "Text": " reports one whose key names no entry the unit lists. ",
-                "Code": false
-              },
-              {
-                "Text": "ParseNoteRef",
-                "Code": true
-              },
-              {
-                "Text": " reads ",
-                "Code": false
-              },
-              {
-                "Text": "ID.SLOT",
-                "Code": true
-              },
-              {
-                "Text": " or ",
-                "Code": false
-              },
-              {
-                "Text": "ID.decisions.KEY",
-                "Code": true
-              },
-              {
-                "Text": " and refuses an unknown slot, a keyed slot without a key, a key on any other slot, and a key outside lower-case letters, digits and hyphens.",
+                "Text": "가 가장 멀다.",
                 "Code": false
               }
             ]
@@ -17176,7 +17109,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "Relation",
+                "Text": "Relation과 Edge",
                 "Code": false
               }
             ]
@@ -17189,16 +17122,28 @@
                 "Code": true
               },
               {
+                "Text": "과 relation grammar",
+                "Code": false
+              },
+              {
                 "Text": " (",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": "model.go",
+                "Text": "internal/model/model.go",
                 "Code": true
               },
               {
-                "Text": "): one writer's claim on an edge from the unit that holds it, with ",
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Relation",
+                "Code": true
+              },
+              {
+                "Text": "은 unit에서 나가는 edge에 대한 writer 하나의 주장으로 ",
                 "Code": false
               },
               {
@@ -17254,7 +17199,15 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -17262,151 +17215,7 @@
                 "Code": true
               },
               {
-                "Text": ". A ",
-                "Code": false
-              },
-              {
-                "Text": "PhraseNote",
-                "Code": true
-              },
-              {
-                "Text": " in ",
-                "Code": false
-              },
-              {
-                "Text": "Unit.Phrases",
-                "Code": true
-              },
-              {
-                "Text": " names what crosses an edge, with its own ",
-                "Code": false
-              },
-              {
-                "Text": "Writer",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Source",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Text",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Evidence",
-                "Code": true
-              },
-              {
-                "Text": ", in at most ",
-                "Code": false
-              },
-              {
-                "Text": "PhraseMax",
-                "Code": true
-              },
-              {
-                "Text": " characters and ",
-                "Code": false
-              },
-              {
-                "Text": "PhraseWords",
-                "Code": true
-              },
-              {
-                "Text": " words. It is never a claim, so it cannot make or keep an edge. ",
-                "Code": false
-              },
-              {
-                "Text": "ValidatePhrase",
-                "Code": true
-              },
-              {
-                "Text": " refuses one that only restates the via. The script never writes one. ",
-                "Code": false
-              },
-              {
-                "Text": "Note",
-                "Code": true
-              },
-              {
-                "Text": " finds the note that names an edge, the first by status and then by the ",
-                "Code": false
-              },
-              {
-                "Text": "phrase",
-                "Code": true
-              },
-              {
-                "Text": " row of the table that is neither dead nor masked. ",
-                "Code": false
-              },
-              {
-                "Text": "Dangling",
-                "Code": true
-              },
-              {
-                "Text": " lists, as a ",
-                "Code": false
-              },
-              {
-                "Text": "DanglingNote",
-                "Code": true
-              },
-              {
-                "Text": " with its edge and writer, the notes whose edge no longer shows by ",
-                "Code": false
-              },
-              {
-                "Text": "Unit.Shown",
-                "Code": true
-              },
-              {
-                "Text": ". ",
-                "Code": false
-              },
-              {
-                "Text": "Unit.Validate",
-                "Code": true
-              },
-              {
-                "Text": " checks each note against the via of every claim on its edge. ",
-                "Code": false
-              },
-              {
-                "Text": "EachShownEvidence",
-                "Code": true
-              },
-              {
-                "Text": " visits the evidence of the shown claims and of the note that names each shown edge. ",
-                "Code": false
-              },
-              {
-                "Text": "Entries",
-                "Code": true
-              },
-              {
-                "Text": " narrows the claim to those entries of the contract it points at, by key: the routes a page calls, the fields a module writes. ",
-                "Code": false
-              },
-              {
-                "Text": "Origin",
-                "Code": true
-              },
-              {
-                "Text": " and ",
+                "Text": "를 가진다. ",
                 "Code": false
               },
               {
@@ -17414,15 +17223,7 @@
                 "Code": true
               },
               {
-                "Text": " are derived, and ",
-                "Code": false
-              },
-              {
-                "Text": "Dead",
-                "Code": true
-              },
-              {
-                "Text": " means it has evidence and all of it is dead. ",
+                "Text": "는 evidence가 있고 모두 죽었다는 뜻이며 ",
                 "Code": false
               },
               {
@@ -17446,7 +17247,7 @@
                 "Code": true
               },
               {
-                "Text": " (it has evidence), ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -17454,7 +17255,7 @@
                 "Code": true
               },
               {
-                "Text": " (it is INFERRED) and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -17462,180 +17263,57 @@
                 "Code": true
               },
               {
-                "Text": " read it. ",
+                "Text": "가 이를 읽는다. ",
                 "Code": false
               },
               {
-                "Text": "SortRelations",
-                "Code": true
-              },
-              {
-                "Text": " orders claims by end and then kind.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Entry",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Entry",
-                "Code": true
-              },
-              {
-                "Text": " (",
+                "Text": "drawn versus listed relation rule",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": "entry.go",
-                "Code": true
-              },
-              {
-                "Text": "): one part of a contract as the code spells it, such as a route, a method, a flag or a field. ",
+                "Text": "(",
                 "Code": false
               },
               {
-                "Text": "Name",
+                "Text": "DATA-0010",
                 "Code": true
               },
               {
-                "Text": " is the code's spelling and ",
+                "Text": ")이 ",
                 "Code": false
               },
               {
-                "Text": "Key",
+                "Text": "Counts",
                 "Code": true
               },
               {
-                "Text": " that name reduced by ",
+                "Text": "에 있다. ",
                 "Code": false
               },
               {
-                "Text": "EntryKey",
-                "Code": true
-              },
-              {
-                "Text": " to lower-case letters, digits and hyphens, so ",
-                "Code": false
-              },
-              {
-                "Text": "GET /users/{id}",
-                "Code": true
-              },
-              {
-                "Text": " is ",
-                "Code": false
-              },
-              {
-                "Text": "get-users-id",
-                "Code": true
-              },
-              {
-                "Text": " and a note on it is ",
-                "Code": false
-              },
-              {
-                "Text": "ID.entries.get-users-id",
-                "Code": true
-              },
-              {
-                "Text": ". ",
-                "Code": false
-              },
-              {
-                "Text": "Shape",
-                "Code": true
-              },
-              {
-                "Text": " is what the code says the entry looks like, and ",
-                "Code": false
-              },
-              {
-                "Text": "Required",
-                "Code": true
-              },
-              {
-                "Text": " is nil when the code does not say. ",
-                "Code": false
-              },
-              {
-                "Text": "Need",
-                "Code": true
-              },
-              {
-                "Text": " words it as required, optional or nothing, and ",
-                "Code": false
-              },
-              {
-                "Text": "Look",
-                "Code": true
-              },
-              {
-                "Text": " joins shape and need for a diff line. ",
-                "Code": false
-              },
-              {
-                "Text": "ValidateEntries",
-                "Code": true
-              },
-              {
-                "Text": " refuses an entry without a name, an entry whose name reduces to no key, such as one in Hangul, with a word to give it a ",
-                "Code": false
-              },
-              {
-                "Text": "key",
-                "Code": true
-              },
-              {
-                "Text": ", a malformed key and two entries with one key, and ",
-                "Code": false
-              },
-              {
-                "Text": "Unit.Validate",
-                "Code": true
-              },
-              {
-                "Text": " refuses entries on a unit that is not a contract. ",
-                "Code": false
-              },
-              {
-                "Text": "EntryNamed",
-                "Code": true
-              },
-              {
-                "Text": " finds one by key.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Relation grammar",
+                "Text": "relation grammar",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": " (",
+                "Text": "(",
                 "Code": false
               },
               {
-                "Text": "model.go",
+                "Text": "MOD-0032",
                 "Code": true
               },
               {
-                "Text": "): ",
+                "Text": ")는 ",
+                "Code": false
+              },
+              {
+                "Text": "RelationKind.Joins",
+                "Code": true
+              },
+              {
+                "Text": "로, ",
                 "Code": false
               },
               {
@@ -17643,7 +17321,7 @@
                 "Code": true
               },
               {
-                "Text": " joins any two kinds, ",
+                "Text": "은 아무 두 kind를, ",
                 "Code": false
               },
               {
@@ -17651,7 +17329,7 @@
                 "Code": true
               },
               {
-                "Text": " ends at a contract, and ",
+                "Text": "는 계약에서 끝나며, ",
                 "Code": false
               },
               {
@@ -17659,7 +17337,7 @@
                 "Code": true
               },
               {
-                "Text": " runs from a module or feature to a contract. ",
+                "Text": "는 module이나 feature에서 계약으로 간다. ",
                 "Code": false
               },
               {
@@ -17667,7 +17345,7 @@
                 "Code": true
               },
               {
-                "Text": " is true for ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -17675,7 +17353,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -17683,7 +17361,7 @@
                 "Code": true
               },
               {
-                "Text": ", which run from the unit that uses the other. ",
+                "Text": "에서 참이다. ",
                 "Code": false
               },
               {
@@ -17691,7 +17369,7 @@
                 "Code": true
               },
               {
-                "Text": " is empty or one of ",
+                "Text": "는 비어 있거나 ",
                 "Code": false
               },
               {
@@ -17771,7 +17449,7 @@
                 "Code": true
               },
               {
-                "Text": " for a library loaded by name or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -17779,7 +17457,15 @@
                 "Code": true
               },
               {
-                "Text": " for a process started, and a phrase that only restates its via, such as dlopen for load, is refused. ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "link",
+                "Code": true
+              },
+              {
+                "Text": " 중 하나다. ",
                 "Code": false
               },
               {
@@ -17787,7 +17473,7 @@
                 "Code": true
               },
               {
-                "Text": " gives its word in the blueprint, such as 호출, and ",
+                "Text": "는 청사진의 단어(예: 호출)를, ",
                 "Code": false
               },
               {
@@ -17795,33 +17481,91 @@
                 "Code": true
               },
               {
-                "Text": " names call and import, whose word a line's solid or dotted ink already says, so the blueprint keeps it in the line's tooltip.",
+                "Text": "은 선의 잉크가 이미 말하는 call과 import를 알린다. ",
                 "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Edge",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
               },
               {
                 "Text": "model.go",
                 "Code": true
               },
               {
-                "Text": "): ",
+                "Text": "의 ",
                 "Code": false
               },
               {
-                "Text": "From",
+                "Text": "\"load\"",
+                "Code": true
+              },
+              {
+                "Text": " 줄은 via를 되풀이하는 구절을 막는 표일 뿐, 실행 시점 바인딩이 아니다. ",
+                "Code": false
+              },
+              {
+                "Text": "PhraseNote",
+                "Code": true
+              },
+              {
+                "Text": "는 edge를 건너는 것을 ",
+                "Code": false
+              },
+              {
+                "Text": "PhraseMax",
+                "Code": true
+              },
+              {
+                "Text": "자, ",
+                "Code": false
+              },
+              {
+                "Text": "PhraseWords",
+                "Code": true
+              },
+              {
+                "Text": "단어 안에서 이름 짓는 주석으로, 주장이 아니어서 edge를 만들거나 지키지 못한다. ",
+                "Code": false
+              },
+              {
+                "Text": "ValidatePhrase",
+                "Code": true
+              },
+              {
+                "Text": "는 via만 되풀이하는 구절을 거부하고 ",
+                "Code": false
+              },
+              {
+                "Text": "Dangling",
+                "Code": true
+              },
+              {
+                "Text": "은 보이지 않는 edge를 가리키는 주석을 나열한다. ",
+                "Code": false
+              },
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": "은 relation이 성립하는 조건으로 ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateWhen",
+                "Code": true
+              },
+              {
+                "Text": "이 검사하고, ",
+                "Code": false
+              },
+              {
+                "Text": "Scope",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "PRIVATE",
                 "Code": true
               },
               {
@@ -17829,19 +17573,52 @@
                 "Code": false
               },
               {
-                "Text": "Kind",
+                "Text": "PUBLIC",
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
-                "Text": "To",
+                "Text": "INTERFACE",
                 "Code": true
               },
               {
-                "Text": ", printed as the shell-safe ",
+                "Text": " 같은 link scope를 알리며, ",
+                "Code": false
+              },
+              {
+                "Text": "ConditionConflicts",
+                "Code": true
+              },
+              {
+                "Text": "는 다른 조건을 가진 살아 있는 숨은 주장을 나열한다. ",
+                "Code": false
+              },
+              {
+                "Text": "relation key",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "IF-0015",
+                "Code": true
+              },
+              {
+                "Text": ")는 ",
+                "Code": false
+              },
+              {
+                "Text": "Edge",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
                 "Code": false
               },
               {
@@ -17849,7 +17626,15 @@
                 "Code": true
               },
               {
-                "Text": " and read back by ",
+                "Text": " 형식으로, ",
+                "Code": false
+              },
+              {
+                "Text": "Edge.String",
+                "Code": true
+              },
+              {
+                "Text": "이 쓰고 ",
                 "Code": false
               },
               {
@@ -17857,7 +17642,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": "가 ID와 kind를 확인하며 읽는다. ",
                 "Code": false
               },
               {
@@ -17865,16 +17650,7 @@
                 "Code": true
               },
               {
-                "Text": " checks the kinds its IDs name.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Precedence",
+                "Text": "가 그 kind를 검사한다.",
                 "Code": false
               }
             ]
@@ -17883,1235 +17659,13 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Precedence",
+                "Text": "Entry",
                 "Code": true
               },
               {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "claims.go",
-                "Code": true
-              },
-              {
-                "Text": "): one table of the writers that may claim each field, highest first. Name and signature take script, reader, supplement. Purpose and responsibility take human, reader, supplement. A relation takes script, human, reader, supplement, and a parent takes human, group, script, reader, supplement. ",
-                "Code": false
-              },
-              {
-                "Text": "Outranks",
-                "Code": true
-              },
-              {
-                "Text": " compares two writers on a field, and a writer missing from a row ranks below all of it. On a relation or a parent, ",
-                "Code": false
-              },
-              {
-                "Text": "order",
-                "Code": true
-              },
-              {
-                "Text": " puts live claims before drifted ones before dead ones, whatever the writer, and the table decides within a status.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "ParentClaim",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "claims.go",
-                "Code": true
-              },
-              {
-                "Text": "): one writer's claim on the unit's container, with ",
-                "Code": false
-              },
-              {
-                "Text": "To",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Writer",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Source",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Evidence",
-                "Code": true
-              },
-              {
-                "Text": ". A human's claim also stores ",
-                "Code": false
-              },
-              {
-                "Text": "Over",
-                "Code": true
-              },
-              {
-                "Text": ", the script's parent when the human stated it, and ",
-                "Code": false
-              },
-              {
-                "Text": "ParentConflicts",
-                "Code": true
-              },
-              {
-                "Text": " lists each present unit whose script parent has moved off it to a parent other than the human's. ",
-                "Code": false
-              },
-              {
-                "Text": "Claim",
-                "Code": true
-              },
-              {
-                "Text": " reads a writer's claim, ",
-                "Code": false
-              },
-              {
-                "Text": "PutParent",
-                "Code": true
-              },
-              {
-                "Text": " replaces it and keeps the claims in table order, and ",
-                "Code": false
-              },
-              {
-                "Text": "DropParents",
-                "Code": true
-              },
-              {
-                "Text": " removes the claims of the given writers.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Mask",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Mask",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "claims.go",
-                "Code": true
-              },
-              {
-                "Text": "): a reader's or a human's retraction of one ",
-                "Code": false
-              },
-              {
-                "Text": "Target",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false
-              },
-              {
-                "Text": "unit",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "parent",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "purpose",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "responsibility",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "signature",
-                "Code": true
-              },
-              {
-                "Text": ", or ",
-                "Code": false
-              },
-              {
-                "Text": "KIND.TO",
-                "Code": true
-              },
-              {
-                "Text": " from ",
-                "Code": false
-              },
-              {
-                "Text": "RelationTarget",
-                "Code": true
-              },
-              {
-                "Text": "), with a ",
-                "Code": false
-              },
-              {
-                "Text": "Reason",
-                "Code": true
-              },
-              {
-                "Text": ". It is bound to the hidden claim's content by ",
-                "Code": false
-              },
-              {
-                "Text": "Digest",
-                "Code": true
-              },
-              {
-                "Text": ", the first 16 hex digits of a SHA-256. ",
-                "Code": false
-              },
-              {
-                "Text": "RelationDigest",
-                "Code": true
-              },
-              {
-                "Text": " hashes kind, end and via, ",
-                "Code": false
-              },
-              {
-                "Text": "PhraseDigest",
-                "Code": true
-              },
-              {
-                "Text": " a note's text, ",
-                "Code": false
-              },
-              {
-                "Text": "ParentDigest",
-                "Code": true
-              },
-              {
-                "Text": " the parent, and ",
-                "Code": false
-              },
-              {
-                "Text": "FactDigest",
-                "Code": true
-              },
-              {
-                "Text": " the value. ",
-                "Code": false
-              },
-              {
-                "Text": "Hides",
-                "Code": true
-              },
-              {
-                "Text": " lets a reader's mask hide the supplement's claims and a human's hide the reader's and the supplement's. ",
-                "Code": false
-              },
-              {
-                "Text": "Masked",
-                "Code": true
-              },
-              {
-                "Text": " tests a claim, and ",
-                "Code": false
-              },
-              {
-                "Text": "PutMask",
-                "Code": true
-              },
-              {
-                "Text": " adds a mask only once. ",
-                "Code": false
-              },
-              {
-                "Text": "RelationMasked",
-                "Code": true
-              },
-              {
-                "Text": " tests a relation claim, where a human's mask on the edge holds whatever the via, so a lower writer cannot bring the edge back with another via, while a reader's stays bound to the content. A claim whose content changes no longer matches and shows again.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Resolve",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Resolve",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "claims.go",
-                "Code": true
-              },
-              {
-                "Text": "): derives the read model in place. A masked why-field or signature is cleared, and a present unit whose name is masked goes absent as ",
-                "Code": false
-              },
-              {
-                "Text": "retracted",
-                "Code": true
-              },
-              {
-                "Text": ". On each edge the claims sort by ",
-                "Code": false
-              },
-              {
-                "Text": "order",
-                "Code": true
-              },
-              {
-                "Text": " with masked claims last, the first shows unless it is masked, and the rest go to ",
-                "Code": false
-              },
-              {
-                "Text": "Hidden",
-                "Code": true
-              },
-              {
-                "Text": ". ",
-                "Code": false
-              },
-              {
-                "Text": "PutRelation",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "DropRelations",
-                "Code": true
-              },
-              {
-                "Text": " re-run this per unit after each edit. Each present unit takes its first parent claim that is not dead, not masked, points at a present module or feature and closes no cycle. Claims are accepted tier by tier, script and group first, then human, reader and supplement, each tier in unit ID order. When a claim is refused for closing a cycle, acceptance starts again from the first tier, so the unit's next claim is weighed before any lower tier. An absent unit shows its first stored claim. A skipped claim stays stored. ",
-                "Code": false
-              },
-              {
-                "Text": "ParentCycle",
-                "Code": true
-              },
-              {
-                "Text": " names a present unit whose parents loop, and the tests of ",
-                "Code": false
-              },
-              {
-                "Text": "model",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "identity",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "group",
-                "Code": true
-              },
-              {
-                "Text": " use it to check that the result is a tree.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Figures",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Figures",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": " (",
-                "Code": false
-              },
-              {
-                "Text": "figure.go",
-                "Code": true
-              },
-              {
-                "Text": "): what every kind of figure shares. A ",
-                "Code": false
-              },
-              {
-                "Text": "FigureKind[C]",
-                "Code": true
-              },
-              {
-                "Text": " is one kind as data. ",
-                "Code": false
-              },
-              {
-                "Text": "Noun",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Dir",
-                "Code": true
-              },
-              {
-                "Text": " name a figure and its directory under ",
-                "Code": false
-              },
-              {
-                "Text": ".abbd",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Part",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Parts",
-                "Code": true
-              },
-              {
-                "Text": " name one claim and the frontmatter key that lists them, ",
-                "Code": false
-              },
-              {
-                "Text": "Min",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Max",
-                "Code": true
-              },
-              {
-                "Text": " bound how many a figure has, ",
-                "Code": false
-              },
-              {
-                "Text": "MinColumns",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "MaxColumns",
-                "Code": true
-              },
-              {
-                "Text": " how many ",
-                "Code": false
-              },
-              {
-                "Text": "Column",
-                "Code": true
-              },
-              {
-                "Text": "s its head names, none for a kind without a head, ",
-                "Code": false
-              },
-              {
-                "Text": "Long",
-                "Code": true
-              },
-              {
-                "Text": " names the word field a store warns on past 80 characters, or every word when it is empty, and ",
-                "Code": false
-              },
-              {
-                "Text": "Whole",
-                "Code": true
-              },
-              {
-                "Text": " checks the claims taken together with the head, nil when each stands alone. It returns each ",
-                "Code": false
-              },
-              {
-                "Text": "Gap",
-                "Code": true
-              },
-              {
-                "Text": " with its text, the places of the claims it involves and the names of the columns it involves. ",
-                "Code": false
-              },
-              {
-                "Text": "Renamed",
-                "Code": true
-              },
-              {
-                "Text": " is true for a kind whose word fields are its own column names, so a retired claim's words compare by text alone. ",
-                "Code": false
-              },
-              {
-                "Text": "Claim[C]",
-                "Code": true
-              },
-              {
-                "Text": " is what a claim type implements so that the store and the command treat every kind alike: its ",
-                "Code": false
-              },
-              {
-                "Text": "Kind",
-                "Code": true
-              },
-              {
-                "Text": ", read on the zero value by ",
-                "Code": false
-              },
-              {
-                "Text": "KindOf[C]",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Validate",
-                "Code": true
-              },
-              {
-                "Text": ", a ",
-                "Code": false
-              },
-              {
-                "Text": "Label",
-                "Code": true
-              },
-              {
-                "Text": " for status, the units it ",
-                "Code": false
-              },
-              {
-                "Text": "Names",
-                "Code": true
-              },
-              {
-                "Text": ", its one-line ",
-                "Code": false
-              },
-              {
-                "Text": "Words",
-                "Code": true
-              },
-              {
-                "Text": " in a fixed order, its ",
-                "Code": false
-              },
-              {
-                "Text": "Quotes",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Requote",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Retire",
-                "Code": true
-              },
-              {
-                "Text": ", the claim as a retired part keeps it, and its ",
-                "Code": false
-              },
-              {
-                "Text": "Gaps",
-                "Code": true
-              },
-              {
-                "Text": " against the state. ",
-                "Code": false
-              },
-              {
-                "Text": "FigureKey",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "ParseFigureKey[C]",
-                "Code": true
-              },
-              {
-                "Text": " take the same keys a decision does. ",
-                "Code": false
-              },
-              {
-                "Text": "state",
-                "Code": true
-              },
-              {
-                "Text": " holds the present units by ID, ",
-                "Code": false
-              },
-              {
-                "Text": "under",
-                "Code": true
-              },
-              {
-                "Text": " walks a unit's parent chain, ",
-                "Code": false
-              },
-              {
-                "Text": "rests",
-                "Code": true
-              },
-              {
-                "Text": " holds the closest-anchor rule for a set of units, and ",
-                "Code": false
-              },
-              {
-                "Text": "strongest",
-                "Code": true
-              },
-              {
-                "Text": " finds the strongest live relation, provides then consumes then depends_on, from one unit or a unit inside it to another or a unit inside that. One quote at least must lie in code that one of them, or a unit inside one, anchors more closely than any other unit does, or that a contract one of them provides anchors so. So a shared file counts for the unit whose anchor names it best, a command's handler counts for the module that provides the command, and a unit a step calls lends it no code.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Step",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Step",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "flow.go",
-                "Code": true
-              },
-              {
-                "Text": "): one step of a flow, the kind ",
-                "Code": false
-              },
-              {
-                "Text": "flow",
-                "Code": true
-              },
-              {
-                "Text": " whose parts are ",
-                "Code": false
-              },
-              {
-                "Text": "steps",
-                "Code": true
-              },
-              {
-                "Text": ", two to ",
-                "Code": false
-              },
-              {
-                "Text": "FlowSteps",
-                "Code": true
-              },
-              {
-                "Text": ", 16. It has a unit, a one-line ",
-                "Code": false
-              },
-              {
-                "Text": "Does",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Note",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Fails",
-                "Code": true
-              },
-              {
-                "Text": ", the units it ",
-                "Code": false
-              },
-              {
-                "Text": "Calls",
-                "Code": true
-              },
-              {
-                "Text": ", and the evidence it rests on. ",
-                "Code": false
-              },
-              {
-                "Text": "Validate",
-                "Code": true
-              },
-              {
-                "Text": " checks a step alone. ",
-                "Code": false
-              },
-              {
-                "Text": "Against",
-                "Code": true
-              },
-              {
-                "Text": " reads it against the state. It finds a gap for a unit that is gone and a gap when no quote rests on the step's unit by ",
-                "Code": false
-              },
-              {
-                "Text": "rests",
-                "Code": true
-              },
-              {
-                "Text": ". For each call it finds the relation ",
-                "Code": false
-              },
-              {
-                "Text": "strongest",
-                "Code": true
-              },
-              {
-                "Text": " gives from the step's unit to the called unit, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. A step's ",
-                "Code": false
-              },
-              {
-                "Text": "Gaps",
-                "Code": true
-              },
-              {
-                "Text": " are those of ",
-                "Code": false
-              },
-              {
-                "Text": "Against",
-                "Code": true
-              },
-              {
-                "Text": ", its ",
-                "Code": false
-              },
-              {
-                "Text": "Long",
-                "Code": true
-              },
-              {
-                "Text": " field is ",
-                "Code": false
-              },
-              {
-                "Text": "does",
-                "Code": true
-              },
-              {
-                "Text": ", and ",
-                "Code": false
-              },
-              {
-                "Text": "Retire",
-                "Code": true
-              },
-              {
-                "Text": " drops its ",
+                "Text": "와 ",
                 "Code": false
               },
-              {
-                "Text": "Calls",
-                "Code": true
-              },
-              {
-                "Text": ", so a retired step is forgotten only when its own unit leaves.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Layer",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Layer",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "layer.go",
-                "Code": true
-              },
-              {
-                "Text": "): one band of a stack, the kind ",
-                "Code": false
-              },
-              {
-                "Text": "stack",
-                "Code": true
-              },
-              {
-                "Text": " whose parts are ",
-                "Code": false
-              },
-              {
-                "Text": "layers",
-                "Code": true
-              },
-              {
-                "Text": ", two to ",
-                "Code": false
-              },
-              {
-                "Text": "StackLayers",
-                "Code": true
-              },
-              {
-                "Text": ", 8. It has a one-line ",
-                "Code": false
-              },
-              {
-                "Text": "Name",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Role",
-                "Code": true
-              },
-              {
-                "Text": ", the stored ",
-                "Code": false
-              },
-              {
-                "Text": "Units",
-                "Code": true
-              },
-              {
-                "Text": " it holds, each with every unit inside it, and the evidence that shows its role. ",
-                "Code": false
-              },
-              {
-                "Text": "Validate",
-                "Code": true
-              },
-              {
-                "Text": " checks a layer alone, and ",
-                "Code": false
-              },
-              {
-                "Text": "Gaps",
-                "Code": true
-              },
-              {
-                "Text": " finds a unit that is gone, or no quote resting on its units by ",
-                "Code": false
-              },
-              {
-                "Text": "rests",
-                "Code": true
-              },
-              {
-                "Text": ". The kind's ",
-                "Code": false
-              },
-              {
-                "Text": "Whole",
-                "Code": true
-              },
-              {
-                "Text": " is ",
-                "Code": false
-              },
-              {
-                "Text": "holdOnce",
-                "Code": true
-              },
-              {
-                "Text": " and its ",
-                "Code": false
-              },
-              {
-                "Text": "Long",
-                "Code": true
-              },
-              {
-                "Text": " field is ",
-                "Code": false
-              },
-              {
-                "Text": "role",
-                "Code": true
-              },
-              {
-                "Text": ". A unit sits in one layer only, counting the units inside the ones a layer names, and the layers name ",
-                "Code": false
-              },
-              {
-                "Text": "StackUnits",
-                "Code": true
-              },
-              {
-                "Text": ", 16, at most. Each gap names the layers it involves. ",
-                "Code": false
-              },
-              {
-                "Text": "Holders",
-                "Code": true
-              },
-              {
-                "Text": " maps each present unit to the layer that names it or its nearest named ancestor. ",
-                "Code": false
-              },
-              {
-                "Text": "Breaches",
-                "Code": true
-              },
-              {
-                "Text": " lists each live relation by which a present unit a lower layer holds uses one a higher layer holds, ",
-                "Code": false
-              },
-              {
-                "Text": "consumes",
-                "Code": true
-              },
-              {
-                "Text": " or ",
-                "Code": false
-              },
-              {
-                "Text": "depends_on",
-                "Code": true
-              },
-              {
-                "Text": " by ",
-                "Code": false
-              },
-              {
-                "Text": "RelationKind.Uses",
-                "Code": true
-              },
-              {
-                "Text": ", with its kind, via and origin. A ",
-                "Code": false
-              },
-              {
-                "Text": "provides",
-                "Code": true
-              },
-              {
-                "Text": " is no breach, since the lower unit serves a contract the upper layer homes. A relation within one layer, one that skips layers downward, and one with an end no layer holds are no breach.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "Row",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Row",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "table.go",
-                "Code": true
-              },
-              {
-                "Text": "): one row of a table, the kind ",
-                "Code": false
-              },
-              {
-                "Text": "table",
-                "Code": true
-              },
-              {
-                "Text": " whose parts are ",
-                "Code": false
-              },
-              {
-                "Text": "rows",
-                "Code": true
-              },
-              {
-                "Text": ", two to ",
-                "Code": false
-              },
-              {
-                "Text": "TableRows",
-                "Code": true
-              },
-              {
-                "Text": ", 16, under two to ",
-                "Code": false
-              },
-              {
-                "Text": "TableColumns",
-                "Code": true
-              },
-              {
-                "Text": ", 8, columns. A ",
-                "Code": false
-              },
-              {
-                "Text": "Column",
-                "Code": true
-              },
-              {
-                "Text": " is a short label of ",
-                "Code": false
-              },
-              {
-                "Text": "ColumnName",
-                "Code": true
-              },
-              {
-                "Text": ", 32, characters at most, with no spaces around it, and may name the stored unit it stands for. A row has a unit, its ",
-                "Code": false
-              },
-              {
-                "Text": "Cells",
-                "Code": true
-              },
-              {
-                "Text": " by column name, each a one-line statement, and the evidence that shows them. A column the row leaves out is an empty cell. ",
-                "Code": false
-              },
-              {
-                "Text": "Validate",
-                "Code": true
-              },
-              {
-                "Text": " checks a row alone, ",
-                "Code": false
-              },
-              {
-                "Text": "ValidateColumns",
-                "Code": true
-              },
-              {
-                "Text": " checks the head alone, and ",
-                "Code": false
-              },
-              {
-                "Text": "Gaps",
-                "Code": true
-              },
-              {
-                "Text": " finds a unit that is gone or no quote resting on it. The kind's ",
-                "Code": false
-              },
-              {
-                "Text": "Long",
-                "Code": true
-              },
-              {
-                "Text": " is empty, so every cell is a word a store warns on. Its ",
-                "Code": false
-              },
-              {
-                "Text": "Whole",
-                "Code": true
-              },
-              {
-                "Text": " is ",
-                "Code": false
-              },
-              {
-                "Text": "fillGrid",
-                "Code": true
-              },
-              {
-                "Text": ": a unit heads one row, a cell sits under a column the head names, and each unit a column names is present. A gap for a column whose unit is gone names that column, so a reader may change it on a human's table. ",
-                "Code": false
-              },
-              {
-                "Text": "Readings",
-                "Code": true
-              },
-              {
-                "Text": " reads each cell under a unit's column against the relation ",
-                "Code": false
-              },
-              {
-                "Text": "strongest",
-                "Code": true
-              },
-              {
-                "Text": " gives from the row's unit to the column's. A ",
-                "Code": false
-              },
-              {
-                "Text": "Reading",
-                "Code": true
-              },
-              {
-                "Text": " is ",
-                "Code": false
-              },
-              {
-                "Text": "Unbacked",
-                "Code": true
-              },
-              {
-                "Text": " when the cell says something with no relation under it and ",
-                "Code": false
-              },
-              {
-                "Text": "Unsaid",
-                "Code": true
-              },
-              {
-                "Text": " when the cell is empty over one.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
               {
                 "Text": "Artifact",
                 "Code": true
@@ -19122,11 +17676,59 @@
                 "Bold": true
               },
               {
+                "Text": "internal/model/entry.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Entry",
+                "Code": true
+              },
+              {
+                "Text": "는 route, method, flag, field처럼 코드가 쓰는 계약의 한 부분이다. ",
+                "Code": false
+              },
+              {
+                "Text": "Key",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "EntryKey",
+                "Code": true
+              },
+              {
+                "Text": "가 소문자, 숫자, 하이픈으로 줄인 이름이고, ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateEntries",
+                "Code": true
+              },
+              {
+                "Text": "는 이름이 없거나 키로 줄지 않거나 키가 겹치는 항목을 거부한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Artifact",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
                 "Text": "model.go",
                 "Code": true
               },
               {
-                "Text": "): the set of what the build makes of a module, one fact with its writer that ",
+                "Text": ")는 build가 module에서 만드는 것의 집합으로 ",
                 "Code": false
               },
               {
@@ -19134,15 +17736,7 @@
                 "Code": true
               },
               {
-                "Text": " writes sorted, ",
-                "Code": false
-              },
-              {
-                "Text": "Built",
-                "Code": true
-              },
-              {
-                "Text": " reads and ",
+                "Text": "이 정렬해 쓰고 ",
                 "Code": false
               },
               {
@@ -19150,15 +17744,16 @@
                 "Code": true
               },
               {
-                "Text": " gives in the blueprint's words, such as 공유 라이브러리; ",
+                "Text": "가 청사진 단어로 준다.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
               {
-                "Text": "link",
-                "Code": true
-              },
-              {
-                "Text": " joins the vias for an artifact that links another or compiles a module in.",
+                "Text": "우선순위와 Resolve",
                 "Code": false
               }
             ]
@@ -19167,7 +17762,23 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "When",
+                "Text": "Precedence",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "ParentClaim",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Mask",
                 "Code": true
               },
               {
@@ -19176,19 +17787,669 @@
                 "Bold": true
               },
               {
-                "Text": "model.go",
+                "Text": "internal/model/claims.go",
                 "Code": true
               },
               {
-                "Text": "): the condition a relation holds under, empty when it always holds, checked by ",
+                "Text": "): ",
                 "Code": false
               },
               {
-                "Text": "ValidateWhen",
+                "Text": "Precedence",
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": "는 각 field를 주장할 수 있는 writer를 높은 순으로 둔 하나의 표이고 ",
+                "Code": false
+              },
+              {
+                "Text": "Outranks",
+                "Code": true
+              },
+              {
+                "Text": "가 비교한다. relation과 parent에서는 상태가 writer보다 먼저여서 live, drifted, dead 순으로 놓인다. ",
+                "Code": false
+              },
+              {
+                "Text": "ParentClaim",
+                "Code": true
+              },
+              {
+                "Text": "은 writer 하나의 container 주장이고, human의 주장은 ",
+                "Code": false
+              },
+              {
+                "Text": "Over",
+                "Code": true
+              },
+              {
+                "Text": "로 당시 script parent를 기억하며 ",
+                "Code": false
+              },
+              {
+                "Text": "ParentConflicts",
+                "Code": true
+              },
+              {
+                "Text": "가 어긋남을 나열한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Mask",
+                "Code": true
+              },
+              {
+                "Text": "는 reader나 human이 ",
+                "Code": false
+              },
+              {
+                "Text": "Target",
+                "Code": true
+              },
+              {
+                "Text": " 하나를 거두는 것으로, SHA-256 앞 16자리 ",
+                "Code": false
+              },
+              {
+                "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": "로 숨긴 주장의 내용에 묶인다. ",
+                "Code": false
+              },
+              {
+                "Text": "Hides",
+                "Code": true
+              },
+              {
+                "Text": "에 따라 reader의 mask는 supplement를, human의 mask는 reader와 supplement를 숨긴다. human의 relation mask는 via와 무관하게 edge를 붙든다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Resolve",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/model/claims.go",
+                "Code": true
+              },
+              {
+                "Text": "): 읽기 모델을 제자리에서 파생시킨다. mask된 why-field와 signature는 지우고, 이름이 mask된 present unit은 ",
+                "Code": false
+              },
+              {
+                "Text": "retracted",
+                "Code": true
+              },
+              {
+                "Text": "로 absent가 된다. edge마다 주장을 정렬해 첫째만 보이고 나머지는 ",
+                "Code": false
+              },
+              {
+                "Text": "Hidden",
+                "Code": true
+              },
+              {
+                "Text": "으로 간다. present unit마다 죽지 않고 mask되지 않고 present module이나 feature를 가리키며 순환을 닫지 않는 첫 parent 주장을 택하고, 순환으로 거부되면 첫 계층부터 다시 받는다. ",
+                "Code": false
+              },
+              {
+                "Text": "ParentCycle",
+                "Code": true
+              },
+              {
+                "Text": "은 parent가 고리를 이루는 unit을 이름 짓는다. 이 패키지에는 생명주기, 스레드, 풀, 타이머가 없다. 함수는 호출자의 고루틴에서 돌고, 실패는 ",
+                "Code": false
+              },
+              {
+                "Text": "Validate",
+                "Code": true
+              },
+              {
+                "Text": " 계열이 돌려주는 ",
+                "Code": false
+              },
+              {
+                "Text": "error",
+                "Code": true
+              },
+              {
+                "Text": "이며 재시도하지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Slot과 그림",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Slot",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "NoteRef",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/model/slot.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Slots",
+                "Code": true
+              },
+              {
+                "Text": "는 module이나 계약이 가지는 slot의 단일 목록으로, 청사진이 보여 주는 순서와 한국어 제목(",
+                "Code": false
+              },
+              {
+                "Text": "의미",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "실패와 재시도",
+                "Code": true
+              },
+              {
+                "Text": " 등)을 가진다. ",
+                "Code": false
+              },
+              {
+                "Text": "decisions",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "relations",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": "는 키가 있어 키마다 note 하나를 가진다. ",
+                "Code": false
+              },
+              {
+                "Text": "ParseNoteRef",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "ID.SLOT",
+                "Code": true
+              },
+              {
+                "Text": "이나 ",
+                "Code": false
+              },
+              {
+                "Text": "ID.decisions.KEY",
+                "Code": true
+              },
+              {
+                "Text": "를 읽고, 모르는 slot, 키 없는 keyed slot, 다른 slot의 키, 소문자·숫자·하이픈 밖의 키를 거부한다. ",
+                "Code": false
+              },
+              {
+                "Text": "NoteRef.Unheld",
+                "Code": true
+              },
+              {
+                "Text": "는 unit이 나열하지 않는 entry를 가리키는 note를 알린다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "그림",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "internal/model/figure.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "FigureKind[C]",
+                "Code": true
+              },
+              {
+                "Text": "는 그림 한 종류를 데이터로 담아 이름, ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " 아래 디렉터리, part 수 범위, 열 수 범위, 경고할 단어 field, 전체 검사 ",
+                "Code": false
+              },
+              {
+                "Text": "Whole",
+                "Code": true
+              },
+              {
+                "Text": "을 정한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Claim[C]",
+                "Code": true
+              },
+              {
+                "Text": "는 store와 명령이 모든 종류를 똑같이 다루도록 주장 타입이 구현하는 인터페이스다. ",
+                "Code": false
+              },
+              {
+                "Text": "state",
+                "Code": true
+              },
+              {
+                "Text": "는 ID별 present unit을 가지고, ",
+                "Code": false
+              },
+              {
+                "Text": "under",
+                "Code": true
+              },
+              {
+                "Text": "는 parent 사슬을 걷고, ",
+                "Code": false
+              },
+              {
+                "Text": "rests",
+                "Code": true
+              },
+              {
+                "Text": "는 가장 가까운 anchor 규칙을, ",
+                "Code": false
+              },
+              {
+                "Text": "strongest",
+                "Code": true
+              },
+              {
+                "Text": "는 provides, consumes, depends_on 순으로 가장 강한 살아 있는 relation을 찾는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Step",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "flow.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 flow의 step으로 2개에서 ",
+                "Code": false
+              },
+              {
+                "Text": "FlowSteps",
+                "Code": true
+              },
+              {
+                "Text": "개까지이고, 호출마다 ",
+                "Code": false
+              },
+              {
+                "Text": "strongest",
+                "Code": true
+              },
+              {
+                "Text": "가 주는 relation이 없으면 gap을 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "Layer",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "layer.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 stack의 띠로 unit을 한 layer에만 두고, ",
+                "Code": false
+              },
+              {
+                "Text": "Breaches",
+                "Code": true
+              },
+              {
+                "Text": "는 아래 layer의 unit이 위 layer의 unit을 쓰는 relation을 나열한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Row",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "table.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 table의 행이고, ",
+                "Code": false
+              },
+              {
+                "Text": "Readings",
+                "Code": true
+              },
+              {
+                "Text": "가 칸을 relation과 맞춰 ",
+                "Code": false
+              },
+              {
+                "Text": "Unbacked",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "Unsaid",
+                "Code": true
+              },
+              {
+                "Text": "를 찾는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Language",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Language",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/model/language.go",
+                "Code": true
+              },
+              {
+                "Text": "): 사람이 저장된 산문을 읽는 언어로, ",
+                "Code": false
+              },
+              {
+                "Text": "ko",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "en-US",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "zh-Hant",
+                "Code": true
+              },
+              {
+                "Text": " 같은 정규 대소문자의 BCP-47 태그이며 빈 값은 설정이 없다는 뜻이다. ",
+                "Code": false
+              },
+              {
+                "Text": "ParseLanguage",
+                "Code": true
+              },
+              {
+                "Text": "는 공백을 자르고 ",
+                "Code": false
+              },
+              {
+                "Text": "_",
+                "Code": true
+              },
+              {
+                "Text": "를 ",
+                "Code": false
+              },
+              {
+                "Text": "-",
+                "Code": true
+              },
+              {
+                "Text": "로 바꾼 뒤 언어, 선택적 script, region, variant 형태를 검사해 정규 대소문자로 돌려주고, 맞지 않으면 error를 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "UnmarshalText",
+                "Code": true
+              },
+              {
+                "Text": "도 같은 검사를 하므로 ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": "의 나쁜 태그는 그것을 읽는 로드를 멈춘다. ",
+                "Code": false
+              },
+              {
+                "Text": "DefaultLanguage",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "LC_ALL",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "LC_MESSAGES",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "LANG",
+                "Code": true
+              },
+              {
+                "Text": " 순으로 POSIX 로캘을 읽고(",
+                "Code": false
+              },
+              {
+                "Text": "C",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "POSIX",
+                "Code": true
+              },
+              {
+                "Text": "는 언어가 없다고 본다), 그다음 OS 로캘, 마지막으로 ",
+                "Code": false
+              },
+              {
+                "Text": "FallbackLanguage",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "en",
+                "Code": true
+              },
+              {
+                "Text": ")를 준다. OS 로캘은 ",
+                "Code": false
+              },
+              {
+                "Text": "osLocale",
+                "Code": true
+              },
+              {
+                "Text": "로, Windows(",
+                "Code": false
+              },
+              {
+                "Text": "language_windows.go",
+                "Code": true
+              },
+              {
+                "Text": ")에서는 ",
+                "Code": false
+              },
+              {
+                "Text": "kernel32.dll",
+                "Code": true
+              },
+              {
+                "Text": "을 이름으로 불러 ",
+                "Code": false
+              },
+              {
+                "Text": "GetUserDefaultLocaleName",
+                "Code": true
+              },
+              {
+                "Text": "을 호출하고, 다른 OS(",
+                "Code": false
+              },
+              {
+                "Text": "language_other.go",
+                "Code": true
+              },
+              {
+                "Text": ")에서는 빈 문자열이다. ",
+                "Code": false
+              },
+              {
+                "Text": "Script",
+                "Code": true
+              },
+              {
+                "Text": "는 script subtag가 가리키는 문자, 없으면 언어 subtag의 문자를 ",
+                "Code": false
+              },
+              {
+                "Text": "unicode.RangeTable",
+                "Code": true
+              },
+              {
+                "Text": "로 주며, 둘 다 모르면 Latin이다. 산문이 그 문자로 쓰였는지 재는 일은 이 패키지가 하지 않는다.",
                 "Code": false
               }
             ]
@@ -27583,6 +26844,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -27598,7 +26860,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The store is the one package that reads and writes the ",
+                "Text": "store는 ",
                 "Code": false
               },
               {
@@ -27606,7 +26868,7 @@
                 "Code": true
               },
               {
-                "Text": " directory (",
+                "Text": " 디렉터리를 읽고 쓰는 유일한 패키지다. YAML frontmatter를 단 Markdown이 원본이고 나머지는 모두 거기서 파생된다. 이 패키지가 제공하는 계약은 unit files(architecture나 features 아래 unit마다 파일 하나), state.yaml의 sync state, project.yaml, module understanding 텍스트, slot notes, 그리고 저장된 flow, stack, table이다. ",
                 "Code": false
               },
               {
@@ -27614,7 +26876,7 @@
                 "Code": true
               },
               {
-                "Text": " also holds the project's ",
+                "Text": "는 등록된 추출 argv, 프로젝트의 ",
                 "Code": false
               },
               {
@@ -27622,7 +26884,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "과 ",
                 "Code": false
               },
               {
@@ -27630,7 +26892,7 @@
                 "Code": true
               },
               {
-                "Text": " from project.yaml, the name ABBD when none is written, and ",
+                "Text": ", overview 밀도 컷을 켜는 ",
                 "Code": false
               },
               {
@@ -27638,7 +26900,39 @@
                 "Code": true
               },
               {
-                "Text": ", nil until the human chooses how dense the overview is, so a chosen false survives a save, and ",
+                "Text": "(사람이 고르기 전에는 nil이라, 고른 false가 저장을 거쳐도 남는다), 그리고 사람이 저장된 산문을 읽는 언어 ",
+                "Code": false
+              },
+              {
+                "Text": "Language",
+                "Code": true
+              },
+              {
+                "Text": "를 담는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Language",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "model.Language",
+                "Code": true
+              },
+              {
+                "Text": "라서 BCP-47 태그가 아니면 load가 거부하고, ",
+                "Code": false
+              },
+              {
+                "Text": "Lang",
+                "Code": true
+              },
+              {
+                "Text": "은 project.yaml에 언어가 없으면 OS 로캘의 언어를 돌려준다. 이름이 없으면 blueprint는 ABBD라고 쓰고, ",
                 "Code": false
               },
               {
@@ -27646,31 +26940,7 @@
                 "Code": true
               },
               {
-                "Text": " names the project root it sits in; ",
-                "Code": false
-              },
-              {
-                "Text": "InputsHash",
-                "Code": true
-              },
-              {
-                "Text": " counts the CODEOWNERS ",
-                "Code": false
-              },
-              {
-                "Text": "owners.File",
-                "Code": true
-              },
-              {
-                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv and the ",
-                "Code": false
-              },
-              {
-                "Text": "overview_cut",
-                "Code": true
-              },
-              {
-                "Text": " switch that turns on the overview's density cut, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": "은 store가 놓인 프로젝트 루트를 가리킨다. merge candidates file, lint debt, 그려진 상태 옆에 커밋되는 blueprint 페이지, compare 뷰가 이전 상태로 읽는 ",
                 "Code": false
               },
               {
@@ -27678,7 +26948,7 @@
                 "Code": true
               },
               {
-                "Text": " that the compare view reads as the previous state.",
+                "Text": " 사본도 이 패키지가 맡는다.",
                 "Code": false
               }
             ]
@@ -27687,7 +26957,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "It stamps texts, notes and figure parts against the code they describe, so a reader of the state can tell CURRENT from STALE, and it hashes its own inputs so the blueprint can tell when it is stale. It uses git queries for the files at a revision, the submodule pins and the snapshot, the evidence checker for the lines around a quote, the unit model for units, claims and evidence, and the candidate shape from identity. It does not decide anything about the units it holds: it never reconciles IDs, runs the extraction, judges a text's contents or writes code.",
+                "Text": "텍스트, 노트, figure 파트를 그것이 설명하는 코드에 대해 stamp해서 상태를 읽는 쪽이 CURRENT와 STALE을 구분하게 하고, 자기 입력을 해시해서 blueprint가 오래됐는지 알게 한다. 리비전의 파일, 서브모듈 핀, 스냅숏은 git 질의로, 인용 주변 줄은 evidence 검사기로, unit, claim, evidence는 unit model로, 후보 모양은 identity에서 가져온다. 담고 있는 unit에 대해서는 아무것도 판단하지 않는다. ID를 맞추지 않고, 추출을 돌리지 않고, 텍스트 내용을 평가하지 않고, 코드를 쓰지 않는다.",
                 "Code": false
               }
             ]
@@ -27727,7 +26997,7 @@
                 "Code": true
               },
               {
-                "Text": "): a unit file is frontmatter, a generated title and anchor list, then the human part from the ",
+                "Text": "): unit 파일은 frontmatter, 생성된 제목과 anchor 목록, 그리고 ",
                 "Code": false
               },
               {
@@ -27735,7 +27005,7 @@
                 "Code": true
               },
               {
-                "Text": " heading on, which ",
+                "Text": " 제목부터의 사람 몫으로 이루어진다. ",
                 "Code": false
               },
               {
@@ -27743,7 +27013,7 @@
                 "Code": true
               },
               {
-                "Text": " splits off on read and appends unchanged on write. Old-format files stay readable through ",
+                "Text": "이 읽을 때 그 부분을 떼어 두고 쓸 때 그대로 붙인다. diff가 오래전 커밋된 상태를 읽으므로 옛 형식 파일은 ",
                 "Code": false
               },
               {
@@ -27751,7 +27021,7 @@
                 "Code": true
               },
               {
-                "Text": ", since a diff reads states committed long ago.",
+                "Text": "로 계속 읽힌다.",
                 "Code": false
               }
             ]
@@ -27773,7 +27043,7 @@
                 "Code": true
               },
               {
-                "Text": "): reads and parses the committed unit files at a revision through git, so a revision without ",
+                "Text": "): 한 리비전에 커밋된 unit 파일을 git으로 읽어 파싱한다. ",
                 "Code": false
               },
               {
@@ -27781,7 +27051,7 @@
                 "Code": true
               },
               {
-                "Text": " has no units.",
+                "Text": "가 없는 리비전에는 unit이 없다.",
                 "Code": false
               }
             ]
@@ -27795,7 +27065,7 @@
                 "Bold": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -27812,7 +27082,7 @@
                 "Code": true
               },
               {
-                "Text": "): state.yaml keeps the last number minted per kind so a number never returns; ",
+                "Text": "): state.yaml은 종류마다 마지막으로 발급한 번호를 기억해 번호가 다시 나오지 않게 한다. ",
                 "Code": false
               },
               {
@@ -27820,7 +27090,7 @@
                 "Code": true
               },
               {
-                "Text": " bumps it for a hand-recorded unit and saves the state. ",
+                "Text": "는 손으로 기록한 unit을 위해 그 값을 올리고 상태를 저장한다. ",
                 "Code": false
               },
               {
@@ -27828,7 +27098,7 @@
                 "Code": true
               },
               {
-                "Text": " reads a merged state by dropping conflict markers and keeping the higher high water.",
+                "Text": "는 병합된 상태를 충돌 표시를 버리고 더 높은 high water를 남겨 읽는다.",
                 "Code": false
               }
             ]
@@ -27866,15 +27136,7 @@
                 "Code": true
               },
               {
-                "Text": " writes one render's pages and removes every other file there, except a ",
-                "Code": false
-              },
-              {
-                "Text": ".gitignore",
-                "Code": true
-              },
-              {
-                "Text": " other than the ",
+                "Text": "는 한 번의 렌더가 만든 페이지를 쓰고 그곳의 다른 파일을 지운다. 예전 abbd가 페이지를 git에서 빼려고 쓴 ",
                 "Code": false
               },
               {
@@ -27882,23 +27144,7 @@
                 "Code": true
               },
               {
-                "Text": " an earlier abbd wrote to keep the pages out of git (",
-                "Code": false
-              },
-              {
-                "Text": "foreignIgnore",
-                "Code": true
-              },
-              {
-                "Text": "), and ",
-                "Code": false
-              },
-              {
-                "Text": "BlueprintHash",
-                "Code": true
-              },
-              {
-                "Text": " skips any ",
+                "Text": " 외의 ",
                 "Code": false
               },
               {
@@ -27906,7 +27152,15 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": "는 남긴다(",
+                "Code": false
+              },
+              {
+                "Text": "foreignIgnore",
+                "Code": true
+              },
+              {
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -27914,7 +27168,7 @@
                 "Code": true
               },
               {
-                "Text": " writes the ",
+                "Text": "은 한 리비전에 커밋된 ",
                 "Code": false
               },
               {
@@ -27922,7 +27176,7 @@
                 "Code": true
               },
               {
-                "Text": " committed at a revision, its pages aside, into a directory and opens a store there, so ",
+                "Text": "를 페이지만 빼고 디렉터리에 풀어 store를 연다. 그래서 ",
                 "Code": false
               },
               {
@@ -27930,7 +27184,7 @@
                 "Code": true
               },
               {
-                "Text": " can draw the base again in the renderer of now.",
+                "Text": "가 기준 상태를 지금의 렌더러로 다시 그린다.",
                 "Code": false
               }
             ]
@@ -27952,7 +27206,53 @@
                 "Code": true
               },
               {
-                "Text": "): candidates.yaml lists each new unit that shares an anchor with an existing one, written as an empty list rather than left absent.",
+                "Text": "): candidates.yaml은 기존 unit과 anchor를 공유하는 새 unit을 나열하고, 없을 때도 빈 목록으로 쓴다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "lint debt",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "LoadLintDebt",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "SaveLintDebt",
+                "Code": true
+              },
+              {
+                "Text": "): lint-debt.yaml은 뷰마다의 hard 위반 빚, 합계 상한, 페이지 한도, 유지하는 레벨의 이유, 그리고 ",
+                "Code": false
+              },
+              {
+                "Text": "ProseDebt",
+                "Code": true
+              },
+              {
+                "Text": "를 담는다. ",
+                "Code": false
+              },
+              {
+                "Text": "ProseDebt",
+                "Code": true
+              },
+              {
+                "Text": "는 아직 project.yaml의 언어로 쓰이지 않은 텍스트를 lint가 보고하는 키로 나열하고 이유를 붙이며, 같은 언어일 때만 효력이 있다.",
                 "Code": false
               }
             ]
@@ -27974,7 +27274,7 @@
                 "Code": true
               },
               {
-                "Text": "): every write skips a file whose bytes are already equal, and otherwise writes a .tmp sibling and renames it into place, so the same state writes the same bytes.",
+                "Text": "): 모든 쓰기는 바이트가 같은 파일을 건너뛰고, 아니면 .tmp 형제 파일에 쓴 뒤 rename한다. 그래서 같은 상태는 같은 바이트를 쓴다.",
                 "Code": false
               }
             ]
@@ -28005,7 +27305,7 @@
                 "Code": true
               },
               {
-                "Text": "): hashes every ",
+                "Text": "): 페이지가 그릴 수 있는 ",
                 "Code": false
               },
               {
@@ -28013,39 +27313,15 @@
                 "Code": true
               },
               {
-                "Text": " file a page can render, leaving out the blueprint, the state, the lint debt and the compare view, where ",
+                "Text": " 파일을 모두 해시하되 blueprint, state, lint debt, compare 뷰는 뺀다. 페이지가 owner를 보여 주므로 ",
                 "Code": false
               },
               {
-                "Text": "scope.yaml",
+                "Text": "owners.File",
                 "Code": true
               },
               {
-                "Text": " holds the ",
-                "Code": false
-              },
-              {
-                "Text": "Scope",
-                "Code": true
-              },
-              {
-                "Text": " that ",
-                "Code": false
-              },
-              {
-                "Text": "LoadScope",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "SaveScope",
-                "Code": true
-              },
-              {
-                "Text": " read and write for ",
+                "Text": "이 찾은 CODEOWNERS도 입력으로 센다. ",
                 "Code": false
               },
               {
@@ -28053,7 +27329,39 @@
                 "Code": true
               },
               {
-                "Text": ", kept out of git; ",
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "Scope",
+                "Code": true
+              },
+              {
+                "Text": "는 git 밖의 ",
+                "Code": false
+              },
+              {
+                "Text": "scope.yaml",
+                "Code": true
+              },
+              {
+                "Text": "에 ",
+                "Code": false
+              },
+              {
+                "Text": "LoadScope",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "SaveScope",
+                "Code": true
+              },
+              {
+                "Text": "로 읽고 쓴다. ",
                 "Code": false
               },
               {
@@ -28061,7 +27369,7 @@
                 "Code": true
               },
               {
-                "Text": " hashes files by name with CRLF read as LF, so a converted checkout stays current.",
+                "Text": "는 CRLF를 LF로 읽어 이름별로 해시하므로 줄 끝이 바뀐 체크아웃도 CURRENT로 남는다.",
                 "Code": false
               }
             ]
@@ -28091,7 +27399,7 @@
                 "Code": true
               },
               {
-                "Text": " records one hash per anchor of the module and of every unit under it, a directory as one hash of the paths under it, and each quote as the lines around it, and the digest hashes them all. ",
+                "Text": "는 모듈과 그 아래 모든 unit의 anchor마다 해시 하나를, 디렉터리는 그 아래 경로 전체의 해시 하나를, 인용은 주변 줄의 해시를 기록하고 digest는 그것들을 묶어 해시한다. ",
                 "Code": false
               },
               {
@@ -28099,7 +27407,7 @@
                 "Code": true
               },
               {
-                "Text": " compares a stored text, ",
+                "Text": "가 저장된 텍스트와 비교하고 ",
                 "Code": false
               },
               {
@@ -28107,7 +27415,7 @@
                 "Code": true
               },
               {
-                "Text": " lists what moved, and ",
+                "Text": "가 움직인 곳을 나열하며, ",
                 "Code": false
               },
               {
@@ -28115,7 +27423,7 @@
                 "Code": true
               },
               {
-                "Text": " carries older texts forward only when their code is shown unchanged.",
+                "Text": "는 코드가 그대로임이 보일 때만 옛 텍스트를 넘긴다.",
                 "Code": false
               }
             ]
@@ -28137,7 +27445,7 @@
                 "Code": true
               },
               {
-                "Text": "): a note or a figure part is stamped only against the places it cites, a quote held more than once counting as missing, so an edit near one note stales that note alone; ",
+                "Text": "): 노트나 figure 파트는 인용한 곳에 대해서만 stamp된다. 한 파일에 두 번 이상 있는 인용은 없는 것으로 세므로, 한 노트 근처의 수정은 그 노트만 STALE로 만든다. ",
                 "Code": false
               },
               {
@@ -28145,7 +27453,32 @@
                 "Code": true
               },
               {
-                "Text": " stores flows, stacks and tables with a stamp per part.",
+                "Text": "는 flow, stack, table을 ",
+                "Code": false
+              },
+              {
+                "Text": "Part",
+                "Code": true
+              },
+              {
+                "Text": "마다 쓴 사람과 stamp를 붙여 저장하고, figure의 ",
+                "Code": false
+              },
+              {
+                "Text": "Origin",
+                "Code": true
+              },
+              {
+                "Text": "은 파트 중 가장 약한 origin이다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "이 패키지에는 스레드, 풀, 타이머가 없다. 실패는 호출자에게 error로 돌려주고 재시도하지 않는다.",
                 "Code": false
               }
             ]
@@ -28183,6 +27516,12 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
+                "Need": "선택"
+              },
+              {
+                "Key": "language",
+                "Name": "language",
+                "Shape": "model.Language",
                 "Need": "선택"
               }
             ],
@@ -31267,6 +30606,7 @@
       },
       "Units": null,
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -31286,7 +30626,7 @@
                 "Code": true
               },
               {
-                "Text": " reads a module's text the way a human reader meets it on the blueprint: as sections, each describing the code as it is now. It has two checks. ",
+                "Text": "는 모듈 텍스트를 사람이 blueprint에서 만나는 방식대로 읽는다. 텍스트는 섹션으로 나뉘고, 각 섹션은 지금의 코드를 설명해야 한다. 검사는 세 가지다. ",
                 "Code": false
               },
               {
@@ -31294,7 +30634,7 @@
                 "Code": true
               },
               {
-                "Text": " finds a section whose prose runs past ",
+                "Text": "은 산문이 ",
                 "Code": false
               },
               {
@@ -31302,7 +30642,7 @@
                 "Code": true
               },
               {
-                "Text": ", 2000 characters. Status reports each such section, and ",
+                "Text": "(2000자)을 넘는 섹션을 찾는다. status는 그런 섹션을 모두 보고하고, ",
                 "Code": false
               },
               {
@@ -31310,7 +30650,7 @@
                 "Code": true
               },
               {
-                "Text": " refuses a text only when its first section, the summary a page shows first, runs past it. ",
+                "Text": "는 첫 섹션, 곧 페이지가 먼저 보여 주는 요약이 넘을 때만 텍스트를 거부한다. ",
                 "Code": false
               },
               {
@@ -31318,7 +30658,7 @@
                 "Code": true
               },
               {
-                "Text": " finds a phrase that reads as the code's history rather than its present: a date, an issue or PR number, or a tag such as ",
+                "Text": "는 날짜, 이슈나 PR 번호, ",
                 "Code": false
               },
               {
@@ -31326,7 +30666,23 @@
                 "Code": true
               },
               {
-                "Text": ". The package only reads text and returns what it found. ",
+                "Text": " 같은 태그처럼 지금이 아니라 코드의 과거로 읽히는 구절을 찾는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Share",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsIn",
+                "Code": true
+              },
+              {
+                "Text": "은 텍스트의 산문이 주어진 문자 체계로 쓰였는지 잰다. 패키지는 텍스트를 읽고 찾은 것을 돌려줄 뿐이다. ",
                 "Code": false
               },
               {
@@ -31334,7 +30690,7 @@
                 "Code": true
               },
               {
-                "Text": " is how both checks and the blueprint read a text line by line, so they split it at the same headings and treat the same lines as code. The abbd CLI prints the findings when ",
+                "Text": "는 세 검사와 blueprint가 텍스트를 줄 단위로 읽는 공통 방법이라, 모두 같은 제목에서 나누고 같은 줄을 코드로 본다. abbd CLI는 ",
                 "Code": false
               },
               {
@@ -31342,7 +30698,7 @@
                 "Code": true
               },
               {
-                "Text": " stores a text and when ",
+                "Text": "가 텍스트를 저장할 때와 ",
                 "Code": false
               },
               {
@@ -31350,7 +30706,7 @@
                 "Code": true
               },
               {
-                "Text": " runs, and neither command refuses a text or fails a check on them, because a version number or a name can read as history.",
+                "Text": "가 돌 때 결과를 출력한다. 버전 번호나 이름도 과거처럼 읽힐 수 있으므로 어느 명령도 History 결과로 텍스트를 거부하거나 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -31381,7 +30737,7 @@
                 "Code": true
               },
               {
-                "Text": "): each line of a text with its ",
+                "Text": "): 텍스트의 각 줄을 ",
                 "Code": false
               },
               {
@@ -31389,7 +30745,7 @@
                 "Code": true
               },
               {
-                "Text": ": ",
+                "Text": "(",
                 "Code": false
               },
               {
@@ -31413,7 +30769,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -31421,7 +30777,15 @@
                 "Code": true
               },
               {
-                "Text": ". A line starting with three or more backticks or tildes is a ",
+                "Text": ")와 함께 담은 ",
+                "Code": false
+              },
+              {
+                "Text": "Line",
+                "Code": true
+              },
+              {
+                "Text": "으로 돌려준다. 백틱이나 물결표 세 개 이상으로 시작하는 줄은 코드 블록을 여는 ",
                 "Code": false
               },
               {
@@ -31429,7 +30793,7 @@
                 "Code": true
               },
               {
-                "Text": " that opens a code block, and a line of only as many or more of the same closes it. After a run of backticks the rest of the line may hold no backtick, as CommonMark has it, so a line that starts with an inline code span stays ",
+                "Text": "이고, 같은 문자만 그만큼 이상 있는 줄이 닫는다. CommonMark처럼 백틱 묶음 뒤에 백틱이 또 있으면 안 되므로, 인라인 코드로 시작하는 줄은 ",
                 "Code": false
               },
               {
@@ -31437,7 +30801,7 @@
                 "Code": true
               },
               {
-                "Text": ". An unclosed block runs to the text's end. Every line inside is ",
+                "Text": "로 남는다. 닫히지 않은 블록은 텍스트 끝까지 이어진다. 블록 안의 줄은 들여쓰기를 지킨 ",
                 "Code": false
               },
               {
@@ -31445,7 +30809,7 @@
                 "Code": true
               },
               {
-                "Text": ", kept with its indentation, so a ",
+                "Text": "라서 그 안의 ",
                 "Code": false
               },
               {
@@ -31453,7 +30817,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": "나 ",
                 "Code": false
               },
               {
@@ -31461,7 +30825,7 @@
                 "Code": true
               },
               {
-                "Text": " there is no heading. Outside a block, a line that starts with ",
+                "Text": "는 제목이 아니다. 블록 밖에서 ",
                 "Code": false
               },
               {
@@ -31469,7 +30833,7 @@
                 "Code": true
               },
               {
-                "Text": " is a ",
+                "Text": "으로 시작하는 줄은 제목의 단어를 담은 ",
                 "Code": false
               },
               {
@@ -31477,7 +30841,7 @@
                 "Code": true
               },
               {
-                "Text": ", holding the heading's words. ",
+                "Text": "이다. ",
                 "Code": false
               },
               {
@@ -31485,7 +30849,7 @@
                 "Code": true
               },
               {
-                "Text": " reads the same ",
+                "Text": "도 같은 ",
                 "Code": false
               },
               {
@@ -31493,7 +30857,7 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": "를 읽는다.",
                 "Code": false
               }
             ]
@@ -31515,15 +30879,15 @@
                 "Code": true
               },
               {
-                "Text": "): the lines under one heading, up to the next heading of any level. A heading is a ",
+                "Text": "): ",
                 "Code": false
               },
               {
-                "Text": "Heading",
+                "Text": "Sections",
                 "Code": true
               },
               {
-                "Text": " line from ",
+                "Text": "가 나눈, 한 제목 아래부터 다음 제목(수준 무관)까지의 줄이다. 제목은 blueprint가 제목을 그리는 규칙과 같은 ",
                 "Code": false
               },
               {
@@ -31531,7 +30895,15 @@
                 "Code": true
               },
               {
-                "Text": ", the same rule the blueprint uses to draw one, so ",
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "Heading",
+                "Code": true
+              },
+              {
+                "Text": "이므로, ",
                 "Code": false
               },
               {
@@ -31539,7 +30911,7 @@
                 "Code": true
               },
               {
-                "Text": " subsections split a long section for the counter and the reader alike. Prose before the first heading forms a section with an empty heading. ",
+                "Text": " 하위 섹션은 세는 쪽과 읽는 쪽 모두에게 긴 섹션을 나눈다. 첫 제목 앞의 산문은 빈 제목의 섹션이 된다. ",
                 "Code": false
               },
               {
@@ -31547,7 +30919,7 @@
                 "Code": true
               },
               {
-                "Text": " counts the runes of the section's non-blank lines, code and fences included, without the heading.",
+                "Text": "는 제목을 빼고 섹션의 비어 있지 않은 줄의 rune을 코드와 fence까지 포함해 센다.",
                 "Code": false
               }
             ]
@@ -31569,7 +30941,7 @@
                 "Code": true
               },
               {
-                "Text": "): each section over ",
+                "Text": "): ",
                 "Code": false
               },
               {
@@ -31577,16 +30949,7 @@
                 "Code": true
               },
               {
-                "Text": ". The threshold is a report line for the agent who writes the text, never a gate.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
-                "Text": "History marks",
+                "Text": "을 넘는 각 섹션이다. 이 기준은 텍스트를 쓰는 에이전트에게 주는 보고일 뿐 관문이 아니다.",
                 "Code": false
               }
             ]
@@ -31616,7 +30979,7 @@
                 "Code": true
               },
               {
-                "Text": " runs an ordered table of patterns over each ",
+                "Text": "는 순서가 정해진 패턴 표를 각 ",
                 "Code": false
               },
               {
@@ -31624,7 +30987,7 @@
                 "Code": true
               },
               {
-                "Text": " line, so a code block is never read. Dates come first, then history tags, then issue and PR references from the most specific (",
+                "Text": " 줄에 돌리므로 코드 블록은 읽지 않는다. 날짜가 먼저, 다음은 과거를 뜻하는 태그, 그다음 이슈와 PR 참조를 가장 구체적인 것(",
                 "Code": false
               },
               {
@@ -31640,7 +31003,7 @@
                 "Code": true
               },
               {
-                "Text": ") to a bare ",
+                "Text": ")부터 맨 ",
                 "Code": false
               },
               {
@@ -31648,7 +31011,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": "까지 본다. ",
                 "Code": false
               },
               {
@@ -31656,7 +31019,7 @@
                 "Code": true
               },
               {
-                "Text": " marks each ",
+                "Text": "는 각 ",
                 "Code": false
               },
               {
@@ -31664,7 +31027,7 @@
                 "Code": true
               },
               {
-                "Text": " span and each URL, a scheme followed by ",
+                "Text": " 구간과 URL(스킴 뒤 ",
                 "Code": false
               },
               {
@@ -31672,7 +31035,7 @@
                 "Code": true
               },
               {
-                "Text": " up to the next blank, and ",
+                "Text": "부터 다음 공백까지)을 표시하고 ",
                 "Code": false
               },
               {
@@ -31680,7 +31043,7 @@
                 "Code": true
               },
               {
-                "Text": " skips them, so a fragment such as ",
+                "Text": "는 그것을 건너뛰므로 ",
                 "Code": false
               },
               {
@@ -31688,7 +31051,7 @@
                 "Code": true
               },
               {
-                "Text": " is not an issue number. A span one pattern reports is taken, so a later pattern never reports it again. A ",
+                "Text": "의 조각은 이슈 번호가 아니다. 한 패턴이 보고한 구간은 차지된 것이라 뒤 패턴이 다시 보고하지 않는다. ",
                 "Code": false
               },
               {
@@ -31696,7 +31059,7 @@
                 "Code": true
               },
               {
-                "Text": " names its section, what it reads as, and the phrase. Version numbers, identifiers, anchors such as ",
+                "Text": "는 섹션, 무엇으로 읽히는지, 구절을 담는다. 버전 번호, 식별자, ",
                 "Code": false
               },
               {
@@ -31704,7 +31067,94 @@
                 "Code": true
               },
               {
-                "Text": ", and words such as \"no longer\" or \"old format\" describe code as it is, and no pattern matches them.",
+                "Text": " 같은 앵커, \"no longer\"나 \"old format\" 같은 말은 지금의 코드를 설명하므로 어느 패턴에도 걸리지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "언어 판정",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "language.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "ProseText",
+                "Code": true
+              },
+              {
+                "Text": "는 어느 언어로 쓰든 그대로 두는 것을 뺀 산문이다. ",
+                "Code": false
+              },
+              {
+                "Text": "Lines",
+                "Code": true
+              },
+              {
+                "Text": "가 코드와 제목으로 읽은 줄, 인라인 코드, 큰따옴표와 꺾쇠 따옴표 안의 인용, 그리고 경로나 호출 기호, 숫자, 밑줄을 품거나 camelCase이거나 대문자 두 자 이상인 단어를 뺀다. ",
+                "Code": false
+              },
+              {
+                "Text": "Share",
+                "Code": true
+              },
+              {
+                "Text": "는 남은 글자 중 주어진 문자 체계(",
+                "Code": false
+              },
+              {
+                "Text": "model.Language",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "Script",
+                "Code": true
+              },
+              {
+                "Text": ")에 속한 비율과 글자 수를 돌려주고, 글자가 없으면 1이다. ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsIn",
+                "Code": true
+              },
+              {
+                "Text": "은 그 비율이 ",
+                "Code": false
+              },
+              {
+                "Text": "Threshold",
+                "Code": true
+              },
+              {
+                "Text": " 0.3 이상인지 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "이 패키지에는 상태, 스레드, 실패 경로가 없다. 문자열을 받아 결과를 돌려주는 순수 함수뿐이다.",
                 "Code": false
               }
             ]
