@@ -6584,7 +6584,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " prints the raw records. Setup, sync and status count the open ones on a ",
+                  "Text": " prints the raw records. A posts_to candidate counts as stored once a relation quotes one send and one recv of its pair. Setup, sync and status count the open ones on a ",
                   "Code": false
                 },
                 {
@@ -6592,7 +6592,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " line, which never fails ",
+                  "Text": " line, printed only when the catalog finds a candidate and never failing ",
                   "Code": false
                 },
                 {
@@ -7121,7 +7121,7 @@
                 "Code": true
               },
               {
-                "Text": " prints the raw records. Setup, sync and status count the open ones on a ",
+                "Text": " prints the raw records. A posts_to candidate counts as stored once a relation quotes one send and one recv of its pair. Setup, sync and status count the open ones on a ",
                 "Code": false
               },
               {
@@ -7129,7 +7129,7 @@
                 "Code": true
               },
               {
-                "Text": " line, which never fails ",
+                "Text": " line, printed only when the catalog finds a candidate and never failing ",
                 "Code": false
               },
               {
