@@ -41,6 +41,7 @@ type unit struct {
 	Anchors   []anchor `json:"anchors"`
 	Digest    string   `json:"digest,omitempty"`
 	Entries   []entry  `json:"entries,omitempty"`
+	Parent    string   `json:"parent,omitempty"`
 }
 
 // entry is one part of a contract the code spells: a command's flag.
@@ -337,6 +338,10 @@ func modules() []unit {
 			continue
 		}
 		u := unit{Key: "mod-" + strings.TrimPrefix(dir, "internal/"), Kind: "MOD", Name: dir, Anchors: []anchor{{Path: dir}}}
+		// A package inside another package's directory sits inside its module.
+		if up := path.Dir(dir); up != "internal" && len(byDir[up]) > 0 {
+			u.Parent = "mod-" + strings.TrimPrefix(up, "internal/")
+		}
 		for _, p := range byDir[dir] {
 			u.Anchors = append(u.Anchors, anchor{Path: p})
 		}
@@ -430,7 +435,7 @@ func contractTable() []contract {
 	return append(commandContracts(), []contract{
 		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitUsage"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil, nil, "", ""},
 		{"if-edge-key", "IF", "relation key", []anchor{{"internal/model/model.go", "Edge"}, {"internal/model/model.go", "ParseEdge"}}, "mod-model", edgeKeySig, nil, nil, "", ""},
-		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "rawResult"}, {"internal/extract/extract.go", "rawUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", literal("extraction json"), nil, nil, "internal/extract.rawResult", "json"},
+		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "Doc"}, {"internal/extract/extract.go", "DocUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", literal("extraction json"), nil, nil, "internal/extract.Doc", "json"},
 		{"cfg-project", "CFG", "project.yaml", []anchor{{"internal/store/store.go", "Project"}, {"internal/store/store.go", "LoadProject"}, {"internal/store/store.go", "SaveProject"}}, "mod-store", literal(".abbd/project.yaml"), nil, nil, "internal/store.Project", "yaml"},
 		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", literal(".abbd/{architecture,features}/ID.md frontmatter"), nil, nil, "internal/model.Unit", "yaml"},
 		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", literal(".abbd/understanding/MOD.md frontmatter"), nil, nil, "internal/store.Understanding", "yaml"},

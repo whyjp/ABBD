@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(order C)
+add_library(core STATIC src/core.c)
+add_executable(cli src/cli.c)
+target_link_libraries(cli PRIVATE core)
+add_executable(other src/other.c)
+add_dependencies(other cli)
