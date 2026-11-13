@@ -8121,16 +8121,14 @@
                   "Ref": "IF-0003.entries.check",
                   "Title": "항목",
                   "Key": "check",
-                  "Stale": true,
-                  "Changed": [
-                    "cmd/abbd/evidence.go (the lines around it changed)"
-                  ],
+                  "Reader": "pstack poteto-mode 0.15.36",
+                  "Stale": false,
                   "Blocks": [
                     {
                       "Kind": "p",
                       "Parts": [
                         {
-                          "Text": "Exits 1 while anything status reports can still be brought current in the same PR: a STALE state, blueprint, text or note, a drifted evidence item, or a dangling phrase note whose edge no longer shows.",
+                          "Text": "Exits 1 while anything status reports can still be brought current in the same PR: a STALE or UNKNOWN state or blueprint, a STALE module text, note or figure part, a drifted evidence item, or a dangling phrase note whose edge no longer shows. Parent and condition conflicts it prints, and they do not fail it.",
                           "Code": false
                         }
                       ]
@@ -9624,7 +9622,6 @@
         "Provides": 1,
         "Uses": 0,
         "Direct": 3,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -9654,7 +9651,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -10302,7 +10300,23 @@
                 "Code": true
               },
               {
-                "Text": ", the condition it holds under, like a script relation.",
+                "Text": ", the condition it holds under, like a script relation. On an edge the script reads but without the condition, as with a CMake ",
+                "Code": false
+              },
+              {
+                "Text": "if()",
+                "Code": true
+              },
+              {
+                "Text": " around a link, or with only its link scope, a supplement relation that gives one is added as a claim below the script's, and it must cite the line the condition is written on. A sync rebuilds only the script's claim, so the condition stays. A supplement condition that differs from one the script reads, or a scope where the script reads a condition, goes to ",
+                "Code": false
+              },
+              {
+                "Text": "Findings.Conflicts",
+                "Code": true
+              },
+              {
+                "Text": ", and the script's shows. A phrase and a condition are all the supplement adds to an edge the script reads.",
                 "Code": false
               }
             ]
@@ -11363,7 +11377,6 @@
         "Provides": 1,
         "Uses": 1,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11415,7 +11428,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -12604,7 +12618,15 @@
                 "Code": true
               },
               {
-                "Text": " characters or over one line.",
+                "Text": " characters or over one line, and an edge listed again with another condition, telling the script to give it once with its conditions joined as ",
+                "Code": false
+              },
+              {
+                "Text": "a | b",
+                "Code": true
+              },
+              {
+                "Text": ", or to leave a link scope out, since a scope is not a condition.",
                 "Code": false
               }
             ]
@@ -19384,7 +19406,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20588,7 +20609,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20937,7 +20958,31 @@
                 "Code": true
               },
               {
-                "Text": " chip on the provider. A thick ",
+                "Text": " chip on the provider. ",
+                "Code": false
+              },
+              {
+                "Text": "spread",
+                "Code": true
+              },
+              {
+                "Text": " sets a box's chips left to right by the mean x their lines lead to, and chips that lead to one x by the least ID of the places they lead to (",
+                "Code": false
+              },
+              {
+                "Text": "attach.to",
+                "Code": true
+              },
+              {
+                "Text": "), never by the contracts they carry, so a chip keeps its place when its line gains a contract (",
+                "Code": false
+              },
+              {
+                "Text": "TestAChipKeepsItsPlaceWhenItsLineGainsAContract",
+                "Code": true
+              },
+              {
+                "Text": "). A thick ",
                 "Code": false
               },
               {
@@ -24263,7 +24308,71 @@
                 "Code": true
               },
               {
-                "Text": ". A phrase is set in italic, so it reads apart from a via word. A label keeps more than twice its offset from any other line parallel to its stretch, so it never stands between two lines, and the area it keeps clear covers its glyphs to the half pixel. A bus whose lines all say one word is labelled once. ",
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": " with the condition ",
+                "Code": false
+              },
+              {
+                "Text": "model.Unit.Condition",
+                "Code": true
+              },
+              {
+                "Text": " gives a relation, plus ",
+                "Code": false
+              },
+              {
+                "Text": "WhenOrigin",
+                "Code": true
+              },
+              {
+                "Text": " when a lower claim than the line's own gives it. ",
+                "Code": false
+              },
+              {
+                "Text": "tree.whens",
+                "Code": true
+              },
+              {
+                "Text": " holds the same per relation, and ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": " adds to the line's tooltip each condition (",
+                "Code": false
+              },
+              {
+                "Text": "조건:",
+                "Code": true
+              },
+              {
+                "Text": ") and each link scope (",
+                "Code": false
+              },
+              {
+                "Text": "범위:",
+                "Code": true
+              },
+              {
+                "Text": ") with how many of the line's relations it gates (",
+                "Code": false
+              },
+              {
+                "Text": "conditions",
+                "Code": true
+              },
+              {
+                "Text": "). A phrase is set in italic, so it reads apart from a via word. A label keeps more than twice its offset from any other line parallel to its stretch, so it never stands between two lines, and the area it keeps clear covers its glyphs to the half pixel. A bus whose lines all say one word is labelled once. ",
                 "Code": false
               },
               {
@@ -28910,7 +29019,6 @@
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -29040,7 +29148,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -30421,7 +30530,7 @@
                 "Code": true
               },
               {
-                "Text": " carries its relation's ",
+                "Text": " carries as ",
                 "Code": false
               },
               {
@@ -30429,7 +30538,47 @@
                 "Code": true
               },
               {
-                "Text": ", and ",
+                "Text": " the condition ",
+                "Code": false
+              },
+              {
+                "Text": "model.Unit.Condition",
+                "Code": true
+              },
+              {
+                "Text": " gives its relation, and as ",
+                "Code": false
+              },
+              {
+                "Text": "WhenOrigin",
+                "Code": true
+              },
+              {
+                "Text": " the origin of the claim that gives it when that is a lower claim than the link's own. ",
+                "Code": false
+              },
+              {
+                "Text": "ConditionLabel",
+                "Code": true
+              },
+              {
+                "Text": " says ",
+                "Code": false
+              },
+              {
+                "Text": "when X",
+                "Code": true
+              },
+              {
+                "Text": ", or ",
+                "Code": false
+              },
+              {
+                "Text": "scope X",
+                "Code": true
+              },
+              {
+                "Text": " for a link scope, with that origin. ",
                 "Code": false
               },
               {
@@ -30437,7 +30586,85 @@
                 "Code": true
               },
               {
-                "Text": " says it after the via.",
+                "Text": " puts it after the via, or after a ",
+                "Code": false
+              },
+              {
+                "Text": ";",
+                "Code": true
+              },
+              {
+                "Text": " when a lower claim gives it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Condition change",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "diff.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Compare",
+                "Code": true
+              },
+              {
+                "Text": " lists in ",
+                "Code": false
+              },
+              {
+                "Text": "Diff.Conditions",
+                "Code": true
+              },
+              {
+                "Text": " each live relation, there in base and now, whose condition changed (",
+                "Code": false
+              },
+              {
+                "Text": "conditions",
+                "Code": true
+              },
+              {
+                "Text": "), in edge order. ",
+                "Code": false
+              },
+              {
+                "Text": "Lines",
+                "Code": true
+              },
+              {
+                "Text": " prints each as ",
+                "Code": false
+              },
+              {
+                "Text": "~ condition",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "Within",
+                "Code": true
+              },
+              {
+                "Text": " keeps those with an end in scope.",
                 "Code": false
               }
             ]
