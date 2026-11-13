@@ -481,9 +481,13 @@ func (r *rustReader) crateRefs(c rustCrate, refs []lsp.Location) {
 			continue
 		}
 		r.mu.Lock()
-		k := r.src[p].at(l.Range.Start.Line, l.Range.Start.Character)
+		src := r.src[p]
 		r.mu.Unlock()
-		if k != inText {
+		k := src.at(l.Range.Start.Line, l.Range.Start.Character)
+		// The crate keyword, as in use crate::x or pub(crate), names the
+		// crate root from inside the crate; the path goes on to x, whose own
+		// references hold the link.
+		if k != inText && src.text(l.Range) == c.name {
 			r.add(fact{link{u, c.unit, model.DependsOn}, "import", site{path: p, line: line}}, k != inUse)
 		}
 	}
