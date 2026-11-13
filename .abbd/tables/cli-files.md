@@ -1,5 +1,5 @@
 ---
-question: Which part of the abbd CLI reads and writes which .abbd file?
+question: abbd CLI의 어느 부분이 어느 .abbd 파일을 읽고 쓰는가?
 format: 1
 columns:
     - name: unit files
@@ -15,35 +15,35 @@ columns:
 rows:
     - unit: MOD-0004
       cells:
-        module texts: re-stamps old-format texts whose code matches, names the rest to re-read
-        project.yaml: reads the extraction argv to run the project's script
-        state.yaml: reads the ID high-water mark, then writes revision and fingerprint
-        unit files: rewrites every unit file from the reconciled extraction, a module's sentences stamped with its code
+        module texts: 코드가 맞는 옛 형식 글은 다시 찍고, 나머지는 다시 읽으라고 이름 댄다
+        project.yaml: 추출 argv를 읽어 돌리며, 등록된 abbd는 sync하는 바이너리 자신으로 돌린다
+        state.yaml: ID 최고 수위를 읽고, 리비전과 지문을 쓴다
+        unit files: 맞춰 본 추출로 모든 unit 파일을 다시 쓰고, 모듈 문장은 그 코드로 찍는다
       evidence:
         - path: cmd/abbd/main.go
-          lines: "567"
+          lines: "575"
           symbol: syncActual
           quote: if err := st.SaveUnits(res.Units); err != nil {
         - path: cmd/abbd/main.go
-          lines: "537"
+          lines: "545"
           symbol: syncActual
           quote: state, err := st.LoadState()
         - path: cmd/abbd/main.go
-          lines: "584"
+          lines: "592"
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
-          lines: "573"
+          lines: "581"
           symbol: syncActual
           quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
         - path: cmd/abbd/main.go
-          lines: "456"
+          lines: "463"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
         cmd/abbd/main.go#quote-045deabc: 277a8a331c1c57f6
         cmd/abbd/main.go#quote-714f2ba0: 59f3f48639d38179
-        cmd/abbd/main.go#quote-22175f6c: 98424d209f0d7558
+        cmd/abbd/main.go#quote-22175f6c: 3443bae8d01db7ad
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-e28fdf28: fc29a42387cb7d71
     - unit: MOD-0006
@@ -74,11 +74,11 @@ rows:
         unit files: reads every unit to resolve and answer a query
       evidence:
         - path: cmd/abbd/query.go
-          lines: "267"
+          lines: "273"
           symbol: explainHow
           quote: texts, err := e.st.LoadUnderstandings()
         - path: cmd/abbd/query.go
-          lines: "277"
+          lines: "283"
           symbol: explainHow
           quote: if t.Digest != e.st.ModuleDigest(units, u.ID) {
       writer: reader
@@ -117,15 +117,15 @@ rows:
         unit files: compares the stored units with the base revision's, or with the copy a write kept before the edits since the last commit
       evidence:
         - path: cmd/abbd/diff.go
-          lines: "250"
+          lines: "263"
           symbol: unitsAt
           quote: return e.st.UnitsAt(base)
         - path: cmd/abbd/evidence.go
-          lines: "143"
+          lines: "148"
           symbol: status
           quote: 'case in.Synced.Fingerprint == "":'
         - path: cmd/abbd/evidence.go
-          lines: "146"
+          lines: "151"
           symbol: status
           quote: switch in.BlueprintFreshness() {
       writer: reader
@@ -433,7 +433,38 @@ retired:
         cmd/abbd/record.go#quote-96b34390: cea44e852e7a7e92
         cmd/abbd/record.go#quote-5614cda7: dec0a70e1688a95f
         cmd/abbd/understand.go#quote-e0b4fa19: c471eda324bee52c
+    - unit: MOD-0004
+      cells:
+        module texts: re-stamps old-format texts whose code matches, names the rest to re-read
+        project.yaml: reads the extraction argv to run the project's script
+        state.yaml: reads the ID high-water mark, then writes revision and fingerprint
+        unit files: rewrites every unit file from the reconciled extraction, a module's sentences stamped with its code
+      evidence:
+        - path: cmd/abbd/main.go
+          lines: "567"
+          symbol: syncActual
+          quote: if err := st.SaveUnits(res.Units); err != nil {
+        - path: cmd/abbd/main.go
+          lines: "537"
+          symbol: syncActual
+          quote: state, err := st.LoadState()
+        - path: cmd/abbd/main.go
+          lines: "584"
+          symbol: syncActual
+          quote: return res, st.SaveState(state)
+        - path: cmd/abbd/main.go
+          lines: "573"
+          symbol: syncActual
+          quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
+        - path: cmd/abbd/main.go
+          lines: "456"
+          quote: p, err := e.st.LoadProject()
+      code:
+        cmd/abbd/main.go#quote-045deabc: 277a8a331c1c57f6
+        cmd/abbd/main.go#quote-714f2ba0: 59f3f48639d38179
+        cmd/abbd/main.go#quote-22175f6c: 98424d209f0d7558
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-e28fdf28: fc29a42387cb7d71
 ---
 
-Each row is one part of the CLI and each column one file under `.abbd/`. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.
-cells: 9 cell(s) say a use no stored relation carries, 0 empty cell(s) sit over a stored relation; abbd status lists them
+행마다 CLI의 한 부분이고, 열마다 `.abbd/` 아래 파일 하나다. 토폴로지는 sync와 record 작성기만 쓴다. 쓰는 명령은 모두 그 뒤에 블루프린트를 그리므로 blueprint publish는 모든 입력을 읽고 블루프린트와 상태를 쓴다. query와 review 명령은 읽기만 한다.
