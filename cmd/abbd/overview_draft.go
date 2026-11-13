@@ -79,24 +79,23 @@ func newQuoteFinder(e env, units []model.Unit) quoteFinder {
 }
 
 // find returns a line of the candidate's from box that names a unit a
-// relation under it runs to, and that its file holds once, with the name it
+// relation under it runs to, and that its file holds once, with what it
 // matched. It looks for a line that calls a name before any line that names
-// one, and tries the relations strongest first, each by the names
-// identNames gives in order. It finds none when no such line exists.
+// one, and tries the relations strongest first, each by the needles in
+// order. It finds none when no such line exists.
 func (q quoteFinder) find(c model.LineCandidate) (model.Evidence, string, bool) {
 	files, ok := q.files[c.From]
 	if !ok {
 		files, _ = q.e.st.Read(q.units, c.From)
-		files = slices.DeleteFunc(slices.Sorted(slices.Values(files)), testFile)
+		files = quotable(slices.Sorted(slices.Values(files)))
 		q.files[c.From] = files
 	}
 	for _, call := range []bool{true, false} {
 		for _, end := range c.Ends {
-			for _, name := range identNames(q.byID[end[0]], q.byID[end[1]]) {
-				word := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
+			for _, n := range needles(q.byID[end[0]], q.byID[end[1]]) {
 				for _, f := range files {
-					if ev, ok := q.line(f, name, word, call, []model.ID{c.From, c.To}); ok {
-						return ev, name, true
+					if ev, ok := q.line(f, n, call, []model.ID{c.From, c.To}); ok {
+						return ev, n.name, true
 					}
 				}
 			}
@@ -105,10 +104,29 @@ func (q quoteFinder) find(c model.LineCandidate) (model.Evidence, string, bool) 
 	return model.Evidence{}, "", false
 }
 
-// line is the first line of file f that names name as a word, calls it when
-// call is set, that the file holds once and that lies in the code of ends,
-// as abbd overview FILE takes a line's quote.
-func (q quoteFinder) line(f, name string, word *regexp.Regexp, call bool, ends []model.ID) (model.Evidence, bool) {
+// quotable are the files of a box a quote may come from: its code. Tests,
+// test fixtures and prose are no code of the box, and a data file such as
+// JSON or YAML counts only for a box that has no code of a language.
+func quotable(files []string) []string {
+	files = slices.DeleteFunc(files, noQuoteFile)
+	if slices.ContainsFunc(files, func(f string) bool { return !dataFile(f) }) {
+		files = slices.DeleteFunc(files, dataFile)
+	}
+	return files
+}
+
+// line is the first line of file f that n names, that calls it when call is
+// set, that the file holds once and that lies in the code of ends, as abbd
+// overview FILE takes a line's quote. A comment and the definition of a
+// function are no use of what they name.
+func (q quoteFinder) line(f string, n needle, call bool, ends []model.ID) (model.Evidence, bool) {
+	re := n.word
+	if call {
+		re = n.call
+	}
+	if re == nil {
+		return model.Evidence{}, false
+	}
 	lines, ok := q.text[f]
 	if !ok {
 		b, _ := os.ReadFile(filepath.Join(q.e.root, filepath.FromSlash(f)))
@@ -116,11 +134,8 @@ func (q quoteFinder) line(f, name string, word *regexp.Regexp, call bool, ends [
 		q.text[f] = lines
 	}
 	for i, line := range lines {
-		if !strings.Contains(line, name) || call && !strings.Contains(line, name+"(") {
-			continue
-		}
 		line = strings.TrimSpace(line)
-		if len(line) > 160 || !word.MatchString(line) {
+		if len(line) > 160 || !re.MatchString(line) || commentary.MatchString(line) || definition.MatchString(line) {
 			continue
 		}
 		ev := model.Evidence{Path: f, Lines: strconv.Itoa(i + 1), Quote: line}
@@ -129,6 +144,67 @@ func (q quoteFinder) line(f, name string, word *regexp.Regexp, call bool, ends [
 		}
 	}
 	return model.Evidence{}, false
+}
+
+// commentary is a line of a comment in most languages, and definition the
+// line that defines a function, which names a function without using it.
+var (
+	commentary = regexp.MustCompile(`^(?://|/\*|\*|--|#\s|##|"""|;;)`)
+	definition = regexp.MustCompile(`^(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:func|fn|def|function)\b`)
+)
+
+// needle is one way the code of a box spells a unit it runs to: word
+// matches a line that spells it and call a line that calls it, nil where
+// the spelling is no call.
+type needle struct {
+	name       string
+	word, call *regexp.Regexp
+}
+
+// needles are what the code of from spells to by, most precise first: the
+// names identNames gives, which a line may call or only name, then, for any
+// language, the unit's place in the tree. Its anchor directories are what an
+// import line spells, as a path (Go, JS, C), dotted (Python, Java) or with
+// :: (Rust), and its last directory is what a qualified use spells, as
+// gitx.Head or gitx::head, even where that directory is a plain word.
+func needles(from, to model.Unit) []needle {
+	var out []needle
+	for _, name := range identNames(from, to) {
+		q := regexp.QuoteMeta(name)
+		out = append(out, needle{name, regexp.MustCompile(`\b` + q + `\b`), regexp.MustCompile(`\b` + q + `\(`)})
+	}
+	dirs := anchorDirs(to)
+	for _, d := range dirs {
+		segs := strings.Split(d, "/")
+		segs = segs[max(0, len(segs)-2):]
+		if len(segs) == 2 && !generic[segs[1]] {
+			out = append(out, needle{strings.Join(segs, "/"), regexp.MustCompile(`\b` + regexp.QuoteMeta(segs[0]) + `(?:/|\.|::)` + regexp.QuoteMeta(segs[1]) + `\b`), nil})
+		}
+	}
+	for _, d := range dirs {
+		last := path.Base(d)
+		if identName.MatchString(last) && !generic[last] {
+			use := `\b` + regexp.QuoteMeta(last) + `(?:\.|::)\w+`
+			out = append(out, needle{last + ".", regexp.MustCompile(use), regexp.MustCompile(use + `\s*\(`)})
+		}
+	}
+	return out
+}
+
+// anchorDirs are the directories the anchors of u lie in, each once: the
+// anchor itself for a directory, its directory for a file.
+func anchorDirs(u model.Unit) []string {
+	var out []string
+	for _, a := range u.Anchors {
+		d := path.Clean(a.Path)
+		if path.Ext(d) != "" {
+			d = path.Dir(d)
+		}
+		if d != "." && d != "/" && !slices.Contains(out, d) {
+			out = append(out, d)
+		}
+	}
+	return out
 }
 
 // identNames are the names the code of from spells to, most precise

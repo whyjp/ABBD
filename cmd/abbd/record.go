@@ -37,6 +37,9 @@ func (e env) citations() ([]model.Evidence, error) {
 		if !c.Check(ev).Live {
 			return nil, fmt.Errorf("the code does not hold %s; quote it verbatim from the working tree", ev)
 		}
+		if at, off := c.Misplaced(ev); off {
+			return nil, fmt.Errorf("%s holds the quote at line %s, more than %d lines from the lines %s you give; cite the lines the quote is on", ev.Path, at, evidence.Slack, ev.Lines)
+		}
 	}
 	return es, nil
 }

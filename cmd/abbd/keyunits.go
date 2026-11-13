@@ -23,11 +23,19 @@ type keyUnit struct {
 }
 
 // types match a type declaration in most languages: a type, struct, class,
-// enum, trait, interface or union.
+// enum, trait, interface or union. The name must be followed by what a
+// declaration has there: a brace, a parenthesis, a generic list, a colon, an
+// equals sign, a semicolon, a base or a type expression such as struct or
+// map. A word of prose after "type", as in a help text's "type names", has
+// none of these, so it is no declaration.
 var types = []*regexp.Regexp{
-	regexp.MustCompile(`^\s*(?:export\s+)?(?:pub(?:\([^)]*\))?\s+)?(?:type|struct|class|enum|trait|interface|union)\s+([A-Za-z_]\w{2,})`),
+	regexp.MustCompile(`^\s*(?:export\s+)?(?:pub(?:\([^)]*\))?\s+)?(?:type|struct|class|enum|trait|interface|union)\s+([A-Za-z_]\w{2,})` + afterName),
 	regexp.MustCompile(`^\s*(?:typedef\s+)?struct\s+([A-Za-z_]\w{2,})\s*\{`),
 }
+
+// afterName is what follows a declared type's name: a delimiter, or one of
+// the words that start a type expression or a base list.
+const afterName = `(?:\s*[{(<:=;\[*]|\s+(?:struct|interface|map|func|chan|extends|implements|where|enum|union|trait)\b)`
 
 // funcs match a function at the left margin in most languages.
 var funcs = []*regexp.Regexp{
@@ -46,9 +54,9 @@ func distinctive(name string) bool {
 	return len(name) >= 5 && (strings.Contains(name, "_") || strings.ToLower(name) != name)
 }
 
-// plainWord is a lower-case name with no underscore, such as names or
-// that: a word of prose as often as a type, as when a help text's line
-// starts with "type names".
+// plainWord is a lower-case name with no underscore, such as validate or
+// names: it names many unrelated things in a repository, so a search for it
+// finds none of them in particular.
 func plainWord(name string) bool {
 	return strings.ToLower(name) == name && !strings.Contains(name, "_")
 }
@@ -78,7 +86,7 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 	inside := map[string]int{}
 	var words []string
 	for _, f := range files {
-		if testFile(f) {
+		if noQuoteFile(f) {
 			continue
 		}
 		file, err := os.Open(filepath.Join(root, filepath.FromSlash(f)))
@@ -160,8 +168,8 @@ var ident = regexp.MustCompile(`[A-Za-z_]\w*`)
 var common = func() map[string]bool {
 	m := map[string]bool{}
 	for _, n := range strings.Fields(`Result Error Err Value Option String Config Builder Context Handle State class Item
-		Debug Display Clone Default Copy Drop Send Sync Into From Hash Iterator Vec Box Map List Set Node Object Type
-		File Path Reader Writer Buffer Stream Kind Mode Name Data Info Options Args Self None Some Event Message
+		Debug Display Clone Default Copy Drop Send Sync Into From Hash Iterator Vec Box Map List Set
+		File Path Reader Writer Buffer Stream Options Args Self None Some
 		try_from as_ref as_str is_empty to_string into_iter from_str as_bytes into_bytes as_slice to_vec to_owned
 		from_utf8 as_mut into_inner with_capacity is_some is_none unwrap_or as_path to_str as_ptr from_bytes to_bytes
 		get_mut iter_mut toString valueOf hashCode`) {
@@ -173,7 +181,7 @@ var common = func() map[string]bool {
 // declaration is the type or distinctive function a line declares, "" else.
 func declaration(line string) string {
 	for _, re := range types {
-		if m := re.FindStringSubmatch(line); m != nil && !shouting(m[1]) && !common[m[1]] && !plainWord(m[1]) {
+		if m := re.FindStringSubmatch(line); m != nil && !shouting(m[1]) && !common[m[1]] {
 			return m[1]
 		}
 	}
@@ -208,4 +216,38 @@ func testFile(f string) bool {
 	base := strings.ToLower(filepath.Base(f))
 	return strings.Contains(base, "_test.") || strings.Contains(base, ".test.") || strings.Contains(base, ".spec.") || strings.HasPrefix(base, "test_") ||
 		strings.Contains("/"+filepath.ToSlash(f), "/tests/") || strings.Contains("/"+filepath.ToSlash(f), "/test/")
+}
+
+// noQuoteFile is a file that is no code of its module: a test, a test fixture or
+// a page of prose. Its lines are no design of the module and no use it makes
+// of another.
+func noQuoteFile(f string) bool { return testFile(f) || fixtureFile(f) || proseFile(f) }
+
+// fixtureFile lies in a directory of test data, such as testdata or fixtures.
+func fixtureFile(f string) bool {
+	for _, d := range strings.Split(strings.ToLower(filepath.ToSlash(filepath.Dir(f))), "/") {
+		switch d {
+		case "testdata", "test_data", "fixtures", "fixture", "__fixtures__", "__snapshots__", "snapshots", "golden", "testfiles":
+			return true
+		}
+	}
+	return false
+}
+
+// proseFile is a page of prose, whose lines name things a text talks about.
+func proseFile(f string) bool {
+	switch strings.ToLower(filepath.Ext(f)) {
+	case ".md", ".markdown", ".rst", ".adoc", ".txt":
+		return filepath.Base(f) != "CMakeLists.txt"
+	}
+	return false
+}
+
+// dataFile holds data or configuration, not code of a language.
+func dataFile(f string) bool {
+	switch strings.ToLower(filepath.Ext(f)) {
+	case ".json", ".yaml", ".yml", ".toml", ".xml", ".csv", ".svg", ".html", ".htm", ".lock", ".sum", ".snap", ".ini", ".cfg":
+		return true
+	}
+	return false
 }

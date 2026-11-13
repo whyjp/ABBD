@@ -33,6 +33,7 @@ func TestExtractNamesTheBundledFrontEnds(t *testing.T) {
 	p, _ := bare(t)
 	p.want(1, `unknown front-end "gradle": use cargo or cmake`, "extract", "gradle")
 	p.want(1, "has no Cargo.toml", "extract", "cargo")
+	p.want(1, "is a CMake cache option, and no cmake front-end is named", "extract", "cargo", "-DX=1")
 }
 
 func TestTheScriptIsToldTheAbbdThatRunsIt(t *testing.T) {

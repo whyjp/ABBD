@@ -338,3 +338,76 @@ func TestEachCMakeVersionConfiguresItsOwnBuildTree(t *testing.T) {
 		t.Errorf("two CMake versions shared a build tree: %v", trees)
 	}
 }
+
+// A target the repository builds only to test or measure it, and a library
+// it vendors, are no modules, wherever their CMakeLists.txt sits: the words
+// of the name and the vendored directory say so. A library's headers and
+// port directory, which it lists but does not compile, are its anchors.
+func TestCMakeLeavesOutTestBenchAndVendoredTargetsAndAnchorsItsHeaders(t *testing.T) {
+	d := extractLibrary(t, "-DKV_BUILD_EXTRAS=OFF")
+	var refs []string
+	for _, u := range d.Units {
+		refs = append(refs, u.Ref)
+	}
+	slices.Sort(refs)
+	if want := []string{"cmake:kv", "cmake:kv_tool"}; !slices.Equal(refs, want) {
+		t.Errorf("units %v, want %v: kv_test, kv_bench and third_party/gt are left out", refs, want)
+	}
+	var dirs []string
+	for _, a := range unit(t, d, "cmake:kv").Anchors {
+		if a.Symbol == "" {
+			dirs = append(dirs, a.Path)
+		}
+	}
+	if want := []string{"db", "include/kv", "port", "table"}; !slices.Equal(dirs, want) {
+		t.Errorf("kv anchors %v, want the directories of its sources and its headers %v", dirs, want)
+	}
+}
+
+// A cache option given after the front-ends reaches the configure, and a
+// configure that fails says how to turn the part that fails off.
+func TestCMakeTakesCacheOptionsAndSaysHowToTurnOffWhatFailsToConfigure(t *testing.T) {
+	if _, err := exec.LookPath("cmake"); err != nil {
+		t.Skip("cmake is not installed")
+	}
+	root, err := filepath.Abs(filepath.Join("testdata", "cmake-library"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cache := t.TempDir()
+	_, err = Extract(root, cache, []Spec{{"cmake", "."}})
+	if old := (oldCMake{}); errors.As(err, &old) {
+		t.Skip(err)
+	}
+	if err == nil || !strings.Contains(err.Error(), "-D<NAME>=OFF") || !strings.Contains(err.Error(), "git submodules") {
+		t.Fatalf("the configure of a missing subdirectory failed with %v, want the way to turn it off", err)
+	}
+	if _, err := ExtractWith(root, cache, []Spec{{"cmake", "."}}, []string{"-DKV_BUILD_EXTRAS=OFF"}); err != nil {
+		t.Errorf("with the option that turns the extras off: %v", err)
+	}
+	if _, err := ExtractWith(root, cache, []Spec{{"cmake", "."}}, []string{"KV_BUILD_EXTRAS=OFF"}); err == nil {
+		t.Error("an option with no -D was taken")
+	}
+	if _, err := ExtractWith(root, cache, []Spec{{"cargo", "."}}, []string{"-DX=1"}); err == nil || !strings.Contains(err.Error(), "no cmake front-end") {
+		t.Errorf("a cache option with no cmake front-end: %v", err)
+	}
+}
+
+func extractLibrary(t *testing.T, defs ...string) extract.Doc {
+	t.Helper()
+	if _, err := exec.LookPath("cmake"); err != nil {
+		t.Skip("cmake is not installed")
+	}
+	root, err := filepath.Abs(filepath.Join("testdata", "cmake-library"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := ExtractWith(root, t.TempDir(), []Spec{{"cmake", "."}}, defs)
+	if old := (oldCMake{}); errors.As(err, &old) {
+		t.Skip(err)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	return d
+}

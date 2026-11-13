@@ -35,7 +35,7 @@ func bindingSites(root string, files []string) []string {
 	var out []string
 	more, shown := 0, map[string]int{}
 	for _, f := range files {
-		if testFile(f) || strings.Contains("/"+f, "/testdata/") || filepath.Ext(f) == ".md" {
+		if noQuoteFile(f) {
 			continue
 		}
 		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(f)))

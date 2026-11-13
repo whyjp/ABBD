@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
@@ -25,11 +26,12 @@ and renders the blueprint. It never judges, blocks, asks or records a decision.
 abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
-abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [--root DIR]
+abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [-DNAME=VALUE...] [--root DIR]
                                      print the extraction JSON a bundled front-end reads from the
                                      build system's own model: cargo (Cargo.toml) or cmake
                                      (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
-                                     relative to the root, "." when left out; register it as
+                                     relative to the root, "." when left out; -D options are
+                                     CMake cache options for the configure; register it as
                                      abbd setup -- abbd extract cargo, or extend its output
 abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
                                      which tells any assistant to ask the blueprint first
@@ -245,6 +247,7 @@ type opts struct {
 	responsibility   string
 	value, src       string
 	reason           string
+	cacheOpts        []string
 	base             string
 	unit             string
 	history          bool
@@ -411,6 +414,11 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 		if len(inv.o.argv) == 0 {
 			return inv, fmt.Errorf("nothing after --")
 		}
+	}
+	if inv.name == "extract" {
+		// A -DNAME=VALUE is a CMake cache option, not a flag of abbd.
+		inv.o.cacheOpts = slices.DeleteFunc(slices.Clone(args), func(a string) bool { return !strings.HasPrefix(a, "-D") })
+		args = slices.DeleteFunc(args, func(a string) bool { return strings.HasPrefix(a, "-D") })
 	}
 	fs := flag.NewFlagSet(inv.name, flag.ContinueOnError)
 	fs.SetOutput(stderr)

@@ -430,3 +430,14 @@ func TestAConstraintGoesStaleWithTheCodeThatKeepsIt(t *testing.T) {
 	contains(t, p.want(0, "", "review", "--base", base), "the constraint MOD-0001.constraints.order is STALE",
 		"the constraint MOD-0002.constraints.charged is STALE")
 }
+
+// A quote cited with lines more than three away from where it sits is
+// refused, naming the lines it is on, though the file holds it once; the
+// same quote cited within three lines of its place is taken.
+func TestAQuoteCitedWithLinesFarFromItsPlaceIsRefused(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.wantNote(1, "holds the quote at line 3, more than 3 lines from the lines 19 you give", "MOD-0001.failure", "tries three times", "billing/retry.go:19:const tries = 3")
+	p.wantNote(0, "understood", "MOD-0001.failure", "tries three times", "billing/retry.go:5:const tries = 3")
+	p.wantNote(0, "understood", "MOD-0001.failure", "tries three times", "billing/retry.go:3-6:const tries = 3")
+}

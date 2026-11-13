@@ -52,9 +52,35 @@ func TestAGenericNameIsNoKeyUnit(t *testing.T) {
 			t.Errorf("%q declares %q, a name too generic to count", line, got)
 		}
 	}
-	for line, want := range map[string]string{"pub struct HiArgs {": "HiArgs", "typedef struct lua_State {": "lua_State", "class SearchWorker:": "SearchWorker"} {
+	for line, want := range map[string]string{"pub struct HiArgs {": "HiArgs", "typedef struct lua_State {": "lua_State", "class SearchWorker:": "SearchWorker",
+		"pub struct Event {": "Event", "class Node:": "Node"} {
 		if got := declaration(line); got != want {
 			t.Errorf("%q declares %q, want %q", line, got, want)
+		}
+	}
+}
+
+// A type a language spells in lower case is a key unit, because what makes a
+// line a declaration is the shape after the name, not the name's case: Go's
+// unexported types and C's structs are most of what those modules declare.
+func TestALowerCaseTypeDeclarationStaysAKeyUnit(t *testing.T) {
+	for line, want := range map[string]string{
+		"type parser struct {":          "parser",
+		"type state map[ID]Unit":        "state",
+		"type env struct {":             "env",
+		"type visitor interface {":      "visitor",
+		"struct client {":               "client",
+		"typedef struct dict {":         "dict",
+		"struct inode {":                "inode",
+		"type handler = Box<dyn Fn()>;": "handler",
+	} {
+		if got := declaration(line); got != want {
+			t.Errorf("%q declares %q, want %q", line, got, want)
+		}
+	}
+	for _, line := range []string{"type names", "type names that the", "  type names  ", "struct that is"} {
+		if got := declaration(line); got != "" {
+			t.Errorf("%q is prose, and declares %q", line, got)
 		}
 	}
 }
