@@ -3,7 +3,9 @@ package screen
 import (
 	"encoding/xml"
 	"fmt"
+	"maps"
 	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -622,11 +624,12 @@ func measure(s sheet) Metrics {
 		}
 	}
 	// 4: lines of one kind that leave one edge of a box are one bundle,
-	// but for a line that drops straight from one box into the next, which
+	// but for a line that drops straight from one box into the next, or
+	// runs straight across from one box's side into the next box's, which
 	// needs no bundle.
 	onBox := func(p fpt) bool {
 		for _, b := range s.shapes {
-			if b.kind == "box" && p.x > b.r.x && p.x < b.r.x+b.r.w && (math.Abs(p.y-b.r.y) < 6 || math.Abs(p.y-b.r.y-b.r.h) < 6) {
+			if b.kind == "box" && sideOf(b.r, p) != "" {
 				return true
 			}
 		}
@@ -636,9 +639,9 @@ func measure(s sheet) Metrics {
 	// a bundle of two of them would join their far ends (rule 18): it is a
 	// bundle of its own, as a straight drop is.
 	straight := func(w stroke) bool {
-		return kindOf(w.class) == "mutual" || len(w.pts) == 2 && w.pts[0].x == w.pts[1].x && onBox(w.pts[0]) && onBox(w.pts[1])
+		return kindOf(w.class) == "mutual" || len(w.pts) == 2 && (w.pts[0].x == w.pts[1].x || w.pts[0].y == w.pts[1].y) && onBox(w.pts[0]) && onBox(w.pts[1])
 	}
-	leaving := map[string]map[int]bool{}
+	leaving := map[string]map[int][]fpt{}
 	for _, w := range ws {
 		if straight(w) {
 			continue
@@ -659,13 +662,13 @@ func measure(s sheet) Metrics {
 			}
 			kk := fmt.Sprint(k, edge, kindOf(w.class))
 			if leaving[kk] == nil {
-				leaving[kk] = map[int]bool{}
+				leaving[kk] = map[int][]fpt{}
 			}
-			leaving[kk][w.group] = true
+			leaving[kk][w.group] = append(leaving[kk][w.group], st)
 		}
 	}
 	for _, gs := range leaving {
-		m.Split += len(gs) - 1
+		m.Split += stubs(gs) - 1
 	}
 	// 13: a line reads top to bottom and left to right. Each stroke that
 	// ends on a box or a chip is one arriving line; it runs forward when its
@@ -688,7 +691,7 @@ func measure(s sheet) Metrics {
 		}
 		return dy > 2 || math.Abs(dy) <= 2 && dx >= 0
 	}
-	arrivals := map[string]map[int]bool{}
+	arrivals := map[string]map[int][]fpt{}
 	for _, w := range ws {
 		a, b := w.pts[0], w.pts[len(w.pts)-1]
 		r, ok := on(b)
@@ -714,18 +717,22 @@ func measure(s sheet) Metrics {
 				m.BackPlain++
 			}
 		}
-		edge := "top"
-		if math.Abs(b.y-r.y-r.h) < math.Abs(b.y-r.y) {
+		edge := sideOf(r, b)
+		switch {
+		case edge == "left" || edge == "right":
+		case math.Abs(b.y-r.y-r.h) < math.Abs(b.y-r.y):
 			edge = "bottom"
+		default:
+			edge = "top"
 		}
 		k := fmt.Sprint(r, edge, kindOf(w.class))
 		if straight(w) {
 			k = fmt.Sprint(k, "straight", w.group)
 		}
 		if arrivals[k] == nil {
-			arrivals[k] = map[int]bool{}
+			arrivals[k] = map[int][]fpt{}
 		}
-		arrivals[k][w.group] = true
+		arrivals[k][w.group] = append(arrivals[k][w.group], b)
 	}
 	// Rule 7 counts a drawn line by where it arrives: a bundle is one line
 	// however many pieces draw it, and a piece that ends on a trunk is part
@@ -733,7 +740,7 @@ func measure(s sheet) Metrics {
 	m.Wires = 0
 	counted := map[int]bool{}
 	for _, gs := range arrivals {
-		m.SplitIn += len(gs) - 1
+		m.SplitIn += stubs(gs) - 1
 		for g := range gs {
 			if !counted[g] {
 				counted[g] = true
@@ -866,4 +873,53 @@ func fsign(f float64) float64 {
 		return -1
 	}
 	return 0
+}
+
+// sideOf is the edge of r that p stands on, within 6px of it and inside
+// its span: top, bottom, left or right, or "" off every edge.
+func sideOf(r frect, p fpt) string {
+	switch {
+	case p.x > r.x && p.x < r.x+r.w && math.Abs(p.y-r.y) < 6:
+		return "top"
+	case p.x > r.x && p.x < r.x+r.w && math.Abs(p.y-r.y-r.h) < 6:
+		return "bottom"
+	case p.y > r.y && p.y < r.y+r.h && math.Abs(p.x-r.x) < 6:
+		return "left"
+	case p.y > r.y && p.y < r.y+r.h && math.Abs(p.x-r.x-r.w) < 6:
+		return "right"
+	}
+	return ""
+}
+
+// stubs is how many stubs the groups of lines gs, by the points where each
+// meets one box edge, draw there: groups that meet it at one point share
+// one stub, which a reader sees as one bundle, whatever ink each runs on
+// past it.
+func stubs(gs map[int][]fpt) int {
+	ks := slices.Sorted(maps.Keys(gs))
+	of := map[int]int{}
+	var find func(g int) int
+	find = func(g int) int {
+		if r, ok := of[g]; ok && r != g {
+			r = find(r)
+			of[g] = r
+			return r
+		}
+		return g
+	}
+	n := len(ks)
+	for i, a := range ks {
+		for _, b := range ks[i+1:] {
+			if find(a) == find(b) {
+				continue
+			}
+			if slices.ContainsFunc(gs[a], func(p fpt) bool {
+				return slices.ContainsFunc(gs[b], func(q fpt) bool { return dist(p, q) < 1 })
+			}) {
+				of[find(b)] = find(a)
+				n--
+			}
+		}
+	}
+	return n
 }
