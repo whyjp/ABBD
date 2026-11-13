@@ -22,12 +22,14 @@ import (
 )
 
 // relaters is the one list of bundled relaters. manifest is the file the
-// relater's directory must hold.
+// relater's directory must hold, and unread says why the code a relater
+// reports unread went unread.
 var relaters = map[string]struct {
-	manifest string
-	run      func(t tree, o owners) (found, error)
+	manifest, unread string
+	run              func(t tree, o owners) (found, error)
 }{
-	"go": {"go.mod", golang},
+	"go":   {"go.mod", "left out by build constraints (read as " + strings.Join(goEnv, ", ") + ")", golang},
+	"rust": {"Cargo.toml", "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared (test code is left out unlisted)", rust},
 }
 
 // Names lists the bundled relaters.
@@ -49,9 +51,10 @@ func ParseSpec(s string) (frontend.Spec, error) { return frontend.SpecOf("relate
 const maxQuotes = 3
 
 // vias ranks what a code-level depends_on rests on, best first: a call is
-// what runs, an implementation is a plug point, and an import that is never
-// called only shares a type or a constant.
-var vias = []model.Via{"call", "trait", "import"}
+// what runs, an implementation is a plug point, a macro writes code into
+// the caller, and an import that is never called only shares a type or a
+// constant.
+var vias = []model.Via{"call", "trait", "macro", "import"}
 
 // link is one relation between two units, by ref.
 type link struct {
@@ -81,9 +84,18 @@ type site struct {
 type found struct {
 	facts   []fact
 	covered map[string]bool
-	// skipped counts the module's Go files the fixed build configuration
-	// left out by a build constraint.
-	skipped int
+	// when is the condition a link holds under, for a relater that reads
+	// several build configurations and finds the link in only some.
+	when map[link]string
+	// unread are the root-relative source files under the units that no
+	// configuration the relater reads compiles.
+	unread []string
+}
+
+// Unread is the code one relater could not read, and why.
+type Unread struct {
+	Relater, Why string
+	Paths        []string
 }
 
 // Relate runs each relater over its directory under root and adds what it
@@ -91,14 +103,15 @@ type found struct {
 // whose code it read, so it replaces the extraction's there. It never makes
 // a unit, and adds a provides or consumes only where the extraction has none,
 // since the extraction owns its contracts.
-func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, int, error) {
+func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, []Unread, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
-		return doc, 0, err
+		return doc, nil, err
 	}
 	o := index(doc.Units)
-	var all found
-	all.covered = map[string]bool{}
+	var unread []Unread
+	all := found{covered: map[string]bool{}, when: map[link]string{}}
+	partial := map[string]bool{}
 	for i, s := range specs {
 		if slices.Contains(specs[:i], s) {
 			continue
@@ -106,20 +119,27 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, i
 		r := relaters[s.Name]
 		dir := filepath.Join(root, filepath.FromSlash(s.Dir))
 		if _, err := os.Stat(filepath.Join(dir, r.manifest)); err != nil {
-			return doc, 0, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, r.manifest)
+			return doc, nil, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, r.manifest)
 		}
 		f, err := r.run(tree{root: root, dir: dir}, o)
 		if err != nil {
-			return doc, 0, fmt.Errorf("%s: %w", s.Name, err)
+			return doc, nil, fmt.Errorf("%s: %w", s.Name, err)
 		}
 		all.facts = append(all.facts, f.facts...)
-		all.skipped += f.skipped
-		for u := range f.covered {
-			all.covered[u] = true
+		maps.Copy(all.covered, f.covered)
+		maps.Copy(all.when, f.when)
+		if len(f.unread) > 0 {
+			slices.Sort(f.unread)
+			unread = append(unread, Unread{s.Name, r.unread, slices.Compact(f.unread)})
+		}
+		for _, p := range f.unread {
+			if u, ok := o.of(p); ok {
+				partial[u] = true
+			}
 		}
 	}
-	doc, err = merge(root, doc, all)
-	return doc, all.skipped, err
+	doc, err = merge(root, doc, all, partial)
+	return doc, unread, err
 }
 
 // codeVia is whether a depends_on's via is one the code alone shows, so a
@@ -128,15 +148,23 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, i
 func codeVia(v model.Via) bool { return v == "" || slices.Contains(vias, v) }
 
 // merge folds the facts into the extraction under the ownership rule Relate
-// states, one relation per link with the best via's quotes.
-func merge(root string, doc extract.Doc, f found) (extract.Doc, error) {
+// states, one relation per link with the best via's quotes. A unit that
+// holds code no configuration compiled was read only in part, so its
+// extraction's depends_on that the relater found no sign of stays: the
+// code left unread may be what it rests on.
+func merge(root string, doc extract.Doc, f found, partial map[string]bool) (extract.Doc, error) {
+	seen := map[link]bool{}
+	for _, x := range f.facts {
+		seen[x.link] = true
+	}
 	had := map[link]bool{}
 	var kept []extract.DocRelation
 	for _, r := range doc.Relations {
-		if r.Kind == model.DependsOn && codeVia(r.Via) && f.covered[r.From] && f.covered[r.To] {
+		l := link{r.From, r.To, r.Kind}
+		if r.Kind == model.DependsOn && codeVia(r.Via) && f.covered[r.From] && f.covered[r.To] && (seen[l] || !partial[r.From]) {
 			continue
 		}
-		had[link{r.From, r.To, r.Kind}] = true
+		had[l] = true
 		kept = append(kept, r)
 	}
 	sites := map[link]map[model.Via]map[site]bool{}
@@ -158,7 +186,7 @@ func merge(root string, doc extract.Doc, f found) (extract.Doc, error) {
 		at := slices.SortedFunc(maps.Keys(byVia[v]), func(a, b site) int {
 			return cmp.Or(compareBool(a.dynamic, b.dynamic), cmp.Compare(a.path, b.path), cmp.Compare(a.line, b.line))
 		})
-		r := extract.DocRelation{From: l.from, To: l.to, Kind: l.kind, Via: v}
+		r := extract.DocRelation{From: l.from, To: l.to, Kind: l.kind, Via: v, When: f.when[l]}
 		for _, s := range at {
 			if len(r.Evidence) == maxQuotes {
 				break
