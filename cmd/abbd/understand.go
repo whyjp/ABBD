@@ -101,7 +101,7 @@ func (e env) understand(ref string, args []string) error {
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
 	readText(e.stdout, string(id), text)
-	e.checkText(e.stdout, units, id, text, true)
+	e.checkText(e.stdout, units, id, text)
 	if s := strings.TrimSpace(e.sentence); s != "" {
 		// The reader who read the module again says its one line too,
 		// stamped with the same code as the text. A person's line outranks

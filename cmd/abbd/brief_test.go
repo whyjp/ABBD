@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -19,7 +21,7 @@ func TestBriefIsTheSkeletonAndReadingListOfAModule(t *testing.T) {
 	}
 	p.want(1, "is not a module or feature", "brief", "DATA-0001")
 
-	p.want(1, "line 3 still says \"TODO what the module is responsible for", "understand", "MOD-0001", p.file(t, "brief.md", out))
+	p.want(1, "line 3 still says \"TODO write this last", "understand", "MOD-0001", p.file(t, "brief.md", out))
 	_, rest, _ := strings.Cut(out, "## Read first")
 	p.want(1, `"Read first" goes to nowhere`, "understand", "MOD-0001", p.file(t, "brief.md", "## Overview\n\nbilling.\n\n## Read first"+rest))
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() { _ = 1 }\n")
@@ -74,4 +76,77 @@ func TestLintAndBriefNameTheBoxesThatSayOnlyTheirKind(t *testing.T) {
 	p.want(0, "MOD-0001 billing: no comment at its anchors says what it is for; read `billing/charge.go`", "brief", "MOD-0001")
 	p.code("billing/charge.go", "package billing\n\n// Charge bills a card once. It never retries.\nfunc Charge() { _ = 1 }\n")
 	p.want(0, "\"Charge bills a card once.\" (from `billing/charge.go`)", "brief", "MOD-0001")
+}
+
+const hypothesisTopo = `{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"ChargeCard"}]},
+ {"key":"charger","kind":"MOD","name":"charger","parent":"billing","anchors":[{"path":"billing/charger.go","symbol":"Run"}]},
+ {"key":"web","kind":"MOD","name":"web","anchors":[{"path":"web/a.go"}]}
+]}`
+
+const hypothesisSup = `{"units":[
+ {"key":"c","kind":"MOD","name":"charger","anchors":[{"path":"billing/charger.go","symbol":"Run"}],"responsibility":"Charges every card twice"}
+]}`
+
+// The brief hands the reader hypotheses, not prose: no TODO carries a code
+// span or a stored sentence, a stored line setup wrote without evidence says
+// so, anchors are files to start from, the names other modules use most are
+// candidates, and the Overview asks for no negative.
+func TestBriefOffersHypothesesNotProse(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\ntype Ledger struct{}\n\nfunc ChargeCard() {}\n")
+	p.code("billing/charger.go", "package billing\n\nfunc Run() { ChargeCard() }\n")
+	p.code("web/a.go", "package web\n\nvar _ = billing.ChargeCard\n")
+	p.code("web/b.go", "package web\n\nvar _ = billing.ChargeCard\nvar _ billing.Ledger\n")
+	git(t, p.root, "add", "-A")
+	p.extract(hypothesisTopo)
+	p.setup(0, "synced", "--supplement", p.file(t, "sup.json", hypothesisSup), "--", exe)
+	out := p.want(0, "## Read first", "brief", "MOD-0001")
+	for _, want := range []string{
+		"- TODO **charger**: MOD MOD-0002\n",
+		"### Files to start from and stored lines, by unit",
+		"- **charger** MOD-0002: start from `billing/charger.go`; stored line, unverified (setup wrote it without evidence): confirm or drop: \"Charges every card twice\"",
+		"### Names other modules use most",
+		"- `ChargeCard` in `billing/charge.go`, named in 2 file(s) outside the module",
+		"- `Ledger` in `billing/charge.go`, named in 1 file(s) outside the module",
+		"the text says nothing about this brief",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("brief does not hold %q:\n%s", want, out)
+		}
+	}
+	skeleton, _, _ := strings.Cut(out, "## Read first")
+	for _, not := range []string{"does not do", "`", "Charges every card twice", "Write all prose in"} {
+		if strings.Contains(skeleton, not) {
+			t.Errorf("the skeleton holds %q:\n%s", not, skeleton)
+		}
+	}
+	if strings.Contains(out, "Write all prose in") {
+		t.Errorf("brief names a language project.yaml does not set:\n%s", out)
+	}
+
+	cfg := filepath.Join(p.root, ".abbd", "project.yaml")
+	b, err := os.ReadFile(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, cfg, string(b)+"language: ko\n")
+	p.want(0, "## Read first\n\nWrite all prose in ko; keep code identifiers, paths and quotes verbatim.\n", "brief", "MOD-0001")
+}
+
+// A text that leaves out a name other modules use most is not asked for it:
+// those names are candidates the reader may skip without a word.
+func TestUnderstandDoesNotAskForTheNamesOtherModulesUse(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\ntype Ledger struct{}\n\nfunc ChargeCard() {}\n")
+	p.code("billing/charger.go", "package billing\n\nfunc Run() { ChargeCard() }\n")
+	p.code("web/a.go", "package web\n\nvar _ = billing.ChargeCard\nvar _ billing.Ledger\n")
+	git(t, p.root, "add", "-A")
+	p.extract(hypothesisTopo)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "`ChargeCard` in `billing/charge.go`", "brief", "MOD-0001")
+	out := p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling charges cards.\n\n## Key Concepts\n\n- **charger** (`billing/charger.go`): runs a charge.\n"))
+	if strings.Contains(out, "unmentioned:") {
+		t.Errorf("understand asked for a name the brief only offers:\n%s", out)
+	}
 }

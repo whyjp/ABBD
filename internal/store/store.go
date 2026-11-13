@@ -559,6 +559,9 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// Language is the BCP-47 tag of the language readers write stored
+	// prose in, such as ko. Empty leaves it to the reader's default.
+	Language string `yaml:"language,omitempty"`
 }
 
 // Cut says whether the overview draws its primary links only.

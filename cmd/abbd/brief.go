@@ -35,26 +35,36 @@ func (e env) brief(ref string) error {
 	name := names(units)
 	ex := topology.Explain(units, id)
 	w := e.stdout
-	fmt.Fprint(w, "## Overview\n\nTODO what the module is responsible for, the contracts it provides and uses by name, and one thing it does not do.\n\n## Key Concepts\n\n")
+	fmt.Fprint(w, "## Overview\n\nTODO write this last, in 3 to 5 sentences from the claim ledger: what the module is responsible for, each claim with its guard, and the neighbour that owns the adjacent work.\n\n## Key Concepts\n\n")
 	byID := map[model.ID]model.Unit{}
 	for _, v := range units {
 		byID[v.ID] = v
 	}
+	var hints []string
 	for _, r := range ex.Inside {
-		v := byID[r.ID]
-		at := ""
-		if len(v.Anchors) > 0 {
-			at = " (`" + v.Anchors[0].Path + "`)"
+		fmt.Fprintf(w, "- TODO **%s**: %s %s\n", r.Name, r.Kind, r.ID)
+		if h := hint(byID[r.ID]); h != "" {
+			hints = append(hints, fmt.Sprintf("**%s** %s: %s", r.Name, r.ID, h))
 		}
-		fmt.Fprintf(w, "- TODO **%s**%s: %s %s%s\n", r.Name, at, r.Kind, r.ID, stored(v))
 	}
 	for _, l := range ex.Out {
 		if l.Kind == model.Provides {
-			fmt.Fprintf(w, "- TODO **%s**: provided contract %s%s\n", name[l.To], l.To, stored(byID[l.To]))
+			fmt.Fprintf(w, "- TODO **%s**: provided contract %s\n", name[l.To], l.To)
+			if h := hint(byID[l.To]); h != "" {
+				hints = append(hints, fmt.Sprintf("**%s** %s: %s", name[l.To], l.To, h))
+			}
 		}
 	}
 
-	fmt.Fprintf(w, "\n## Read first\n\nRead what this section lists, rewrite every TODO above, check the draft as the reader's Before you store sections say, then delete this section and store the text with abbd understand %s FILE --reader WHO.\n\n### Files, entry first\n\n", id)
+	fmt.Fprint(w, "\n## Read first\n\n")
+	p, err := e.st.LoadProject()
+	if err != nil {
+		return err
+	}
+	if p.Language != "" {
+		fmt.Fprintf(w, "Write all prose in %s; keep code identifiers, paths and quotes verbatim.\n\n", p.Language)
+	}
+	fmt.Fprintf(w, "Every line below is a hypothesis to confirm or drop, never prose to rewrite, and the text says nothing about this brief. Build the claim ledger the reader describes, write each TODO above from it, check the draft as the reader's Before you store section says, then delete this section and store the text with abbd understand %s FILE --reader WHO.\n\n### Files, entry first\n\n", id)
 	files, quotes := e.st.Read(units, id)
 	slices.SortStableFunc(files, func(a, b string) int { return entryRank(a) - entryRank(b) })
 	for _, f := range files {
@@ -74,11 +84,12 @@ func (e env) brief(ref string) error {
 	for _, l := range ex.In {
 		contracts = append(contracts, fmt.Sprintf("used by %s %s, %s%s", l.From, name[l.From], l.Kind, l.Label()))
 	}
-	var keys []string
+	list(w, "Files to start from and stored lines, by unit; a bullet's code span is the file its claim's quote is in, not one named here", hints)
+	var used []string
 	for _, k := range e.keyUnitsOf(units, id, keyShown) {
-		keys = append(keys, fmt.Sprintf("`%s` in `%s`, named %d times elsewhere", k.Name, k.File, k.Uses))
+		used = append(used, fmt.Sprintf("`%s` in `%s`, named in %d file(s) outside the module", k.Name, k.File, k.Users))
 	}
-	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
+	list(w, "Names other modules use most: candidates for the types and calls a user touches first; cover those the code bears out and skip the rest without a word", used)
 	list(w, "Boxes that say only their kind: each draft comes from a Go doc comment or a file's header comment; keep it only where the code bears it out, and store the line in the supplement, or a module's or feature's with abbd understand --sentence", e.drafts(byID, name, drawnWith(id, ex)))
 	list(w, "Run-time binding sites: record the tie each makes as a coupling with its quote, via load, spawn, trait, callback or config, and a registry as a contract its members provide", bindingSites(e.root, files))
 	list(w, "Contracts and neighbours", contracts)
@@ -113,14 +124,34 @@ func (e env) brief(ref string) error {
 	return nil
 }
 
-// stored is a unit's stored sentence with its origin, for a TODO to rewrite.
-func stored(u model.Unit) string {
-	for _, f := range []*model.Fact{u.Responsibility, u.Purpose, u.Signature} {
-		if f != nil && f.Value != "" {
-			return fmt.Sprintf("; stored: %s (%s)", f.Value, f.Origin)
+// hint is where a unit's reading starts and the sentence stored for it, as
+// a hypothesis: a supplement's or a reader's line carries no evidence, so
+// the reader confirms it from the code or drops it.
+func hint(u model.Unit) string {
+	var parts []string
+	if len(u.Anchors) > 0 {
+		parts = append(parts, "start from `"+u.Anchors[0].Path+"`")
+	}
+	if f := storedFact(u); f != nil {
+		switch f.Writer {
+		case model.Supplement:
+			parts = append(parts, fmt.Sprintf("stored line, unverified (setup wrote it without evidence): confirm or drop: %q", f.Value))
+		case model.Reader:
+			parts = append(parts, fmt.Sprintf("stored line, unverified (a reader wrote it without evidence): confirm or drop: %q", f.Value))
+		default:
+			parts = append(parts, fmt.Sprintf("stored line (%s): %q", f.Origin, f.Value))
 		}
 	}
-	return ""
+	return strings.Join(parts, "; ")
+}
+
+func storedFact(u model.Unit) *model.Fact {
+	for _, f := range []*model.Fact{u.Responsibility, u.Purpose, u.Signature} {
+		if f != nil && f.Value != "" {
+			return f
+		}
+	}
+	return nil
 }
 
 func entryRank(p string) int {
@@ -185,8 +216,7 @@ func cited[C model.Claim[C]](kind string, figs []store.Figure[C], own map[model.
 	return out
 }
 
-// keyShown is how many key units the brief lists and the text check holds
-// the text to.
+// keyShown is how many of the names other modules use most the brief lists.
 const keyShown = 8
 
 // drawnWith is the module, the units its page draws inside it, and the

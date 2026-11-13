@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"maps"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,11 +16,12 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// keyUnit is a type or function a module declares, with how many places
-// across the repository name it: what a reader of the module must cover.
+// keyUnit is a type or function a module declares, with how many files
+// outside the module name it: a candidate for what a user of the module
+// touches first.
 type keyUnit struct {
 	Name, File string
-	Uses       int
+	Users      int
 }
 
 // types match a type declaration in most languages: a type, struct, class,
@@ -37,6 +39,18 @@ var funcs = []*regexp.Regexp{
 	regexp.MustCompile(`^(?:static\s+|inline\s+|extern\s+)*[A-Za-z_][\w\s\*]*\b([A-Za-z_]\w{2,})\s*\([^;{]*\)?\s*\{?\s*$`),
 }
 
+// codeExts are the extensions of source files whose declarations keyUnits
+// reads. A licence, a readme or a build file holds prose that the
+// declaration patterns misread as code.
+var codeExts = map[string]bool{
+	".go": true, ".rs": true, ".c": true, ".h": true, ".cc": true, ".cpp": true, ".cxx": true, ".hpp": true, ".hh": true, ".hxx": true,
+	".m": true, ".mm": true, ".py": true, ".js": true, ".jsx": true, ".mjs": true, ".cjs": true, ".ts": true, ".tsx": true, ".mts": true,
+	".java": true, ".kt": true, ".scala": true, ".swift": true, ".cs": true, ".rb": true, ".php": true, ".lua": true, ".zig": true,
+	".dart": true, ".ex": true, ".exs": true, ".erl": true, ".hs": true, ".ml": true, ".fs": true, ".vue": true, ".svelte": true,
+}
+
+func codeFile(f string) bool { return codeExts[strings.ToLower(filepath.Ext(f))] }
+
 // distinctive is a function name a repository-wide search can count: a
 // plain lower-case word such as from or lock names many unrelated things.
 func distinctive(name string) bool {
@@ -50,29 +64,24 @@ func distinctive(name string) bool {
 // U32, which says nothing of the module's design.
 func shouting(name string) bool { return strings.ToUpper(name) == name }
 
-// searched is how many of a module's names keyUnits counts across the
-// repository, and searchFor how long it may take.
-const (
-	searched  = 40
-	searchFor = 20 * time.Second
-)
+// searchFor is how long keyUnits may read the repository.
+const searchFor = 20 * time.Second
 
-// keyUnits ranks what a module's files declare by fan-in: how many matches
-// of the name the repository's tracked files in the same languages hold
-// outside the module, read through one git grep. The first n are the units
-// a text about the module covers. A search past searchFor, outside a git
-// repository or without git yields none.
+// keyUnits ranks what a module's code files declare by how many tracked
+// files outside the module, in the same languages and tests left out, name
+// it. The first n are the names other modules use most. A search past
+// searchFor, outside a git repository or without git yields none.
 func keyUnits(root string, files []string, n int) []keyUnit {
 	decl := map[string]string{}
 	own := map[string]bool{}
+	var exts []string
 	for _, f := range files {
 		own[f] = true
-	}
-	inside := map[string]int{}
-	var words []string
-	for _, f := range files {
-		if testFile(f) {
+		if testFile(f) || !codeFile(f) {
 			continue
+		}
+		if x := "*" + filepath.Ext(f); !slices.Contains(exts, x) {
+			exts = append(exts, x)
 		}
 		file, err := os.Open(filepath.Join(root, filepath.FromSlash(f)))
 		if err != nil {
@@ -81,9 +90,7 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 		s := bufio.NewScanner(file)
 		s.Buffer(make([]byte, 1<<20), 1<<20)
 		for s.Scan() {
-			line := s.Text()
-			words = append(words, ident.FindAllString(line, -1)...)
-			if name := declaration(line); name != "" {
+			if name := declaration(s.Text()); name != "" {
 				if _, seen := decl[name]; !seen {
 					decl[name] = f
 				}
@@ -94,94 +101,99 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 	if len(decl) == 0 {
 		return nil
 	}
-	for _, w := range words {
-		if _, ok := decl[w]; ok {
-			inside[w]++
-		}
-	}
-	var names []string
-	for k := range decl {
-		names = append(names, k)
-	}
-	slices.Sort(names)
-	// The names the module itself uses most are the ones searched.
-	slices.SortStableFunc(names, func(a, b string) int { return inside[b] - inside[a] })
-	names = names[:min(len(names), searched)]
-	args := []string{"-C", root, "-c", "core.quotePath=false", "grep", "-I", "-o", "-w", "-F"}
-	for _, nm := range names {
-		args = append(args, "-e", nm)
-	}
-	args = append(args, "--")
-	exts := map[string]bool{}
-	for _, f := range files {
-		if x := filepath.Ext(f); x != "" && !exts[x] {
-			exts[x] = true
-			args = append(args, "*"+x)
-		}
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), searchFor)
 	defer cancel()
-	out, _ := exec.CommandContext(ctx, "git", args...).Output()
-	if ctx.Err() != nil {
+	out, err := exec.CommandContext(ctx, "git", append([]string{"-C", root, "-c", "core.quotePath=false", "ls-files", "-z", "--"}, exts...)...).Output()
+	if err != nil {
 		return nil
 	}
-	uses := map[string]int{}
-	for _, line := range bytes.Split(out, []byte("\n")) {
-		path, match, ok := bytes.Cut(line, []byte(":"))
-		if !ok {
+	users := map[string]int{}
+	for _, p := range strings.Split(string(out), "\x00") {
+		if p == "" || own[p] || testFile(p) {
 			continue
 		}
-		if decl[string(match)] != "" && !own[string(path)] {
-			uses[string(match)]++
+		if ctx.Err() != nil {
+			return nil
+		}
+		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(p)))
+		if err != nil || bytes.IndexByte(data[:min(len(data), 8000)], 0) >= 0 {
+			continue
+		}
+		named := map[string]bool{}
+		for _, w := range words(data) {
+			if _, ok := decl[string(w)]; ok && !named[string(w)] {
+				named[string(w)] = true
+				users[string(w)]++
+			}
 		}
 	}
 	var ranked []keyUnit
-	for _, nm := range names {
-		if uses[nm] > 0 {
-			ranked = append(ranked, keyUnit{Name: nm, File: decl[nm], Uses: uses[nm]})
-		}
+	for _, nm := range slices.Sorted(maps.Keys(users)) {
+		ranked = append(ranked, keyUnit{Name: nm, File: decl[nm], Users: users[nm]})
 	}
-	slices.SortStableFunc(ranked, func(a, b keyUnit) int { return b.Uses - a.Uses })
+	slices.SortStableFunc(ranked, func(a, b keyUnit) int { return b.Users - a.Users })
 	return ranked[:min(n, len(ranked))]
 }
 
-var ident = regexp.MustCompile(`[A-Za-z_]\w*`)
+// words are the identifiers in b, as a regexp of [A-Za-z_]\w* finds them,
+// by hand because a regexp reads a large repository too slowly.
+func words(b []byte) [][]byte {
+	word := func(c byte) bool {
+		return c == '_' || 'a' <= c|0x20 && c|0x20 <= 'z' || '0' <= c && c <= '9'
+	}
+	var out [][]byte
+	for i := 0; i < len(b); {
+		if !word(b[i]) {
+			i++
+			continue
+		}
+		j := i + 1
+		for j < len(b) && word(b[j]) {
+			j++
+		}
+		if c := b[i]; c < '0' || c > '9' {
+			out = append(out, b[i:j])
+		}
+		i = j
+	}
+	return out
+}
 
-// common are names a language or its standard library uses everywhere,
-// which a module may declare again but which say nothing of it.
-var common = map[string]bool{"Result": true, "Error": true, "Err": true, "Value": true, "Option": true, "String": true, "Config": true, "Builder": true, "Context": true, "Handle": true, "State": true, "class": true, "Item": true, "try_from": true, "as_ref": true, "as_str": true, "is_empty": true, "to_string": true, "into_iter": true, "from_str": true}
+// generic are names, in lower case, that a language, its standard library
+// or any codebase uses everywhere: a module may declare one again, but it
+// says nothing of what a user of the module touches.
+var generic = map[string]bool{
+	"result": true, "error": true, "err": true, "value": true, "option": true, "options": true, "string": true, "config": true,
+	"builder": true, "context": true, "handle": true, "state": true, "class": true, "item": true, "info": true, "param": true,
+	"params": true, "input": true, "output": true, "data": true, "type": true, "kind": true, "node": true, "entry": true,
+	"base": true, "list": true, "args": true, "flags": true, "settings": true, "default": true, "inner": true, "object": true,
+	"license": true, "try_from": true, "as_ref": true, "as_str": true, "is_empty": true, "to_string": true, "into_iter": true,
+	"from_str": true, "with_capacity": true, "to_owned": true, "into_owned": true, "into_inner": true, "from_parts": true,
+	"file_name": true, "poll_next": true, "poll_ready": true, "target": true,
+}
+
+func plain(name string) bool { return shouting(name) || generic[strings.ToLower(name)] }
 
 // declaration is the type or distinctive function a line declares, "" else.
 func declaration(line string) string {
 	for _, re := range types {
-		if m := re.FindStringSubmatch(line); m != nil && !shouting(m[1]) && !common[m[1]] {
+		if m := re.FindStringSubmatch(line); m != nil && !plain(m[1]) {
 			return m[1]
 		}
 	}
 	for _, re := range funcs {
-		if m := re.FindStringSubmatch(line); m != nil && distinctive(m[1]) && !shouting(m[1]) && !common[m[1]] && !strings.HasSuffix(m[1], "_t") {
+		if m := re.FindStringSubmatch(line); m != nil && distinctive(m[1]) && !plain(m[1]) && !strings.HasSuffix(m[1], "_t") {
 			return m[1]
 		}
 	}
 	return ""
 }
 
-// keyUnitsOf ranks the key units of a module's own files.
+// keyUnitsOf ranks the names other modules use most among a module's own
+// declarations.
 func (e env) keyUnitsOf(units []model.Unit, id model.ID, n int) []keyUnit {
 	files, _ := e.st.Read(units, id)
 	return keyUnits(e.root, files, n)
-}
-
-// unnamed are the key units a text never names.
-func unnamed(text string, keys []keyUnit) []keyUnit {
-	var out []keyUnit
-	lower := strings.ToLower(text)
-	for _, k := range keys {
-		if !strings.Contains(lower, strings.ToLower(k.Name)) {
-			out = append(out, k)
-		}
-	}
-	return out
 }
 
 // testFile is a test, whose helpers are no unit of the module's design.

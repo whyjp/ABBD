@@ -234,7 +234,7 @@ func (e env) statusLines() error {
 	}
 	for _, id := range slices.Sorted(maps.Keys(in.Understandings)) {
 		if _, ok := textModule(in.Units, id); ok {
-			e.checkText(e.stdout, in.Units, id, in.Understandings[id].Text, false)
+			e.checkText(e.stdout, in.Units, id, in.Understandings[id].Text)
 		}
 	}
 	ev := evidenceCounts(in.Units)
