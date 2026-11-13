@@ -74,18 +74,23 @@ const (
 )
 
 // layering is a stored stack as zones read it: each layer's units, top down.
+// primary says it is the repository's primary flow (store.Figures.Primary),
+// its layers the flow's stages in order.
 type layering struct {
-	names []string
-	units [][]model.ID
+	key, question string
+	primary       bool
+	names         []string
+	units         [][]model.ID
 }
 
 func layerings(in Input) []layering {
 	var out []layering
+	marked, ok := in.Figures.Primary()
 	for _, s := range in.Figures.Stacks {
 		if !s.Known {
 			continue
 		}
-		var l layering
+		l := layering{key: string(s.Key), question: s.Question, primary: ok && s.Key == marked.Key}
 		for _, p := range s.Parts {
 			l.names = append(l.names, p.Claim.Name)
 			l.units = append(l.units, p.Claim.Units)

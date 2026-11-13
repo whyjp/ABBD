@@ -486,6 +486,9 @@ type overview struct {
 	more        map[model.ID]int
 	counted     [][2]string
 	countedRels []string
+	// flow is the stack marked the primary flow, which orders the full
+	// overview and the insides of the units it crosses, nil for none.
+	flow *layering
 }
 
 // top lists the top-level units, those with no parent, and the drawn
@@ -702,6 +705,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		}
 	}
 	tiers, steps := map[string]int{}, map[string]int{}
+	var stages map[string]int
 	if focus == "" {
 		box := func(u model.ID) string {
 			if c := o.tree.chain(u); len(c) > 0 && isModule[c[0]] {
@@ -709,6 +713,8 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			}
 			return ""
 		}
+		o.flow = primaryOf(stacks)
+		stages = o.flow.stagesOn(box)
 		for i, g := range stackOf(stacks, box, func(ids []string) []string { return ids }) {
 			for _, id := range g.ids {
 				tiers[id] = i + 1
@@ -730,7 +736,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)]})
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {

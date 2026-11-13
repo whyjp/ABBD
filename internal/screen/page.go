@@ -81,11 +81,14 @@ type Graph struct {
 	Flows  []FlowView  `json:"flows,omitempty"`
 	Stacks []StackView `json:"stacks,omitempty"`
 	Tables []TableView `json:"tables,omitempty"`
+	// Primary is the repository's primary flow, whose stages the units on
+	// it rank by.
+	Primary *PrimaryFlow `json:"primary,omitempty"`
 }
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

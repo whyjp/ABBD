@@ -179,6 +179,9 @@ type Model struct {
 	// Decisions are every decision note, the unit it sits on first, for the
 	// decisions index.
 	Decisions []Decision `json:"-"`
+	// Primary is the repository's primary flow, which orders the views it
+	// crosses, nil when no stack is marked.
+	Primary *PrimaryFlow `json:",omitempty"`
 	// Edges are every live relation between present units, for graph.json.
 	Edges   []Line
 	Extract []string
@@ -308,6 +311,7 @@ func Build(in Input) Model {
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
+	m.Primary = o.flow.record()
 	rank(&m)
 	return m
 }
@@ -315,7 +319,7 @@ func Build(in Input) Model {
 // rank gives each unit the overview draws its Rank there, and each unit a
 // module's inside draws its Rank on that inside.
 func rank(m *Model) {
-	on := ranks(m.Overview)
+	on := ranks(m.Overview, m.Primary)
 	for i, u := range m.Units {
 		if r, ok := on[u.ID]; ok {
 			m.Units[i].Rank = &r
@@ -323,7 +327,7 @@ func rank(m *Model) {
 	}
 	for i := range m.Insides {
 		ins := &m.Insides[i]
-		on := ranks(ins.Drawing)
+		on := ranks(ins.Drawing, m.Primary)
 		for j, u := range ins.Units {
 			if r, ok := on[u.ID]; ok {
 				ins.Units[j].Rank = &r

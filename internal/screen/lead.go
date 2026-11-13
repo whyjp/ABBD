@@ -198,8 +198,21 @@ type flowWalk struct {
 	words         []string
 }
 
+// walks are the stored flows as leads read them, the primary flow first:
+// each stage's units in order, named by the stage, so a view it crosses
+// numbers its stage hops at rest.
 func walks(in Input) []flowWalk {
 	var out []flowWalk
+	if p, ok := in.Figures.Primary(); ok {
+		w := flowWalk{key: string(p.Key), question: p.Question}
+		for _, l := range p.Parts {
+			for _, u := range l.Claim.Units {
+				w.units = append(w.units, u)
+				w.words = append(w.words, l.Claim.Name)
+			}
+		}
+		out = append(out, w)
+	}
 	for _, f := range in.Figures.Flows {
 		if !f.Known {
 			continue
