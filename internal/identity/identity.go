@@ -177,7 +177,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
 			SupplementRef: in.SupplementRef, Anchors: in.Anchors, Purpose: in.Purpose,
-			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest, Artifact: in.Artifact, Entries: in.Entries,
+			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest, Artifact: in.Artifact, Run: in.Run, Entries: in.Entries,
 			Evidence: in.Evidence,
 		}
 		created = append(created, nu)
@@ -418,6 +418,7 @@ func merge(u *model.Unit, in extract.Unit, ws Writers) {
 		{model.ResponsibilityField, &u.Responsibility, in.Responsibility},
 		{model.SignatureField, &u.Signature, in.Signature},
 		{model.ArtifactField, &u.Artifact, in.Artifact},
+		{model.RunField, &u.Run, in.Run},
 	} {
 		held := *f.at
 		if held == nil || ws.own(held.Writer) || f.offers != nil && model.Outranks(f.field, f.offers.Writer, held.Writer) {

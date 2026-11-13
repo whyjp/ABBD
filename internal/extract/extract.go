@@ -29,6 +29,7 @@ type rawUnit struct {
 	Responsibility string           `json:"responsibility,omitempty"`
 	Digest         string           `json:"digest,omitempty"`
 	Artifacts      []model.Artifact `json:"artifacts,omitempty"`
+	Run            string           `json:"run,omitempty"`
 	Parent         string           `json:"parent,omitempty"`
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
@@ -96,6 +97,7 @@ type Unit struct {
 	Responsibility *model.Fact
 	Digest         string
 	Artifact       *model.Fact
+	Run            *model.Fact
 	Entries        []model.Entry
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
@@ -175,6 +177,9 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		}
 		evidence, err := NormalizeEvidence(rr.Evidence)
 		if err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
+		if err := rr.Kind.Quoted(len(evidence)); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
 		keys, err := entryKeys(rr.Entries, entries[rr.To])
@@ -280,6 +285,17 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 		if len(ru.Artifacts) > 0 && ru.Kind != model.Module {
 			return nil, raw, fmt.Errorf("unit %d (%s): only a module is a build artifact", i, ru.Name)
 		}
+		var run *model.Fact
+		if ru.Run != "" {
+			if ru.Kind != model.Exec {
+				return nil, raw, fmt.Errorf("unit %d (%s): only an execution context carries a run", i, ru.Name)
+			}
+			r, err := model.ParseRun(ru.Run)
+			if err != nil {
+				return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+			}
+			run = inferred(r.String())
+		}
 		es, err := normalizeEntries(ru.Kind, ru.Entries)
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
@@ -295,6 +311,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
 			Artifact:       said(ru.Artifacts),
+			Run:            run,
 			Parent:         ru.Parent,
 			ParentEvidence: parentEvidence,
 			Evidence:       evidence,

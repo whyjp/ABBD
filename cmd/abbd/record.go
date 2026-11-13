@@ -295,10 +295,12 @@ func place(id model.ID) string {
 	return string(id)
 }
 
-// statedFields are the why-fields a human states; code facts come from the script.
+// statedFields are the fields a human states: the why-fields, and how an
+// execution context runs. Code facts come from the script.
 var statedFields = map[string]func(*model.Unit) **model.Fact{
 	"purpose":        func(u *model.Unit) **model.Fact { return &u.Purpose },
 	"responsibility": func(u *model.Unit) **model.Fact { return &u.Responsibility },
+	"run":            func(u *model.Unit) **model.Fact { return &u.Run },
 }
 
 // recordFact writes what a human stated about a unit, with where they said it.
@@ -309,7 +311,7 @@ func (e env) recordFact(key string) error {
 	_, isSlot := model.SlotNamed(slot)
 	switch {
 	case !ok && !isSlot:
-		return fmt.Errorf("%q is not ID.purpose, ID.responsibility or ID.decisions.KEY", key)
+		return fmt.Errorf("%q is not ID.purpose, ID.responsibility, EXEC-ID.run or ID.decisions.KEY", key)
 	case strings.TrimSpace(e.value) == "":
 		return fmt.Errorf("give the stated text with --value")
 	case e.sourceRef() == "":
@@ -325,7 +327,15 @@ func (e env) recordFact(key string) error {
 	if !ok {
 		return fmt.Errorf("%s is not a unit of the state", id)
 	}
-	f := model.Stated(strings.TrimSpace(e.value), e.sourceRef())
+	value := strings.TrimSpace(e.value)
+	if field == "run" {
+		r, err := model.ParseRun(value)
+		if err != nil {
+			return err
+		}
+		value = r.String()
+	}
+	f := model.Stated(value, e.sourceRef())
 	*at(&u) = &f
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err

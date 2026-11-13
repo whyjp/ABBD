@@ -42,7 +42,7 @@ abbd record relation FROM KIND TO --source REF [--via VIA] [--phrase TEXT] [--ev
                                      a coupling a human stated, USER_STATED
 abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
                                      a unit the script cannot see, INFERRED
-abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root DIR]
+abbd record fact ID.purpose|ID.responsibility|EXEC-ID.run --value TEXT --source REF [--root DIR]
                                      what a human stated, USER_STATED with where they said it
 abbd record fact ID.decisions.KEY --value TEXT --source REF [--root DIR]
                                      a human's reason for a decision a reader stored, USER_STATED

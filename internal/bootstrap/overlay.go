@@ -84,6 +84,9 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		if u.Artifact == nil && d.Artifact != nil {
 			u.Artifact = supplemented(d.Artifact)
 		}
+		if d.Run != nil {
+			u.Run = supplemented(d.Run)
+		}
 	}
 	if len(gaps) > 0 {
 		sort.Strings(gaps)
