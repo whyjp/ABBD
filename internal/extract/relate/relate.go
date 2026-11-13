@@ -81,6 +81,9 @@ type site struct {
 type found struct {
 	facts   []fact
 	covered map[string]bool
+	// skipped counts the module's Go files the fixed build configuration
+	// left out by a build constraint.
+	skipped int
 }
 
 // Relate runs each relater over its directory under root and adds what it
@@ -88,10 +91,10 @@ type found struct {
 // whose code it read, so it replaces the extraction's there. It never makes
 // a unit, and adds a provides or consumes only where the extraction has none,
 // since the extraction owns its contracts.
-func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, error) {
+func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, int, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
-		return doc, err
+		return doc, 0, err
 	}
 	o := index(doc.Units)
 	var all found
@@ -103,19 +106,26 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, e
 		r := relaters[s.Name]
 		dir := filepath.Join(root, filepath.FromSlash(s.Dir))
 		if _, err := os.Stat(filepath.Join(dir, r.manifest)); err != nil {
-			return doc, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, r.manifest)
+			return doc, 0, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, r.manifest)
 		}
 		f, err := r.run(tree{root: root, dir: dir}, o)
 		if err != nil {
-			return doc, fmt.Errorf("%s: %w", s.Name, err)
+			return doc, 0, fmt.Errorf("%s: %w", s.Name, err)
 		}
 		all.facts = append(all.facts, f.facts...)
+		all.skipped += f.skipped
 		for u := range f.covered {
 			all.covered[u] = true
 		}
 	}
-	return merge(root, doc, all)
+	doc, err = merge(root, doc, all)
+	return doc, all.skipped, err
 }
+
+// codeVia is whether a depends_on's via is one the code alone shows, so a
+// relater that read both ends owns it. A config, spawn, data or callback
+// relation lives outside the Go code and is never replaced.
+func codeVia(v model.Via) bool { return v == "" || slices.Contains(vias, v) }
 
 // merge folds the facts into the extraction under the ownership rule Relate
 // states, one relation per link with the best via's quotes.
@@ -123,7 +133,7 @@ func merge(root string, doc extract.Doc, f found) (extract.Doc, error) {
 	had := map[link]bool{}
 	var kept []extract.DocRelation
 	for _, r := range doc.Relations {
-		if r.Kind == model.DependsOn && f.covered[r.From] && f.covered[r.To] {
+		if r.Kind == model.DependsOn && codeVia(r.Via) && f.covered[r.From] && f.covered[r.To] {
 			continue
 		}
 		had[link{r.From, r.To, r.Kind}] = true

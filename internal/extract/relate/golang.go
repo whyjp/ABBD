@@ -7,6 +7,7 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"strings"
 
 	"golang.org/x/tools/go/callgraph/vta"
 	"golang.org/x/tools/go/packages"
@@ -34,6 +35,11 @@ func golang(t tree, o owners) (found, error) {
 	g := goRead{tree: t, owners: o, fset: cfg.Fset, loaded: map[string]bool{}, f: found{covered: map[string]bool{}}}
 	var broken []string
 	for _, p := range pkgs {
+		for _, f := range p.IgnoredFiles {
+			if r, ok := t.rel(f); ok && strings.HasSuffix(r, ".go") && !strings.HasSuffix(r, "_test.go") {
+				g.f.skipped++
+			}
+		}
 		for _, e := range p.Errors {
 			broken = append(broken, e.Error())
 		}

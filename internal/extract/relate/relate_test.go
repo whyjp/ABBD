@@ -36,7 +36,7 @@ func run(t *testing.T, doc extract.Doc) []string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := Relate(fixture, doc, []frontend.Spec{s})
+	out, _, err := Relate(fixture, doc, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,11 +105,40 @@ func TestGoRelaterReplacesOnlyTheDependsOnBetweenCodeItRead(t *testing.T) {
 	}
 }
 
+func TestGoRelaterKeepsNonCodeRelationsBetweenUnitsItRead(t *testing.T) {
+	doc := extract.Doc{Units: modules(), Relations: []extract.DocRelation{
+		{From: "mod-app", To: "mod-core", Kind: model.DependsOn, Via: "config"},
+		{From: "mod-core", To: "mod-shapes", Kind: model.DependsOn, Via: "spawn"},
+		{From: "mod-app", To: "mod-plugin", Kind: model.DependsOn, Via: "data"},
+		{From: "mod-app", To: "mod-extra", Kind: model.DependsOn, Via: "call"},
+	}}
+	got := run(t, doc)
+	for _, kept := range []string{"mod-app depends_on mod-core via config []", "mod-core depends_on mod-shapes via spawn []", "mod-app depends_on mod-plugin via data []"} {
+		if !slices.Contains(got, kept) {
+			t.Errorf("lost %q, a relation the code cannot show:\n%s", kept, strings.Join(got, "\n"))
+		}
+	}
+	if slices.ContainsFunc(got, func(l string) bool { return strings.HasPrefix(l, "mod-app depends_on mod-extra ") }) {
+		t.Error("kept a code-level call the relater read no sign of")
+	}
+}
+
+func TestGoRelaterCountsFilesSkippedByBuildConstraints(t *testing.T) {
+	s, _ := ParseSpec("go")
+	_, skipped, err := Relate(fixture, extract.Doc{Units: modules()}, []frontend.Spec{s})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if skipped != 1 {
+		t.Errorf("skipped = %d, want 1 (util/util_windows.go)", skipped)
+	}
+}
+
 func TestGoRelationsPrintTheSameBytesEveryRun(t *testing.T) {
 	s, _ := ParseSpec("go")
 	var outs [2]bytes.Buffer
 	for i := range outs {
-		doc, err := Relate(fixture, extract.Doc{Units: modules()}, []frontend.Spec{s})
+		doc, _, err := Relate(fixture, extract.Doc{Units: modules()}, []frontend.Spec{s})
 		if err != nil {
 			t.Fatal(err)
 		}

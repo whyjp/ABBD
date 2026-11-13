@@ -35,7 +35,8 @@ abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
                                      print the extraction that EXTRACT-ARGV prints, or stdin,
                                      with the code-level relations a bundled relater reads
                                      between its units: go (go.mod; go/types, calls resolved
-                                     with VTA, tests left out, GOOS=linux); it replaces the
+                                     with VTA, tests left out, GOOS=linux; files only other
+                                     platforms or cgo build are skipped, counted on stderr); it replaces the
                                      depends_on between units whose code it read, and adds a
                                      provides or consumes only where the extraction has none;
                                      register it as abbd setup -- abbd relate go -- EXTRACT-ARGV
