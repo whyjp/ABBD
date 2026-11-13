@@ -251,12 +251,18 @@ func TestDiffNamesTheWordsThatChanged(t *testing.T) {
 	}
 	contains(t, p.want(0, "", "diff", "--base", "HEAD", "--unit", "MOD-0001"), "words inside MOD-0001 since", "+ \"It retries three times.\"")
 
-	var d struct{ Words []string }
+	var d struct {
+		Words []struct {
+			Key, Kind, Unit, Change string
+			Lost, Gained            []string
+		}
+	}
 	if err := json.Unmarshal([]byte(p.want(0, "", "diff", "--base", "HEAD", "--json")), &d); err != nil {
 		t.Fatal(err)
 	}
-	if !slices.Contains(d.Words, `    + "It retries three times."`) {
-		t.Errorf("--json words = %q", d.Words)
+	if w := d.Words; len(w) != 1 || w[0].Key != "text MOD-0001" || w[0].Kind != "text" || w[0].Unit != "MOD-0001" || w[0].Change != "changed" ||
+		!slices.Equal(w[0].Lost, []string{"It retries once."}) || !slices.Equal(w[0].Gained, []string{"It retries three times."}) {
+		t.Errorf("--json words = %+v", d.Words)
 	}
 
 	p.want(0, "compare view:", "diff", "--base", "HEAD", "--unit", "MOD-0001", "--page")

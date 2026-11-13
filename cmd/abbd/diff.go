@@ -49,7 +49,12 @@ func (e env) diff() error {
 		in = topology.Subtree(id, was, now)
 		d = d.Within(in)
 	}
-	words, err := e.wordsSince(base, was, now, in)
+	then, done, err := e.storeAt(base)
+	defer done()
+	if err != nil {
+		return err
+	}
+	words, err := e.wordsSince(then, was, now, in)
 	if err != nil {
 		return err
 	}
@@ -58,7 +63,7 @@ func (e env) diff() error {
 			Base string `json:"base"`
 			Unit string `json:"unit,omitempty"`
 			topology.Diff
-			Words []string `json:"words"`
+			Words []wordChange `json:"words"`
 		}{base, e.unit, d, words}, "", "  ")
 		if err != nil {
 			return err
@@ -71,11 +76,11 @@ func (e env) diff() error {
 		}
 		fmt.Fprintf(e.stdout, "topology%s since %s:\n%s", of, short(base), d)
 		if len(words) > 0 {
-			fmt.Fprintf(e.stdout, "words%s since %s:\n%s\n", of, short(base), strings.Join(words, "\n"))
+			fmt.Fprintf(e.stdout, "words%s since %s:\n%s\n", of, short(base), strings.Join(lines(words), "\n"))
 		}
 	}
 	if e.page {
-		page, err := e.comparePage(base, d, words)
+		page, err := e.comparePage(base, then, d, words)
 		if err != nil {
 			return err
 		}
@@ -155,7 +160,7 @@ func summary(d topology.Diff) string {
 // compare directory, and a page that sets one of its pages beside the
 // current one with the changes listed. Git and the state's fingerprint both
 // ignore the directory.
-func (e env) comparePage(base string, d topology.Diff, words []string) (string, error) {
+func (e env) comparePage(base string, at store.Store, d topology.Diff, words []wordChange) (string, error) {
 	dir := e.st.CompareDir()
 	then := filepath.Join(dir, "base")
 	if err := os.RemoveAll(then); err != nil {
@@ -167,7 +172,7 @@ func (e env) comparePage(base string, d topology.Diff, words []string) (string, 
 	if err := os.WriteFile(filepath.Join(dir, ".gitignore"), []byte("*\n"), 0o644); err != nil {
 		return "", err
 	}
-	pages, err := e.pagesAt(base)
+	pages, err := e.pagesAt(base, at)
 	if err != nil {
 		return "", err
 	}
@@ -201,7 +206,7 @@ func (e env) comparePage(base string, d topology.Diff, words []string) (string, 
 	nowSVG, style := drawing(load(exists("../blueprint/"+name)), anchor)
 	var b strings.Builder
 	if err := compareTmpl.Execute(&b, map[string]any{
-		"Of": of, "Base": short(base), "Summary": summary(d), "Lines": d.String(), "Count": len(d.Lines()), "Words": strings.Join(words, "\n"), "WordCount": len(words),
+		"Of": of, "Base": short(base), "Summary": summary(d), "Lines": d.String(), "Count": len(d.Lines()), "Words": strings.Join(lines(words), "\n"), "WordCount": len(lines(words)),
 		"Style": template.CSS(style), "Before": template.HTML(wasSVG), "Now": template.HTML(nowSVG),
 		"BasePage": exists("base/" + name), "NowPage": "../blueprint/" + name,
 	}); err != nil {
@@ -211,9 +216,9 @@ func (e env) comparePage(base string, d topology.Diff, words []string) (string, 
 	return page, os.WriteFile(page, []byte(b.String()), 0o644)
 }
 
-// pagesAt draws the blueprint of the state committed at base, so the base
-// reads in the renderer of now, or reads the pages the kept copy holds.
-func (e env) pagesAt(base string) (map[string][]byte, error) {
+// pagesAt draws the blueprint of at, the state committed at base, so the
+// base reads in the renderer of now, or reads the pages the kept copy holds.
+func (e env) pagesAt(base string, at store.Store) (map[string][]byte, error) {
 	if base == prev {
 		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")
 		es, err := os.ReadDir(kept)
@@ -228,13 +233,7 @@ func (e env) pagesAt(base string) (map[string][]byte, error) {
 		}
 		return pages, nil
 	}
-	at := filepath.Join(e.st.CompareDir(), "at")
-	defer os.RemoveAll(at)
-	st, err := e.st.CheckoutAt(base, at)
-	if err != nil {
-		return nil, err
-	}
-	in, err := screen.Load(st)
+	in, err := screen.Load(at)
 	if err != nil || len(in.Units) == 0 {
 		return nil, err
 	}
@@ -269,13 +268,8 @@ func (e env) unitsAt(base string) ([]model.Unit, error) {
 
 func short(rev string) string { return rev[:min(len(rev), 12)] }
 
-// wordsSince is wordsDiff between the store at base and now.
-func (e env) wordsSince(base string, was, now []model.Unit, in func(model.ID) bool) ([]string, error) {
-	then, done, err := e.storeAt(base)
-	defer done()
-	if err != nil {
-		return nil, err
-	}
+// wordsSince is wordsDiff between then, the store at base, and now.
+func (e env) wordsSince(then store.Store, was, now []model.Unit, in func(model.ID) bool) ([]wordChange, error) {
 	before, err := writtenIn(then, was)
 	if err != nil {
 		return nil, err

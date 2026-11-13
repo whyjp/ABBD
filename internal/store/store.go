@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -141,26 +142,18 @@ func (s Store) loadUnits() ([]model.Unit, map[model.ID]bool, error) {
 // UnitsAt reads the unit files as they were committed at rev. A revision
 // without .abbd/ has no units.
 func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
-	project := filepath.Dir(s.root)
 	var dirs []string
 	for _, d := range s.unitDirs() {
 		dirs = append(dirs, Dir+"/"+d)
 	}
-	files, err := gitx.Files(project, rev, dirs...)
+	files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return strings.HasSuffix(f, ".md") }, dirs...)
 	if err != nil {
 		return nil, err
 	}
 	var units []model.Unit
 	old := map[model.ID]bool{}
-	for _, f := range files {
-		if !strings.HasSuffix(f, ".md") {
-			continue
-		}
-		b, err := gitx.Show(project, rev, f)
-		if err != nil {
-			return nil, err
-		}
-		u, isOld, err := parseUnit(f, b)
+	for _, f := range slices.Sorted(maps.Keys(files)) {
+		u, isOld, err := parseUnit(f, files[f])
 		if err != nil {
 			return nil, fmt.Errorf("%s at %s: %w", f, rev, err)
 		}
@@ -177,22 +170,14 @@ func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
 // dir and opens a store there, so the state as it was can be drawn again.
 // No code is checked out beside it, so its texts read against none.
 func (s Store) CheckoutAt(rev, dir string) (Store, error) {
-	project := filepath.Dir(s.root)
 	if err := os.RemoveAll(dir); err != nil {
 		return Store{}, err
 	}
-	files, err := gitx.Files(project, rev, Dir)
+	files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return !strings.HasPrefix(f, Dir+"/blueprint/") }, Dir)
 	if err != nil {
 		return Store{}, err
 	}
-	for _, f := range files {
-		if strings.HasPrefix(f, Dir+"/blueprint/") {
-			continue
-		}
-		b, err := gitx.Show(project, rev, f)
-		if err != nil {
-			return Store{}, err
-		}
+	for f, b := range files {
 		if err := writeFile(filepath.Join(dir, filepath.FromSlash(f)), b); err != nil {
 			return Store{}, err
 		}
