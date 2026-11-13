@@ -734,7 +734,7 @@
       "Parent": "FEAT-0002",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"## Extraction format\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes` or `provides`.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes`, `provides`, `runs_on`\""
       ]
     },
     {
@@ -2022,12 +2022,13 @@
         "Stale": true
       },
       "Anchors": [
+        "internal/model/model.go",
         "internal/model/model.go ends",
         "internal/model/model.go vias"
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go \"var ends = map[RelationKind]struct {\"",
         "internal/model/model.go \"var vias = map[Via]bool{\""
       ]
     },
@@ -4873,7 +4874,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
     },
     {
       "From": "MOD-0047",
@@ -5426,7 +5427,7 @@
         "Uses": 19,
         "Direct": 2,
         "StaleNotes": 0,
-        "Dead": 2
+        "Dead": 0
       },
       "Units": [
         {
@@ -15424,7 +15425,7 @@
         "Direct": 0,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 2
+        "Dead": 0
       },
       "Units": [
         {
@@ -15525,6 +15526,7 @@
           "Sentence": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
           "Guess": true,
           "Anchors": [
+            "internal/model/model.go",
             "internal/model/model.go ends",
             "internal/model/model.go vias"
           ],
@@ -19163,7 +19165,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\"",
             "internal/topology/query.go \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -28768,7 +28770,7 @@
         "Direct": 1,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 3
+        "Dead": 2
       },
       "Units": [
         {
@@ -30366,7 +30368,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\"",
             "internal/topology/query.go \"case l.Origin == model.Inferred:\""
           ]
         },
