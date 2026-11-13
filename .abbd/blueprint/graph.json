@@ -8102,7 +8102,39 @@
                 "Code": true
               },
               {
-                "Text": "처럼 순번을 붙인다). 그래서 part를 넣거나 빼도 다른 part의 키는 그대로다. 찾은 글마다 키와 함께 글의 짧은 digest를 남기고, table은 열 이름도 ",
+                "Text": "처럼 순번을 붙인다). 그래서 part를 넣거나 빼도 다른 part의 키는 그대로다. 개요는 캡션을 한 글로 판정하고, 구역 이름, 줄의 단어, 주 흐름의 단계 이름은 각각 ",
+                "Code": false
+              },
+              {
+                "Text": "overview zone \u003c이름\u003e",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "overview line \u003cFROM TO\u003e",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "overview stage \u003c이름\u003e",
+                "Code": true
+              },
+              {
+                "Text": " 키로 따로 판정하며, 이때 ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsAsWord",
+                "Code": true
+              },
+              {
+                "Text": "가 식별자만 있는 단어를 그 언어로 읽히지 않는 글로 본다. 찾은 글마다 키와 함께 글의 짧은 digest를 남기고, table은 열 이름도 ",
                 "Code": false
               },
               {
@@ -35639,7 +35671,15 @@
                 "Code": true
               },
               {
-                "Text": " 0.3 이상인지 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다.",
+                "Text": " 0.3 이상인지 본다. ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsAsWord",
+                "Code": true
+              },
+              {
+                "Text": "는 줄의 단어나 단계 이름처럼 홀로 서는 글에 같은 판정을 쓰되, 글자는 있는데 산문 단어가 하나도 없는 식별자만의 글은 읽히지 않는 것으로 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다.",
                 "Code": false
               }
             ]
