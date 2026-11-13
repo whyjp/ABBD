@@ -149,6 +149,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		}
 	}
 	res := Result{Units: units}
+	whens := map[string]string{}
 	for i, rr := range raw.Relations {
 		from, okf := kinds[rr.From]
 		to, okt := kinds[rr.To]
@@ -174,8 +175,13 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s) carries a phrase; a phrase is a reader's words, so the supplement gives it and the script does not", i, rr.From, rr.To)
 		}
 		if err := model.ValidateWhen(rr.When); err != nil {
-			return res, fmt.Errorf("relation %d: %w", i, err)
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
+		edge := rr.From + " " + string(rr.Kind) + " " + rr.To
+		if w, ok := whens[edge]; ok && w != rr.When {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): the edge is listed again with condition %q after %q; give it once, its conditions joined as \"a | b\", and no condition when any listing has none", i, rr.From, rr.To, rr.When, w)
+		}
+		whens[edge] = rr.When
 		if err := model.ValidatePhrase(rr.Phrase, rr.Via); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
