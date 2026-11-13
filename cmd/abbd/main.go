@@ -399,12 +399,18 @@ var commands = map[string]command{
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
-	"version":         {pos: []int{0}, run: func(e env, _ []string) error { _, err := fmt.Fprintln(e.stdout, "abbd", version()); return err }},
+	"version":         {pos: []int{0}, run: func(e env, _ []string) error { return e.version() }},
 }
 
-// version is the module version and the commit the binary was built from,
-// with +dirty when the checkout had changes, as the Go toolchain stamps them.
-func version() string {
+// version prints the module version and the commit the binary was built
+// from, with +dirty when the checkout had changes, as the Go toolchain
+// stamps them, so a log can say which abbd ran.
+func (e env) version() error {
+	_, err := fmt.Fprintln(e.stdout, "abbd", buildVersion())
+	return err
+}
+
+func buildVersion() string {
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		return "(unknown)"
