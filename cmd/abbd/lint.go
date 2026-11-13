@@ -98,16 +98,16 @@ func (e env) lint(pos []string) error {
 		if err := e.st.SaveLintDebt(d); err != nil {
 			return err
 		}
-		if n := len(unowed); n > 0 {
-			t := in.Project.Language
-			fmt.Fprintf(e.stdout, "lint: prose: %s not in %s left out of the debt, which only shrinks; lint fails until each is written in %s\n", plural(n, "text"), t, t)
-		}
 		for _, l := range levels {
 			if r, ok := kept[l.View]; ok {
 				fmt.Fprintf(e.stdout, "lint: kept the level of %s: %s\n", l.View, r)
 			}
 		}
 		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["tees"], d.Ceilings["excess_turns"], d.Ceilings["placement"], d.Ceilings["overflow"], d.Ceilings["detours"], store.Dir)
+		if n := len(unowed); n > 0 {
+			t := in.Project.Language
+			return fmt.Errorf("prose: %s not in %s left out of the debt, which only shrinks; lint fails until each is written in %s", plural(n, "text"), t, t)
+		}
 		return nil
 	}
 	every := only == ""
@@ -126,8 +126,9 @@ func (e env) lint(pos []string) error {
 		// Only a language project.yaml names gates the prose, so the
 		// gate does not move with the machine lint runs on.
 		if t := in.Project.Language; t != "" {
-			r.Language, r.Prose = t, foreignProse(in, t)
-			fails, lower := proseGate(r.Prose, t, debt.Prose)
+			found := foreignProse(in, t)
+			r.Language, r.Prose = t, proseKeys(found)
+			fails, lower := proseGate(found, t, debt.Prose)
 			r.Failures = append(r.Failures, fails...)
 			r.Lowerable = append(r.Lowerable, lower...)
 		}

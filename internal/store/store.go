@@ -428,12 +428,13 @@ type LintDebt struct {
 }
 
 // ProseDebt names the texts abbd lint lets stand in another language than
-// Language, by the keys lint reports them under, and why. It holds only
-// while project.yaml names the same language.
+// Language, and why. Owed maps the key lint reports each text under to a
+// digest of its words, so a text written again under that key is no longer
+// owed. It holds only while project.yaml names the same language.
 type ProseDebt struct {
-	Language model.Language `yaml:"language"`
-	Reason   string         `yaml:"reason"`
-	Owed     []string       `yaml:"owed"`
+	Language model.Language    `yaml:"language"`
+	Reason   string            `yaml:"reason"`
+	Owed     map[string]string `yaml:"owed"`
 }
 
 // LoadLintDebt reads what the drawings owe. With no file they owe nothing

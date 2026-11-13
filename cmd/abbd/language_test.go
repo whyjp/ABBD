@@ -64,7 +64,7 @@ func TestLintFlagsProseNotInTheProjectLanguage(t *testing.T) {
 	}
 
 	p.want(0, "responsibility of MOD-0001", "understand", "MOD-0001", p.file(t, "ko.md", "## Overview\n\nbilling 모듈은 charges table에 금액을 기록한다.\n"), "--sentence", "billing writes the charges table.")
-	p.want(0, "lint: prose: 1 text not in ko left out of the debt", "lint", "--record")
+	p.want(1, "prose: 1 text not in ko left out of the debt", "lint", "--record")
 	debt := p.read("lint-debt.yaml")
 	if strings.Contains(debt, "MOD-0001 responsibility") || strings.Contains(debt, "MOD-0001 text") {
 		t.Fatalf("record must keep only owed texts still foreign, never take in one written since:\n%s", debt)
@@ -84,7 +84,7 @@ func TestLintJudgesEveryTablePartAndColumn(t *testing.T) {
 	p.table(0, "stored table charge", ko)
 	p.setLanguage("ko")
 	r, out := proseOf(t, p)
-	for _, k := range []string{"table charge columns", "table charge row 1", "table charge row 2"} {
+	for _, k := range []string{"table charge columns", "table charge row MOD-0001", "table charge row MOD-0002"} {
 		if !slices.Contains(r.Prose, k) {
 			t.Errorf("lint must judge %s:\n%s", k, out)
 		}
@@ -92,4 +92,34 @@ func TestLintJudgesEveryTablePartAndColumn(t *testing.T) {
 	if slices.Contains(r.Prose, "table charge") {
 		t.Errorf("lint failed a Korean question and caption:\n%s", out)
 	}
+}
+
+// The debt owes the words a text held when it was taken, not its slot: an
+// owed text written again in English fails until it reads in the language.
+func TestTheProseDebtOwesWordsNotSlots(t *testing.T) {
+	p := semanticProject(t)
+	p.setLanguage("ko")
+	sentence := "billing writes the charges table."
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "en.md", "## Overview\n\nbilling writes the charges table.\n"), "--sentence", sentence)
+	p.want(0, "", "lint", "--record")
+	p.want(0, "", "lint")
+
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "en.md", "## Overview\n\nbilling stores every charge in the charges table.\n"), "--sentence", sentence)
+	r, out := proseOf(t, p)
+	if !slices.Contains(r.Failures, "prose: MOD-0001 text was written again since the debt took it and does not read as ko; write it in ko, keeping identifiers, paths and quotes verbatim") {
+		t.Fatalf("an owed text written again in English must fail lint:\n%s", out)
+	}
+	if slices.ContainsFunc(r.Failures, func(f string) bool { return strings.HasPrefix(f, "prose: MOD-0001 responsibility") }) {
+		t.Fatalf("an owed text left as it was must still pass:\n%s", out)
+	}
+	p.want(1, "prose: 1 text not in ko left out of the debt", "lint", "--record")
+	p.want(1, "prose: MOD-0001 text does not read as ko", "lint")
+
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "ko.md", "## Overview\n\nbilling 모듈은 charges table에 금액을 기록한다.\n"), "--sentence", sentence)
+	p.want(0, "", "lint", "--record")
+	debt := p.read("lint-debt.yaml")
+	if strings.Contains(debt, "MOD-0001 text") || !strings.Contains(debt, "MOD-0001 responsibility") {
+		t.Fatalf("record must drop the text written in ko and keep the untouched one:\n%s", debt)
+	}
+	p.want(0, "", "lint")
 }
