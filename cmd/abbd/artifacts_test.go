@@ -43,3 +43,14 @@ func TestTheScriptIsToldTheAbbdThatRunsIt(t *testing.T) {
 	p.setup(0, "synced: 1 unit(s)", "--", exe)
 	p.want(0, "MOD-0001 running abbd", "explain", "MOD-0001")
 }
+
+// abbd --help, -h and help print the usage and succeed, as a first-time user
+// types them, where any other unknown word is refused with it.
+func TestHelpPrintsTheUsage(t *testing.T) {
+	t.Parallel()
+	p, _ := bare(t)
+	for _, a := range []string{"--help", "-h", "help"} {
+		p.want(0, "abbd setup [--supplement FILE]", a)
+	}
+	p.want(64, "unknown command", "frobnicate")
+}

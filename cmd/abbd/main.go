@@ -437,6 +437,10 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 }
 
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	if len(args) > 0 && slices.Contains([]string{"--help", "-h", "help"}, args[0]) {
+		fmt.Fprintln(stdout, usage)
+		return exitOK
+	}
 	inv, err := parse(args, stderr)
 	if err != nil {
 		fmt.Fprintln(stderr, "abbd:", err)
