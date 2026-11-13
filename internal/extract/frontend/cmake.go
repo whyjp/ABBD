@@ -90,7 +90,11 @@ var notBuilt = map[string]bool{
 // Targets compiling the same sources, such as a static and a shared build of
 // one library, are one module.
 func cmake(t tree) (extract.Doc, error) {
-	build := t.buildDir("cmake")
+	version, err := cmakeVersion(t)
+	if err != nil {
+		return extract.Doc{}, err
+	}
+	build := t.buildDir(filepath.Join("cmake", version))
 	query := filepath.Join(build, ".cmake", "api", "v1", "query")
 	if err := os.MkdirAll(query, 0o755); err != nil {
 		return extract.Doc{}, err
@@ -196,6 +200,36 @@ func cmake(t tree) (extract.Doc, error) {
 		}
 	}
 	return doc, nil
+}
+
+// cmakeVersion asks the cmake on PATH for its version before anything is
+// configured, so a CMake older than 4.2 gets the refusal even where its
+// configure fails first. The version is in the name of the build tree, so a
+// tree an older CMake made never meets a newer one that cannot reuse it.
+func cmakeVersion(t tree) (string, error) {
+	out, err := t.run("cmake", "-E", "capabilities")
+	if err != nil {
+		return "", err
+	}
+	var caps struct {
+		Version struct {
+			String string `json:"string"`
+			Major  int    `json:"major"`
+			Minor  int    `json:"minor"`
+		} `json:"version"`
+	}
+	if err := json.Unmarshal(out, &caps); err != nil {
+		return "", fmt.Errorf("cmake -E capabilities printed no JSON: %w", err)
+	}
+	if v := caps.Version; v.Major < 4 || v.Major == 4 && v.Minor < 2 {
+		return "", oldCMake{v.String}
+	}
+	return strings.Map(func(r rune) rune {
+		if r == '.' || r == '-' || r >= '0' && r <= '9' || r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' {
+			return r
+		}
+		return '_'
+	}, caps.Version.String), nil
 }
 
 // throughInterfaces replaces each INTERFACE library among ids with what it
