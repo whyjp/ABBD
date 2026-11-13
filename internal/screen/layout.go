@@ -382,11 +382,11 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	if fa != nil {
 		pinStages(nodes, fa)
 	}
-	if seat == nil {
+	switch {
+	case fa != nil:
+		flowRank(nodes, order, out, keep, rank, fa)
+	case seat == nil:
 		tier(nodes, order, out, keep, rank)
-	}
-	if fa != nil && fa.across {
-		clearSpine(nodes, rank, out)
 	}
 	// The frame's edges leave the layering, and the layers they alone held
 	// close up.
@@ -1076,57 +1076,157 @@ func pinStages(nodes []lnode, f *flowAxis) {
 		return strings.Compare(x.id, y.id)
 	})
 	for k, i := range staged {
-		nodes[i].tier, nodes[i].step = 1, k+1
+		nodes[i].tier, nodes[i].step = 1, 2*k+2
 	}
 }
 
-// clearSpine keeps the spine's row to the spine. Any other node tier left in
-// it moves to a row of its own: just above the spine when no staged node
-// uses it, else just below. Every row past them shifts down.
-func clearSpine(nodes []lnode, rank map[string]int, out map[string][]string) {
-	s := -1
-	staged := map[string]bool{}
-	for _, n := range nodes {
-		if n.stage > 0 {
-			staged[n.id], s = true, rank[n.id]
+// flowRank ranks the boxes of a view that lays the primary flow out. The
+// stages hold their rows: across, the one spine row, else a row to a stage
+// in stage order. Every other box stands by the lines as tier has it,
+// against the stages too: below the boxes that use it, else just above
+// the highest it uses, so it stands between the stages it joins. A box
+// that a stage uses and that itself uses a stage, across, would climb to
+// the spine from below whichever side it took: it stands in the spine row,
+// just before the first stage it uses, as the flow passes through it.
+func flowRank(nodes []lnode, order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int, f *flowAxis) {
+	gap := len(nodes) + 2
+	level := func(s int) int {
+		if f.across {
+			return gap
+		}
+		return s * gap
+	}
+	for id, s := range f.stage {
+		rank[id] = level(s)
+	}
+	ins := map[string][]string{}
+	linked := map[string]bool{}
+	for _, v := range order {
+		for _, w := range out[v] {
+			if keep[ledge{v, w}] && (f.stage[v] == 0 || f.stage[w] == 0) {
+				ins[w] = append(ins[w], v)
+				linked[v], linked[w] = true, true
+			}
 		}
 	}
-	usedByStage := func(v string) bool {
-		for u := range staged {
-			if slices.Contains(out[u], v) {
-				return true
+	for range len(order) {
+		moved := false
+		for _, v := range order {
+			if f.stage[v] > 0 || !linked[v] {
+				continue
+			}
+			r := 0
+			if len(ins[v]) > 0 {
+				for _, u := range ins[v] {
+					r = max(r, rank[u]+1)
+				}
+			} else {
+				r = 1 << 30
+				for _, w := range out[v] {
+					if keep[ledge{v, w}] {
+						r = min(r, rank[w]-1)
+					}
+				}
+			}
+			if r != rank[v] {
+				rank[v], moved = r, true
+			}
+		}
+		if !moved {
+			break
+		}
+	}
+	if f.across && !inline(nodes, out, rank, f) {
+		f.across = false
+		pinStages(nodes, f)
+		flowRank(nodes, order, out, keep, rank, f)
+		return
+	}
+	used := map[int]bool{}
+	for _, v := range order {
+		if f.stage[v] > 0 || linked[v] {
+			used[rank[v]] = true
+		}
+	}
+	at := map[int]int{}
+	for i, r := range slices.Sorted(maps.Keys(used)) {
+		at[r] = i
+	}
+	for _, v := range order {
+		if f.stage[v] > 0 || linked[v] {
+			rank[v] = at[rank[v]]
+		}
+	}
+}
+
+// inline stands in the spine row each box below it that a stage uses and
+// that uses a stage which does not reach it back, so its line would climb
+// to close no cycle: just before the first such stage, its tier and step
+// putting it there (huddle). Where the row would not fit spineRoom with
+// them, it says false and moves none: the flow reads down instead.
+func inline(nodes []lnode, out map[string][]string, rank map[string]int, f *flowAxis) bool {
+	spine := 0
+	for id := range f.stage {
+		spine = rank[id]
+	}
+	usedBy := map[string]bool{}
+	for u := range f.stage {
+		for _, w := range out[u] {
+			usedBy[w] = true
+		}
+	}
+	reaches := func(from, to string) bool {
+		seen := map[string]bool{from: true}
+		queue := []string{from}
+		for len(queue) > 0 {
+			c := queue[0]
+			queue = queue[1:]
+			for _, n := range out[c] {
+				if n == to {
+					return true
+				}
+				if !seen[n] {
+					seen[n] = true
+					queue = append(queue, n)
+				}
 			}
 		}
 		return false
 	}
-	above, below := map[string]bool{}, map[string]bool{}
+	step := map[int]int{}
+	width := -gapX
 	for _, n := range nodes {
-		if !staged[n.id] && rank[n.id] == s {
-			if usedByStage(n.id) {
-				below[n.id] = true
-			} else {
-				above[n.id] = true
+		if n.stage > 0 {
+			width += n.w + gapX
+			if step[n.stage] == 0 || n.step < step[n.stage] {
+				step[n.stage] = n.step
 			}
 		}
 	}
-	a, b := 0, 0
-	if len(above) > 0 {
-		a = 1
-	}
-	if len(below) > 0 {
-		b = 1
-	}
-	for id, r := range rank {
-		switch {
-		case r < s || above[id]:
-		case staged[id]:
-			rank[id] = s + a
-		case below[id]:
-			rank[id] = s + a + 1
-		default:
-			rank[id] = r + a + b
+	at := map[int]int{}
+	for i, n := range nodes {
+		if n.stage > 0 || !usedBy[n.id] || rank[n.id] <= spine {
+			continue
+		}
+		first := 0
+		for _, w := range out[n.id] {
+			if s := f.stage[w]; s > 0 && (first == 0 || s < first) && !reaches(w, n.id) {
+				first = s
+			}
+		}
+		if first > 0 {
+			at[i] = first
+			width += n.w + gapX
 		}
 	}
+	if width > spineRoom {
+		return false
+	}
+	for i, first := range at {
+		rank[nodes[i].id] = spine
+		nodes[i].tier, nodes[i].step = 1, step[first]-1
+	}
+	return true
 }
 
 // tier ranks the boxes of a stored stack's tiers (lnode.tier) in the

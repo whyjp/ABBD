@@ -316,3 +316,75 @@ func TestTheKeyNamesThePrimaryStack(t *testing.T) {
 		t.Errorf("the overview's key must name stack pipeline as the primary flow")
 	}
 }
+
+// climbs counts the O3 breaches of a view: lines that climb to a box that
+// does not reach them back.
+func climbs(t *testing.T, m Model, view string) int {
+	t.Helper()
+	vs, err := Lint(m, view)
+	if err != nil {
+		t.Fatal(err)
+	}
+	n := 0
+	for _, v := range vs {
+		for _, b := range v.Breaches {
+			if b.Criterion == "O3" {
+				n++
+			}
+		}
+	}
+	return n
+}
+
+// Down the stages, boxes on a chain from one stage to the next stand
+// between the two stages' rows, so no line climbs.
+func TestABoxStandsBetweenTheStagesItJoins(t *testing.T) {
+	id := func(i int) model.ID { return model.ID(fmt.Sprintf("MOD-%04d", i)) }
+	var units []model.Unit
+	var parts []store.Part[model.Layer]
+	for i := 1; i <= 6; i++ {
+		var rels []model.Relation
+		if i < 6 {
+			rels = deps(id(i + 1))
+		}
+		if i == 1 {
+			rels = append(rels, deps("MOD-0011")...)
+		}
+		units = append(units, called(id(i), fmt.Sprintf("a stage with a name long enough to fill its box %d", i), rels...))
+		parts = append(parts, band(fmt.Sprint("stage ", i), id(i)))
+	}
+	units = append(units, called("MOD-0011", "zbuff", deps("MOD-0012")...), called("MOD-0012", "decompressor", deps(id(2))...))
+	m := Build(Input{Units: units, Figures: primaryStack(parts...)})
+	if f := m.Overview.axis.flow; f == nil || f.across {
+		t.Fatalf("the flow is laid down: %+v", f)
+	}
+	bs := boxes(m.Overview)
+	if d, s := bs["MOD-0012"], bs[string(id(2))]; d.Y+d.H > s.Y {
+		t.Errorf("the decompressor %+v stands above stage 2 %+v, which it uses", d, s)
+	}
+	if n := climbs(t, m, "overview"); n != 0 {
+		t.Errorf("%d lines climb, want none", n)
+	}
+}
+
+// Across, a box the first stage uses that uses the last stage stands in
+// the spine row, before that stage, so no line climbs to the spine.
+func TestABoxBetweenStagesStandsOnTheSpine(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "frontend", deps("MOD-0004")...),
+		called("MOD-0002", "plugins", deps("MOD-0003")...),
+		called("MOD-0003", "libobs"),
+		called("MOD-0004", "shared", deps("MOD-0003")...),
+	}
+	m := Build(Input{Units: units, Figures: primaryStack(band("app", "MOD-0001"), band("sources", "MOD-0002"), band("render", "MOD-0003"))})
+	if f := m.Overview.axis.flow; f == nil || !f.across {
+		t.Fatalf("the flow is laid across: %+v", f)
+	}
+	bs := boxes(m.Overview)
+	if s, l := bs["MOD-0004"], bs["MOD-0003"]; s.Y != l.Y || s.X > l.X {
+		t.Errorf("shared %+v stands in the spine row before libobs %+v", s, l)
+	}
+	if n := climbs(t, m, "overview"); n != 0 {
+		t.Errorf("%d lines climb, want none", n)
+	}
+}
