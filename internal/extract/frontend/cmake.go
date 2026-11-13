@@ -21,6 +21,10 @@ type cmakeIndex struct {
 }
 
 type cmakeCodemodel struct {
+	Version struct {
+		Major int `json:"major"`
+		Minor int `json:"minor"`
+	} `json:"version"`
 	Paths          struct{ Source string } `json:"paths"`
 	Configurations []struct {
 		Name    string `json:"name"`
@@ -29,6 +33,10 @@ type cmakeCodemodel struct {
 			JSONFile string `json:"jsonFile"`
 		} `json:"targets"`
 	} `json:"configurations"`
+}
+
+type cmakeTargetRef struct {
+	ID string `json:"id"`
 }
 
 type cmakeTarget struct {
@@ -43,18 +51,14 @@ type cmakeTarget struct {
 		CompileGroupIndex *int   `json:"compileGroupIndex"`
 	} `json:"sources"`
 	CompileGroups []struct{ Language string } `json:"compileGroups"`
-	Dependencies  []struct {
-		ID        string `json:"id"`
-		Backtrace *int   `json:"backtrace"`
-	} `json:"dependencies"`
-	Backtrace *int `json:"backtrace"`
-	Graph     struct {
+	Dependencies  []cmakeTargetRef            `json:"dependencies"`
+	LinkLibraries []cmakeTargetRef            `json:"linkLibraries"`
+	Backtrace     *int                        `json:"backtrace"`
+	Graph         struct {
 		Nodes []struct {
-			File    int  `json:"file"`
-			Command *int `json:"command"`
+			File int `json:"file"`
 		} `json:"nodes"`
-		Files    []string `json:"files"`
-		Commands []string `json:"commands"`
+		Files []string `json:"files"`
 	} `json:"backtraceGraph"`
 }
 
@@ -149,10 +153,8 @@ func cmake(t tree) (extract.Doc, error) {
 		if f, ok := t.defined(tg); ok {
 			g.anchors = append(g.anchors, model.Anchor{Path: f, Symbol: tg.Name})
 		}
-		for _, d := range tg.Dependencies {
-			if tg.command(d.Backtrace) != "add_dependencies" {
-				g.deps = append(g.deps, d.ID)
-			}
+		for _, d := range links(cm, tg) {
+			g.deps = append(g.deps, d.ID)
 		}
 		byID[tg.ID] = g
 	}
@@ -216,17 +218,14 @@ func (t tree) defined(tg cmakeTarget) (string, bool) {
 	return t.rel(p)
 }
 
-// command is the CMake command at a backtrace node. A dependency that
-// add_dependencies made only orders the build and links nothing.
-func (tg cmakeTarget) command(node *int) string {
-	if node == nil || *node >= len(tg.Graph.Nodes) {
-		return ""
+// links are the targets a target links. Code model 2.9 (CMake 3.31) lists
+// them apart from targets that add_dependencies only builds first; an older
+// one lists both together, and each stays a link.
+func links(cm cmakeCodemodel, tg cmakeTarget) []cmakeTargetRef {
+	if cm.Version.Major > 2 || cm.Version.Minor >= 9 {
+		return tg.LinkLibraries
 	}
-	c := tg.Graph.Nodes[*node].Command
-	if c == nil || *c >= len(tg.Graph.Commands) {
-		return ""
-	}
-	return tg.Graph.Commands[*c]
+	return tg.Dependencies
 }
 
 // moduleRefs names each module by its target, or a module of several

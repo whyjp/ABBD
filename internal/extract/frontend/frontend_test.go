@@ -189,6 +189,27 @@ func TestABuildOrderFromAddDependenciesIsNoLink(t *testing.T) {
 	}
 }
 
+func TestALinkStaysALinkWhenAddDependenciesNamesTheSameTarget(t *testing.T) {
+	d := run(t, "cmake", "cmake-order-link")
+	want := map[string]model.Via{"cmake:cli -> cmake:core": "link", "cmake:cli2 -> cmake:core": "link"}
+	if got := relations(d); !maps.Equal(got, want) {
+		t.Errorf("relations %v, want %v; cli adds the order before its link, cli2 after", got, want)
+	}
+}
+
+func TestACodeModelOlderThanCMake331LinksEveryDependency(t *testing.T) {
+	tg := cmakeTarget{Dependencies: []cmakeTargetRef{{"core"}, {"gen"}}, LinkLibraries: []cmakeTargetRef{{"core"}}}
+	var cm cmakeCodemodel
+	cm.Version.Major, cm.Version.Minor = 2, 8
+	if got := links(cm, tg); len(got) != 2 {
+		t.Errorf("code model 2.8 links %v, want every dependency", got)
+	}
+	cm.Version.Minor = 9
+	if got := links(cm, tg); len(got) != 1 || got[0].ID != "core" {
+		t.Errorf("code model 2.9 links %v, want only core", got)
+	}
+}
+
 func TestARegistryCrateNamedLikeAMemberIsNoRelation(t *testing.T) {
 	d := run(t, "cargo", "cargo-registry")
 	unit(t, d, "cargo:serde")
