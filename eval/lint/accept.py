@@ -14,8 +14,10 @@ so a change to a lint criterion cannot move a case.
 
 It prints one row per case: case, source, view, measure, value, main's
 value, target and pass when the value is at or under the target, and exits 1 when a
-case fails. When go test writes no tables, as when the build fails, it
-stops with go's output before measuring anything. A case comes from a user
+case fails. A case whose view, page or line is not drawn fails with that
+reason in its result, and the other cases are still measured. When go test
+writes no tables, as when the build fails, it stops with go's output before
+measuring anything. A case comes from a user
 screenshot in D:/abbd-eval/exemplars (user-NN) or from the day's review
 (today); its view is a fixture view, by the name TestLintFixtures gives it,
 or every fixture view for a total.
@@ -65,6 +67,11 @@ M81 = "orca MOD-0081 shared types and schemas"
 RPC = 'box "shared/rpc-contract" (MOD-0090)'
 
 
+class Unmeasured(Exception):
+    """A case's view, page or line is not there, so that case fails with this
+    reason and the others are still measured."""
+
+
 def read(path):
     with open(path, newline="", encoding="utf8") as f:
         return list(csv.DictReader(f, delimiter="\t", quoting=csv.QUOTE_NONE))
@@ -85,7 +92,7 @@ class Tables:
 
     def view(self, name):
         if name not in self.views:
-            sys.exit(f"no view {name!r} in the lint table")
+            raise Unmeasured(f"no view {name!r} in the lint table")
         return name
 
 
@@ -160,7 +167,7 @@ def ways(t, view, frm, to=None, kind=None):
     got = [w for w in t.ways if w["view"] == t.view(view) and w["from"] == frm
            and (to is None or w["to"] == to) and (kind is None or w["kind"] == kind)]
     if not got:
-        sys.exit(f"no traced line from {frm} to {to} on {view}")
+        raise Unmeasured(f"no traced line from {frm} to {to} on {view}")
     return got
 
 
@@ -299,7 +306,7 @@ def page_map(t, view):
                 DRAWN[key] = drawn(page[at:page.index("</svg>", at)])
                 break
         else:
-            sys.exit(f"no section {sid} for {view!r} in {t.pages}")
+            raise Unmeasured(f"no section {sid} for {view!r} in {t.pages}")
     return DRAWN[key]
 
 
@@ -866,7 +873,16 @@ def run(out, hover_on, root):
         subprocess.run([sys.executable, shoot, os.path.join(out, "shots"), *repos, "--pages", "all", "--hover-shots", "0"],
                        check=True, stdout=subprocess.DEVNULL)
     t = Tables(out, hover_on)
-    return [None if v is None else int(v) for v in (c.fn(t, c.view) for c in CASES)]
+    return [measure(c, t) for c in CASES]
+
+
+def measure(c, t):
+    """The case's value, None when it skips, or the reason it could not be measured."""
+    try:
+        v = c.fn(t, c.view)
+    except Unmeasured as e:
+        return str(e)
+    return None if v is None else int(v)
 
 
 def describe(root):
@@ -882,13 +898,15 @@ def main():
     base = args[args.index("--main") + 1] if "--main" in args else None
     values = run(out, hover_on, ROOT)
     mains = run(os.path.join(out, "main"), hover_on, base) if base else [None] * len(CASES)
-    results = ["skip" if v is None else "pass" if v <= c.target else "fail" for c, v in zip(CASES, values)]
-    show = lambda v: "" if v is None else str(v)
+    results = ["skip" if v is None else f"fail: {v}" if isinstance(v, str) else "pass" if v <= c.target else "fail"
+               for c, v in zip(CASES, values)]
+    show = lambda v: "" if v is None or isinstance(v, str) else str(v)
     print("case\tsource\tview\tmeasure\tvalue\tmain\ttarget\tresult")
     for c, v, m, r in zip(CASES, values, mains, results):
         print(f"{c.id}\t{c.source}\t{c.view}\t{c.measure}\t{show(v)}\t{show(m)}\t<= {c.target}\t{r}")
     skipped = results.count("skip")
-    print(f"\n{results.count('fail')} of {len(results) - skipped} measured cases fail" + (f", {skipped} skipped" if skipped else ""))
+    failed = sum(r.startswith("fail") for r in results)
+    print(f"\n{failed} of {len(results) - skipped} measured cases fail" + (f", {skipped} skipped" if skipped else ""))
     if record:
         path = os.path.join(HERE, "acceptance.tsv")
         old = {r["case"]: r for r in read(path)} if os.path.exists(path) else {}
@@ -897,10 +915,10 @@ def main():
             f.write("case\tsource\tview\tmeasure\trecorded\tcommit\tmain\tmain_commit\ttarget\tnote\n")
             for c, v, m in zip(CASES, values, mains):
                 was = old.get(c.id, {})
-                rec = [show(v), at] if v is not None else [was.get("recorded", ""), was.get("commit", "")]
-                mn = [show(m), main_at] if m is not None else [was.get("main", ""), was.get("main_commit", "")]
+                rec = [show(v), at] if show(v) else [was.get("recorded", ""), was.get("commit", "")]
+                mn = [show(m), main_at] if show(m) else [was.get("main", ""), was.get("main_commit", "")]
                 f.write("\t".join([c.id, c.source, c.view, c.measure, *rec, *mn, f"<= {c.target}", c.note]) + "\n")
-    sys.exit(1 if "fail" in results else 0)
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
