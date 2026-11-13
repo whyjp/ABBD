@@ -6224,7 +6224,6 @@
         "Provides": 33,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6730,7 +6729,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6761,7 +6760,7 @@
                 "Code": true
               },
               {
-                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table, overview다. 읽기 동사는 extract, explain, brief, path, impact, diff, review, evidence, status, lint다. ",
+                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table, overview다. 읽기 동사는 extract, relate, explain, brief, path, impact, diff, review, evidence, status, lint다. ",
                 "Code": false
               },
               {
@@ -7266,6 +7265,85 @@
               },
               {
                 "Text": "): 트리 스냅숏과 함께 화면 입력을 읽어 블루프린트 파일을 쓰고, 입력과 렌더 해시를 상태에 남긴다. 유닛이 없으면 아무것도 하지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "코드 수준 관계",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "bundled relaters",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/relate.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd relate go[=DIR]",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "--",
+                "Code": true
+              },
+              {
+                "Text": " 뒤 명령이 찍는 extraction JSON을, 명령이 없으면 표준 입력의 것을 읽어, bundled relater(MOD-0060)가 코드에서 읽은 unit 사이 관계를 더해 같은 JSON으로 다시 찍는다. 아는 필드만 받아 ",
+                "Code": false
+              },
+              {
+                "Text": "extract.Doc",
+                "Code": true
+              },
+              {
+                "Text": "으로 읽고, 빌드 제약 탓에 건너뛴 Go 파일이 있으면 그 수를 표준 오류에 알린다. 상태는 읽지도 쓰지도 않으므로, 등록하면 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd setup -- abbd relate go -- 추출 argv",
+                "Code": true
+              },
+              {
+                "Text": "처럼 추출 스크립트를 감싼다. ",
+                "Code": false
+              },
+              {
+                "Text": "RELATER[=DIR]",
+                "Code": true
+              },
+              {
+                "Text": " 인자는 front-end와 같은 ",
+                "Code": false
+              },
+              {
+                "Text": "frontend.SpecOf",
+                "Code": true
+              },
+              {
+                "Text": "로 읽는다.",
                 "Code": false
               }
             ]
@@ -12674,7 +12752,6 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -12784,7 +12861,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -13632,6 +13709,141 @@
               },
               {
                 "Text": "가 스크립트에 대고 풀도록 남는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Relater",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "bundled relater",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (MOD-0060 internal/extract/relate): 추출이 이름 지은 unit 사이에 코드 수준 관계를 더하는 하위 모듈로, ",
+                "Code": false
+              },
+              {
+                "Text": "Names",
+                "Code": true
+              },
+              {
+                "Text": "가 나열하는 것은 ",
+                "Code": false
+              },
+              {
+                "Text": "go",
+                "Code": true
+              },
+              {
+                "Text": " 하나다. ",
+                "Code": false
+              },
+              {
+                "Text": "Relate",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "RELATER[=DIR]",
+                "Code": true
+              },
+              {
+                "Text": " spec마다 그 디렉터리에 ",
+                "Code": false
+              },
+              {
+                "Text": "go.mod",
+                "Code": true
+              },
+              {
+                "Text": "가 있는지 보고, go/types로 패키지를 읽고 VTA로 호출을 풀어(테스트는 빼고, 어느 호스트에서나 같도록 GOOS=linux, GOARCH=amd64, CGO_ENABLED=0으로 고정) call, import, trait 사실을 모은다. 읽은 코드가 두 끝 unit에 모두 닿는 코드 근거 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": "(via가 비었거나 call, trait, import)은 추출의 것을 대신하고, 설정이나 spawn 같은 그 밖의 relation은 건드리지 않는다. unit은 만들지 않으며, ",
+                "Code": false
+              },
+              {
+                "Text": "provides",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "consumes",
+                "Code": true
+              },
+              {
+                "Text": "는 추출에 아직 없는 곳에만 더한다. 한 link는 가장 좋은 via(call, trait, import 순서)의 relation 하나가 되고, 인용은 직접 호출을 먼저 최대 세 줄이다. ",
+                "Code": false
+              },
+              {
+                "Text": "frontend.SpecOf",
+                "Code": true
+              },
+              {
+                "Text": "는 front-end와 relater가 함께 쓰는 ",
+                "Code": false
+              },
+              {
+                "Text": "NAME[=DIR]",
+                "Code": true
+              },
+              {
+                "Text": " 읽기다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd relate",
+                "Code": true
+              },
+              {
+                "Text": "가 이것을 부른다. 내부에서 ",
+                "Code": false
+              },
+              {
+                "Text": "found",
+                "Code": true
+              },
+              {
+                "Text": "는 relater 하나가 읽은 사실과 그 코드가 닿은 unit의 묶음이고, ",
+                "Code": false
+              },
+              {
+                "Text": "held",
+                "Code": true
+              },
+              {
+                "Text": "는 module이나 feature의 anchor 경로와 깊이다. ",
+                "Code": false
+              },
+              {
+                "Text": "pair",
+                "Code": true
+              },
+              {
+                "Text": "는 Go의 타입과 그것이 바뀌어 담기는 interface의 짝이며, trait 사실은 두 패키지가 import로 이어졌거나 이 짝이 있을 때만 나온다.",
                 "Code": false
               }
             ]
