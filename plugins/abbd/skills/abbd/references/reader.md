@@ -4,27 +4,36 @@ ABBD reads code with this reader. Both skills follow it for every reading step: 
 
 pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36/skills/how/SKILL.md` exists (check with Glob; never assume), you may use pstack `how` to explore a module this reader calls complex, and pstack `swarm` to fan out setup's slices. Another pstack version counts as absent; say so in one line. Whichever engine explored, what you store passes the contract below, so rewrite how's output to it. Name who read when you store: `--reader "abbd reader"`, or `--reader "pstack how 0.15.36"` when how explored.
 
+Write the prose you store in the language the brief names, English when it names none. Identifiers, paths, code spans and quotes stay verbatim.
+
 ## Reading one module
 
-1. Start from the brief. Run `abbd brief <MOD-ID>` and save its output as the file you will store. It holds the two sections with a TODO bullet per inside unit and per contract the module provides, then a `## Read first` section: the files the text is stamped against, entry files first, the module's contracts and neighbours, the couplings readers already recorded with their quotes, the notes and figures that cite it, and, for a stored text, what moved since it was written.
-2. Read every file the brief lists, entry files first, then the files the most stored relations point at, then the rest. Leave them only to follow a contract one hop.
-3. Explore before you write. Keep working notes, never stored, and fill each of these before you draft a line:
+1. Start from the brief. Run `abbd brief <MOD-ID>` and save its output as the file you will store. It holds the two sections with a TODO bullet per inside unit and per contract the module provides, then a `## Read first` section: the files the text is stamped against, entry files first, the files to start from and the stored line for each unit, the names other modules use most, the module's contracts and neighbours, the couplings readers already recorded with their quotes, the notes and figures that cite it, and, for a stored text, what moved since it was written.
+2. Treat every line of the brief as a hypothesis. Confirm a stored line from the code or drop it. A name the brief lists may stay out of the text without a word. Write no sentence about the brief.
+3. Read every file the brief lists, entry files first, then the files the most stored relations point at, then the rest. Leave them only to follow a contract one hop.
+4. Explore before you write. Cover each of these the module has:
+   - **First touched**: the public types and calls a user of this module touches first. Start from the brief's `Names other modules use most`.
    - **Entry points**: what calls into the module from outside, by name and file.
-   - **Lifecycle**: how it starts, how it stops, how it aborts or shuts down, and what it frees.
    - **Core types and state**: the types the module's functions take and return most, and the state they share or guard.
-   - **Threads and pools**: every thread, task, pool, timer or callback it starts or runs on, and what runs where.
-   - **Run-time binding**: where the module learns its plugins, handlers or components at run time, and what it starts: a registry, a table, `dlopen` or another load by name, a macro, a trait-object factory, a backend picked by name, a process it spawns, an injected bundle. Start from the brief's `Run-time binding sites` and read each hit.
-   - **Failure paths**: what it returns or raises when something fails, and what it retries.
-   - **Key units**: the `Key units by fan-in` the brief lists. Name each in the text, or say in one line why it stays out.
-   Note where the module stops, what is not obvious, open questions and the files you read.
-   The text covers every one of these lists: name the lifecycle, the threads, the failure paths and the run-time binding in Key Concepts, or say in one line that the module has none.
-4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
+   - **Lifecycle**: how it starts, stops or aborts, and what it frees.
+   - **Threads and pools**: the threads, tasks, pools, timers or callbacks it starts or runs on, and what runs where.
+   - **Run-time binding**: where it learns its plugins, handlers or components at run time, and what it starts: a registry, a table, `dlopen` or another load by name, a macro, a trait-object factory, a backend picked by name, a process it spawns, an injected bundle. Start from the brief's `Run-time binding sites` and read each hit.
+   - **Failure paths**: what it returns, raises or retries when something fails.
+5. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
 
-## Before you store: look for a counterexample
+## The claim ledger
 
-A universal or exclusive claim is the easiest one to get wrong. Before you keep a sentence that says "never", "always", "only", "each", "every", "all", "no", "none" or "cannot", search the module for a case that breaks it, with grep for the names involved and a read of each hit. Keep the sentence only when no counterexample turns up. When one does, narrow the claim to what holds, such as "on the main thread" or "except when", or drop it. A claim you could not check is worded as what you read, not as a law.
+Your working notes are a ledger of candidate claims, never stored. Every sentence of the text comes from a ledger entry.
 
-A role is a claim too. Before you write that a function loads, starts, frees or dispatches something, open its body: an empty or stub function, or one that only forwards, does not do it, so name the one that does. Before you write that a part goes where (a combinator before sinks, a dock a plugin adds), when something happens (while building, at startup, once ready), or that a function writes rather than only reads, find the line that shows it.
+- An entry holds the claim, the `file:line` of the line that does it, that line quoted, and its guard: the error code, flag, platform, build macro, size or phase it holds under, or "in the main case". Read the whole function, each branch included, before you write what it does. A name, a signature or a log string is not the line that does it.
+- A quantifier (each, every, all, only, first, most, always, never, or a plain plural that means all), a negative (does not, no, none, nothing, cannot), a closed list or a count needs a recorded search in its entry: the pattern, its hit count, and each hit read. Without one, write "such as" or name the cases you read.
+- Where the module stops, name the neighbour that owns the adjacent work and quote its line. Write no claim of what the module does not do without a recorded search.
+
+## Writing the text
+
+- Write each claim with its guard: "X when G", or "in the main case". A sentence that merges entries keeps each member's guard, or splits.
+- Write Key Concepts first. Spend its bullets on the first-touched types and calls before the other checklist items.
+- Write the Overview last, repeating only ledger claims with their guards.
 
 ## Before you store a module's text: have a fresh reader falsify the draft
 
@@ -32,16 +41,20 @@ You cannot see your own wrong claims. Once a module's draft text is complete, an
 
 Then open every cited line yourself. When the line bears the finding out, narrow the sentence to what holds or drop it. When it does not, keep the sentence. Store only after every finding is settled. With no subagent available, run this check yourself as a separate pass: reread only the draft and the listed files, as if someone else wrote it, and say in your reply that no fresh reader checked it.
 
+## Outside a module's text: look for a counterexample
+
+Before a slot note, a flow step or a phrase says each, every, all, only, first, most, always, never, no, none, nothing, does not or cannot, search for a case that breaks it, with grep for the names involved and a read of each hit. Narrow the claim to what holds, or drop it.
+
 ## What you store
 
 **The module's text**, with `abbd understand <MOD-ID> <FILE> --reader "<WHO>"`:
 
 - Exactly two sections, `## Overview` then `## Key Concepts`. Each section, and each `###` part inside one, holds under 2,000 characters. Key Concepts runs over first, so count it before you store, and split it under `###` headings when it does. How it works, where things live and gotchas go to flows, the drawing and slots, never into the text.
-- Overview: one or two paragraphs, under 2,000 characters, in the present tense, with no dates, PR or issue numbers. It names what the module is responsible for, the contracts it provides and uses by their stored names, and one thing it does not do.
-- Key Concepts: 3 to 10 bullets, each `**Name** (` followed by a code span naming the file or symbol, then `): ` and one to three sentences. Every inside unit the module's page draws is named in some bullet. When a module holds more than ten, one bullet names the units that work together, so the count stays at ten. The 2,000-character limit wins over coverage: group units, key units and the lifecycle, thread and failure lists into shared bullets before you add one.
+- Overview: 3 to 5 sentences in the present tense, with no dates, PR or issue numbers. It names what the module is responsible for and the neighbour that owns the adjacent work.
+- Key Concepts: 3 to 10 bullets, each `**Name** (` followed by a code span naming the file of its ledger entry, not a file the brief named, then `): ` and one to three sentences. Every inside unit the module's page draws is named in some bullet. When a module holds more than ten, one bullet names the units that work together, so the count stays at ten. Under the 2,000-character limit, drop a detail before you drop a guard.
 - Rewrite every TODO the brief left and delete its `## Read first` section. `abbd understand <MOD-ID> <FILE>` refuses a text with a TODO line or a section other than the two.
 - Inline marks are `code` spans and `**bold**` only. No links, images, HTML or mermaid. A fence holds code only.
-- `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters, each phrase that reads as history, each inside unit the text never names (`unmentioned:`), and each path it names that is code of another unit (`names:`). Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay. Name each unmentioned unit, or say in one line why a key unit stays out. Name another unit's file by that unit instead.
+- `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters, each phrase that reads as history, each inside unit the text never names (`unmentioned:`), and each path it names that is code of another unit (`names:`). Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay. Name each unmentioned unit. Name another unit's file by that unit instead.
 
 **A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill. A `posts_to` quotes the producer and the consumer, so refreshing one with `abbd record evidence <FROM>.posts_to.<TO>` takes both `--evidence` items again.
 
