@@ -1,0 +1,15 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+fancy = ["dep:fancy"]
+
+[dependencies]
+engine = { path = "../engine" }
+plugin = { path = "../plugin" }
+shapes = { path = "../shapes" }
+util = { path = "../util" }
+extra = { path = "../extra" }
+fancy = { path = "../fancy", optional = true }
