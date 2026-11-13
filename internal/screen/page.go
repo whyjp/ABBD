@@ -84,11 +84,15 @@ type Graph struct {
 	// Primary is the repository's primary flow, whose stages the units on
 	// it rank by.
 	Primary *PrimaryFlow `json:"primary,omitempty"`
+	// Zones and Lines are the overview's zones and the lines a reader chose
+	// for it, each with its word.
+	Zones []ZoneView   `json:"zones,omitempty"`
+	Lines []ChosenLine `json:"lines,omitempty"`
 }
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary, Zones: m.Zones, Lines: m.Lines}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

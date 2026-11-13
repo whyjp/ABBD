@@ -94,9 +94,12 @@ func (f Figure[C]) Origin() model.Origin {
 }
 
 // Claims are the figure's claims, in order.
-func (f Figure[C]) Claims() []C {
-	out := make([]C, len(f.Parts))
-	for i, p := range f.Parts {
+func (f Figure[C]) Claims() []C { return ClaimsOf(f.Parts) }
+
+// ClaimsOf are the claims of parts, in order.
+func ClaimsOf[C model.Claim[C]](parts []Part[C]) []C {
+	out := make([]C, len(parts))
+	for i, p := range parts {
 		out[i] = p.Claim
 	}
 	return out
@@ -153,30 +156,61 @@ func FigureDraft[C model.Claim[C]](f Figure[C]) ([]byte, error) {
 // was written with. It refuses a part that cites no code. The same figure on
 // the same code writes the same bytes.
 func SaveFigure[C model.Claim[C]](s Store, f Figure[C]) error {
-	k := model.KindOf[C]()
-	f.Parts = slices.Clone(f.Parts)
-	for i := range f.Parts {
-		f.Parts[i].Changed, f.Parts[i].Moved = nil, nil
-		if _, f.Parts[i].Code = s.NoteStamp(f.Parts[i].Claim.Quotes()); len(f.Parts[i].Code) == 0 {
-			return fmt.Errorf("%s %s %s %d cites no code to check it against", k.Noun, f.Key, k.Part, i+1)
-		}
+	var err error
+	if f.Parts, err = stampParts(s, string(f.Key), f.Parts); err != nil {
+		return err
 	}
 	return writeFigure(s, f)
+}
+
+// stampParts stamps each part with the lines around the quotes it cites, as
+// the code is now. It refuses a part that cites no code; key names the
+// figure in the refusal.
+func stampParts[C model.Claim[C]](s Store, key string, parts []Part[C]) ([]Part[C], error) {
+	k := model.KindOf[C]()
+	parts = slices.Clone(parts)
+	for i := range parts {
+		parts[i].Changed, parts[i].Moved = nil, nil
+		if _, parts[i].Code = s.NoteStamp(parts[i].Claim.Quotes()); len(parts[i].Code) == 0 {
+			return nil, fmt.Errorf("%s %s %s %d cites no code to check it against", k.Noun, key, k.Part, i+1)
+		}
+	}
+	return parts, nil
+}
+
+// plainQuotes keeps each quote of the parts to its path, lines, symbol and
+// words, as a stored file holds it.
+func plainQuotes[C model.Claim[C]](parts []Part[C]) []Part[C] {
+	parts = slices.Clone(parts)
+	for i, p := range parts {
+		ev := make([]model.Evidence, len(p.Claim.Quotes()))
+		for j, e := range p.Claim.Quotes() {
+			ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+		}
+		parts[i].Claim = p.Claim.Requote(ev)
+	}
+	return parts
+}
+
+// readParts reads each stored part against the code it cites now: what
+// changed since it was stamped, and who wrote it, a reader when it does not
+// say.
+func readParts[C model.Claim[C]](s Store, parts []Part[C]) {
+	for i, p := range parts {
+		if p.Writer == "" {
+			parts[i].Writer = model.Reader
+		}
+		parts[i].Changed, parts[i].Moved = s.changed(p.Claim.Quotes(), p.Code)
+		if len(p.Claim.Quotes()) == 0 || len(p.Code) == 0 {
+			parts[i].Changed = []string{"the " + model.KindOf[C]().Part + " cites no code abbd stamped, so nothing shows it is still true"}
+		}
+	}
 }
 
 // writeFigure writes a stamped figure, each quote kept to its path, lines,
 // symbol and words.
 func writeFigure[C model.Claim[C]](s Store, f Figure[C]) error {
-	f.Parts, f.Retired = slices.Clone(f.Parts), slices.Clone(f.Retired)
-	for _, parts := range [][]Part[C]{f.Parts, f.Retired} {
-		for i, p := range parts {
-			ev := make([]model.Evidence, len(p.Claim.Quotes()))
-			for j, e := range p.Claim.Quotes() {
-				ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
-			}
-			parts[i].Claim = p.Claim.Requote(ev)
-		}
-	}
+	f.Parts, f.Retired = plainQuotes(f.Parts), plainQuotes(f.Retired)
 	front, err := encodeFigure(f, true)
 	if err != nil {
 		return err
@@ -388,15 +422,7 @@ func loadKind[C model.Claim[C]](s Store) ([]Figure[C], []Stray, error) {
 		name := strings.TrimSuffix(filepath.Base(f), ".md")
 		_, err = model.ParseFigureKey[C](name)
 		fig.Key, fig.File, fig.Known, fig.Caption = model.FigureKey(name), file, err == nil, CleanText(string(body))
-		for i, p := range fig.Parts {
-			if p.Writer == "" {
-				fig.Parts[i].Writer = model.Reader
-			}
-			fig.Parts[i].Changed, fig.Parts[i].Moved = s.changed(p.Claim.Quotes(), p.Code)
-			if len(p.Claim.Quotes()) == 0 || len(p.Code) == 0 {
-				fig.Parts[i].Changed = []string{"the " + k.Part + " cites no code abbd stamped, so nothing shows it is still true"}
-			}
-		}
+		readParts(s, fig.Parts)
 		for i, p := range fig.Retired {
 			fig.Retired[i].Changed, fig.Retired[i].Moved = s.changed(p.Claim.Quotes(), p.Code)
 		}

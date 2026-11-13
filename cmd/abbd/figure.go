@@ -129,9 +129,27 @@ func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit
 	if err := model.ValidateColumns(f.Columns); err != nil {
 		return err
 	}
+	if err := checkParts(e, f.Parts, units); err != nil {
+		return err
+	}
+	if gaps := f.Gaps(units); len(gaps) > 0 {
+		var texts []string
+		for _, g := range gaps {
+			texts = append(texts, g.Text)
+		}
+		return errors.New(strings.Join(texts, "; "))
+	}
+	return nil
+}
+
+// checkParts refuses a part that is not well formed, cites a quote the code
+// does not hold once, or the state does not bear out. It sets each quote's
+// lines to where the code holds it now.
+func checkParts[C model.Claim[C]](e env, parts []store.Part[C], units []model.Unit) error {
+	kind := model.KindOf[C]()
 	c := evidence.New(e.root)
-	for i := range f.Parts {
-		p := &f.Parts[i]
+	for i := range parts {
+		p := &parts[i]
 		at := fmt.Sprintf("%s %d", kind.Part, i+1)
 		if err := p.Claim.Validate(); err != nil {
 			return fmt.Errorf("%s: %w", at, err)
@@ -154,13 +172,6 @@ func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit
 		if gaps := p.Claim.Gaps(units); len(gaps) > 0 {
 			return fmt.Errorf("%s: %s", at, strings.Join(gaps, "; "))
 		}
-	}
-	if gaps := f.Gaps(units); len(gaps) > 0 {
-		var texts []string
-		for _, g := range gaps {
-			texts = append(texts, g.Text)
-		}
-		return errors.New(strings.Join(texts, "; "))
 	}
 	return nil
 }

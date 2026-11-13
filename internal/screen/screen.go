@@ -37,6 +37,9 @@ type Input struct {
 	// the ordered walks, with the markdown files beside them that are no
 	// figures, and why.
 	Figures store.Figures
+	// Overview is the overview's own record a reader chose: its zones and
+	// its lines. The primary flow is the stack marked primary, in Figures.
+	Overview store.Overview
 	// Primary are the stored relations, by relation key (model.Edge's
 	// String), the overview must draw whatever else it counts instead
 	// (primary.go) when Project.Cut() is on. Nil leaves the choice to
@@ -74,6 +77,9 @@ func Load(st store.Store) (Input, error) {
 	}
 	in.Owners = OwnersOf(owners.Read(st.ProjectDir()), in.Units)
 	if in.Figures, err = st.LoadFigures(); err != nil {
+		return in, err
+	}
+	if in.Overview, err = st.LoadOverview(); err != nil {
 		return in, err
 	}
 	in.Digests = map[model.ID]string{}
@@ -143,6 +149,9 @@ type UnitRow struct {
 	Parent string `json:",omitempty"`
 	// Artifact is the set of build artifacts a module is, comma-joined.
 	Artifact string `json:",omitempty"`
+	// Zone is the name of the overview's zone that holds the unit, itself
+	// or through a unit that holds it, when a zone does.
+	Zone string `json:",omitempty"`
 	// Evidence is the code a unit only a reader found rests on.
 	Evidence []string `json:",omitempty"`
 	// Notes are the unit's slots and Entries its table when no inside shows
@@ -171,6 +180,10 @@ type Model struct {
 	Flows  []FlowView
 	Stacks []StackView
 	Tables []TableView
+	// Zones and Lines are the overview's zones and the lines a reader chose
+	// for it, with their words.
+	Zones []ZoneView
+	Lines []ChosenLine
 	// Name and Purpose are the project's, and Parts its top-level modules
 	// and every feature with the one line each says of itself, which the
 	// overview opens with.
@@ -191,11 +204,13 @@ type Model struct {
 // input gives the same model, so the rendered files only change with the data.
 func Build(in Input) Model {
 	m := Model{Extract: in.Project.Extract}
+	ov := readOverview(in)
+	m.Zones, m.Lines = ov.zones, ov.lines
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
 			Purpose: sentenceOf(u.Purpose, in.Digests[u.ID]), Responsibility: sentenceOf(u.Responsibility, in.Digests[u.ID]), Anchors: anchors(u), Artifact: model.ArtifactSet(u.Built()),
-			Parent: string(u.Parent),
+			Parent: string(u.Parent), Zone: ov.zone[u.ID],
 		}
 		for _, e := range u.Evidence {
 			row.Evidence = append(row.Evidence, cite(e))

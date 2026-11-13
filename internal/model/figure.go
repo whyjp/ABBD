@@ -109,6 +109,20 @@ func (st state) under(id, top ID) bool {
 	return false
 }
 
+// box is the outermost present unit that holds id, or id itself: the box
+// the overview draws it in. A unit whose parent is not present sits at the
+// top level, as the overview draws it.
+func (st state) box(id ID) ID {
+	for seen := map[ID]bool{}; !seen[id]; seen[id] = true {
+		p := st[id].Parent
+		if _, ok := st[p]; !ok {
+			break
+		}
+		id = p
+	}
+	return id
+}
+
 // within reports whether id is one of tops or a unit inside one.
 func (st state) within(id ID, tops []ID) bool {
 	return slices.ContainsFunc(tops, func(top ID) bool { return st.under(id, top) })
