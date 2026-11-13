@@ -9534,6 +9534,7 @@
         "Provides": 1,
         "Uses": 0,
         "Direct": 3,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -9563,7 +9564,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
