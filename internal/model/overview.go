@@ -169,7 +169,7 @@ func (l Line) Carries(units []Unit) []Carried {
 			continue
 		}
 		for _, r := range st[id].Relations {
-			if !r.Dead && st.reaches(r, l.To) {
+			if !r.Dead && st.reaches(id, r, l.To) {
 				out = append(out, Carried{id, r.To, r.Kind, r.Via})
 			}
 		}
@@ -242,9 +242,17 @@ func drawOnce(_ []Column, lines []Line, _ []Unit) []Gap {
 	return gaps
 }
 
-// providers are the boxes of the units that provide c, a contract at the
-// top level, in order: the boxes the overview sets c on as a chip, and
-// where a line to c lands. They are none when c is no such contract.
+// moduleBox reports whether the box of id is a module or a feature, the
+// only boxes the overview counts as a contract's provider or user.
+func (st state) moduleBox(id ID) bool {
+	k := st[st.box(id)].Kind
+	return k == Module || k == Feature
+}
+
+// providers are the module or feature boxes of the units that provide c, a
+// contract at the top level, in order: the boxes the overview sets c on as a
+// chip, and where a line to c lands. They are none when c is no such
+// contract.
 func (st state) providers(c ID) []ID {
 	if st.box(c) != c || !st[c].Kind.IsContract() {
 		return nil
@@ -252,7 +260,7 @@ func (st state) providers(c ID) []ID {
 	var out []ID
 	for _, id := range slices.Sorted(maps.Keys(st)) {
 		for _, r := range st[id].Relations {
-			if !r.Dead && r.Kind == Provides && r.To == c && !slices.Contains(out, st.box(id)) {
+			if !r.Dead && r.Kind == Provides && r.To == c && st.moduleBox(id) && !slices.Contains(out, st.box(id)) {
 				out = append(out, st.box(id))
 			}
 		}
@@ -260,18 +268,23 @@ func (st state) providers(c ID) []ID {
 	return out
 }
 
-// reaches reports whether r, a relation of a unit, lands on to: its end is
-// to or a unit inside it, or its end is a contract at the top level that to,
-// or a unit inside it, provides, which the overview draws as a chip on the
-// provider's box with the line running there.
-func (st state) reaches(r Relation, to ID) bool {
+// reaches reports whether r, a relation of the unit user, lands on to: its
+// end is to or a unit inside it, or its end is a contract at the top level
+// that to, or a unit inside it, provides, which the overview draws as a chip
+// on the provider's box with the line running there, from a user that is a
+// module or feature box and does not provide the contract itself.
+func (st state) reaches(user ID, r Relation, to ID) bool {
 	if st.under(r.To, to) {
 		return true
 	}
-	if r.Kind == Provides {
+	if r.Kind == Provides || !st.moduleBox(user) {
 		return false
 	}
-	for _, p := range st.providers(r.To) {
+	ps := st.providers(r.To)
+	if slices.Contains(ps, st.box(user)) {
+		return false
+	}
+	for _, p := range ps {
 		if st.under(p, to) {
 			return true
 		}
@@ -280,13 +293,14 @@ func (st state) reaches(r Relation, to ID) bool {
 }
 
 // Boxes are the units the overview draws as boxes, in ID order: each
-// present unit whose parent is not present, but a contract a unit provides,
-// which the overview draws as a chip on its provider's box.
+// present module, feature or contract whose parent is not present, but a
+// contract a unit provides, which the overview draws as a chip on its
+// provider's box.
 func Boxes(units []Unit) []ID {
 	st := stateOf(units)
 	var out []ID
 	for _, id := range slices.Sorted(maps.Keys(st)) {
-		if st.box(id) == id && len(st.providers(id)) == 0 {
+		if k := st[id].Kind; st.box(id) == id && (k == Module || k == Feature || k.IsContract()) && len(st.providers(id)) == 0 {
 			out = append(out, id)
 		}
 	}
@@ -362,7 +376,7 @@ func (c LineCandidate) Relations(k ...Carry) int {
 }
 
 // LineCandidates are the lines the overview could draw, one per pair of
-// boxes a live relation joins in its direction, a use of a contract drawn as
+// boxes of modules and features a live relation joins in its direction, a use of a contract drawn as
 // a chip joining the user's box to each provider's, the strongest first: by
 // the carry of its strongest relation, then by how many relations of that
 // carry it holds, then by how many it holds in all, then by its ends.
@@ -374,13 +388,16 @@ func LineCandidates(units []Unit) []LineCandidate {
 	}
 	by := map[[2]ID][]rel{}
 	for _, id := range slices.Sorted(maps.Keys(st)) {
+		if !st.moduleBox(id) {
+			continue
+		}
 		for _, r := range st[id].Relations {
 			if _, ok := st[r.To]; !ok || r.Dead {
 				continue
 			}
 			a, ends := st.box(id), []ID{st.box(r.To)}
 			if ps := st.providers(r.To); len(ps) > 0 {
-				if r.Kind == Provides {
+				if r.Kind == Provides || slices.Contains(ps, a) {
 					continue
 				}
 				ends = ps

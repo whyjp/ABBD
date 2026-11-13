@@ -205,4 +205,4 @@ lines:
         internal/screen/words.go#quote-98a69d6b: 546e6d6f3a87b30a
 ---
 
-에이전트는 /abbd와 /abbd-setup 스킬로 abbd CLI를 부른다. sync는 추출을 읽고 ID를 맞추고 인용을 검사해 store에 쓴 뒤 screen이 청사진을 그린다. internal/model은 모든 상자가 쓰는 어휘라 선을 그리지 않았다.
+에이전트는 /abbd와 /abbd-setup 스킬로 abbd CLI를 부른다. sync는 추출을 읽고 ID를 맞추고 인용을 검사해 store에 쓴 뒤 screen이 청사진을 그린다. internal/model은 CLI와 대부분의 internal 패키지가 쓰는 어휘라 선을 그리지 않았다.

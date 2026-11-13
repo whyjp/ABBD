@@ -49,3 +49,35 @@ func TestLineCandidatesRankWhatTheRelationsCarry(t *testing.T) {
 		t.Errorf("a line from a contract's user to its provider draws the use: %v", gaps)
 	}
 }
+
+// The overview takes a contract's providers out of its users, and counts
+// providers and users in module and feature boxes only, so the draft offers
+// no line the overview would not draw.
+func TestLineCandidatesMatchWhatTheOverviewDraws(t *testing.T) {
+	t.Parallel()
+	ev := []Evidence{{Path: "a.go", Lines: "1", Quote: "b.Do()"}}
+	rel := func(to ID, k RelationKind, via Via) Relation {
+		return Relation{To: to, Kind: k, Via: via, Evidence: ev}
+	}
+	units := []Unit{
+		{ID: "MOD-0001", Kind: Module, Relations: []Relation{rel("DATA-0001", Provides, ""), rel("DATA-0001", Consumes, "data")}},
+		{ID: "MOD-0002", Kind: Module, Relations: []Relation{rel("DATA-0001", Provides, "")}},
+		{ID: "EXEC-0001", Kind: Exec, Relations: []Relation{rel("DATA-0001", Consumes, "data"), rel("DATA-0002", Provides, "")}},
+		{ID: "MOD-0003", Kind: Module, Relations: []Relation{rel("DATA-0002", Consumes, "data")}},
+		{ID: "DATA-0001", Kind: Data},
+		{ID: "DATA-0002", Kind: Data},
+	}
+	if got, want := Boxes(units), []ID{"DATA-0002", "MOD-0001", "MOD-0002", "MOD-0003"}; !slices.Equal(got, want) {
+		t.Errorf("the boxes are the modules, features and contracts no module provides, not an execution context: got %v, want %v", got, want)
+	}
+	got := LineCandidates(units)
+	if len(got) != 1 || got[0].From != "MOD-0003" || got[0].To != "DATA-0002" {
+		t.Errorf("only the use of the contract no module provides draws a line, not a user that provides the contract nor an execution context: %+v", got)
+	}
+	for _, l := range []Line{{From: "MOD-0001", To: "MOD-0002"}, {From: "EXEC-0001", To: "MOD-0001"}} {
+		l.Word, l.Evidence = "x", ev
+		if gaps := l.Gaps(units); !slices.ContainsFunc(gaps, func(g string) bool { return len(g) > 10 && g[:10] == "no live re" }) {
+			t.Errorf("line %s to %s carries nothing the overview draws: %v", l.From, l.To, gaps)
+		}
+	}
+}
