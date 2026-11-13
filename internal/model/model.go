@@ -263,9 +263,9 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 }
 
 // EachShownEvidence visits the items of the claims that show: the unit's
-// own, its winning parent claim's, each shown relation's, and the note
-// that names each shown edge. An outranked claim's items cannot change what
-// anyone sees.
+// own, its winning parent claim's, each shown relation's, the claim that
+// gives a shown edge its condition or, dead, gave it, and the note that names each shown
+// edge. An outranked claim's items cannot change what anyone sees.
 func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
@@ -278,6 +278,14 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Relations {
 		for j := range u.Relations[i].Evidence {
 			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
+		}
+	}
+	for i := range u.Hidden {
+		r := &u.Hidden[i]
+		if c, ok := u.ConditionEvidence(r.Kind, r.To); ok && c == r && u.Shown(r.Kind, r.To) {
+			for j := range r.Evidence {
+				f(r.Writer, &r.Evidence[j])
+			}
 		}
 	}
 	for i := range u.Phrases {
@@ -311,6 +319,75 @@ func (u Unit) Note(kind RelationKind, to ID) (PhraseNote, bool) {
 		}
 	}
 	return best, ok
+}
+
+// Condition is the condition an edge holds under, and the origin of the
+// claim that gives it: the shown claim's own, or, when it gives none, that
+// of the first other live or drifted claim on the edge that a mask does not
+// hide. The script reads the edge, and a reader may know a condition the
+// script cannot read, such as a CMake if(). A link scope says who sees the
+// link, not when it holds, so any claim's condition shows over it.
+func (u Unit) Condition(kind RelationKind, to ID) (string, Origin) {
+	if r, ok := u.conditionClaim(kind, to, false); ok {
+		return r.When, r.Writer.Origin()
+	}
+	return "", ""
+}
+
+// ConditionEvidence is the claim whose evidence backs the edge's condition:
+// the one Condition reads, or, while no live claim gives a condition, a dead
+// one, so its death stays counted and listed until a reader refreshes or
+// retracts it.
+func (u Unit) ConditionEvidence(kind RelationKind, to ID) (*Relation, bool) {
+	return u.conditionClaim(kind, to, true)
+}
+
+func (u Unit) conditionClaim(kind RelationKind, to ID, dead bool) (*Relation, bool) {
+	rank := func(r *Relation) int {
+		n := 0
+		if Scope(r.When) {
+			n = 2
+		}
+		if r.Status() == Dead {
+			n++
+		}
+		return n
+	}
+	var best *Relation
+	for _, rs := range [][]Relation{u.Relations, u.Hidden} {
+		for i := range rs {
+			r := &rs[i]
+			if r.To != to || r.Kind != kind || r.When == "" || !dead && r.Status() == Dead || u.RelationMasked(*r) {
+				continue
+			}
+			if best == nil || rank(r) < rank(best) {
+				best = r
+			}
+		}
+	}
+	return best, best != nil
+}
+
+// ConditionConflicts lists the shown edges where another live claim gives a
+// condition, or a link scope, other than the shown claim's own. The shown
+// claim's shows; the other stays stored until its writer drops it.
+func ConditionConflicts(units []Unit) []string {
+	var out []string
+	for _, u := range Present(units) {
+		for _, r := range u.Relations {
+			if r.Dead || r.When == "" {
+				continue
+			}
+			for _, h := range u.Hidden {
+				if h.To != r.To || h.Kind != r.Kind || h.When == "" || h.When == r.When || Scope(h.When) != Scope(r.When) || h.Status() == Dead || u.RelationMasked(h) {
+					continue
+				}
+				what := map[bool]string{false: "condition", true: "scope"}[Scope(r.When)]
+				out = append(out, fmt.Sprintf("%s: the %s gives %s %q, the %s's %q shows", Edge{From: u.ID, To: r.To, Kind: r.Kind}, h.Writer, what, h.When, r.Writer, r.When))
+			}
+		}
+	}
+	return out
 }
 
 // DanglingNote is a phrase note that names no line, by its edge and writer.
@@ -637,6 +714,25 @@ func (k RelationKind) Joins(from, to Kind) error {
 	return nil
 }
 
+// MaxWhen bounds a relation's condition, which names a feature, a cfg or a
+// scope rather than restating the build file.
+const MaxWhen = 60
+
+// Scope says a relation's when is a link scope, which says who sees the
+// link rather than when it holds.
+func Scope(when string) bool {
+	return when == "PRIVATE" || when == "PUBLIC" || when == "INTERFACE"
+}
+
+// ValidateWhen refuses a condition that runs over MaxWhen characters or
+// over one line.
+func ValidateWhen(w string) error {
+	if strings.ContainsAny(w, "\r\n") || len([]rune(w)) > MaxWhen {
+		return fmt.Errorf("condition %q: one line of at most %d characters, such as feature = \"sinks-kafka\", cfg(unix) or dev", w, MaxWhen)
+	}
+	return nil
+}
+
 // Artifact is what a build makes of a module: an executable, a static or
 // shared library, a module the host loads at run time, or a Rust cdylib.
 type Artifact string
@@ -815,6 +911,10 @@ type Relation struct {
 	Entries []string `yaml:"entries,omitempty"`
 	// Digest fingerprints the lines that hold the live evidence.
 	Digest string `yaml:"digest,omitempty"`
+	// When is the condition the relation holds under, as the build says it:
+	// a feature, a cfg, a dev or build dependency, or a link scope such as
+	// PRIVATE. Empty means it always holds.
+	When string `yaml:"when,omitempty"`
 	// Origin and Dead are derived by Resolve. Dead marks a claim whose
 	// evidence is all dead.
 	Origin Origin `yaml:"-"`
