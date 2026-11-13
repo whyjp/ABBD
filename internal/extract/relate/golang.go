@@ -31,7 +31,7 @@ func golang(t tree, o owners) (found, error) {
 	if err != nil {
 		return found{}, err
 	}
-	g := goRead{tree: t, owners: o, fset: cfg.Fset, f: found{covered: map[string]bool{}}}
+	g := goRead{tree: t, owners: o, fset: cfg.Fset, loaded: map[string]bool{}, f: found{covered: map[string]bool{}}}
 	var broken []string
 	for _, p := range pkgs {
 		for _, e := range p.Errors {
@@ -39,6 +39,7 @@ func golang(t tree, o owners) (found, error) {
 		}
 		for _, f := range p.CompiledGoFiles {
 			if r, ok := t.rel(f); ok {
+				g.loaded[r] = true
 				if u, ok := o.of(r); ok {
 					g.f.covered[u] = true
 				}
@@ -61,17 +62,21 @@ type goRead struct {
 	tree
 	owners
 	fset *token.FileSet
-	f    found
+	// loaded are the module's own files, so a vendored or replaced
+	// dependency inside the root never counts as a unit's code.
+	loaded map[string]bool
+	f      found
 }
 
-// at is the root-relative site of pos, and the unit whose code holds it.
+// at is the root-relative site of pos, and the unit whose code holds it. It
+// reads the file the compiler read, past any //line directive.
 func (g *goRead) at(pos token.Pos) (site, string, bool) {
 	if !pos.IsValid() {
 		return site{}, "", false
 	}
-	p := g.fset.Position(pos)
+	p := g.fset.PositionFor(pos, false)
 	r, ok := g.rel(p.Filename)
-	if !ok {
+	if !ok || !g.loaded[r] {
 		return site{}, "", false
 	}
 	u, ok := g.of(r)
@@ -93,7 +98,8 @@ func (g *goRead) add(from site, fromUnit string, to token.Pos, kind model.Relati
 func (g *goRead) calls(funcs map[*ssa.Function]bool) {
 	cg := vta.CallGraph(funcs, nil)
 	for fn, n := range cg.Nodes {
-		if fn == nil || !funcs[fn] || fn.Pkg == nil {
+		caller := pkgOf(fn)
+		if fn == nil || !funcs[fn] || caller == nil {
 			continue
 		}
 		for _, e := range n.Out {
@@ -102,7 +108,7 @@ func (g *goRead) calls(funcs map[*ssa.Function]bool) {
 			}
 			callee := e.Callee.Func
 			dynamic := e.Site.Common().StaticCallee() == nil
-			if dynamic && !imports(fn.Pkg.Pkg, callee) {
+			if dynamic && !slices.Contains(caller.Imports(), pkgOf(callee)) {
 				continue
 			}
 			if s, u, ok := g.at(e.Site.Pos()); ok {
@@ -113,12 +119,22 @@ func (g *goRead) calls(funcs map[*ssa.Function]bool) {
 	}
 }
 
-// imports reports whether p imports the package that declares fn.
-func imports(p *types.Package, fn *ssa.Function) bool {
-	if fn.Pkg == nil {
-		return false
+// pkgOf is the package that declares fn. A wrapper or a generic instance
+// belongs to no SSA package, so it is the package of what it stands for.
+func pkgOf(fn *ssa.Function) *types.Package {
+	if fn == nil {
+		return nil
 	}
-	return slices.Contains(p.Imports(), fn.Pkg.Pkg)
+	if o := fn.Origin(); o != nil {
+		fn = o
+	}
+	if fn.Pkg != nil {
+		return fn.Pkg.Pkg
+	}
+	if obj := fn.Object(); obj != nil {
+		return obj.Pkg()
+	}
+	return nil
 }
 
 // declared is where a function's source declares it. A wrapper or an

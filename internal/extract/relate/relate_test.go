@@ -24,7 +24,7 @@ func mod(ref, dir string) extract.DocUnit {
 
 func modules() []extract.DocUnit {
 	return []extract.DocUnit{
-		mod("mod-app", "app"), mod("mod-core", "core"), mod("mod-plugin", "plugin"),
+		mod("mod-app", "./app"), mod("mod-core", "core/"), mod("mod-plugin", "plugin"),
 		mod("mod-shapes", "shapes"), mod("mod-util", "util"), mod("mod-extra", "extra"),
 		mod("mod-docs", "docs"),
 	}

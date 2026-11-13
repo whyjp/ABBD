@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"path"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -210,7 +211,7 @@ func index(units []extract.DocUnit) owners {
 	for _, u := range units {
 		ref := cmp.Or(u.Ref, u.Key)
 		for _, a := range u.Anchors {
-			p := strings.Trim(filepath.ToSlash(a.Path), "/")
+			p := path.Clean(strings.Trim(strings.ReplaceAll(a.Path, `\`, "/"), "/"))
 			switch {
 			case u.Kind.IsContract() && a.Symbol != "":
 				o.contracts[p+"#"+a.Symbol] = cmp.Or(o.contracts[p+"#"+a.Symbol], ref)
