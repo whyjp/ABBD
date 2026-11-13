@@ -108,10 +108,8 @@ type Diff struct {
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
 	RelationsRemoved []Relation `json:"relations_removed"`
-	// RunsAdded and RunsRemoved are live runs_on and posts_to relations,
-	// whoever wrote them, by the units they join: a module's code that runs on a thread it
-	// owns joins it to its own inside unit, which a relation between
-	// top-level units would not show.
+	// RunsAdded and RunsRemoved are the live runs_on and posts_to
+	// relations, from any writer, between the units they join.
 	RunsAdded     []Coupling `json:"runs_added"`
 	RunsRemoved   []Coupling `json:"runs_removed"`
 	InferredAdded []Coupling `json:"inferred_added"`

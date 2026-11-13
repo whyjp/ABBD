@@ -61,6 +61,10 @@ func TestAHumanStatesARunOnlyOnAnExecutionContext(t *testing.T) {
 	if p.setupCode(out) != 0 {
 		t.Fatalf("setup:\n%s", out)
 	}
+	p.want(1, "--source", "record", "fact", "EXEC-0001.run", "--value", "tick N")
+	if md := p.read("architecture/EXEC-0001.md"); strings.Contains(md, "tick N") {
+		t.Fatalf("a run with no source should not be stored:\n%s", md)
+	}
 	p.want(0, "recorded EXEC-0001.run", "record", "fact", "EXEC-0001.run", "--value", "tick N", "--source", "conversation")
 	contains(t, p.read("architecture/EXEC-0001.md"), "value: tick N")
 	p.want(1, "unknown count", "record", "fact", "EXEC-0001.run", "--value", "tick 3", "--source", "conversation")
