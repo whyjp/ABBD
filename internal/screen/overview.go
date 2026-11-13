@@ -480,6 +480,10 @@ type overview struct {
 	origins map[string]model.Origin
 	// read is what the routing draw last made costs a reader (costOf).
 	read cost
+	// walks are the stored flows the views' leads follow, and whole says
+	// the plan draws the overview, not a focus view, which has no lead.
+	walks []flowWalk
+	whole bool
 	// more are the links each box counts instead of drawing (primary.go),
 	// counted the pairs of places they join and countedRels the stored
 	// relations they stand for.
@@ -574,7 +578,7 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // the stack's order (tier) on the whole overview, not on a focus view, and
 // within a tier the boxes the stored flows run through in their steps' order.
 func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut) *overview {
-	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
+	o := &overview{tree: newTree(units), walks: flows, whole: focus == "", units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
@@ -1124,6 +1128,15 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			to.key = s.toKey
 		}
 		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind, plan: o.tree.planOnly(s.rels)})
+	}
+	if o.whole {
+		boxes := slices.Clone(o.modules)
+		for _, c := range o.contracts {
+			if _, ok := l.pos[string(c)]; ok {
+				boxes = append(boxes, c)
+			}
+		}
+		leadLines(o.tree, o.walks, l.axis, boxes, true, reqs, func(i int) []string { return merged[i].rels })
 	}
 	routed := l.route(reqs)
 	o.read = costOf(routed, reqs)

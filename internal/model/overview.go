@@ -158,7 +158,9 @@ type Carried struct {
 }
 
 // Carries are the live relations the line draws, in order: each from From,
-// or a unit inside it, to To, or a unit inside it.
+// or a unit inside it, to To, or a unit inside it, or to a contract the
+// overview draws as a chip on To because To, or a unit inside it,
+// provides it (reaches).
 func (l Line) Carries(units []Unit) []Carried {
 	st := stateOf(units)
 	var out []Carried
@@ -167,7 +169,7 @@ func (l Line) Carries(units []Unit) []Carried {
 			continue
 		}
 		for _, r := range st[id].Relations {
-			if !r.Dead && st.under(r.To, l.To) {
+			if !r.Dead && st.reaches(id, r, l.To) {
 				out = append(out, Carried{id, r.To, r.Kind, r.Via})
 			}
 		}
@@ -238,4 +240,205 @@ func drawOnce(_ []Column, lines []Line, _ []Unit) []Gap {
 		}
 	}
 	return gaps
+}
+
+// moduleBox reports whether the box of id is a module or a feature, the
+// only boxes the overview counts as a contract's provider or user.
+func (st state) moduleBox(id ID) bool {
+	k := st[st.box(id)].Kind
+	return k == Module || k == Feature
+}
+
+// providers are the module or feature boxes of the units that provide c, a
+// contract at the top level, in order: the boxes the overview sets c on as a
+// chip, and where a line to c lands. They are none when c is no such
+// contract.
+func (st state) providers(c ID) []ID {
+	if st.box(c) != c || !st[c].Kind.IsContract() {
+		return nil
+	}
+	var out []ID
+	for _, id := range slices.Sorted(maps.Keys(st)) {
+		for _, r := range st[id].Relations {
+			if !r.Dead && r.Kind == Provides && r.To == c && st.moduleBox(id) && !slices.Contains(out, st.box(id)) {
+				out = append(out, st.box(id))
+			}
+		}
+	}
+	return out
+}
+
+// reaches reports whether r, a relation of the unit user, lands on to: its
+// end is to or a unit inside it, or its end is a contract at the top level
+// that to, or a unit inside it, provides, which the overview draws as a chip
+// on the provider's box with the line running there, from a user that is a
+// module or feature box and does not provide the contract itself.
+func (st state) reaches(user ID, r Relation, to ID) bool {
+	if st.under(r.To, to) {
+		return true
+	}
+	if r.Kind == Provides || !st.moduleBox(user) {
+		return false
+	}
+	ps := st.providers(r.To)
+	if slices.Contains(ps, st.box(user)) {
+		return false
+	}
+	for _, p := range ps {
+		if st.under(p, to) {
+			return true
+		}
+	}
+	return false
+}
+
+// Boxes are the units the overview draws as boxes, in ID order: each
+// present module, feature or contract whose parent is not present, but a
+// contract a unit provides, which the overview draws as a chip on its
+// provider's box.
+func Boxes(units []Unit) []ID {
+	st := stateOf(units)
+	var out []ID
+	for _, id := range slices.Sorted(maps.Keys(st)) {
+		if k := st[id].Kind; st.box(id) == id && (k == Module || k == Feature || k.IsContract()) && len(st.providers(id)) == 0 {
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+// Carry is how much a relation tells a person about why two boxes are
+// tied, the order a draft offers the overview's lines in.
+type Carry int
+
+const (
+	// Runs is work or data that moves at run time: a posts_to, a call, a
+	// file or table read or written, an implementation provided or used
+	// through a trait or a callback, or a relation that names no via.
+	Runs Carry = iota
+	// Wires is a tie one side sets up for the other: config, a convention,
+	// a load, a spawn, a link, a macro or a build feature.
+	Wires
+	// Imports is a plain import.
+	Imports
+)
+
+var carryWords = [...]string{Runs: "runs", Wires: "wires", Imports: "imports"}
+
+func (c Carry) String() string { return carryWords[c] }
+
+// CarryOf is how much a relation of kind k through via carries.
+func CarryOf(k RelationKind, via Via) Carry {
+	switch via {
+	case "import":
+		return Imports
+	case "", "call", "data", "trait", "callback", "queue", "channel", "signal", "proxy":
+		return Runs
+	}
+	if k == PostsTo {
+		return Runs
+	}
+	return Wires
+}
+
+// Tie is a kind and a via of relation and how many live relations under a
+// candidate line have them.
+type Tie struct {
+	Kind RelationKind
+	Via  Via
+	N    int
+}
+
+// LineCandidate is a pair of overview boxes some live relation joins, in
+// its direction, as a draft offers it: the relations under it by kind and
+// via, strongest first, and the first quote of its strongest relation that
+// has one, a line a reader can cite or start from. Quote is empty when no
+// relation under it quotes code.
+type LineCandidate struct {
+	From, To ID
+	Ties     []Tie
+	Quote    Evidence
+}
+
+// Carry is the strongest carry among the relations under the line.
+func (c LineCandidate) Carry() Carry { return CarryOf(c.Ties[0].Kind, c.Ties[0].Via) }
+
+// Relations counts the relations under the line, and those of carry k
+// alone when k is given.
+func (c LineCandidate) Relations(k ...Carry) int {
+	n := 0
+	for _, t := range c.Ties {
+		if len(k) == 0 || CarryOf(t.Kind, t.Via) == k[0] {
+			n += t.N
+		}
+	}
+	return n
+}
+
+// LineCandidates are the lines the overview could draw, one per pair of
+// boxes of modules and features a live relation joins in its direction, a use of a contract drawn as
+// a chip joining the user's box to each provider's, the strongest first: by
+// the carry of its strongest relation, then by how many relations of that
+// carry it holds, then by how many it holds in all, then by its ends.
+func LineCandidates(units []Unit) []LineCandidate {
+	st := stateOf(units)
+	type rel struct {
+		Relation
+		from ID
+	}
+	by := map[[2]ID][]rel{}
+	for _, id := range slices.Sorted(maps.Keys(st)) {
+		if !st.moduleBox(id) {
+			continue
+		}
+		for _, r := range st[id].Relations {
+			if _, ok := st[r.To]; !ok || r.Dead {
+				continue
+			}
+			a, ends := st.box(id), []ID{st.box(r.To)}
+			if ps := st.providers(r.To); len(ps) > 0 {
+				if r.Kind == Provides || slices.Contains(ps, a) {
+					continue
+				}
+				ends = ps
+			}
+			for _, b := range ends {
+				if a != b {
+					by[[2]ID{a, b}] = append(by[[2]ID{a, b}], rel{r, id})
+				}
+			}
+		}
+	}
+	var out []LineCandidate
+	for pair, rels := range by {
+		slices.SortStableFunc(rels, func(a, b rel) int {
+			return cmp.Or(cmp.Compare(CarryOf(a.Kind, a.Via), CarryOf(b.Kind, b.Via)), cmp.Compare(a.from, b.from), cmp.Compare(a.To, b.To), cmp.Compare(a.Kind, b.Kind), cmp.Compare(a.Via, b.Via))
+		})
+		c := LineCandidate{From: pair[0], To: pair[1]}
+		for _, r := range rels {
+			i := slices.IndexFunc(c.Ties, func(t Tie) bool { return t.Kind == r.Kind && t.Via == r.Via })
+			if i < 0 {
+				c.Ties = append(c.Ties, Tie{Kind: r.Kind, Via: r.Via})
+				i = len(c.Ties) - 1
+			}
+			c.Ties[i].N++
+			if c.Quote.Path != "" {
+				continue
+			}
+			for _, e := range r.Evidence {
+				if e.Status != Dead && e.Quote != "" {
+					c.Quote = Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+					break
+				}
+			}
+		}
+		slices.SortStableFunc(c.Ties, func(a, b Tie) int {
+			return cmp.Or(cmp.Compare(CarryOf(a.Kind, a.Via), CarryOf(b.Kind, b.Via)), cmp.Compare(b.N, a.N), cmp.Compare(a.Kind, b.Kind), cmp.Compare(a.Via, b.Via))
+		})
+		out = append(out, c)
+	}
+	slices.SortFunc(out, func(a, b LineCandidate) int {
+		return cmp.Or(cmp.Compare(a.Carry(), b.Carry()), cmp.Compare(b.Relations(a.Carry()), a.Relations(a.Carry())), cmp.Compare(b.Relations(), a.Relations()), cmp.Compare(a.From, b.From), cmp.Compare(a.To, b.To))
+	})
+	return out
 }

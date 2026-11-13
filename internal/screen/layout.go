@@ -728,8 +728,12 @@ type wireReq struct {
 	// kind keeps lines of different kinds out of one bundle, and plan says
 	// every relation the line stands for arises only in design, so it is
 	// drawn dotted and rides no road a solid line rides (confluence.go).
+	// lead says the view's lead rides the line (leadLines): its hop paints
+	// the line in solid flow ink at rest, so the roads never keep it apart
+	// to show its dots.
 	kind string
 	plan bool
+	lead bool
 }
 
 func polyline(pts []pt) string {

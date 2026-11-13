@@ -482,7 +482,7 @@ func newRoadIndex(v roadView, ways [][]pt) *roadIndex {
 	}
 	legsOn := func(l track) []leg { return x.lines[l] }
 	for i, w := range ways {
-		if v.plan[i] && v.unseenOf(i, w, legsOn) {
+		if v.dotted(i) && v.unseenOf(i, w, legsOn) {
 			x.unseen[i] = true
 			c.unseen++
 		}
@@ -798,7 +798,7 @@ func (ch *change) unseen() int {
 	x, v := ch.x, ch.x.v
 	rs := map[int]bool{}
 	for _, i := range ch.ts {
-		if v.plan[i] {
+		if v.dotted(i) {
 			rs[i] = true
 			continue
 		}
@@ -808,7 +808,7 @@ func (ch *change) unseen() int {
 					continue
 				}
 				for _, s := range x.lines[l] {
-					if v.plan[s.route] && !ch.touched[s.route] {
+					if v.dotted(s.route) && !ch.touched[s.route] {
 						rs[s.route] = true
 					}
 				}
