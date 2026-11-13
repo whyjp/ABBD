@@ -5,6 +5,7 @@ edition = "2021"
 
 [features]
 fancy = ["dep:fancy"]
+plain = []
 
 [dependencies]
 engine = { path = "../engine" }

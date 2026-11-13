@@ -19,13 +19,15 @@ import (
 // constant and plugin only for a unit struct; app's net module calls a
 // private fn of app and calls util; plugin implements engine's trait,
 // invokes its macro and calls util through facade, which re-exports it; app's cfg(windows) module calls util, and its test
-// module and integration test use extra, and none of those is read.
+// module and integration test use extra, and none of those is read; gates
+// names engine, plugin and util only in cfg-inactive code, and util again in
+// a fn the plain feature, which has no dependency of its own, turns on.
 const rustFixture = "testdata/rs"
 
 func rustUnits() []extract.DocUnit {
 	return []extract.DocUnit{
 		mod("mod-app", "app"), mod("mod-net", "app/src/net"), mod("mod-engine", "engine"), mod("mod-plugin", "plugin"),
-		mod("mod-shapes", "shapes"), mod("mod-util", "util"), mod("mod-extra", "extra"), mod("mod-fancy", "fancy"), mod("mod-facade", "facade"),
+		mod("mod-shapes", "shapes"), mod("mod-util", "util"), mod("mod-extra", "extra"), mod("mod-fancy", "fancy"), mod("mod-facade", "facade"), mod("mod-gates", "app/src/gates.rs"),
 	}
 }
 
@@ -90,6 +92,8 @@ func TestRustRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 		"mod-app depends_on mod-util via build-feature []",
 		"mod-engine consumes if-speaker via trait [engine/src/lib.rs:6:s.speak()]",
 		"mod-facade depends_on mod-util via import [facade/src/lib.rs:1:pub extern crate util as tools;]",
+		"mod-gates depends_on mod-shapes via import [app/src/gates.rs:19:shapes::MAX]",
+		"mod-gates depends_on mod-util via call when all features [app/src/gates.rs:13:util::wide()]",
 		"mod-net depends_on mod-app via call [app/src/net/mod.rs:2:super::helper() + util::wide()]",
 		"mod-net depends_on mod-util via call [app/src/net/mod.rs:2:super::helper() + util::wide()]",
 		"mod-plugin depends_on mod-engine via macro [plugin/src/lib.rs:7:engine::loud!(\"woof\")]",
