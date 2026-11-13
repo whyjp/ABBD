@@ -4127,7 +4127,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
+      "Via": "import",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -4348,7 +4348,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
+      "Via": "import",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -4814,7 +4814,7 @@
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
+      "Via": "import",
       "Phrase": "merge candidates",
       "PhraseOrigin": "INFERRED"
     },
@@ -23356,7 +23356,7 @@
                 "Code": true
               },
               {
-                "Text": " (96px) or more side by side, of one kind and dotting from up to ",
+                "Text": " (96px) or more side by side, of one kind from up to ",
                 "Code": false
               },
               {
@@ -23364,7 +23364,7 @@
                 "Code": true
               },
               {
-                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway, and after each such merge the nearer moves run again, since a run the long merge has moved can open a near merge it had shut out as a far split. Where no run moves, ",
+                "Text": " (64px) apart, where that runs no more road beside road and leaves no dotted line hidden, so lanes the grid laid a few tracks apart join one highway, and after each such merge the nearer moves run again, since a run the long merge has moved can open a near merge it had shut out as a far split. Where no run moves, ",
                 "Code": false
               },
               {
@@ -23404,7 +23404,39 @@
                 "Code": true
               },
               {
-                "Text": ").",
+                "Text": "). A run that carries both solid and dotted lines may also move without its dotted ones (",
+                "Code": false
+              },
+              {
+                "Text": "solidPart",
+                "Code": true
+              },
+              {
+                "Text": "), and ",
+                "Code": false
+              },
+              {
+                "Text": "roadCost",
+                "Code": true
+              },
+              {
+                "Text": " counts a fork's heights apart by dotting (",
+                "Code": false
+              },
+              {
+                "Text": "forks",
+                "Code": true
+              },
+              {
+                "Text": " with byDotting) while the moves still offer a branch of either dotting its siblings' track, so a dotted branch keeps a track of its own while its solid neighbours join a road; ",
+                "Code": false
+              },
+              {
+                "Text": "TestADottedBranchLetsItsSolidNeighboursJoinARoad",
+                "Code": true
+              },
+              {
+                "Text": " holds that.",
                 "Code": false
               }
             ]

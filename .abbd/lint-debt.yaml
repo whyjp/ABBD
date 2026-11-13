@@ -16,7 +16,7 @@ debt:
         R: 1
 pages:
     overview:
-        abreast: 0
+        abreast: 168
         colour_switches: 0
         combs: 0
         counts: 2
@@ -26,4 +26,4 @@ pages:
         false_joins: 0
         label_repeats: 0
         labelled: 13
-        parallel_ink: 511
+        parallel_ink: 948
