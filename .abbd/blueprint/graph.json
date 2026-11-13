@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2867,6 +2867,14 @@
     },
     {
       "From": "FEAT-0002",
+      "To": "IF-0002",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd evidence\""
+    },
+    {
+      "From": "FEAT-0002",
       "To": "IF-0003",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
@@ -2989,6 +2997,14 @@
       "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0021",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd retract\""
     },
     {
       "From": "FEAT-0002",
@@ -5424,7 +5440,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 19,
+        "Uses": 21,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5548,6 +5564,7 @@
           "Head": "abbd",
           "Names": [
             "diff",
+            "evidence",
             "status",
             "impact",
             "sync",
@@ -5557,6 +5574,7 @@
             "exit codes",
             "migrate",
             "record evidence",
+            "retract",
             "flow",
             "lint",
             "brief"
@@ -6830,7 +6848,7 @@
                 "Code": true
               },
               {
-                "Text": ". Explain also names a module's set of build artifacts and who said it, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
+                "Text": ". Explain also names a module's set of build artifacts and who said it, and each coupling's condition, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
@@ -8110,7 +8128,10 @@
                   "Ref": "IF-0003.entries.check",
                   "Title": "항목",
                   "Key": "check",
-                  "Stale": false,
+                  "Stale": true,
+                  "Changed": [
+                    "cmd/abbd/evidence.go (the lines around it changed)"
+                  ],
                   "Blocks": [
                     {
                       "Kind": "p",
@@ -8754,6 +8775,11 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
@@ -10254,6 +10280,36 @@
               },
               {
                 "Text": " fills a matched script unit's only when the script read none, written by the supplement, so the build's own reading wins and a sync keeps it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Supplement condition",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "overlay.go",
+                "Code": true
+              },
+              {
+                "Text": "): a supplement coupling keeps its ",
+                "Code": false
+              },
+              {
+                "Text": "when",
+                "Code": true
+              },
+              {
+                "Text": ", the condition it holds under, like a script relation.",
                 "Code": false
               }
             ]
@@ -12513,6 +12569,52 @@
                 "Code": false
               }
             ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Condition",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "extract.go",
+                "Code": true
+              },
+              {
+                "Text": "): a relation's ",
+                "Code": false
+              },
+              {
+                "Text": "when",
+                "Code": true
+              },
+              {
+                "Text": " names the condition it holds under, a feature, a cfg, ",
+                "Code": false
+              },
+              {
+                "Text": "dev",
+                "Code": true
+              },
+              {
+                "Text": " or a link scope; parse refuses one over ",
+                "Code": false
+              },
+              {
+                "Text": "model.MaxWhen",
+                "Code": true
+              },
+              {
+                "Text": " characters or over one line.",
+                "Code": false
+              }
+            ]
           }
         ]
       },
@@ -12738,6 +12840,12 @@
               {
                 "Key": "relations-phrase",
                 "Name": "relations.phrase",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "relations-when",
+                "Name": "relations.when",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -15264,6 +15372,44 @@
               },
               {
                 "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Condition carry",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "identity.go",
+                "Code": true
+              },
+              {
+                "Text": "): each extracted relation keeps its ",
+                "Code": false
+              },
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": " as ",
+                "Code": false
+              },
+              {
+                "Text": "setRelations",
+                "Code": true
+              },
+              {
+                "Text": " rebuilds the writer's claims.",
                 "Code": false
               }
             ]
@@ -18941,6 +19087,36 @@
               },
               {
                 "Text": " joins the vias for an artifact that links another or compiles a module in.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "model.go",
+                "Code": true
+              },
+              {
+                "Text": "): the condition a relation holds under, empty when it always holds, checked by ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateWhen",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
@@ -28294,6 +28470,12 @@
                 "Need": "선택"
               },
               {
+                "Key": "relations-when",
+                "Name": "relations.when",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "hidden",
                 "Name": "hidden",
                 "Shape": "[]Relation",
@@ -28386,6 +28568,12 @@
               {
                 "Key": "hidden-digest",
                 "Name": "hidden.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "hidden-when",
+                "Name": "hidden.when",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -30250,6 +30438,52 @@
               },
               {
                 "Text": ".",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Link condition",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "impact.go",
+                "Code": true
+              },
+              {
+                "Text": "): a ",
+                "Code": false
+              },
+              {
+                "Text": "Link",
+                "Code": true
+              },
+              {
+                "Text": " carries its relation's ",
+                "Code": false
+              },
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "Label",
+                "Code": true
+              },
+              {
+                "Text": " says it after the via.",
                 "Code": false
               }
             ]

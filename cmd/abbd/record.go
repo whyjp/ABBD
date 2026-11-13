@@ -379,12 +379,18 @@ type target struct {
 	edge  *model.Edge
 	// phrase says the target is the phrase note on edge, not its claims.
 	phrase bool
+	// when says the target is the claims on edge that give it a condition.
+	when bool
 }
 
 func parseTarget(s string) (target, error) {
 	if e, ok := strings.CutSuffix(s, ".phrase"); ok && strings.Count(e, ".") == 2 {
 		edge, err := model.ParseEdge(e)
 		return target{id: edge.From, edge: &edge, phrase: true}, err
+	}
+	if e, ok := strings.CutSuffix(s, ".when"); ok && strings.Count(e, ".") == 2 {
+		edge, err := model.ParseEdge(e)
+		return target{id: edge.From, edge: &edge, when: true}, err
 	}
 	if strings.Count(s, ".") == 2 {
 		edge, err := model.ParseEdge(s)
@@ -397,7 +403,7 @@ func parseTarget(s string) (target, error) {
 	switch field {
 	case "", "parent", "purpose", "responsibility":
 	default:
-		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility, an edge such as MOD-0001.depends_on.MOD-0002 or its phrase, EDGE.phrase", s)
+		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility, an edge such as MOD-0001.depends_on.MOD-0002, its phrase, EDGE.phrase, or its condition, EDGE.when", s)
 	}
 	return target{id: model.ID(id), field: field}, nil
 }
@@ -453,7 +459,7 @@ func (e env) refresh(s string) error {
 	case t.edge != nil:
 		var base *model.Relation
 		for _, r := range u.Claims() {
-			if r.To == t.edge.To && r.Kind == t.edge.Kind && (r.Writer == model.Reader || r.Writer == model.Supplement && base == nil) {
+			if r.To == t.edge.To && r.Kind == t.edge.Kind && (!t.when || r.When != "") && (r.Writer == model.Reader || r.Writer == model.Supplement && base == nil) {
 				base = &r
 			}
 		}
@@ -526,7 +532,7 @@ func (e env) retract(s string) error {
 		key := model.PhraseTarget(t.edge.Kind, t.edge.To)
 		for _, n := range slices.Clone(u.Phrases) {
 			switch {
-			case n.To != t.edge.To || n.Kind != t.edge.Kind:
+			case t.when || n.To != t.edge.To || n.Kind != t.edge.Kind:
 			case n.Writer == w:
 				u.DropNotes(func(o model.PhraseNote) bool { return o.To == n.To && o.Kind == n.Kind && o.Writer == w })
 				changed = true
@@ -543,7 +549,9 @@ func (e env) retract(s string) error {
 			what = "the phrase"
 		}
 		key = model.RelationTarget(t.edge.Kind, t.edge.To)
-		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool { return r.To != t.edge.To || r.Kind != t.edge.Kind })
+		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool {
+			return r.To != t.edge.To || r.Kind != t.edge.Kind || t.when && r.When == ""
+		})
 		for _, r := range claims {
 			switch {
 			case r.Writer == w:

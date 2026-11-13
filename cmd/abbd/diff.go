@@ -131,6 +131,7 @@ func summary(d topology.Diff) string {
 	add(len(d.Code), "계약 코드 변경")
 	add(len(d.RelationsAdded), "관계 추가")
 	add(len(d.RelationsRemoved), "관계 제거")
+	add(len(d.Conditions), "조건 변경")
 	add(len(d.RunsAdded), "실행 관계 추가")
 	add(len(d.RunsRemoved), "실행 관계 제거")
 	add(len(d.InferredAdded), "판독한 결합 추가")

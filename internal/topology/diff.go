@@ -74,6 +74,14 @@ type Relation struct {
 	ToName   string             `json:"to_name"`
 }
 
+// Condition is a relation, there before and now, whose condition changed:
+// the feature, cfg or scope it holds under, "" for always.
+type Condition struct {
+	Relation
+	Old string `json:"old"`
+	New string `json:"new"`
+}
+
 // Coupling is a reader's relation, with how it arises and the code it rests on.
 type Coupling struct {
 	Relation
@@ -108,6 +116,8 @@ type Diff struct {
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
 	RelationsRemoved []Relation `json:"relations_removed"`
+	// Conditions are the relations whose condition changed.
+	Conditions []Condition `json:"relation_conditions_changed"`
 	// RunsAdded and RunsRemoved are the live runs_on and posts_to
 	// relations, from any writer, between the units they join.
 	RunsAdded     []Coupling `json:"runs_added"`
@@ -192,6 +202,7 @@ func Compare(base, now []model.Unit) Diff {
 			d.InferredDead = append(d.InferredDead, died[k])
 		}
 	}
+	d.Conditions = conditions(base, now)
 	return d
 }
 
@@ -451,6 +462,9 @@ func (d Diff) Lines() []string {
 			out = append(out, fmt.Sprintf("~ %s %s %s: %q -> %q%s", c.Field, c.ID, c.Name, c.Old, c.New, by(c.Origin)))
 		}
 	}
+	for _, c := range d.Conditions {
+		out = append(out, fmt.Sprintf("~ condition %s %s %s: %q -> %q (%s %s %s)", c.From, c.Kind, c.To, c.Old, c.New, c.FromName, c.Kind, c.ToName))
+	}
 	for _, c := range d.InferredDead {
 		out = append(out, "- inferred dead "+c.line())
 	}
@@ -652,6 +666,9 @@ func (d Diff) Within(in func(model.ID) bool) Diff {
 		UsesNarrowed:     rels(d.UsesNarrowed),
 		RelationsAdded:   rels(d.RelationsAdded),
 		RelationsRemoved: rels(d.RelationsRemoved),
+		Conditions:       keep(d.Conditions, func(c Condition) bool { return in(c.From) || in(c.To) }),
+		RunsAdded:        keep(d.RunsAdded, func(c Coupling) bool { return in(c.From) || in(c.To) }),
+		RunsRemoved:      keep(d.RunsRemoved, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		InferredAdded:    keep(d.InferredAdded, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		InferredDead:     keep(d.InferredDead, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		Changed:          keep(d.Changed, func(c Changed) bool { return in(c.ID) }),
@@ -754,4 +771,38 @@ func sigDelta(old, now string) string {
 		return "the same words in another order; --json has both"
 	}
 	return strings.Join(d, " ") + "; --json has both"
+}
+
+// conditions lists the live relations, there in base and now, whose
+// condition changed, in the order of their edges.
+func conditions(base, now []model.Unit) []Condition {
+	when := func(units []model.Unit) map[string]Condition {
+		name := map[model.ID]string{}
+		for _, u := range units {
+			name[u.ID] = u.Name.Value
+		}
+		out := map[string]Condition{}
+		for _, u := range model.Present(units) {
+			for _, r := range u.Relations {
+				if r.Dead {
+					continue
+				}
+				w, _ := u.Condition(r.Kind, r.To)
+				out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Condition{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: name[r.To]}, New: w}
+			}
+		}
+		return out
+	}
+	was, is := when(base), when(now)
+	var out []Condition
+	for _, k := range keys(is) {
+		b, ok := was[k]
+		if !ok || b.New == is[k].New {
+			continue
+		}
+		c := is[k]
+		c.Old = b.New
+		out = append(out, c)
+	}
+	return out
 }
