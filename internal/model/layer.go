@@ -29,7 +29,7 @@ type Layer struct {
 // Kind makes a stack's layers a kind of figure, whose layers hold each unit
 // once between them.
 func (Layer) Kind() FigureKind[Layer] {
-	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce}
+	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce[Layer](StackUnits)}
 }
 
 // Validate checks the layer on its own: a name and a role, one line each, the
@@ -82,59 +82,63 @@ func (l Layer) Gaps(units []Unit) []string {
 	return gaps
 }
 
-// holdOnce keeps each unit in one layer of a stack. A layer holds each unit
-// it names and every unit inside it, so a unit named in one layer and held
-// by another, through a unit that holds it, is held twice. The layers name
-// StackUnits units at most. A unit moved under another after the stack was
-// stored can break the first rule, and the stored stack then reads STALE.
-// Each gap names the layers it involves.
-func holdOnce(_ []Column, layers []Layer, units []Unit) []Gap {
-	st := stateOf(units)
-	type named struct {
-		id    ID
-		layer int
-	}
-	var all []named
-	for i, l := range layers {
-		for _, id := range l.Units {
-			all = append(all, named{id, i + 1})
+// holdOnce keeps each unit in one part of a figure whose parts hold units,
+// such as a stack's layers. A part holds each unit it names and every unit
+// inside it, so a unit named in one part and held by another, through a
+// unit that holds it, is held twice. The parts name most units at most, or
+// any number when most is 0. A unit moved under another after the figure
+// was stored can break the first rule, and the stored figure then reads
+// STALE. Each gap names the parts it involves.
+func holdOnce[C Claim[C]](most int) func([]Column, []C, []Unit) []Gap {
+	return func(_ []Column, parts []C, units []Unit) []Gap {
+		k := KindOf[C]()
+		st := stateOf(units)
+		type named struct {
+			id   ID
+			part int
 		}
-	}
-	var gaps []Gap
-	if len(all) > StackUnits {
-		every := make([]int, len(layers))
-		for i := range every {
-			every[i] = i + 1
-		}
-		gaps = append(gaps, Gap{Text: fmt.Sprintf("a stack's layers name at most %d units, and these name %d; split the question in two", StackUnits, len(all)), Parts: every})
-	}
-	for i, a := range all {
-		for _, b := range all[i+1:] {
-			inner, outer := a, b
-			if !st.under(inner.id, outer.id) {
-				inner, outer = b, a
-			}
-			switch {
-			case !st.under(inner.id, outer.id):
-			case inner.id == outer.id:
-				gaps = append(gaps, Gap{Text: fmt.Sprintf("%s is named by layer %d and by layer %d; a unit sits in one layer", a.id, a.layer, b.layer), Parts: []int{a.layer, b.layer}})
-			case inner.layer == outer.layer:
-				gaps = append(gaps, Gap{Text: fmt.Sprintf("layer %d names %s and %s, which holds it; name the outer unit alone", inner.layer, inner.id, outer.id), Parts: []int{inner.layer}})
-			default:
-				gaps = append(gaps, Gap{Text: fmt.Sprintf("%s is held by layer %d and, inside %s, by layer %d; a unit sits in one layer", inner.id, inner.layer, outer.id, outer.layer), Parts: []int{min(inner.layer, outer.layer), max(inner.layer, outer.layer)}})
+		var all []named
+		for i, p := range parts {
+			for _, id := range p.Names() {
+				all = append(all, named{id, i + 1})
 			}
 		}
+		var gaps []Gap
+		if most > 0 && len(all) > most {
+			every := make([]int, len(parts))
+			for i := range every {
+				every[i] = i + 1
+			}
+			gaps = append(gaps, Gap{Text: fmt.Sprintf("a %s's %s name at most %d units, and these name %d; split the question in two", k.Noun, k.Parts, most, len(all)), Parts: every})
+		}
+		for i, a := range all {
+			for _, b := range all[i+1:] {
+				inner, outer := a, b
+				if !st.under(inner.id, outer.id) {
+					inner, outer = b, a
+				}
+				switch {
+				case !st.under(inner.id, outer.id):
+				case inner.id == outer.id:
+					gaps = append(gaps, Gap{Text: fmt.Sprintf("%s is named by %s %d and by %s %d; a unit sits in one %s", a.id, k.Part, a.part, k.Part, b.part, k.Part), Parts: []int{a.part, b.part}})
+				case inner.part == outer.part:
+					gaps = append(gaps, Gap{Text: fmt.Sprintf("%s %d names %s and %s, which holds it; name the outer unit alone", k.Part, inner.part, inner.id, outer.id), Parts: []int{inner.part}})
+				default:
+					gaps = append(gaps, Gap{Text: fmt.Sprintf("%s is held by %s %d and, inside %s, by %s %d; a unit sits in one %s", inner.id, k.Part, inner.part, outer.id, k.Part, outer.part, k.Part), Parts: []int{min(inner.part, outer.part), max(inner.part, outer.part)}})
+				}
+			}
+		}
+		return gaps
 	}
-	return gaps
 }
 
-// Holders maps each present unit a layer holds to that layer's place, from 1
-// at the top: the layer that names the unit, or else the one that names its
-// nearest ancestor.
-func Holders(layers []Layer, units []Unit) map[ID]int {
+// Holders maps each present unit a part holds to that part's place, from 1,
+// such as a layer's from the top: the part that names the unit, or else the
+// one that names its nearest ancestor.
+func Holders[C Claim[C]](parts []C, units []Unit) map[ID]int {
 	named := map[ID]int{}
-	for i, l := range layers {
-		for _, id := range l.Units {
+	for i, p := range parts {
+		for _, id := range p.Names() {
 			if _, ok := named[id]; !ok {
 				named[id] = i + 1
 			}

@@ -81,11 +81,16 @@ type Graph struct {
 	Flows  []FlowView  `json:"flows,omitempty"`
 	Stacks []StackView `json:"stacks,omitempty"`
 	Tables []TableView `json:"tables,omitempty"`
+	// Primary, Zones and Lines are the overview a reader chose: the primary
+	// flow in numbered stages, the zones and the chosen lines.
+	Primary *Primary     `json:"primary,omitempty"`
+	Zones   []ZoneView   `json:"zones,omitempty"`
+	Lines   []ChosenLine `json:"lines,omitempty"`
 }
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary, Zones: m.Zones, Lines: m.Lines}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

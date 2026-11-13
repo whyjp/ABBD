@@ -37,6 +37,9 @@ type Input struct {
 	// the ordered walks, with the markdown files beside them that are no
 	// figures, and why.
 	Figures store.Figures
+	// Overview is the summary a reader chose: the primary flow in stages,
+	// the zones and the chosen lines.
+	Overview store.Overview
 	// Primary are the stored relations, by relation key (model.Edge's
 	// String), the overview must draw whatever else it counts instead
 	// (primary.go) when Project.Cut() is on. Nil leaves the choice to
@@ -74,6 +77,9 @@ func Load(st store.Store) (Input, error) {
 	}
 	in.Owners = OwnersOf(owners.Read(st.ProjectDir()), in.Units)
 	if in.Figures, err = st.LoadFigures(); err != nil {
+		return in, err
+	}
+	if in.Overview, err = st.LoadOverview(); err != nil {
 		return in, err
 	}
 	in.Digests = map[model.ID]string{}
@@ -143,6 +149,11 @@ type UnitRow struct {
 	Parent string `json:",omitempty"`
 	// Artifact is the set of build artifacts a module is, comma-joined.
 	Artifact string `json:",omitempty"`
+	// Stage is the number of the primary flow's stage that holds the unit,
+	// and Zone the name of the zone that holds it, itself or through a unit
+	// that holds it, when the overview names them.
+	Stage int    `json:",omitempty"`
+	Zone  string `json:",omitempty"`
 	// Evidence is the code a unit only a reader found rests on.
 	Evidence []string `json:",omitempty"`
 	// Notes are the unit's slots and Entries its table when no inside shows
@@ -171,6 +182,11 @@ type Model struct {
 	Flows  []FlowView
 	Stacks []StackView
 	Tables []TableView
+	// Primary, Zones and Lines are the overview a reader chose: the primary
+	// flow in stages, the zones, and the chosen lines with their words.
+	Primary *Primary
+	Zones   []ZoneView
+	Lines   []ChosenLine
 	// Name and Purpose are the project's, and Parts its top-level modules
 	// and every feature with the one line each says of itself, which the
 	// overview opens with.
@@ -188,11 +204,13 @@ type Model struct {
 // input gives the same model, so the rendered files only change with the data.
 func Build(in Input) Model {
 	m := Model{Extract: in.Project.Extract}
+	ov := readOverview(in)
+	m.Primary, m.Zones, m.Lines = ov.primary, ov.zones, ov.lines
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
 			Purpose: sentenceOf(u.Purpose, in.Digests[u.ID]), Responsibility: sentenceOf(u.Responsibility, in.Digests[u.ID]), Anchors: anchors(u), Artifact: model.ArtifactSet(u.Built()),
-			Parent: string(u.Parent),
+			Parent: string(u.Parent), Stage: ov.stage[u.ID], Zone: ov.zone[u.ID],
 		}
 		for _, e := range u.Evidence {
 			row.Evidence = append(row.Evidence, cite(e))

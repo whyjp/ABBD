@@ -344,6 +344,7 @@ var commands = map[string]command{
 	"forget":          {flags: []string{"root"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.forget(pos[0]) }},
 	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
+	"overview":        {flags: []string{"root"}, pos: []int{0, 1}, writes: true, run: func(e env, pos []string) error { return e.overview(pos) }},
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},

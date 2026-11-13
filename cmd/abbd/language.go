@@ -93,6 +93,18 @@ func foreignProse(in screen.Input, t model.Language) []foreign {
 	for _, f := range in.Figures.Stacks {
 		figureProse(check, f, func(l model.Layer) []string { return []string{l.Role} })
 	}
+	if o := in.Overview; o.Known {
+		said := []string{o.Flow, o.Caption}
+		for _, p := range overviewParts(o) {
+			if p.kind != "line" {
+				said = append(said, p.label)
+			}
+		}
+		for _, l := range o.Lines {
+			said = append(said, l.Claim.Word)
+		}
+		check("overview", said...)
+	}
 	for _, f := range in.Figures.Tables {
 		var cols []string
 		for _, c := range f.Columns {

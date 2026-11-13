@@ -75,6 +75,15 @@ func (e env) checkEvidence() error {
 			}
 		}
 	}
+	o, err := e.st.LoadOverview()
+	if err != nil {
+		return err
+	}
+	for _, p := range overviewParts(o) {
+		for _, ev := range p.quotes {
+			line(p.String(), model.Reader, "", ev)
+		}
+	}
 	fmt.Fprintf(e.stdout, "%d live, %d drifted, %d dead\n", n[model.Live], n[model.Drifted], n[model.Dead])
 	return nil
 }
@@ -226,6 +235,9 @@ func (e env) statusLines() error {
 		if b != "" {
 			behind = append(behind, b)
 		}
+	}
+	if b := e.statusOverview(in.Units, in.Overview); b != "" {
+		behind = append(behind, b)
 	}
 	e.statusBreaches(in.Units, fs.Stacks)
 	e.statusCells(in.Units, fs.Tables)
