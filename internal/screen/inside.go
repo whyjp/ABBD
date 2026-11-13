@@ -380,6 +380,19 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	var nodes []lnode
 	var edges []ledge
 	names := map[model.ID][]string{}
+	// An inside lays out by the primary flow alone, never by a stack's
+	// tiers, and a focus view keeps its full view's order instead.
+	var stages map[string]int
+	if focus == "" {
+		stages = o.flow.stagesOn(func(id model.ID) string {
+			for _, c := range t.chain(id) {
+				if t.units[c].Parent == m {
+					return string(c)
+				}
+			}
+			return ""
+		})
+	}
 	for _, u := range inner {
 		// A focus view names its boxes by their last path segment, as
 		// frame ports are; the tooltip keeps the whole name.
@@ -389,7 +402,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		ls, w := lines2(label)
 		names[u.ID] = ls
-		nodes = append(nodes, lnode{id: string(u.ID), w: w, h: 26 + len(ls)*nameLine + 2})
+		nodes = append(nodes, lnode{id: string(u.ID), w: w, h: 26 + len(ls)*nameLine + 2, stage: stages[string(u.ID)]})
 	}
 	// The frame's top and bottom take part in the layering, so a unit that
 	// meets a port on top rises toward it and one that uses a port below
