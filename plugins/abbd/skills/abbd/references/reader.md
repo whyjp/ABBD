@@ -26,6 +26,12 @@ A universal or exclusive claim is the easiest one to get wrong. Before you keep 
 
 A role is a claim too. Before you write that a function loads, starts, frees or dispatches something, open its body: an empty or stub function, or one that only forwards, does not do it, so name the one that does. Before you write that a part goes where (a combinator before sinks, a dock a plugin adds), when something happens (while building, at startup, once ready), or that a function writes rather than only reads, find the line that shows it.
 
+## Before you store: have a fresh reader falsify the draft
+
+You cannot see your own wrong claims. Once the draft text is complete, spawn one fresh `Explore` subagent, tell it not to edit files, and give it only the draft text, the module ID and the brief's `Read first` file list. Its brief: "For each sentence of this text, find code that contradicts it (wrong) or shows it overstated (true only in the main case, or wrong about the place, the time or the platform). Return each finding as the sentence, the `file:line` and the quoted line. Return nothing else, and do not propose new content."
+
+Then open every cited line yourself. When the line bears the finding out, narrow the sentence to what holds or drop it. When it does not, keep the sentence. Store only after every finding is settled.
+
 ## What you store
 
 **The module's text**, with `abbd understand <MOD-ID> <FILE> --reader "<WHO>"`:
