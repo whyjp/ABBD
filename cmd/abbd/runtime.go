@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/runscan"
+	"github.com/whyjp/abbd/internal/extract/runscan"
 )
 
 // runtime prints the run-time work list: each catalog candidate the state
