@@ -12,7 +12,9 @@ ABBD는 병합된 코드의 아키텍처 토폴로지를 최종 상태로 `.abbd
 
 ## 설치
 
-pstack은 필요 없다. pstack 0.15.36이 설치되어 있으면 /abbd의 리더가 읽기 엔진으로 쓸 수 있다. CLI는 `go build -o bin/abbd ./cmd/abbd`로 만들고 PATH에 둔다.
+pstack은 필요 없다. pstack 0.15.36이 설치되어 있으면 /abbd의 리더가 읽기 엔진으로 쓸 수 있다. CLI는 `go build -o bin/abbd ./cmd/abbd`로 만들고 PATH에 둔다. Windows에서는 `bin/abbd.exe`로 만든다.
+
+지원 플랫폼은 macOS, Windows, Linux다. `.github/workflows/test.yml`이 세 OS에서 `gofmt`, `go vet`, `go test`를 돌리고, 이 저장소의 `.abbd`를 `abbd sync`한 결과가 세 OS에서 바이트까지 같은지 비교한다.
 
 저장소 루트가 Claude Code 마켓플레이스다.
 
