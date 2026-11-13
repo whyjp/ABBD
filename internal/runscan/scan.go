@@ -28,15 +28,18 @@ var testDirs = map[string]bool{
 }
 
 // LangOf is the catalog language of a file, or "" for one the catalog does
-// not read: another language, or code only tests run.
+// not read: another language, or code only tests run. A Rust file named
+// tests.rs or test.rs is the tests module its parent declares.
 func LangOf(p string) Lang {
 	p = filepath.ToSlash(p)
 	dirs := strings.Split(path.Dir(p), "/")
-	if slices.ContainsFunc(dirs, func(d string) bool { return testDirs[d] }) {
+	if slices.ContainsFunc(dirs, func(d string) bool {
+		return testDirs[d] || strings.HasSuffix(d, "_tests") || strings.HasSuffix(d, "-tests")
+	}) {
 		return ""
 	}
 	base := path.Base(p)
-	if strings.HasSuffix(base, "_test.go") || strings.HasSuffix(base, "_test.rs") || strings.HasSuffix(base, "_tests.rs") {
+	if strings.HasSuffix(base, "_test.go") || strings.HasSuffix(base, "_test.rs") || strings.HasSuffix(base, "_tests.rs") || base == "tests.rs" || base == "test.rs" {
 		return ""
 	}
 	return langs[strings.ToLower(path.Ext(base))]
@@ -130,7 +133,7 @@ func ScanFile(p string, src []byte) []Record {
 					at++
 				}
 			}
-			if seen[at] || skip(at) || (e.Call && declares(code, at)) {
+			if seen[at] || (skip(at) && !e.Directive) || (e.Call && declares(code, at)) {
 				continue
 			}
 			group := func(name string) string {
@@ -214,6 +217,9 @@ func (f file) skipped(lang Lang) func(int) bool {
 		}
 	case Rust:
 		for _, m := range rustTest.FindAllIndex(f.code, -1) {
+			if bytes.Contains(f.code[m[0]:m[1]], []byte("not(")) {
+				continue
+			}
 			spans = append(spans, [2]int{m[0], itemEnd(f.code, m[1])})
 		}
 	}
@@ -266,7 +272,8 @@ var callKeywords = map[string]bool{
 }
 
 // declares reports whether the name at i reads as declared rather than
-// called: a type or a keyword such as fn stands right before it.
+// called: a type or a keyword such as fn stands right before it. A
+// preprocessor line such as #endif before it ends no declaration.
 func declares(code []byte, i int) bool {
 	j := i
 	for j > 0 && (isSpace(code[j-1]) || code[j-1] == '*' || code[j-1] == '&') {
@@ -276,7 +283,11 @@ func declares(code []byte, i int) bool {
 	for k > 0 && isWord(code[k-1]) {
 		k--
 	}
-	return k < j && !callKeywords[string(code[k:j])]
+	h := k
+	for h > 0 && (code[h-1] == ' ' || code[h-1] == '\t') {
+		h--
+	}
+	return k < j && !callKeywords[string(code[k:j])] && (h == 0 || code[h-1] != '#')
 }
 
 // callArgs reads the arguments of the call whose opening bracket ends just

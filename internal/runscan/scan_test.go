@@ -157,3 +157,52 @@ func TestScanIsSortedAndDeterministic(t *testing.T) {
 		t.Errorf("two scans differ")
 	}
 }
+
+func TestCWrappersPoolsAndDirectives(t *testing.T) {
+	check(t, "lib/io.cpp", `
+void start(int n) {
+#if defined(X)
+    use_x();
+#endif
+    pthread_create(&t, NULL, run, NULL);
+    ThreadPool executor(n);
+    threads_.emplace_back([this] { loop(); });
+    ctx->pool = POOL_create_advanced(n, 0, mem);
+    job = AIO_IOPool_createIoJob(ctx, size);
+#pragma omp parallel default(shared)
+    { work(); }
+}
+`, `
+5 spawn pthread_create to=run ch=
+6 spawn thread pool object to= ch=
+7 spawn thread container to= ch=
+8 spawn POOL_create_advanced to= ch=
+10 spawn #pragma omp parallel to= ch=
+`)
+}
+
+func TestRustWrappersAndTestGatedCode(t *testing.T) {
+	check(t, "src/topology/running.rs", `
+pub fn spawn_named<T>(task: T, name: &str) {}
+fn start(&mut self) {
+    let h = spawn_named(task, "sink");
+    auth.spawn_regenerate_token();
+    crate::spawn_in_current_span(async move {});
+    let respawn_on_exit = true;
+}
+#[cfg(not(test))]
+fn real() { tokio::spawn(x()); }
+#[cfg(all(test, feature = "redis-integration-tests"))]
+mod integration_tests {
+    fn t() { tokio::spawn(x()); }
+}
+`, `
+3 spawn spawn_named to= ch=
+4 spawn spawn_regenerate_token to= ch=
+5 spawn spawn_in_current_span to= ch=
+9 spawn tokio::spawn to=x ch=
+`)
+	if rs := ScanFile("src/sinks/http/tests.rs", []byte("fn f() { tokio::spawn(x()); }\n")); len(rs) != 0 {
+		t.Errorf("a tests.rs module is read: %v", rs)
+	}
+}
