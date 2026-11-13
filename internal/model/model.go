@@ -655,8 +655,7 @@ func isExec(k Kind) bool      { return k == Exec }
 // runs_on or a posts_to is a run-time fact, not a dependency of the code:
 // the context calls the code that runs on it, and the code a producer calls
 // to post is its own depends_on or consumes. Neither is a use, so neither
-// breaches a layer, as impact and path also follow only consumes and
-// depends_on.
+// breaches a layer.
 func (k RelationKind) Uses() bool { return k == Consumes || k == DependsOn }
 
 // RunTime reports whether a relation of kind k says what runs on an
