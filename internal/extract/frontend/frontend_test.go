@@ -197,6 +197,15 @@ func TestALinkStaysALinkWhenAddDependenciesNamesTheSameTarget(t *testing.T) {
 	}
 }
 
+func TestATargetLinkingAnInterfaceLibraryLinksWhatItLinks(t *testing.T) {
+	d := run(t, "cmake", "cmake-interface")
+	want := map[string]model.Via{"cmake:cli -> cmake:p1_core": "link", "cmake:tool2 -> cmake:p1_core": "link", "cmake:tool3 -> cmake:p1_core": "link"}
+	if got := relations(d); !maps.Equal(got, want) {
+		t.Errorf("relations %v, want %v; tool2 links p1_core through iface, tool3 through outer and iface", got, want)
+	}
+}
+
+
 func TestACodeModelOlderThanCMake331LinksEveryDependency(t *testing.T) {
 	tg := cmakeTarget{Dependencies: []cmakeTargetRef{{"core"}, {"gen"}}, LinkLibraries: []cmakeTargetRef{{"core"}}}
 	var cm cmakeCodemodel
