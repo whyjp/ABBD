@@ -170,12 +170,13 @@ var ident = regexp.MustCompile(`[A-Za-z_]\w*`)
 
 // common are names a language or its standard library uses everywhere,
 // which a module may declare again but which say nothing of it: a count of
-// them across the repository counts every use of the library's own.
+// them across the repository counts every use of the library's own. Names a
+// module often declares as its own, such as Writer or Path, stay out.
 var common = func() map[string]bool {
 	m := map[string]bool{}
-	for _, n := range strings.Fields(`Result Error Err Value Option String Config Builder Context Handle State class Item
-		Debug Display Clone Default Copy Drop Send Sync Into From Hash Iterator Vec Box Map List Set
-		File Path Reader Writer Buffer Stream Options Args Self None Some
+	for _, n := range strings.Fields(`Result Error Err Value Option String class
+		Debug Display Clone Default Copy Drop Send Sync Into From Vec Box
+		File Self None Some
 		try_from as_ref as_str is_empty to_string into_iter from_str as_bytes into_bytes as_slice to_vec to_owned
 		from_utf8 as_mut into_inner with_capacity is_some is_none unwrap_or as_path to_str as_ptr from_bytes to_bytes
 		get_mut iter_mut toString valueOf hashCode`) {

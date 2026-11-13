@@ -53,7 +53,7 @@ func TestAGenericNameIsNoKeyUnit(t *testing.T) {
 		}
 	}
 	for line, want := range map[string]string{"pub struct HiArgs {": "HiArgs", "typedef struct lua_State {": "lua_State", "class SearchWorker:": "SearchWorker",
-		"pub struct Event {": "Event", "class Node:": "Node"} {
+		"pub struct Event {": "Event", "class Node:": "Node", "type Writer string": "Writer", "type Path []string": "Path", "pub struct Reader {": "Reader"} {
 		if got := declaration(line); got != want {
 			t.Errorf("%q declares %q, want %q", line, got, want)
 		}
