@@ -130,9 +130,9 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		from, to string
 		kind     model.RelationKind
 	}
-	extracted := map[edge]model.Via{}
+	extracted := map[edge]extract.Relation{}
 	for _, r := range out.Relations {
-		extracted[edge{r.From, r.To, r.Kind}] = r.Via
+		extracted[edge{r.From, r.To, r.Kind}] = r
 	}
 	for _, r := range doc.Relations {
 		fi, okf := resolve(r.From)
@@ -151,18 +151,34 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s: %w", r.From, r.Kind, r.To, err)
 		}
 		e := edge{out.Units[fi].Key, out.Units[ti].Key, r.Kind}
-		via, read := extracted[e]
-		if !read {
+		got, read := extracted[e]
+		switch {
+		case !read:
 			if len(r.Evidence) == 0 {
 				return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
 			}
-			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence})
+			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence, When: r.When})
+		case r.When == "" || r.When == got.When:
+		case got.When != "" && (!model.Scope(got.When) || model.Scope(r.When)):
+			// Two link scopes conflict as two conditions do: one link has one.
+			what := map[bool]string{false: "condition", true: "scope"}[model.Scope(r.When) && model.Scope(got.When)]
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement relation %s -%s-> %s gives %s %q, the script reads %q; the script's shows", r.From, r.Kind, r.To, what, r.When, got.When))
+		default:
+			// The script reads the edge but not its condition, as with a
+			// CMake if() around a link, or only its link scope. The
+			// supplement's claim on the edge stays below the script's and
+			// gives it the condition; a sync rebuilds only the script's
+			// claim, so the condition stays.
+			if len(r.Evidence) == 0 {
+				return base, f, fmt.Errorf("supplement relation %s -%s-> %s gives condition %q without evidence; cite the line the condition is written on", r.From, r.Kind, r.To, r.When)
+			}
+			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence, When: r.When})
 		}
 		// A phrase only names what crosses the edge, so on an edge the script
-		// reads it is all the supplement adds.
+		// reads a phrase and a condition are all the supplement adds.
 		for _, p := range doc.Phrases {
 			if p.From == r.From && p.To == r.To && p.Kind == r.Kind {
-				if err := model.ValidatePhrase(p.Text, via); err != nil {
+				if err := model.ValidatePhrase(p.Text, got.Via); err != nil {
 					return base, f, fmt.Errorf("supplement relation %s -%s-> %s, on the edge the script reads: %w", r.From, r.Kind, r.To, err)
 				}
 				out.Phrases = append(out.Phrases, extract.Phrase{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Text: p.Text, Evidence: p.Evidence})
