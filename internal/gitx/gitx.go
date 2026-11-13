@@ -36,13 +36,40 @@ func Head(dir string) string {
 	return strings.TrimSpace(out)
 }
 
-// Files lists the files under paths at rev, relative to dir.
-func Files(dir, rev string, paths ...string) ([]string, error) {
-	out, err := run(dir, nil, append([]string{"ls-tree", "-r", "--name-only", rev, "--"}, paths...)...)
+// FilesAt returns the files under paths as they were at rev, by path
+// relative to dir, those keep refuses aside. It reads them all in one
+// pass, so a store of hundreds of files costs two git calls, not hundreds.
+func FilesAt(dir, rev string, keep func(path string) bool, paths ...string) (map[string][]byte, error) {
+	list, err := run(dir, nil, append([]string{"ls-tree", "-r", "-z", rev, "--"}, paths...)...)
 	if err != nil {
 		return nil, fmt.Errorf("git ls-tree %s: %w", rev, err)
 	}
-	return strings.Fields(out), nil
+	var names, oids []string
+	for _, e := range strings.Split(list, "\x00") {
+		meta, name, ok := strings.Cut(e, "\t")
+		if f := strings.Fields(meta); ok && len(f) == 3 && f[1] == "blob" && keep(name) {
+			names, oids = append(names, name), append(oids, f[2])
+		}
+	}
+	files := map[string][]byte{}
+	if len(oids) == 0 {
+		return files, nil
+	}
+	out, err := runInput(dir, nil, strings.Join(oids, "\n")+"\n", "cat-file", "--batch")
+	if err != nil {
+		return nil, fmt.Errorf("git cat-file %s: %w", rev, err)
+	}
+	for _, name := range names {
+		head, rest, _ := strings.Cut(out, "\n")
+		var oid, kind string
+		var size int
+		if _, err := fmt.Sscanf(head, "%s %s %d", &oid, &kind, &size); err != nil || size+1 > len(rest) {
+			return nil, fmt.Errorf("git cat-file %s: %s: unreadable %q", rev, name, head)
+		}
+		files[name] = []byte(rest[:size])
+		out = rest[size+1:]
+	}
+	return files, nil
 }
 
 // WorkingFiles lists the files of the working tree, tracked or not but not
@@ -59,15 +86,6 @@ func WorkingFiles(dir string) []string {
 		}
 	}
 	return files
-}
-
-// Show returns a file as it was at rev; path is relative to dir.
-func Show(dir, rev, path string) ([]byte, error) {
-	out, err := run(dir, nil, "show", rev+":./"+filepath.ToSlash(path))
-	if err != nil {
-		return nil, fmt.Errorf("git show %s:%s: %w", rev, path, err)
-	}
-	return []byte(out), nil
 }
 
 // MergeBase returns where HEAD left the default branch, trying origin's HEAD,

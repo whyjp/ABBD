@@ -50,7 +50,7 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 // The English key stays the CSS class and the word the CLI prints.
 var labels = map[string]string{
 	"stated": "사람", "inferred": "판독", "extracted": "추출",
-	"MOD": "모듈", "IF": "인터페이스", "EVT": "이벤트", "DATA": "데이터", "CFG": "설정", "FEAT": "기능",
+	"MOD": "모듈", "IF": "인터페이스", "EVT": "이벤트", "DATA": "데이터", "CFG": "설정", "FEAT": "기능", "EXEC": "실행",
 }
 
 // tips say what each origin word means; the page shows them on hover.
@@ -67,8 +67,10 @@ const (
 
 // Graph is graph.json: the blueprint's data, for tools that do not read the
 // page. It holds no value of the sync that rendered it, which the state
-// records, and no drawing, which the pages hold, so a change that moves
-// boxes or lines rewrites the pages that draw them and not this file.
+// records, and of the drawing, which the pages hold, only each box's Rank:
+// the order a reader reads it in. A change that moves boxes or lines
+// rewrites the pages that draw them, and this file only when a box changes
+// rows.
 type Graph struct {
 	Units []UnitRow `json:"units"`
 	Edges []Line    `json:"edges"`

@@ -1,6 +1,8 @@
 # The ABBD reader
 
-ABBD reads code with this reader. Both skills follow it for every reading step: a module's text, a slot note, a flow, a coupling, and setup's slices. It needs nothing but the abbd CLI and the agent's own tools.
+ABBD reads code with this reader. Both skills follow it for every reading step: a module's text, a slot note, a flow, a coupling, and setup's slices. It needs nothing but the abbd CLI and the agent's own tools. Where it spawns a subagent, a host without subagents runs that step as a separate pass of its own.
+
+Write everything you store in the language the first line of the `## Read first` of `abbd brief <MOD-ID>` names, keeping identifiers, paths and quotes verbatim.
 
 pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36/skills/how/SKILL.md` exists (check with Glob; never assume), you may use pstack `how` to explore a module this reader calls complex, and pstack `swarm` to fan out setup's slices. Another pstack version counts as absent; say so in one line. Whichever engine explored, what you store passes the contract below, so rewrite how's output to it. Name who read when you store: `--reader "abbd reader"`, or `--reader "pstack how 0.15.36"` when how explored.
 
@@ -26,6 +28,12 @@ A universal or exclusive claim is the easiest one to get wrong. Before you keep 
 
 A role is a claim too. Before you write that a function loads, starts, frees or dispatches something, open its body: an empty or stub function, or one that only forwards, does not do it, so name the one that does. Before you write that a part goes where (a combinator before sinks, a dock a plugin adds), when something happens (while building, at startup, once ready), or that a function writes rather than only reads, find the line that shows it.
 
+## Before you store a module's text: have a fresh reader falsify the draft
+
+You cannot see your own wrong claims. Once a module's draft text is complete, and before you delete the brief's `Read first` section, spawn one fresh `Explore` subagent, tell it not to edit files, and give it only the draft text, the module ID and the brief's `Read first` file list. Its brief: "For each sentence of this text, find code that contradicts it (wrong) or shows it overstated (true only in the main case, or wrong about the place, the time or the platform). Return each finding as the sentence, the `file:line` and the quoted line. Return nothing else, and do not propose new content."
+
+Then open every cited line yourself. When the line bears the finding out, narrow the sentence to what holds or drop it. When it does not, keep the sentence. Store only after every finding is settled. With no subagent available, run this check yourself as a separate pass: reread only the draft and the listed files, as if someone else wrote it, and say in your reply that no fresh reader checked it.
+
 ## What you store
 
 **The module's text**, with `abbd understand <MOD-ID> <FILE> --reader "<WHO>"`:
@@ -37,9 +45,9 @@ A role is a claim too. Before you write that a function loads, starts, frees or 
 - Inline marks are `code` spans and `**bold**` only. No links, images, HTML or mermaid. A fence holds code only.
 - `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters, each phrase that reads as history, each inside unit the text never names (`unmentioned:`), and each path it names that is code of another unit (`names:`). Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay. Name each unmentioned unit, or say in one line why a key unit stays out. Name another unit's file by that unit instead.
 
-**A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill.
+**A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill. A `posts_to` quotes the producer and the consumer, so refreshing one with `abbd record evidence <FROM>.posts_to.<TO>` takes both `--evidence` items again.
 
-No import shows a run-time binding, so record each one you found as a coupling with its quote: `--via load` for a library or plugin loaded by name, `--via spawn` for a process started, `--via config` for a backend picked by a name in settings, `--via trait` or `--via callback` for a factory or handler table. A registry that components add themselves to is a contract: give it a unit in the supplement with evidence, have each member provide it, and have the module that reads the registry consume it.
+No import shows a run-time binding, so record each one you found as a coupling with its quote: `--via load` for a library or plugin loaded by name, `--via spawn` for a process started, `--via config` for a backend picked by a name in settings, `--via trait` or `--via callback` for a factory or handler table. A registry that components add themselves to is a contract: give it a unit in the supplement with evidence, have each member provide it, and have the module that reads the registry consume it. A plug-point contract, such as a callback table, a trait or a weak symbol the host calls through, goes the same way: the modules that implement it or register an implementation `provides` it, and the host that calls through it `consumes` it. Registering an implementation is providing, not consuming.
 
 **Order** (what one command does, a pipeline's stages): a flow, `abbd flow <KEY> <FILE>`.
 

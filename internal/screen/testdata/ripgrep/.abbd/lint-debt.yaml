@@ -5,6 +5,7 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
+    against_axis: 2
     detours: 0
     excess_turns: 28
     overflow: 0
@@ -14,6 +15,8 @@ ceilings:
 pages:
     overview:
         abreast: 0
+        against_axis: 0
+        against_axis_ink: 0
         colour_switches: 2
         combs: 0
         counts: 2

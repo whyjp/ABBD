@@ -10,8 +10,8 @@ import (
 // Hop is one link of a path. Forward says the path walks it from From to To;
 // otherwise it walks it backwards, from To to From.
 //
-// Shares is set on a hop that walks back along a depends_on or consumes link
-// into the unit the previous hop used as well. The units on either side of
+// Shares is set on a hop that walks back along a depends_on, consumes or
+// runs_on link into the unit the previous hop used as well. The units on either side of
 // that unit only use the same thing; neither relates to the other. Provider
 // is a unit that provides Shares, when one does.
 type Hop struct {
@@ -20,13 +20,15 @@ type Hop struct {
 	Shares, Provider model.ID
 }
 
-func uses(k model.RelationKind) bool { return k == model.DependsOn || k == model.Consumes }
+// uses says a link of kind k, walked forward, uses the unit at its end. Two
+// units that run on one execution context share it as two consumers share a
+// contract. A posts_to is the hand-off to whatever runs there, so it is no use.
+func uses(k model.RelationKind) bool { return k.Uses() || k == model.RunsOn }
 
 // cost orders walks: fewest joints where two users of one unit meet, then
 // fewest hops, then fewest hops through the nesting, so a relation someone
 // recorded wins a tie, then the strongest weakest link, kept negated so
 // smaller is better throughout.
-// better throughout.
 type cost struct{ joints, hops, nests, weak int }
 
 func (c cost) less(d cost) bool {
@@ -34,7 +36,7 @@ func (c cost) less(d cost) bool {
 }
 
 // state is where a walk stands and whether it got there by using that unit,
-// along a depends_on or consumes link walked forward.
+// along a link walked forward that uses it.
 type state struct {
 	at   model.ID
 	used bool
