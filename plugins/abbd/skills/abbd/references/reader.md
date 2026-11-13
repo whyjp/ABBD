@@ -1,6 +1,6 @@
 # The ABBD reader
 
-ABBD reads code with this reader. Both skills follow it for every reading step: a module's text, a slot note, a flow, a coupling, and setup's slices. It needs nothing but the abbd CLI and the agent's own tools.
+ABBD reads code with this reader. Both skills follow it for every reading step: a module's text, a slot note, a flow, a coupling, and setup's slices. It needs nothing but the abbd CLI and the agent's own tools. Where it spawns a subagent, a host without subagents runs that step as a separate pass of its own.
 
 Write everything you store in the language the first line of the `## Read first` of `abbd brief <MOD-ID>` names, keeping identifiers, paths and quotes verbatim.
 
@@ -27,6 +27,12 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
 A universal or exclusive claim is the easiest one to get wrong. Before you keep a sentence that says "never", "always", "only", "each", "every", "all", "no", "none" or "cannot", search the module for a case that breaks it, with grep for the names involved and a read of each hit. Keep the sentence only when no counterexample turns up. When one does, narrow the claim to what holds, such as "on the main thread" or "except when", or drop it. A claim you could not check is worded as what you read, not as a law.
 
 A role is a claim too. Before you write that a function loads, starts, frees or dispatches something, open its body: an empty or stub function, or one that only forwards, does not do it, so name the one that does. Before you write that a part goes where (a combinator before sinks, a dock a plugin adds), when something happens (while building, at startup, once ready), or that a function writes rather than only reads, find the line that shows it.
+
+## Before you store a module's text: have a fresh reader falsify the draft
+
+You cannot see your own wrong claims. Once a module's draft text is complete, and before you delete the brief's `Read first` section, spawn one fresh `Explore` subagent, tell it not to edit files, and give it only the draft text, the module ID and the brief's `Read first` file list. Its brief: "For each sentence of this text, find code that contradicts it (wrong) or shows it overstated (true only in the main case, or wrong about the place, the time or the platform). Return each finding as the sentence, the `file:line` and the quoted line. Return nothing else, and do not propose new content."
+
+Then open every cited line yourself. When the line bears the finding out, narrow the sentence to what holds or drop it. When it does not, keep the sentence. Store only after every finding is settled. With no subagent available, run this check yourself as a separate pass: reread only the draft and the listed files, as if someone else wrote it, and say in your reply that no fresh reader checked it.
 
 ## What you store
 
