@@ -152,7 +152,6 @@ prose:
         FEAT-0026 text: 6b724b95
         IF-0001 note entries.base: 87a82831
         IF-0001 note entries.check: d07c367f
-        IF-0001 note entries.json: 1255aeb2
         IF-0001 purpose: 0e1812a7
         IF-0001 responsibility: 76dff335
         IF-0002 purpose: c4671126
@@ -278,7 +277,6 @@ prose:
         MOD-0021 responsibility: 27ecc395
         MOD-0022 purpose: 3ff3d9b3
         MOD-0022 responsibility: 4c76524f
-        MOD-0022 text: b5afe7d7
         MOD-0023 purpose: 69e6b2ca
         MOD-0023 responsibility: d365368b
         MOD-0024 purpose: 952b4c35
