@@ -31,6 +31,15 @@ abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [--root DIR]
                                      (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
                                      relative to the root, "." when left out; register it as
                                      abbd setup -- abbd extract cargo, or extend its output
+abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
+                                     print the extraction that EXTRACT-ARGV prints, or stdin,
+                                     with the code-level relations a bundled relater reads
+                                     between its units: go (go.mod; go/types, calls resolved
+                                     with VTA, tests left out, GOOS=linux; files only other
+                                     platforms or cgo build are skipped, counted on stderr); it replaces the
+                                     depends_on between units whose code it read, and adds a
+                                     provides or consumes only where the extraction has none;
+                                     register it as abbd setup -- abbd relate go -- EXTRACT-ARGV
 abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
                                      which tells any assistant to ask the blueprint first
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
@@ -368,6 +377,7 @@ var commands = map[string]command{
 	"overview":        {flags: []string{"root"}, pos: []int{0, 1}, writes: true, run: func(e env, pos []string) error { return e.overview(pos) }},
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"extract":         {flags: []string{"root"}, pos: []int{1, 2}, run: func(e env, pos []string) error { return e.extractBundled(pos) }},
+	"relate":          {flags: []string{"root"}, pos: []int{1, 2}, dashArgv: true, run: func(e env, pos []string) error { return e.relateExtraction(pos) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"brief":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.brief(pos[0]) }},
