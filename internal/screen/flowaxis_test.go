@@ -3,6 +3,7 @@ package screen
 import (
 	"fmt"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -300,5 +301,18 @@ func TestAStageBandKeepsItsStageNumber(t *testing.T) {
 	}
 	if !slices.Contains(got, "1 · read") || !slices.Contains(got, "3 · write") {
 		t.Errorf("bands %q, want 1 · read and 3 · write", got)
+	}
+}
+
+// The key under a drawing whose lead follows the primary stack names the
+// stack, never a stored flow.
+func TestTheKeyNamesThePrimaryStack(t *testing.T) {
+	files, err := Files(Build(Input{Units: pipeline(), Figures: pipelineStages()}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	page := string(files["index.html"])
+	if !strings.Contains(page, "주 흐름: stack pipeline의 단계 순서") || strings.Contains(page, "저장된 흐름 pipeline") {
+		t.Errorf("the overview's key must name stack pipeline as the primary flow")
 	}
 }

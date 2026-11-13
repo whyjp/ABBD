@@ -31,8 +31,11 @@ import (
 // from, and Hue that box's colour, which the lead is drawn in.
 type Lead struct {
 	Key, Title, Entry, Hue string
-	Hops                   []Hop
-	Stay                   *Stay `json:",omitempty"`
+	// Primary says the lead follows the stack marked the primary flow, its
+	// stages, not a stored flow's steps.
+	Primary bool `json:",omitempty"`
+	Hops    []Hop
+	Stay    *Stay `json:",omitempty"`
 }
 
 // Stay numbers the steps a stored flow runs on one box of the overview
@@ -282,6 +285,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	var hops []use
 	var key, title string
 	var stay *Stay
+	primary := false
 	// A view that lays the primary flow out numbers its stages, whatever
 	// stored flow would run further on it.
 	if d.axis.flow != nil && len(flows) > 0 && flows[0].primary && len(d.followed(t, flows[0], uses)) >= leadMin {
@@ -294,6 +298,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 				hops, key, title, best = hs, f.key, f.question, k
 			}
 		}
+		primary = flows[best].primary
 		if whole && len(hops) < leadMin {
 			stay = d.stayed(t, flows[best], hops)
 		}
@@ -312,7 +317,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	}
 	// The primary flow starts at its first stage the view shows, though
 	// no numbered hop leaves it.
-	if len(hops) > 0 && len(flows) > 0 && flows[0].primary && key == flows[0].key {
+	if len(hops) > 0 && primary {
 		box := d.shown(t)
 		for _, u := range flows[0].units {
 			if b := box(u); b != "" {
@@ -321,7 +326,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 			}
 		}
 	}
-	l := &Lead{Key: key, Title: title, Entry: entry, Stay: stay}
+	l := &Lead{Key: key, Title: title, Entry: entry, Primary: primary, Stay: stay}
 	for _, b := range d.Boxes {
 		if b.ID == l.Entry {
 			l.Hue = b.Hue
