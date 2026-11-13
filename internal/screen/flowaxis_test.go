@@ -458,3 +458,27 @@ func TestAnInsideKeepsItsSpineToTheStages(t *testing.T) {
 	}
 	t.Fatal("no inside of MOD-0001")
 }
+
+// A later stage that uses an earlier one runs back by the order the stages
+// set, which O4 judges: rule 13 leaves such lines out of its count.
+func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
+	units := []model.Unit{called("MOD-0001", "config")}
+	var parts []store.Part[model.Layer]
+	parts = append(parts, band("config", "MOD-0001"))
+	for i := 2; i <= 5; i++ {
+		id := model.ID(fmt.Sprintf("MOD-%04d", i))
+		rels := deps("MOD-0001")
+		if i < 5 {
+			rels = append(rels, deps(model.ID(fmt.Sprintf("MOD-%04d", i+1)))...)
+		}
+		units = append(units, called(id, fmt.Sprint("stage ", i), rels...))
+		parts = append(parts, band(fmt.Sprint("stage ", i), id))
+	}
+	vs, err := Lint(Build(Input{Units: units, Figures: primaryStack(parts...)}), "overview")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := Sum(vs).Back; n != 0 {
+		t.Errorf("%d lines counted back, want none", n)
+	}
+}
