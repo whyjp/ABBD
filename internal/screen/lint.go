@@ -426,7 +426,17 @@ type look struct {
 }
 
 func newLook(v view, s sheet) *look {
-	l := &look{v: v, s: s, trace: trace(s, v.d.Relations), metrics: measure(s), at: map[string]int{}, row: map[int]int{}, stage: map[int]int{}}
+	var turns func(int) bool
+	if f := v.d.axis.flow; f != nil {
+		turns = func(k int) bool {
+			if k >= len(v.d.Routes) || len(v.d.Routes[k].ends) != 2 {
+				return false
+			}
+			a, b := f.stage[v.d.Routes[k].ends[0]], f.stage[v.d.Routes[k].ends[1]]
+			return b > 0 && a > b
+		}
+	}
+	l := &look{v: v, s: s, trace: trace(s, v.d.Relations), metrics: measureBy(s, turns), at: map[string]int{}, row: map[int]int{}, stage: map[int]int{}}
 	for i, sh := range s.shapes {
 		if _, ok := l.at[sh.id]; !ok {
 			l.at[sh.id] = i

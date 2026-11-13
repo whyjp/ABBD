@@ -46,6 +46,9 @@ type layered struct {
 	// with how many lines the join stands for.
 	up, down map[string]map[string]int
 	chains   []chain
+	// fixed are the rows order keeps as they stand, nil for none: rows
+	// whose order a primary flow's stages set.
+	fixed []bool
 }
 
 func dummy(c, r int) string { return fmt.Sprintf("~%d@%d", c, r) }
@@ -242,6 +245,7 @@ var overviewTactics = []tactic{{}, {fold: true}, {fold: true, median: true}, {en
 // by where each item's neighbours stand, down and up, each followed by
 // swapping neighbours while that crosses less, keeping the best order seen.
 func (g *layered) order(t tactic) {
+	pinned := func(r int) bool { return r < len(g.fixed) && g.fixed[r] }
 	// The sweeps work on item numbers, not names: they look up every
 	// item's neighbours many times over.
 	var ids []string
@@ -316,6 +320,9 @@ func (g *layered) order(t tactic) {
 		return g.chains[c].lower == frameBottomNode
 	}
 	sweep := func(r int, side, other [][]link, downward bool) {
+		if pinned(r) {
+			return
+		}
 		for _, v := range rows[r] {
 			sum, k := 0.0, 0
 			// An item joined only the other way, as a chain from the
@@ -368,7 +375,10 @@ func (g *layered) order(t tactic) {
 	transpose := func() {
 		for again, rounds := true, 0; again && rounds < 8; rounds++ {
 			again = false
-			for _, row := range rows {
+			for r, row := range rows {
+				if pinned(r) {
+					continue
+				}
 				for i := 0; i+1 < len(row); i++ {
 					u, v := row[i], row[i+1]
 					if pair(v, u) < pair(u, v) {
@@ -388,8 +398,10 @@ func (g *layered) order(t tactic) {
 		return out
 	}
 	if t.reversed {
-		for _, row := range rows {
-			slices.Reverse(row)
+		for r, row := range rows {
+			if !pinned(r) {
+				slices.Reverse(row)
+			}
 		}
 	}
 	index()
@@ -418,6 +430,9 @@ func (g *layered) order(t tactic) {
 	// reaches; the lanes from the bottom likewise, top down.
 	if t.follow {
 		follow := func(r int, top bool) {
+			if pinned(r) {
+				return
+			}
 			side := down
 			if !top {
 				side = up
@@ -469,6 +484,12 @@ func (g *layered) order(t tactic) {
 	// that pass its row: left in front of them, it would push them aside.
 	alone := func(v int) bool { return len(up[v])+len(down[v]) == 0 }
 	for r, row := range best {
+		if pinned(r) {
+			for i, v := range row {
+				g.rows[r][i] = ids[v]
+			}
+			continue
+		}
 		slices.SortStableFunc(row, func(a, b int) int {
 			switch {
 			case alone(a) == alone(b):
