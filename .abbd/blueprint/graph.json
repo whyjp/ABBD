@@ -7228,7 +7228,7 @@
                 "Code": true
               },
               {
-                "Text": ")로 overview의 주 흐름 단계, 구역, 고른 선을 확인해 저장하고, status는 STALE 파트를, evidence는 그 인용을, explain은 유닛이 놓인 단계와 구역을 프로젝트 언어로 찍는다.",
+                "Text": ")로 overview의 주 흐름 단계, 구역, 고른 선을 확인해 저장하고, status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 단계와 구역을 프로젝트 언어로 찍는다.",
                 "Code": false
               }
             ]
@@ -19378,7 +19378,15 @@
                 "Code": true
               },
               {
-                "Text": "로 unit을 한 곳에만 둔다. ",
+                "Text": "로 unit을 한 곳에만 두며, 이름은 phrase 규칙을 따르고 겹치지 않는다. 단계와 구역은 overview가 상자로 그리는 unit만 이름 짓는다. ",
+                "Code": false
+              },
+              {
+                "Text": "state.box",
+                "Code": true
+              },
+              {
+                "Text": "는 present parent가 없는 가장 바깥 unit, 곧 overview의 상자를 찾는다. ",
                 "Code": false
               },
               {
@@ -19402,7 +19410,7 @@
                 "Code": true
               },
               {
-                "Text": "은 reader가 고른 선으로, ",
+                "Text": "은 reader가 고른 선으로, 두 끝이 한 상자 안에 있으면 gap을 내고, ",
                 "Code": false
               },
               {
