@@ -1317,8 +1317,8 @@
       "kind": "MOD",
       "name": "unit explanation",
       "parent": "mod-topology",
-      "purpose": "so one unit can be read at a glance with its neighbours",
-      "responsibility": "Gathers one present unit, the units inside it, its drawn links out and in (counting an inside unit's link across the boundary as the unit's own), and the reader couplings touching it or anything inside it.",
+      "purpose": "unit 하나를 이웃과 함께 한눈에 읽도록",
+      "responsibility": "present unit 하나와 그 안의 unit, 그려지는 바깥과 안쪽 link(경계를 넘는 안쪽 unit의 link는 그 unit 자신의 것으로 센다), 그리고 그것이나 그 안의 무엇에 닿는 reader 결합을 모은다.",
       "evidence": [
         {
           "path": "internal/topology/query.go",
