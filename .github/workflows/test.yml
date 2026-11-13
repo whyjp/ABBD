@@ -38,6 +38,10 @@ jobs:
         run: |
           curl -fsSL https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-linux-x86_64.tar.gz | tar -xz -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/cmake-4.2.1-linux-x86_64/bin" >> "$GITHUB_PATH"
+      # The rust relater needs rust-analyzer and cargo; its tests skip without them.
+      - name: Install rust-analyzer
+        if: runner.os == 'Linux'
+        run: rustup component add rust-analyzer rust-src
       - name: go test
         run: go test -timeout 20m ./...
       # The log stays outside the checkout: sync fingerprints every file in it.
@@ -47,6 +51,13 @@ jobs:
           cmake --version
           log="$RUNNER_TEMP/frontend.log"
           go test -count=1 -v ./internal/extract/frontend > "$log" || { cat "$log"; exit 1; }
+          if grep -- '--- SKIP' "$log"; then exit 1; fi
+      - name: The relater tests ran, none skipped
+        if: runner.os == 'Linux'
+        run: |
+          rust-analyzer --version
+          log="$RUNNER_TEMP/relate.log"
+          go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
           if grep -- '--- SKIP' "$log"; then exit 1; fi
       - name: Digest the synced .abbd output
         if: success() || failure()
