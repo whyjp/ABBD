@@ -35,6 +35,10 @@ func TestMain(m *testing.M) {
 			b = bytes.ReplaceAll(b, []byte("{{RUN}}"), n)
 		}
 		b = bytes.ReplaceAll(b, []byte("{{PYTHONHASHSEED}}"), []byte(os.Getenv("PYTHONHASHSEED")))
+		// {{ABBD_BIN}} says whether the script was told the abbd that runs it.
+		if self, _ := os.Executable(); os.Getenv("ABBD_BIN") == self {
+			b = bytes.ReplaceAll(b, []byte("{{ABBD_BIN}}"), []byte("running abbd"))
+		}
 		os.Stdout.Write(b)
 		os.Exit(0)
 	}
