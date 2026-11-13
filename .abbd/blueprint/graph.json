@@ -5770,7 +5770,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6234,7 +6233,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6842,7 +6841,7 @@
                 "Code": true
               },
               {
-                "Text": ". Explain also names a module's set of build artifacts and who said it, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
+                "Text": ". Explain also names a module's set of build artifacts and who said it, and each coupling's condition, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
@@ -15556,7 +15555,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15679,7 +15677,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -19073,6 +19071,36 @@
               },
               {
                 "Text": " joins the vias for an artifact that links another or compiles a module in.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "When",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "model.go",
+                "Code": true
+              },
+              {
+                "Text": "): the condition a relation holds under, empty when it always holds, checked by ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateWhen",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
