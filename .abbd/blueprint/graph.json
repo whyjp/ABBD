@@ -225,6 +225,7 @@
         "internal/topology/diff.go Diff"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"Signatures []Signature `json:\\\"contract_signatures_changed\\\"`\""
       ]
@@ -261,6 +262,7 @@
         "internal/topology/diff.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
@@ -297,6 +299,7 @@
         "internal/topology/query.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
       ]
@@ -351,6 +354,7 @@
         "internal/group/group.go"
       ],
       "Parent": "MOD-0054",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"return path.Dir(u.Anchors[0].Path)\""
       ]
@@ -423,6 +427,7 @@
         "internal/topology/diff.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
       ]
@@ -441,6 +446,7 @@
         "internal/group/group.go"
       ],
       "Parent": "MOD-0054",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
@@ -459,6 +465,7 @@
         "internal/topology/impact.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
@@ -495,6 +502,7 @@
         "plugins/abbd/skills/abbd",
         "plugins/abbd/skills/abbd/SKILL.md abbd"
       ],
+      "Zone": "abbd 스킬",
       "Rank": {
         "Basis": "stack",
         "N": 3,
@@ -521,6 +529,7 @@
         "plugins/abbd/skills/abbd-setup",
         "plugins/abbd/skills/abbd-setup/SKILL.md abbd-setup"
       ],
+      "Zone": "abbd 스킬",
       "Rank": {
         "Basis": "stack",
         "N": 1,
@@ -542,6 +551,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by whether its evidence still holds\""
       ]
@@ -560,6 +570,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Open `.abbd/blueprint/index.html` for the modules the request touches\"",
         "plugins/abbd/skills/abbd/SKILL.md \"Ask the topology before grepping the code.\""
@@ -579,6 +590,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Record each coupling or unit a reader found that the state lacks\""
       ]
@@ -591,12 +603,14 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Records a purpose, responsibility or coupling the human states, with a source reference.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"When the human states a purpose, a responsibility or a coupling in the conversation\""
       ]
@@ -616,6 +630,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Put the topology difference in the reply and in the PR description\""
       ]
@@ -635,6 +650,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"for a CI job that labels the PR\""
       ]
@@ -654,6 +670,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"List unit candidates from the layout, entry points, manifests and schemas.\""
       ]
@@ -673,6 +690,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
       ]
@@ -692,6 +710,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
       ]
@@ -711,6 +730,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`not deterministic`: the script printed different output across three runs\""
       ]
@@ -730,6 +750,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the readers described the code\""
       ]
@@ -749,6 +770,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"## Extraction format\"",
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes`, `provides`, `runs_on`\""
@@ -810,6 +832,7 @@
         "plugins/abbd/skills/abbd/references/reader.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"ABBD reads code with this reader.\""
       ]
@@ -829,6 +852,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
       ]
@@ -841,14 +865,16 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 7), and only when a human is in the conversation.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 8), and only when a human is in the conversation.\""
       ]
     },
     {
@@ -1370,6 +1396,7 @@
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
         "cmd/abbd/overview.go",
+        "cmd/abbd/overview_draft.go",
         "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
@@ -1585,6 +1612,7 @@
         "internal/bootstrap",
         "internal/bootstrap/overlay.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -1610,6 +1638,7 @@
         "internal/bootstrap/overlay.go Overlay"
       ],
       "Parent": "MOD-0009",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"u.Purpose = supplemented(d.Purpose)\""
       ]
@@ -1632,6 +1661,7 @@
         "internal/bootstrap/overlay.go overlap"
       ],
       "Parent": "MOD-0009",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"its anchors match more than one %s equally\"",
         "internal/bootstrap/overlay.go \"keys[x.Key()] = true\""
@@ -1654,6 +1684,7 @@
         "internal/evidence",
         "internal/evidence/evidence.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -1678,6 +1709,7 @@
         "internal/evidence/evidence.go all"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"v.SetAbsent(model.EvidenceDead)\"",
         "internal/evidence/evidence.go \"e.Status, e.Since = model.Drifted, rev\""
@@ -1701,6 +1733,7 @@
         "internal/evidence/evidence.go Slack"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"const Slack = 3\"",
         "internal/evidence/evidence.go \"// A quote ending in a word must end where the code's word ends, so\""
@@ -1724,6 +1757,7 @@
         "internal/evidence/evidence.go load"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"// norm is the file with all whitespace removed, so formatting never kills\"",
         "internal/evidence/evidence.go \"bytes.ReplaceAll(b, []byte(\\\"\\\\r\\\\n\\\"), []byte(\\\"\\\\n\\\"))\""
@@ -1748,6 +1782,7 @@
         "internal/extract",
         "internal/extract/extract.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -1772,6 +1807,7 @@
         "internal/extract/extract.go parentCycle"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"parent %q is not the key of another module\"",
         "internal/extract/extract.go \"func parentCycle(units []Unit, key string) bool {\""
@@ -1796,6 +1832,7 @@
         "internal/extract/extract.go inferred"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
       ]
@@ -1817,6 +1854,7 @@
         "internal/extract/extract.go normalizePath"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
         "internal/extract/extract.go \"leaves the project root\""
@@ -1841,6 +1879,7 @@
         "internal/extract/extract.go parseUnits"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"dec.DisallowUnknownFields()\"",
         "internal/extract/extract.go \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
@@ -1865,6 +1904,7 @@
         "internal/gitx",
         "internal/gitx/gitx.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -1888,6 +1928,7 @@
         "internal/gitx/gitx.go MergeBase"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
@@ -1909,6 +1950,7 @@
         "internal/gitx/gitx.go Renames"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
         "internal/gitx/gitx.go \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
@@ -1933,6 +1975,7 @@
         "internal/gitx/gitx.go Snapshot"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
         "internal/gitx/gitx.go \"\\\":(exclude)\\\"+exclude\""
@@ -1957,6 +2000,7 @@
         "internal/identity",
         "internal/identity/identity.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -1981,6 +2025,7 @@
         "internal/identity/identity.go Reconcile"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"if ov \u003e= 2 || same {\"",
         "internal/identity/identity.go \"case p.identical != q.identical:\""
@@ -2005,6 +2050,7 @@
         "internal/identity/identity.go heldByHuman"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"func heldByHuman(units []model.Unit) map[model.ID]bool {\""
       ]
@@ -2029,6 +2075,7 @@
         "internal/identity/identity.go setRelations"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
         "internal/identity/identity.go \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
@@ -2537,6 +2584,7 @@
         "internal/topology/path.go",
         "internal/topology/query.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -2560,6 +2608,7 @@
         "internal/topology/diff.go Boundary"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func (d Diff) Boundary() bool {\""
       ]
@@ -2584,6 +2633,7 @@
         "internal/topology/diff.go between"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func Compare(base, now []model.Unit) Diff {\"",
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
@@ -2606,6 +2656,7 @@
         "internal/topology/impact.go ImpactOf"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
       ]
@@ -2627,6 +2678,7 @@
         "internal/topology/impact.go Links"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func Links(units []model.Unit) []Link {\""
       ]
@@ -2648,6 +2700,7 @@
         "internal/topology/query.go Explain"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"func Explain(units []model.Unit, id model.ID) Explanation {\""
       ]
@@ -2670,6 +2723,7 @@
         "internal/topology/query.go strength"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {\"",
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
@@ -2686,6 +2740,7 @@
         "internal/group",
         "internal/group/group.go"
       ],
+      "Zone": "토폴로지 규칙",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -2729,6 +2784,7 @@
         "internal/narrative/language.go",
         "internal/narrative/narrative.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 6,
@@ -2746,6 +2802,7 @@
         "internal/owners",
         "internal/owners/owners.go"
       ],
+      "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
         "N": 5,
@@ -2765,7 +2822,8 @@
         "internal/extract/frontend/cmake.go",
         "internal/extract/frontend/frontend.go"
       ],
-      "Parent": "MOD-0017"
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     }
   ],
   "edges": [
@@ -3015,6 +3073,14 @@
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd scope\""
     },
     {
+      "From": "FEAT-0001",
+      "To": "IF-0031",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd overview\""
+    },
+    {
       "From": "FEAT-0002",
       "To": "IF-0001",
       "Kind": "consumes",
@@ -3173,6 +3239,14 @@
     },
     {
       "From": "FEAT-0002",
+      "To": "IF-0024",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd stack\""
+    },
+    {
+      "From": "FEAT-0002",
       "To": "IF-0026",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
@@ -3194,6 +3268,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd extract\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0031",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd overview\""
     },
     {
       "From": "FEAT-0003",
@@ -5289,7 +5371,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 23,
+        "Uses": 24,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5423,7 +5505,8 @@
             "lint",
             "review",
             "brief",
-            "scope"
+            "scope",
+            "overview"
           ]
         }
       ],
@@ -5683,7 +5766,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 22,
+        "Uses": 24,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5811,7 +5894,7 @@
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
           "Understanding": {
-            "Reader": "concept-orch (Claude Opus 5.5)",
+            "Reader": "pstack poteto-mode 0.15.36",
             "Stale": false,
             "Blocks": [
               {
@@ -5827,7 +5910,7 @@
                 "Kind": "p",
                 "Parts": [
                   {
-                    "Text": "The stance at the top of the /abbd-setup skill: setup asks the human one thing only, how dense the overview should be, and only when a human is in the conversation. The first state it commits is the baseline, which the human reads in the blueprint and the PR, and setup needs nothing but the abbd CLI and the reader, with pstack as an optional engine.",
+                    "Text": "/abbd-setup 스킬 맨 위의 태도다. setup은 사람에게 overview를 얼마나 촘촘히 그릴지 한 가지만 묻고, 그것도 대화에 사람이 있을 때만 묻는다. 처음 커밋하는 상태가 기준선이고, 사람은 그것을 청사진과 PR에서 읽는다. setup은 abbd CLI와 리더만 있으면 되고, pstack은 고를 수 있는 엔진이다.",
                     "Code": false
                   }
                 ]
@@ -5859,9 +5942,11 @@
             "record evidence",
             "retract",
             "flow",
+            "stack",
             "lint",
             "brief",
-            "extract"
+            "extract",
+            "overview"
           ]
         }
       ],
@@ -7446,7 +7531,23 @@
                 "Code": true
               },
               {
-                "Text": "에 저장한다. 주 흐름은 그 파일에 따로 두지 않고 주 흐름 stack을 쓴다. status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 주 흐름 단계(그 stack의 layer)와 구역을 프로젝트 언어로 찍는다.",
+                "Text": "에 저장한다. FILE 없는 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd overview",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/overview_draft.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 저장된 구역과 선 위에 YAML 주석으로 쓸 거리를 찍는다. overview가 그리는 상자와 각 상자가 서는 단계, 주 흐름의 단계, stack 층과 폴더에서 온 구역 후보, 살아 있는 relation이 잇는 상자 쌍마다의 선 후보를 강한 순으로 relation 수와 인용과 함께 찍는다. 주 흐름은 그 파일에 따로 두지 않고 주 흐름 stack을 쓴다. status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 주 흐름 단계(그 stack의 layer)와 구역을 프로젝트 언어로 찍는다. 어느 단계도 이름 짓지 않은 상자는 안의 unit을 이름 짓는 첫 단계에 서므로, explain은 그 단계와 그 unit을 찍는다.",
                 "Code": false
               }
             ]
@@ -19812,7 +19913,79 @@
                 "Code": true
               },
               {
-                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다.",
+                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다. 최상위 계약은 overview가 제공자 상자 위의 칩으로 그리므로, 그 계약을 쓰는 relation은 제공자 상자에 닿는 것으로 센다(",
+                "Code": false
+              },
+              {
+                "Text": "reaches",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "providers",
+                "Code": true
+              },
+              {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "Boxes",
+                "Code": true
+              },
+              {
+                "Text": "는 overview가 상자로 그리는 unit을 주고, ",
+                "Code": false
+              },
+              {
+                "Text": "LineCandidates",
+                "Code": true
+              },
+              {
+                "Text": "는 살아 있는 relation이 방향대로 잇는 상자 쌍을 ",
+                "Code": false
+              },
+              {
+                "Text": "Carry",
+                "Code": true
+              },
+              {
+                "Text": " 순(runs, wires, imports)으로, 같은 순위에서는 그 순위의 relation 수와 전체 수로 매겨 첫 인용과 함께 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "StandsAt",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "layer.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 어느 파트도 이름 짓지 않은 상자가 서는 첫 파트와 그 안에서 이름 지어진 unit을 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "Home",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "figure.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 unit의 anchor가 함께 놓인 가장 깊은 디렉터리다.",
                 "Code": false
               }
             ]
@@ -22054,6 +22227,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "overview",
+                "Code": true
+              },
+              {
                 "Text": ") 뒤에 돈다. 빈 저장소에서는 아무것도 그리지 않는다. 모든 파일을 쓰고 ",
                 "Code": false
               },
@@ -23107,7 +23288,7 @@
                 "Code": false
               },
               {
-                "Text": "home",
+                "Text": "model.Home",
                 "Code": true
               },
               {
@@ -30011,7 +30192,31 @@
                 "Code": true
               },
               {
-                "Text": ")로 쓰고 읽는다. 그 파일은 구역과 고른 선만 담고, 모르는 field가 있는 frontmatter는 거부한다. 주 흐름은 ",
+                "Text": ")로 쓰고 읽는다. 그 파일은 구역과 고른 선만 담고, 모르는 field가 있는 frontmatter는 거부하고, 초안에 ",
+                "Code": false
+              },
+              {
+                "Text": "flow",
+                "Code": true
+              },
+              {
+                "Text": " 키가 있으면 주 흐름은 ",
+                "Code": false
+              },
+              {
+                "Text": "primary: true",
+                "Code": true
+              },
+              {
+                "Text": "로 표시된 stack이라고 알리며 거부한다(",
+                "Code": false
+              },
+              {
+                "Text": "ParseOverviewDraft",
+                "Code": true
+              },
+              {
+                "Text": "). 주 흐름은 ",
                 "Code": false
               },
               {
@@ -35037,6 +35242,270 @@
           ]
         }
       ]
+    }
+  ],
+  "zones": [
+    {
+      "name": "abbd 스킬",
+      "units": [
+        "FEAT-0001",
+        "FEAT-0002"
+      ]
+    },
+    {
+      "name": "읽는 쪽",
+      "units": [
+        "MOD-0017",
+        "MOD-0013",
+        "MOD-0022",
+        "MOD-0056",
+        "MOD-0057"
+      ]
+    },
+    {
+      "name": "토폴로지 규칙",
+      "units": [
+        "MOD-0026",
+        "MOD-0009",
+        "MOD-0054",
+        "MOD-0047"
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0001",
+      "word": "abbd sync 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 38
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "MOD-0001",
+      "word": "abbd setup 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 29
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "FEAT-0001",
+      "word": "abbd 스킬의 리더",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0055",
+      "word": "pstack how 탐색",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0017",
+      "word": "스크립트 출력 Parse",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0009",
+      "word": "보충 doc Overlay",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0009",
+      "to": "MOD-0017",
+      "word": "extract.Result 덧입힘",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0022",
+      "word": "작업 트리 Snapshot",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0026",
+      "word": "저장본과 추출 Reconcile",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0013",
+      "word": "단위 인용 Apply",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0054",
+      "word": "단위 Fallback 배치",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0041",
+      "word": "SaveUnits 단위 파일",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "data"
+      ],
+      "relations": 15
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0034",
+      "word": "청사진 Build",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0041",
+      "word": "LoadUnits 단위 읽기",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "convention",
+        "data"
+      ],
+      "relations": 12
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0047",
+      "word": "topology.Explain 질의",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0047",
+      "word": "EntryUses 항목 사용처",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0057",
+      "word": "owners.Read 소유자",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0056",
+      "word": "narrative.Lines 줄",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
     }
   ]
 }
