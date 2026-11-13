@@ -58,6 +58,36 @@ func TestAStoredFlowLeadsInItsOrder(t *testing.T) {
 	}
 }
 
+// Of two stored flows, LeadFlow names the one the built overview draws
+// bold, whichever the state lists first.
+func TestLeadFlowIsTheFlowTheOverviewDrawsBold(t *testing.T) {
+	t.Parallel()
+	units, err := store.Open(filepath.Join("testdata", "self")).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := func(key string, ids ...model.ID) store.Flow {
+		var f store.Flow
+		f.Key, f.Known, f.Question = model.FigureKey(key), true, key+"?"
+		for _, u := range ids {
+			f.Parts = append(f.Parts, store.Part[model.Step]{Claim: model.Step{Unit: u, Does: "runs"}})
+		}
+		return f
+	}
+	short := flow("short", "MOD-0022", "MOD-0055", "MOD-0022")
+	walk := flow("walk", "MOD-0001", "MOD-0041", "MOD-0022", "MOD-0001", "MOD-0017")
+	for _, fs := range [][]store.Flow{{short, walk}, {walk, short}} {
+		in := Input{Units: units, Figures: store.Figures{Flows: fs}}
+		l := Build(in).Overview.Lead
+		if l == nil || l.Key != "walk" {
+			t.Fatalf("built lead %+v, want walk", l)
+		}
+		if got := LeadFlow(in); got != l.Key {
+			t.Errorf("LeadFlow %q, built overview leads %q", got, l.Key)
+		}
+	}
+}
+
 // A flow whose next step sits on a box no drawn line joins to the lead
 // stops there, and one hop is no lead.
 func TestAFlowStopsWhereNoLineJoinsIt(t *testing.T) {

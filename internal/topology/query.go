@@ -26,7 +26,8 @@ func Explain(units []model.Unit, id model.ID) Explanation {
 			ex.Inside = append(ex.Inside, ref(u))
 		}
 	}
-	own := owner(units, id)
+	ps := newParents(units)
+	own := func(x model.ID) bool { return ps.within(x, id) }
 	for _, l := range Links(units) {
 		switch {
 		case l.Origin == model.Inferred:

@@ -89,7 +89,7 @@ func (e env) brief(ref string) error {
 	if err != nil {
 		return err
 	}
-	list(w, "Where it sits in the primary flow: say so in the Overview", flows)
+	list(w, "Where it sits in the stored flows, the one the overview draws bold first, or, in none, what it hands off and reads: say so in the Overview", flows)
 	list(w, "Contracts and neighbours", contracts)
 	var couplings []string
 	for _, l := range ex.Inferred {

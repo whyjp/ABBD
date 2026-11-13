@@ -203,34 +203,10 @@ func Build(in Input) Model {
 	m.Decisions = decisions(in)
 	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
 	m.Parts = parts(in.Units)
-	// The overview is drawn in the plain order of its rows only. Every
-	// module's page holds a focus view seated by it, so an overview that took
-	// another order after a small change would redraw every page. It may
-	// still take another ranking, the way a person lays out a cycle, where
-	// that fits the screen or has fewer hard breaches and moves no box off
-	// what it joins (choose). The screen it fits is what the page leaves
-	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
-	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
-	var c *cut
-	if in.Project.Cut() {
-		c = o.primary(in.Primary, ls, fs)
-	}
-	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
-	room := overviewRoom(len(flows), len(stacks), len(tables))
-	href := func(id model.ID) string { return viewOf(o.tree, id) }
-	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
-		p := planOverview(in.Units, "", nil, t, ls, fs, c)
-		if p.layout.idle {
-			return Drawing{}, false
-		}
-		d := p.draw(href)
-		*read = p.read
-		return d, true
-	}, func(d Drawing, read *cost) {
-		read.judge(d)
-		read.over = pastScreen(d, room)
-	})
+	ov := drawOverview(in, ls, fs)
+	o, c, flows, stacks, tables := ov.plan, ov.cut, ov.flows, ov.stacks, ov.tables
+	m.Overview = ov.drawing
 	m.Focus = o.overviewFocus(in.Units, m.Overview, c.hides())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
@@ -310,6 +286,60 @@ func Build(in Input) Model {
 	o.linkFigures(&m)
 	rank(&m)
 	return m
+}
+
+// drawnOverview is the overview as Build draws it, before its colours and
+// lead, with the plan, cut and figure views it was drawn from.
+type drawnOverview struct {
+	plan    *overview
+	cut     *cut
+	flows   []FlowView
+	stacks  []StackView
+	tables  []TableView
+	drawing Drawing
+}
+
+// drawOverview draws the overview in the plain order of its rows only.
+// Every module's page holds a focus view seated by it, so an overview that
+// took another order after a small change would redraw every page. It may
+// still take another ranking, the way a person lays out a cycle, where that
+// fits the screen or has fewer hard breaches and moves no box off what it
+// joins (choose). The screen it fits is what the page leaves under the list
+// of questions drawn above it.
+func drawOverview(in Input, ls []layering, fs []flowWalk) drawnOverview {
+	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
+	ov := drawnOverview{plan: o, flows: o.flows(in), stacks: o.stacks(in), tables: o.tables(in)}
+	if in.Project.Cut() {
+		ov.cut = o.primary(in.Primary, ls, fs)
+	}
+	room := overviewRoom(len(ov.flows), len(ov.stacks), len(ov.tables))
+	href := func(id model.ID) string { return viewOf(o.tree, id) }
+	ov.drawing = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+		p := planOverview(in.Units, "", nil, t, ls, fs, ov.cut)
+		if p.layout.idle {
+			return Drawing{}, false
+		}
+		d := p.draw(href)
+		*read = p.read
+		return d, true
+	}, func(d Drawing, read *cost) {
+		read.judge(d)
+		read.over = pastScreen(d, room)
+	})
+	return ov
+}
+
+// LeadFlow is the key of the stored flow the overview draws bold, the one
+// way through it a reader follows first; "" where the overview draws no
+// lead or reads it from its lines.
+func LeadFlow(in Input) string {
+	fs := walks(in)
+	ov := drawOverview(in, layerings(in), fs)
+	ov.drawing.lead(ov.plan.tree, fs, true)
+	if ov.drawing.Lead == nil {
+		return ""
+	}
+	return ov.drawing.Lead.Key
 }
 
 // rank gives each unit the overview draws its Rank there, and each unit a
