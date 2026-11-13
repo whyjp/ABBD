@@ -49,7 +49,9 @@ func TestDiffNamesExecutionContextsAndWhatRunsOnThem(t *testing.T) {
 			t.Errorf("diff lacks %q:\n%s", want, strings.Join(lines, "\n"))
 		}
 	}
-	if slices.ContainsFunc(lines, func(l string) bool { return strings.Contains(l, "relation MOD-0001") || strings.Contains(l, "inferred MOD-0001") }) {
+	if slices.ContainsFunc(lines, func(l string) bool {
+		return strings.Contains(l, "relation MOD-0001") || strings.Contains(l, "inferred MOD-0001")
+	}) {
 		t.Errorf("a run-time relation reads as a relation between top-level units or as a reader's coupling:\n%s", strings.Join(lines, "\n"))
 	}
 }
