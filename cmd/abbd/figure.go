@@ -44,6 +44,10 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 		return err
 	}
 	f.Key = k
+	keptMark := had && kind.Primary && prev.Primary && !f.MarkSaid
+	if keptMark {
+		f.Primary = true
+	}
 	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
@@ -74,7 +78,10 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "stored %s %s, %d %s, %s, each %s stamped with the lines around the quotes it cites\n", kind.Noun, k, len(f.Parts), kind.Parts, f.Origin(), kind.Part)
-	if f.Primary {
+	switch {
+	case keptMark:
+		fmt.Fprintf(e.stdout, "kept the mark that makes %s %s the primary flow, since the draft leaves primary out; store it with primary: false to drop the mark\n", kind.Noun, k)
+	case f.Primary:
 		fmt.Fprintf(e.stdout, "marked %s %s the primary flow: its %s are the stages every view reads in order\n", kind.Noun, k, kind.Parts)
 	}
 	if len(kept) > 0 {
@@ -292,7 +299,7 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
 	closed := func(cols []model.Column) []model.Column {
 		return slices.DeleteFunc(slices.Clone(cols), func(c model.Column) bool { return openColumn[c.Name] })
 	}
-	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"column head", head(closed(prev.Columns)), head(closed(f.Columns))}, {"caption", prev.Caption, f.Caption}} {
+	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"primary mark", fmt.Sprint(prev.Primary), fmt.Sprint(f.Primary)}, {"column head", head(closed(prev.Columns)), head(closed(f.Columns))}, {"caption", prev.Caption, f.Caption}} {
 		if !sameWords(w.was, w.now) {
 			return nil, nil, nil, fmt.Errorf("the %s of %s %s is a human's word; keep it as abbd %s %s prints it, since only a human changes it, with --source", w.field, kind.Noun, f.Key, kind.Noun, f.Key)
 		}
@@ -385,6 +392,11 @@ func statusFigures[C model.Claim[C]](e env, units []model.Unit, figs []store.Fig
 	marked := store.Marked(figs)
 	if len(marked) > 1 {
 		lines = append(lines, fmt.Sprintf("conflict: %ss %v are each marked the primary flow, so the blueprint lays out by neither; store all but one without primary: true", kind.Noun, marked))
+	}
+	for _, f := range figs {
+		if !kind.Primary && f.Known && f.Primary {
+			lines = append(lines, fmt.Sprintf("warning: %s carries primary: true, which only a stack may carry, so abbd reads past the mark; store the %s again without it", f.File, kind.Noun))
+		}
 	}
 	fmt.Fprintf(e.stdout, "%s: %d %s(s), %d %s(s), %d STALE\n", kind.Dir, len(figs), kind.Noun, parts, kind.Part, stale)
 	dir := store.FigureDir[C]()

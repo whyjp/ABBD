@@ -26,13 +26,18 @@ func (e env) stack(key string, args []string) error {
 	if len(args) == 0 {
 		out = e.stderr
 	}
-	fmt.Fprintf(out, "breaches: %d relation(s) run up the stack, a lower layer using a higher one; abbd status lists them\n", len(model.Breaches(s.Claims(), units)))
+	if s.Primary {
+		fmt.Fprintln(out, "breaches: none counted on the primary flow, whose later stages use earlier ones as a flow runs")
+		return nil
+	}
+	fmt.Fprintf(out, "breaches: %d relation(s) run up the stack, a lower layer using a higher one; abbd status lists them\n", len(store.Breaches(s, units)))
 	return nil
 }
 
 // statusBreaches reports each stored relation by which a lower layer of a
 // stack uses a higher one. A breach is debt in the code or a layer drawn
-// wrong, and only a design call clears it, so it never fails the check.
+// wrong, and only a design call clears it, so it never fails the check. The
+// stack marked the primary flow has none (store.Breaches).
 func (e env) statusBreaches(units []model.Unit, stacks []store.Stack) {
 	name := map[model.ID]string{}
 	for _, u := range units {
@@ -47,7 +52,7 @@ func (e env) statusBreaches(units []model.Unit, stacks []store.Stack) {
 		}
 		known++
 		layers := s.Claims()
-		for _, b := range model.Breaches(layers, units) {
+		for _, b := range store.Breaches(s, units) {
 			origins[b.Origin]++
 			lines = append(lines, fmt.Sprintf("breach: stack %s: %s %s (layer %d %s) %s %s %s (layer %d %s), %s", s.Key, b.From, name[b.From], b.Lower, layers[b.Lower-1].Name, b.Kind, b.To, name[b.To], b.Upper, layers[b.Upper-1].Name, b.Origin))
 		}

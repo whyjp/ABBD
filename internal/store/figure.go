@@ -31,7 +31,11 @@ type Figure[C model.Claim[C]] struct {
 	// Primary marks the figure the repository's primary flow, its claims the
 	// flow's stages in order. Only a kind whose FigureKind.Primary is set
 	// holds it, and Figures.Primary reads it as one at most.
-	Primary        bool
+	Primary bool
+	// MarkSaid says the frontmatter states primary at all, true or false.
+	// A draft that leaves the key out keeps the stored figure's mark, so
+	// only a draft that says false drops it.
+	MarkSaid       bool
 	Columns        []model.Column
 	Parts, Retired []Part[C]
 	Caption        string
@@ -127,7 +131,7 @@ func ParseFigureDraft[C model.Claim[C]](b []byte) (Figure[C], error) {
 	if err != nil {
 		return Figure[C]{}, fmt.Errorf("the draft's frontmatter: %w", err)
 	}
-	out := Figure[C]{Question: strings.TrimSpace(f.Question), Primary: f.Primary, Columns: f.Columns, Caption: CleanText(string(body))}
+	out := Figure[C]{Question: strings.TrimSpace(f.Question), Primary: f.Primary, MarkSaid: f.MarkSaid, Columns: f.Columns, Caption: CleanText(string(body))}
 	for _, p := range f.Parts {
 		out.Parts = append(out.Parts, Part[C]{Claim: p.Claim})
 	}
@@ -251,6 +255,7 @@ func decodeFigure[C model.Claim[C]](front []byte) (Figure[C], error) {
 			}
 		}
 	}
+	_, f.MarkSaid = m["primary"]
 	return f, nil
 }
 
@@ -284,8 +289,12 @@ func (fs Figures) Primary() (Stack, bool) {
 }
 
 // Marked are the keys of the known figures of figs marked the primary flow,
-// in key order.
+// in key order. Only a kind that may be marked counts (FigureKind.Primary);
+// status names a mark on any other kind as one abbd reads past.
 func Marked[C model.Claim[C]](figs []Figure[C]) []model.FigureKey {
+	if !model.KindOf[C]().Primary {
+		return nil
+	}
 	var out []model.FigureKey
 	for _, f := range figs {
 		if f.Known && f.Primary {
@@ -293,6 +302,17 @@ func Marked[C model.Claim[C]](figs []Figure[C]) []model.FigureKey {
 		}
 	}
 	return out
+}
+
+// Breaches are the relations that run up stack s (model.Breaches). The
+// stack marked the primary flow has none: its layers are stages read
+// upstream to downstream, and a later stage using an earlier one, as every
+// stage uses the config, is how a flow runs, not debt.
+func Breaches(s Stack, units []model.Unit) []model.Breach {
+	if s.Primary {
+		return nil
+	}
+	return model.Breaches(s.Claims(), units)
 }
 
 // LoadKind reads every figure of kind C in key order.
