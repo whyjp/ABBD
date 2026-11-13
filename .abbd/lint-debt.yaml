@@ -17,7 +17,7 @@ debt:
         R: 1
 pages:
     overview:
-        abreast: 168 # 0 until #209 drew store->identity dotted beside the CLI road
+        abreast: 0
         against_axis: 3
         against_axis_ink: 888
         colour_switches: 0
@@ -29,7 +29,7 @@ pages:
         false_joins: 0
         label_repeats: 0
         labelled: 12 # 13 until #236 joined an unphrased call to the extract-model line; see #252
-        parallel_ink: 948 # 511 until #209; see abreast
+        parallel_ink: 511
 prose:
     language: ko
     reason: written before project.yaml named ko; each text is written in ko when it is next read again, stale or touched

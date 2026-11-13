@@ -278,27 +278,11 @@ func (d *Drawing) uses() []use {
 // a stored flow shows even where it leaves its first box once or never:
 // the steps it then runs on its last box are numbered on that box (Stay).
 func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
-	uses := d.uses()
-	var hops []use
+	hops, best, stay := d.leadHops(t, flows, d.uses(), whole)
 	var key, title string
-	var stay *Stay
-	// A view that lays the primary flow out numbers its stages, whatever
-	// stored flow would run further on it.
-	if d.axis.flow != nil && len(flows) > 0 && flows[0].primary && len(d.followed(t, flows[0], uses)) >= leadMin {
-		flows = flows[:1]
-	}
-	if len(flows) > 0 {
-		best := -1
-		for k, f := range flows {
-			if hs := d.followed(t, f, uses); best < 0 || len(hs) > len(hops) {
-				hops, key, title, best = hs, f.key, f.question, k
-			}
-		}
-		if whole && len(hops) < leadMin {
-			stay = d.stayed(t, flows[best], hops)
-		}
+	if best >= 0 {
+		key, title = flows[best].key, flows[best].question
 	} else {
-		hops = inferred(d.Boxes, uses)
 		title = "주 흐름 (추정): 아무도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감"
 	}
 	if len(hops) < leadMin && stay == nil {
@@ -349,6 +333,64 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	for i := range d.Boxes {
 		if d.Boxes[i].ID == l.Entry && d.Boxes[i].Hue != "" {
 			d.Boxes[i].Role = "entry"
+		}
+	}
+}
+
+// leadHops is the lead's hops over uses: those of the stored flow that runs
+// furthest on the view, best its index in flows, or with no stored flow the
+// lead the lines show plainly, best -1. A view that lays the primary flow
+// out numbers its stages, whatever stored flow would run further on it. On
+// the overview (whole) a flow with too few hops may still stay on a box.
+// It reads only the boxes and the lines' ends, so it holds before the lines
+// are routed (leadLines).
+func (d *Drawing) leadHops(t tree, flows []flowWalk, uses []use, whole bool) ([]use, int, *Stay) {
+	if len(flows) == 0 {
+		return inferred(d.Boxes, uses), -1, nil
+	}
+	if d.axis.flow != nil && flows[0].primary && len(d.followed(t, flows[0], uses)) >= leadMin {
+		flows = flows[:1]
+	}
+	var hops []use
+	best := -1
+	for k, f := range flows {
+		if hs := d.followed(t, f, uses); best < 0 || len(hs) > len(hops) {
+			hops, best = hs, k
+		}
+	}
+	if whole && len(hops) < leadMin {
+		return hops, best, d.stayed(t, flows[best], hops)
+	}
+	return hops, best, nil
+}
+
+// leadLines marks the lines the view's lead will ride, before they are
+// routed: a hop paints its line in solid flow ink at rest, so the roads do
+// not keep a dotted line it rides on a track of its own beside a solid road
+// to show dots the hop covers anyway. boxes are the view's boxes, and rels
+// the stored relations each line stands for.
+func leadLines(t tree, flows []flowWalk, ax axis, boxes []model.ID, whole bool, reqs []wireReq, rels func(int) []string) {
+	d := Drawing{axis: ax}
+	on := map[string]bool{}
+	for _, b := range boxes {
+		d.Boxes = append(d.Boxes, Box{ID: string(b)})
+		on[string(b)] = true
+	}
+	var uses []use
+	for k, q := range reqs {
+		if q.kind == "provides" || !on[q.from.node] || !on[q.to.node] || q.from.node == q.to.node {
+			continue
+		}
+		w := len(slices.Compact(slices.Sorted(slices.Values(rels(k)))))
+		both := q.kind == "mutual"
+		uses = append(uses, use{from: q.from.node, to: q.to.node, way: k, weight: w, both: both})
+		if both {
+			uses = append(uses, use{from: q.to.node, to: q.from.node, way: k, weight: w, both: true})
+		}
+	}
+	if hops, _, stay := d.leadHops(t, flows, uses, whole); len(hops) >= leadMin || stay != nil {
+		for _, h := range hops {
+			reqs[h.way].lead = true
 		}
 	}
 }

@@ -279,8 +279,9 @@ type roadView struct {
 	style []string
 	// plan says each route's relations all arise only in design, so it is
 	// drawn dotted where it rides alone, and kinds is each route's kind.
-	plan  []bool
-	kinds []string
+	// lead, nil where no lead is drawn, says the view's lead rides a route.
+	plan, lead []bool
+	kinds      []string
 	// ends are each route's two ends, whose spans its first and last runs
 	// may slide along.
 	ends     [][2]end
@@ -295,6 +296,11 @@ type roadView struct {
 	dotting                bool
 	forkOf, fromOf         []int
 }
+
+// dotted says route i shows dotted at rest, so its dots must show
+// somewhere (unseenOf): it is plan, and no lead hop paints it in solid flow
+// ink, which would hide its dots on any track it took.
+func (v roadView) dotted(i int) bool { return v.plan[i] && (v.lead == nil || !v.lead[i]) }
 
 // grouped is v with its routes grouped.
 func (v roadView) grouped() roadView {
@@ -471,11 +477,16 @@ func (v roadView) oneKind(a, b straightRun) bool {
 // solidPart is run r with only its solid lines, when it holds both solid
 // and dotted ones: a dotted line hidden under solid ink reads as solid, so
 // a road of mixed ink may join a solid road only without its dotted lines.
+// A run that holds a route's first or last run is a box's stub, which stays
+// whole: split, its lines would leave the box as two stubs side by side.
 func (v roadView) solidPart(ways [][]pt, r straightRun) (straightRun, bool) {
 	out := r
 	out.segs = nil
 	out.lo, out.hi = 1<<30, -1<<30
 	for _, s := range r.segs {
+		if s[1] == 0 || s[1] == len(ways[s[0]])-2 {
+			return r, false
+		}
 		if v.plan[s[0]] {
 			continue
 		}
@@ -519,14 +530,14 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 
 // confluent moves the routes onto shared roads and draws the road.
 func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
-	ink, plan, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
+	ink, plan, lead, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
 	dest, to, from := make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
 		to[i], from[i] = place(q.to), place(q.from)
 		if q.from.node != "" {
 			from[i] = "node|" + q.from.node
 		}
-		ink[i], plan[i], kinds[i] = fmt.Sprint(r.back[i]), q.plan, q.kind
+		ink[i], plan[i], lead[i], kinds[i] = fmt.Sprint(r.back[i]), q.plan, q.lead, q.kind
 		dest[i] = min(max(2*q.to.row+1, -1), 2*rows+1)
 	}
 	ends := make([][2]end, len(reqs))
@@ -537,7 +548,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for i, w := range r.ways {
 		ways[i] = straight(w)
 	}
-	v := roadView{style: ink, plan: plan, kinds: kinds, ends: ends, from: from, to: to, dest: dest, position: position}.grouped()
+	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, position: position}.grouped()
 	routed := ways
 	settle := func(stairsFirst bool) ([][]pt, roadCost) {
 		ways, cost := routed, v.cost(routed)

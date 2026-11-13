@@ -115,7 +115,8 @@ var (
 	decls = map[string]map[string]string{}
 	// methods holds "dir.Name" for every method a package declares.
 	methods = map[string]bool{}
-	// funcs holds "dir.Name" for every function and method a package declares.
+	// funcs holds "dir.Name" for every package-level function a package
+	// declares, methods left out.
 	funcs = map[string]bool{}
 
 	// types maps "dir.Name" to its type spec and declaring file.
@@ -263,9 +264,10 @@ func parseTree(root string) error {
 		}
 		for _, d := range f.Decls {
 			if fd, ok := d.(*ast.FuncDecl); ok {
-				funcs[sf.dir+"."+fd.Name.Name] = true
 				if fd.Recv != nil {
 					methods[sf.dir+"."+fd.Name.Name] = true
+				} else {
+					funcs[sf.dir+"."+fd.Name.Name] = true
 				}
 			}
 			if g, ok := d.(*ast.GenDecl); ok {
@@ -367,22 +369,25 @@ func references(owners map[string]string) map[string]map[string]bool {
 		if out[from] == nil {
 			out[from] = map[string]bool{}
 		}
-		for _, ref := range symbolRefs(f) {
+		refs := symbolRefs(f)
+		for _, ref := range sortedKeys(refs) {
 			dir, name, _ := strings.Cut(ref, ".")
 			if decl, ok := decls[dir][name]; ok && owners[decl] != "" {
 				to := owners[decl]
-				out[from][to] = out[from][to] || funcs[ref]
+				out[from][to] = out[from][to] || refs[ref]
 			}
 		}
 	}
 	return out
 }
 
-// symbolRefs lists "dir.Name" for every module symbol a file names: imported
-// package members through selectors, methods of imported packages by name,
-// and same-package names declared in another file. Matching by name can
-// overcount a local name that shares a declared one, never undercount.
-func symbolRefs(f *srcFile) []string {
+// symbolRefs maps "dir.Name" to whether the file calls it, for every module
+// symbol the file names: imported package members through selectors, which
+// it calls when they are package-level functions, methods of imported
+// packages by name, which it calls, and same-package names declared in
+// another file. Matching by name can overcount a local name that shares a
+// declared one, never undercount.
+func symbolRefs(f *srcFile) map[string]bool {
 	seen := map[string]bool{}
 	own := map[string]bool{}
 	for _, n := range topLevel(f.ast) {
@@ -393,23 +398,25 @@ func symbolRefs(f *srcFile) []string {
 		case *ast.SelectorExpr:
 			if x, ok := n.X.(*ast.Ident); ok {
 				if dir, ok := f.imports[x.Name]; ok {
-					seen[dir+"."+n.Sel.Name] = true
+					ref := dir + "." + n.Sel.Name
+					seen[ref] = seen[ref] || funcs[ref]
 					return false
 				}
 			}
 			for _, dir := range f.imports {
-				if methods[dir+"."+n.Sel.Name] {
-					seen[dir+"."+n.Sel.Name] = true
+				if ref := dir + "." + n.Sel.Name; methods[ref] {
+					seen[ref] = true
 				}
 			}
 		case *ast.Ident:
 			if decl, ok := decls[f.dir][n.Name]; ok && decl != f.path && !own[n.Name] {
-				seen[f.dir+"."+n.Name] = true
+				ref := f.dir + "." + n.Name
+				seen[ref] = seen[ref] || funcs[ref]
 			}
 		}
 		return true
 	})
-	return sortedKeys(seen)
+	return seen
 }
 
 // contract is how one contract is anchored and how its signature is read.
@@ -501,7 +508,7 @@ func consumers(u unit, owners map[string]string) []string {
 		if o == "" || o == prov {
 			continue
 		}
-		for _, ref := range symbolRefs(files[p]) {
+		for ref := range symbolRefs(files[p]) {
 			if targets[ref] {
 				found[o] = true
 			}
