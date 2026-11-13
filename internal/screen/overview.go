@@ -751,6 +751,10 @@ type attach struct {
 	one bool
 	// runs are the x each of its lines runs at toward the edge.
 	runs []int
+	// to is the least ID of the places its lines lead to. Chips that lead
+	// to one x stand in its order, not in the order of the contracts they
+	// carry, so a chip keeps its place when its line gains a contract.
+	to string
 }
 
 // reorder moves chips of an edge settle set out to other places in their
@@ -803,6 +807,9 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 	sort.SliceStable(items, func(i, j int) bool {
 		if items[i].other != items[j].other {
 			return items[i].other < items[j].other
+		}
+		if items[i].to != items[j].to {
+			return items[i].to < items[j].to
 		}
 		return items[i].key < items[j].key
 	})
@@ -951,14 +958,20 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	// One line per user and provider, however many contracts it carries:
 	// it leaves the user's chip for those contracts and reaches the
 	// provider's.
-	toward := map[string][]int{}
+	toward, to := map[string][]int{}, map[string]string{}
+	lead := func(key string, x int, place model.ID) {
+		if xs := toward[key]; len(xs) == 0 || string(place) < to[key] {
+			to[key] = string(place)
+		}
+		toward[key] = append(toward[key], x)
+	}
 	for _, k := range o.pairs {
 		u, p := k[0], k[1]
 		in, out := chipKey(u, o.carry[k], false), string(p)
-		toward[in] = append(toward[in], l.toward(string(u), string(p)))
+		lead(in, l.toward(string(u), string(p)), p)
 		if isModule(p) {
 			out = chipKey(p, o.carry[k], true)
-			toward[out] = append(toward[out], l.toward(string(p), string(u)))
+			lead(out, l.toward(string(p), string(u)), u)
 		}
 		var titles, rels []string
 		for _, c := range o.carry[k] {
@@ -980,7 +993,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 					}
 					other /= len(xs)
 				}
-				a := attach{key: ch.key, label: ch.label, other: other}
+				a := attach{key: ch.key, label: ch.label, other: other, to: to[ch.key]}
 				if side == 0 {
 					tops[m] = append(tops[m], a)
 				} else {
