@@ -110,7 +110,7 @@ func randomRoute(r *rand.Rand, grid, step int) []pt {
 	p := pt{r.Intn(grid) * step, r.Intn(grid) * step}
 	w := []pt{p}
 	vert := r.Intn(2) == 0
-	for range 2 + r.Intn(5) {
+	for range 1 + r.Intn(6) {
 		d := (1 + r.Intn(grid)) * step
 		if r.Intn(2) == 0 {
 			d = -d
