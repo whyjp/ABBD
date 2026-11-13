@@ -39,7 +39,7 @@ A role is a claim too. Before you write that a function loads, starts, frees or 
 
 **A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill.
 
-No import shows a run-time binding, so record each one you found as a coupling with its quote: `--via load` for a library or plugin loaded by name, `--via spawn` for a process started, `--via config` for a backend picked by a name in settings, `--via trait` or `--via callback` for a factory or handler table. A registry that components add themselves to is a contract: give it a unit in the supplement with evidence, have each member provide it, and have the module that reads the registry consume it.
+No import shows a run-time binding, so record each one you found as a coupling with its quote: `--via load` for a library or plugin loaded by name, `--via spawn` for a process started, `--via config` for a backend picked by a name in settings, `--via trait` or `--via callback` for a factory or handler table. A registry that components add themselves to is a contract: give it a unit in the supplement with evidence, have each member provide it, and have the module that reads the registry consume it. A plug-point contract, such as a callback table, a trait or a weak symbol the host calls through, goes the same way: the modules that implement it or register an implementation `provides` it, and the host that calls through it `consumes` it. Registering an implementation is providing, not consuming.
 
 **Order** (what one command does, a pipeline's stages): a flow, `abbd flow <KEY> <FILE>`.
 
