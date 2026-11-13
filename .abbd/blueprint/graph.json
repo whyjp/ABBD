@@ -20335,6 +20335,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -23396,7 +23397,15 @@
                 "Code": true
               },
               {
-                "Text": "); the two orders settle side by side, and ",
+                "Text": "), and ",
+                "Code": false
+              },
+              {
+                "Text": "TestTheRoadIndexWeighsChangesAsAWholeRecount",
+                "Code": true
+              },
+              {
+                "Text": " holds every change it weighs on random views to that whole recount; the two orders settle side by side, and ",
                 "Code": false
               },
               {
