@@ -28,12 +28,16 @@ type def struct {
 
 // wrapper is a project function that starts an execution context with
 // work its caller hands in: its body passes one of its own parameters to a
-// catalog spawn call. A call to it is a spawn site.
+// catalog spawn call, or to a call of another wrapper. A call to it is a
+// spawn site. Discovery goes two levels deep, a wrapper of a wrapper.
 type wrapper struct {
 	def
 	lang  Lang
 	file  string
 	param int
+	// chain is the definition of this wrapper and of each wrapper under it,
+	// as path:line, down to the one whose body calls the catalog.
+	chain []string
 }
 
 // api names the wrapper the way a call qualifies it.
@@ -71,10 +75,11 @@ type index struct {
 	// definition of which is a wrapper needs no qualifier either.
 	wrapped map[Lang]map[string]int
 	defs    map[Lang]map[string][]string
+	recv    receivers
 }
 
 func newIndex(fs []file) *index {
-	ix := &index{wrappers: map[Lang][]wrapper{}, pattern: map[string]*regexp.Regexp{}, count: map[Lang]map[string]int{}, wrapped: map[Lang]map[string]int{}, defs: map[Lang]map[string][]string{}}
+	ix := &index{wrappers: map[Lang][]wrapper{}, pattern: map[string]*regexp.Regexp{}, count: map[Lang]map[string]int{}, wrapped: map[Lang]map[string]int{}, defs: map[Lang]map[string][]string{}, recv: newReceivers(fs)}
 	for _, f := range fs {
 		if ix.count[f.lang] == nil {
 			ix.count[f.lang] = map[string]int{}
@@ -89,10 +94,25 @@ func newIndex(fs []file) *index {
 		ix.wrappers[f.lang] = append(ix.wrappers[f.lang], f.wrappers()...)
 		ix.aliases = append(ix.aliases, f.aliases()...)
 	}
+	ix.reindex()
+	var outer []wrapper
+	for _, f := range fs {
+		outer = append(outer, ix.outerWrappers(f)...)
+	}
+	for _, w := range outer {
+		ix.wrappers[w.lang] = append(ix.wrappers[w.lang], w)
+	}
+	ix.reindex()
 	ix.aliases = slices.DeleteFunc(ix.aliases, func(a alias) bool { return !ix.spawnName(a.lang, a.target) })
 	for i := range ix.aliases {
 		ix.aliases[i].use = regexp.MustCompile(`\b` + regexp.QuoteMeta(ix.aliases[i].name) + `\b`)
 	}
+	return ix
+}
+
+// reindex counts the wrappers per name and compiles each name's call
+// pattern.
+func (ix *index) reindex() {
 	for l, ws := range ix.wrappers {
 		ix.wrapped[l] = map[string]int{}
 		for _, w := range ws {
@@ -102,7 +122,35 @@ func newIndex(fs []file) *index {
 			}
 		}
 	}
-	return ix
+}
+
+// outerWrappers returns the file's definitions, not wrappers yet, whose
+// body hands one of their parameters to a call of a wrapper as the work it
+// runs: the second level. It reads only the wrappers the first level
+// found, so the result does not hang on the order files are read in.
+func (ix *index) outerWrappers(f file) []wrapper {
+	known := map[int]bool{}
+	for _, w := range ix.wrappers[f.lang] {
+		if w.file == f.path {
+			known[w.at] = true
+		}
+	}
+	var out []wrapper
+	for _, c := range ix.wrapperCalls(f) {
+		d, ok := f.enclosing(c.at)
+		if !ok || known[d.at] {
+			continue
+		}
+		for i, p := range d.params {
+			if p != "" && usesParam(c.work, p) {
+				chain := append([]string{f.path + ":" + strconv.Itoa(f.line(d.at))}, c.r.Wrapper...)
+				out = append(out, wrapper{def: d, lang: f.lang, file: f.path, param: i + 1, chain: chain})
+				known[d.at] = true
+				break
+			}
+		}
+	}
+	return out
 }
 
 // spawnName reports whether a name could start a spawn call: its last
@@ -135,7 +183,7 @@ func (ix *index) def(l Lang, name string) string {
 func (f file) wrappers() []wrapper {
 	var out []wrapper
 	found := map[int]bool{}
-	for _, h := range f.hits(true) {
+	for _, h := range f.hits(true, nil) {
 		if h.e.Kind != Spawn || (f.lang == Rust && f.skip(h.at)) {
 			continue
 		}
@@ -146,7 +194,7 @@ func (f file) wrappers() []wrapper {
 		work := f.work(h)
 		for i, p := range d.params {
 			if p != "" && slices.ContainsFunc(work, func(w string) bool { return usesParam(w, p) }) {
-				out = append(out, wrapper{def: d, lang: f.lang, file: f.path, param: i + 1})
+				out = append(out, wrapper{def: d, lang: f.lang, file: f.path, param: i + 1, chain: []string{f.path + ":" + strconv.Itoa(f.line(d.at))}})
 				found[d.at] = true
 				break
 			}
@@ -258,6 +306,8 @@ func closeOf[T string | []byte](s T, open int) int {
 type call struct {
 	r  Record
 	at int
+	// work is the argument the call hands a wrapper as the work to run.
+	work string
 }
 
 // wrapperCalls finds the file's calls through a wrapper. A call matches by
@@ -295,9 +345,9 @@ func (ix *index) wrapperCalls(f file) []call {
 			args, _ := callArgs(f.code, m[1])
 			for _, w := range ws {
 				if len(args) >= w.param && ix.calls(w, f, q, sep) {
-					r := Record{Kind: Spawn, API: w.api(), Confidence: "syntactic", Via: "catalog", Configs: []string{}}
+					r := Record{Kind: Spawn, API: w.api(), Wrapper: w.chain, Confidence: "syntactic", Via: "catalog", Configs: []string{}}
 					r.To.Name = name(nth(args, w.param))
-					out = append(out, call{r, at})
+					out = append(out, call{r, at, nth(args, w.param)})
 					break
 				}
 			}
@@ -363,7 +413,7 @@ func (ix *index) aliasCalls(f file) []call {
 			rest := f.code[m[1]:min(m[1]+256, len(f.code))]
 			probe := []byte(a.target + string(rest))
 			if r, ok := f.probe(probe, len(a.target), at, m[1], ix); ok {
-				out = append(out, call{r, at})
+				out = append(out, call{r: r, at: at})
 			}
 		}
 	}
@@ -377,7 +427,7 @@ func (ix *index) aliasCalls(f file) []call {
 func (f file) probe(text []byte, shift, at, end int, ix *index) (Record, bool) {
 	back := func(i int) int { return end + i - shift }
 	for _, e := range Catalog {
-		if e.Lang != f.lang || e.Kind != Spawn {
+		if e.Lang != f.lang || e.Kind != Spawn || e.Recv != "" || e.Uses != nil && !e.Uses.Match(f.code) {
 			continue
 		}
 		m := e.Pattern.FindSubmatchIndex(text)
@@ -406,7 +456,7 @@ func (f file) probe(text []byte, shift, at, end int, ix *index) (Record, bool) {
 		q, sep := qualifier(text, m)
 		args, _ := callArgs(f.code, back(m[1]))
 		if len(args) >= w.param && ix.calls(w, f, q, sep) {
-			r := Record{Kind: Spawn, API: w.api(), Confidence: "syntactic", Via: "catalog", Configs: []string{}}
+			r := Record{Kind: Spawn, API: w.api(), Wrapper: w.chain, Confidence: "syntactic", Via: "catalog", Configs: []string{}}
 			r.To.Name = name(nth(args, w.param))
 			return r, true
 		}

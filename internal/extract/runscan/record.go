@@ -48,7 +48,11 @@ type Record struct {
 	// impl implements, when the call names it.
 	To Target `json:"to"`
 	// Channel names what a send or a recv goes through, as the code spells it.
-	Channel  string   `json:"channel"`
+	Channel string `json:"channel"`
+	// Wrapper, on a call through a project wrapper, is the evidence the
+	// call starts a context: the wrapper's definition as path:line, then
+	// that of the wrapper it calls in turn, down to the catalog call.
+	Wrapper  []string `json:"wrapper,omitempty"`
 	Evidence Site     `json:"evidence"`
 	Configs  []string `json:"configs"`
 	// Confidence is syntactic for the catalog and semantic for a front-end

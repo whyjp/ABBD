@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -49,7 +50,7 @@ void start(POOL_ctx* ctx) {
 }
 `, `
 7 recv ZSTD_pthread_cond_wait to= ch=queuePopCond
-12 spawn ZSTD_pthread_create to= ch=
+12 spawn ZSTD_pthread_create to=worker ch=
 13 spawn CreateThread to=worker ch=
 14 spawn _beginthreadex to=worker ch=
 15 send ZSTD_pthread_cond_signal to= ch=queuePopCond
@@ -160,6 +161,8 @@ func TestScanIsSortedAndDeterministic(t *testing.T) {
 	}
 }
 
+// A pool's constructor and POOL_create start threads on the pool's own
+// loop, so the spawn site is the thread call inside them, not their calls.
 func TestCWrappersPoolsAndDirectives(t *testing.T) {
 	check(t, "lib/io.cpp", `
 void start(int n) {
@@ -176,9 +179,7 @@ void start(int n) {
 }
 `, `
 5 spawn pthread_create to=run ch=
-6 spawn thread pool object to= ch=
 7 spawn thread container to= ch=
-8 spawn POOL_create_advanced to= ch=
 10 spawn #pragma omp parallel to= ch=
 `)
 }
@@ -333,6 +334,19 @@ void start(void) {
 `)
 }
 
+func TestAMethodNamedLikeAThreadCallIsNoSite(t *testing.T) {
+	check(t, "plugins/out.cpp", `
+void Output::CreateThread(bool enable) { }
+void f(Output *out) {
+    out->CreateThread(true);
+    obj.CreateThread(false);
+    ::CreateThread(NULL, 0, run, NULL, 0, NULL);
+}
+`, `
+5 spawn CreateThread to=run ch=
+`)
+}
+
 func TestAPostsToQuotingAnyEndOfItsPairIsStored(t *testing.T) {
 	rs := []Record{
 		rec(Send, "cond_signal", "", "popCond", "lib/pool/pool.c", 20, "cond_signal(&ctx->popCond);"),
@@ -347,5 +361,131 @@ func TestAPostsToQuotingAnyEndOfItsPairIsStored(t *testing.T) {
 	cs := Candidates(rs, []model.Unit{m})
 	if len(cs) != 1 || !cs[0].Stored {
 		t.Errorf("a posts_to quoting the second send and the recv should hold the pair:\n%s", show(cs))
+	}
+}
+
+func TestCppFrameworkEntries(t *testing.T) {
+	check(t, "app/run.cpp", `
+#include <future>
+using namespace std;
+void run(Worker *w, QTimer *timer) {
+    auto f = async(launch::async, load);
+    auto g = std::async(load);
+    std::jthread jt(body);
+    QThread *t = QThread::create(work);
+    t->start();
+    timer->start(100);
+    w->start();
+    QtConcurrent::run(work, 3);
+    dispatch_async(queue, ^{ work(); });
+    dispatch_group_async(group, queue, block);
+    dispatch_after(when, queue, block);
+    dispatch_async_f(queue, ctx, work_f);
+}
+future<int> async(int x);
+`, `
+4 spawn std::async to= ch=
+5 spawn std::async to= ch=
+6 spawn std::jthread to=body ch=
+7 spawn QThread::create to=work ch=
+8 spawn QThread::start to= ch=
+11 spawn QtConcurrent::run to=work ch=
+12 spawn dispatch_async to= ch=
+13 spawn dispatch_group_async to=block ch=
+14 spawn dispatch_after to=block ch=
+15 spawn dispatch_async_f to=ctx ch=
+`)
+	check(t, "app/plain.cpp", `
+void run() { auto f = async(load); }
+`, ``)
+	got := scanTree(t, map[string]string{
+		"app/worker.h": `
+class Base : public QThread { };
+class Worker : public Base {
+  Worker *next;
+};
+struct Holder { QThread thread; std::unique_ptr<Worker> owned; };
+`,
+		"app/worker.cpp": `
+void Worker::go() {
+  next->start();
+  owned->start(QThread::LowPriority);
+  thread.start();
+  timer->start();
+}
+`,
+		"app/other.cpp": `
+void f() { next->start(); }
+`,
+	})
+	want := "app/worker.cpp:2 QThread::start to= def=\napp/worker.cpp:3 QThread::start to= def=\napp/worker.cpp:4 QThread::start to= def=\n"
+	if got != want {
+		t.Errorf("QThread starts:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+func TestWrappersTwoLevelsDeep(t *testing.T) {
+	files := map[string]string{
+		"lib/src/lib.rs": `
+pub fn spawn_in_current_span<T>(task: impl Future<Output = T>) -> JoinHandle<T> {
+    tokio::spawn(task.in_current_span())
+}
+`,
+		"lib/src/cpu_time.rs": `
+pub fn spawn_timed<F>(future: F, counter: Option<Counter>) -> JoinHandle<F::Output> {
+    match counter {
+        Some(c) => crate::spawn_in_current_span(future.cpu_timed(c)),
+        None => crate::spawn_in_current_span(future),
+    }
+}
+pub fn spawn_thrice<F>(future: F) { spawn_timed(future, None); }
+pub fn tick(n: u32) { crate::spawn_in_current_span(heartbeat(n)); }
+`,
+		"app/src/builder.rs": `
+fn build() {
+    let task = spawn_timed(run_sink(), counter);
+    spawn_thrice(other());
+    tick(3);
+}
+`,
+	}
+	got := scanTree(t, files)
+	for _, line := range []string{
+		"app/src/builder.rs:2 cpu_time::spawn_timed to=run_sink",
+		"lib/src/cpu_time.rs:3 lib::spawn_in_current_span to=cpu_timed",
+		"lib/src/cpu_time.rs:4 lib::spawn_in_current_span to=future",
+		"lib/src/cpu_time.rs:7 cpu_time::spawn_timed to=future",
+	} {
+		if !strings.Contains(got, line+" ") {
+			t.Errorf("missing %q in:\n%s", line, got)
+		}
+	}
+	for _, bad := range []string{"app/src/builder.rs:3 ", "app/src/builder.rs:4 "} {
+		if strings.Contains(got, bad) {
+			t.Errorf("%q is past two levels or hands no work in:\n%s", bad, got)
+		}
+	}
+	root := t.TempDir()
+	for p, s := range files {
+		full := filepath.Join(root, filepath.FromSlash(p))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(strings.TrimPrefix(s, "\n")), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rs, err := Scan(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var chain []string
+	for _, r := range rs {
+		if r.Evidence.Path == "app/src/builder.rs" && r.Evidence.Line == 2 {
+			chain = r.Wrapper
+		}
+	}
+	if want := []string{"lib/src/cpu_time.rs:1", "lib/src/lib.rs:1"}; !slices.Equal(chain, want) {
+		t.Errorf("spawn_timed's call carries wrapper %v, want %v", chain, want)
 	}
 }

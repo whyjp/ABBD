@@ -146,16 +146,21 @@ type hit struct {
 
 // hits runs the catalog's entries of the file's language over the code.
 // A hit on a line the scan skips is kept only when keepSkipped is set,
-// as the wrapper search reads macro bodies.
-func (f file) hits(keepSkipped bool) []hit {
+// as the wrapper search reads macro bodies. An entry that needs its
+// receiver's class runs only once rs, read from every file, is known.
+func (f file) hits(keepSkipped bool, rs receivers) []hit {
 	var out []hit
 	seen := map[int]bool{}
 	for _, e := range Catalog {
-		if e.Lang != f.lang {
+		if e.Lang != f.lang || e.Uses != nil && !e.Uses.Match(f.code) || e.Recv != "" && rs == nil {
 			continue
 		}
 		for _, m := range f.matches(e, f.lower) {
-			if h, ok := f.hitAt(e, m, keepSkipped); ok && !seen[h.at] {
+			h, ok := f.hitAt(e, m, keepSkipped)
+			if ok && e.Recv != "" && !rs.declared(f, e.Recv, h.group("recv")) {
+				continue
+			}
+			if ok && !seen[h.at] {
 				seen[h.at] = true
 				out = append(out, h)
 			}
@@ -178,6 +183,9 @@ func (f file) hitAt(e Entry, m []int, keepSkipped bool) (hit, bool) {
 		}
 	}
 	if (f.skip(at) && !e.Directive && !keepSkipped) || (e.Call && declares(code, at)) {
+		return hit{}, false
+	}
+	if e.Call && e.Kind == Spawn && f.lang == C && member(code, at) {
 		return hit{}, false
 	}
 	args, opened := callArgs(code, m[1])
@@ -216,7 +224,7 @@ func (f file) records(ix *index) []Record {
 		r.Evidence = f.site(at)
 		out = append(out, r)
 	}
-	for _, h := range f.hits(false) {
+	for _, h := range f.hits(false, ix.recv) {
 		add(h.record(), h.at)
 	}
 	spawned := map[int]bool{}
@@ -358,12 +366,16 @@ var callKeywords = map[string]bool{
 }
 
 // declares reports whether the name at i reads as declared rather than
-// called: a type or a keyword such as fn stands right before it. A
+// called: a type or a keyword such as fn stands right before it, or a
+// template type's closing > and a space, as in future<int> async(. A
 // word on a preprocessor line, such as #endif or #ifdef X, declares nothing.
 func declares(code []byte, i int) bool {
 	j := i
 	for j > 0 && (isSpace(code[j-1]) || code[j-1] == '*' || code[j-1] == '&') {
 		j--
+	}
+	if j < i && j > 1 && code[j-1] == '>' && code[j-2] != '-' {
+		return true
 	}
 	k := j
 	for k > 0 && isWord(code[k-1]) {
@@ -372,6 +384,28 @@ func declares(code []byte, i int) bool {
 	line := bytes.LastIndexByte(code[:k], '\n') + 1
 	directive := strings.HasPrefix(strings.TrimLeft(string(code[line:k]), " \t"), "#")
 	return k < j && !callKeywords[string(code[k:j])] && !directive
+}
+
+// member reports whether the C or C++ name at i is reached through an
+// object or a class, as in out->CreateThread( or Output::CreateThread(,
+// so it is a project method that shares a free function's name. A bare
+// :: names the global function itself.
+func member(code []byte, i int) bool {
+	j := i
+	for j > 0 && isSpace(code[j-1]) {
+		j--
+	}
+	switch {
+	case j > 0 && code[j-1] == '.', j > 1 && code[j-2] == '-' && code[j-1] == '>':
+		return true
+	case j > 1 && code[j-2] == ':' && code[j-1] == ':':
+		k := j - 2
+		for k > 0 && isSpace(code[k-1]) {
+			k--
+		}
+		return k > 0 && isWord(code[k-1])
+	}
+	return false
 }
 
 // callArgs reads the arguments of the call whose opening bracket ends just
