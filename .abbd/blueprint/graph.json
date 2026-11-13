@@ -27526,6 +27526,7 @@
         "Provides": 5,
         "Uses": 2,
         "Direct": 5,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -27625,7 +27626,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -28226,11 +28227,24 @@
                 "Name": "overview_cut",
                 "Shape": "*bool",
                 "Need": "선택"
+              },
+              {
+                "Key": "language",
+                "Name": "language",
+                "Shape": "string",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0001",
+                    "Name": "abbd CLI",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": true,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": true,
             "Notes": false
           }
@@ -32421,7 +32435,7 @@
         }
       ],
       "Rows": 5,
-      "Stale": 0,
+      "Stale": 1,
       "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
@@ -32562,7 +32576,11 @@
             "cmd/abbd/record.go \"u.PutRelation(rel)\"",
             "cmd/abbd/record.go \"u.PutNote(note)\"",
             "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id\""
-          ]
+          ],
+          "Reasons": [
+            "cmd/abbd/understand.go (the lines around it changed)"
+          ],
+          "Stale": true
         },
         {
           "N": 3,
