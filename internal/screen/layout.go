@@ -28,6 +28,10 @@ type lnode struct {
 	// step is where the node first comes in a stored flow, from 1, 0 for
 	// none: a tier's boxes stand in its row in that order (huddle).
 	step int
+	// stage is where the node stands on the primary flow, from 1, 0 off
+	// it. Callers state it, and arrange alone decides how the stages are
+	// laid out (flowOf).
+	stage int
 }
 
 // ledge runs from a node to one it uses.
@@ -83,6 +87,8 @@ type layout struct {
 	idle bool
 	// counted and roads are the tactic's flags.
 	counted, roads bool
+	// axis is what the rows were ranked by.
+	axis axis
 }
 
 const (
@@ -372,8 +378,15 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 		rank[v] = max(rank[v], low-1)
 	}
+	fa := flowOf(nodes)
+	if fa != nil {
+		pinStages(nodes, fa)
+	}
 	if seat == nil {
 		tier(nodes, order, out, keep, rank)
+	}
+	if fa != nil && fa.across {
+		clearSpine(nodes, rank, out)
 	}
 	// The frame's edges leave the layering, and the layers they alone held
 	// close up.
@@ -403,6 +416,13 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		delete(out, frameTopNode)
 		delete(touched, frameTopNode)
 		delete(touched, frameBottomNode)
+	}
+	ax := axis{basis: byDependency, cycle: cyclic(out), flow: fa}
+	switch {
+	case fa != nil:
+		ax.basis = byFlow
+	case seat == nil && slices.ContainsFunc(nodes, func(nd lnode) bool { return nd.tier > 0 }):
+		ax.basis = byStack
 	}
 	n := 0
 	for _, r := range rank {
@@ -482,6 +502,9 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
 		rs := split(ids, byID, room)
+		if fa.spine(ids) {
+			rs = [][]string{ids}
+		}
 		if seat == nil && len(rs) > 1 {
 			rs = stack(rs, keep, byID, room)
 		}
@@ -493,7 +516,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, axis: ax}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)
@@ -985,6 +1008,125 @@ func setName(name string, px, pad, minW, maxW int) ([]string, int) {
 		return []string{fa, fb}, maxW
 	}
 	return []string{a, b}, max(minW, max(textWidth(a, px), textWidth(b, px))+pad)
+}
+
+// flowAxis is how a view laid the primary flow out. The layout records it,
+// and lint and graph.json read it. across says the stages read left to right
+// along one row, the spine; else each stage has rows of its own, top down.
+// stage is each staged box's stage, by id.
+type flowAxis struct {
+	across bool
+	stage  map[string]int
+}
+
+// spineRoom is the room a spine reads in on one screen, whatever room a
+// tactic narrows rows to, so every tactic of a view picks the same geometry.
+const spineRoom = insideBudget - 12 - 2*padX
+
+// flowOf reads the stages off nodes: across when the staged nodes, side by
+// side with gapX between them, fit spineRoom, else down. It is nil when the
+// nodes show fewer than two stages.
+func flowOf(nodes []lnode) *flowAxis {
+	f := &flowAxis{stage: map[string]int{}}
+	shown := map[int]bool{}
+	width := -gapX
+	for _, n := range nodes {
+		if n.stage > 0 {
+			f.stage[n.id], shown[n.stage] = n.stage, true
+			width += n.w + gapX
+		}
+	}
+	if len(shown) < 2 {
+		return nil
+	}
+	f.across = width <= spineRoom
+	return f
+}
+
+// spine says ids hold a staged node of a flow laid across: their row is the
+// spine, which never wraps.
+func (f *flowAxis) spine(ids []string) bool {
+	return f != nil && f.across && slices.ContainsFunc(ids, func(id string) bool { return f.stage[id] > 0 })
+}
+
+// pinStages turns stages into the pins tier and huddle keep, in place of any
+// tier. Across, every staged node stands in one tier, ordered by stage, then
+// by its flow step, then by id. Down, each stage is a tier of its own.
+func pinStages(nodes []lnode, f *flowAxis) {
+	var staged []int
+	for i := range nodes {
+		nodes[i].tier = 0
+		if nodes[i].stage == 0 {
+			continue
+		}
+		if !f.across {
+			nodes[i].tier = nodes[i].stage
+			continue
+		}
+		staged = append(staged, i)
+	}
+	slices.SortStableFunc(staged, func(a, b int) int {
+		x, y := nodes[a], nodes[b]
+		if x.stage != y.stage {
+			return x.stage - y.stage
+		}
+		if x.step != y.step {
+			return x.step - y.step
+		}
+		return strings.Compare(x.id, y.id)
+	})
+	for k, i := range staged {
+		nodes[i].tier, nodes[i].step = 1, k+1
+	}
+}
+
+// clearSpine keeps the spine's row to the spine. Any other node tier left in
+// it moves to a row of its own: just above the spine when no staged node
+// uses it, else just below. Every row past them shifts down.
+func clearSpine(nodes []lnode, rank map[string]int, out map[string][]string) {
+	s := -1
+	staged := map[string]bool{}
+	for _, n := range nodes {
+		if n.stage > 0 {
+			staged[n.id], s = true, rank[n.id]
+		}
+	}
+	usedByStage := func(v string) bool {
+		for u := range staged {
+			if slices.Contains(out[u], v) {
+				return true
+			}
+		}
+		return false
+	}
+	above, below := map[string]bool{}, map[string]bool{}
+	for _, n := range nodes {
+		if !staged[n.id] && rank[n.id] == s {
+			if usedByStage(n.id) {
+				below[n.id] = true
+			} else {
+				above[n.id] = true
+			}
+		}
+	}
+	a, b := 0, 0
+	if len(above) > 0 {
+		a = 1
+	}
+	if len(below) > 0 {
+		b = 1
+	}
+	for id, r := range rank {
+		switch {
+		case r < s || above[id]:
+		case staged[id]:
+			rank[id] = s + a
+		case below[id]:
+			rank[id] = s + a + 1
+		default:
+			rank[id] = r + a + b
+		}
+	}
 }
 
 // tier ranks the boxes of a stored stack's tiers (lnode.tier) in the

@@ -38,6 +38,7 @@ func (e env) diff() error {
 		return err
 	}
 	d := topology.Compare(was, now)
+	var in func(model.ID) bool
 	if e.unit != "" {
 		id := model.ID(e.unit)
 		_, isNow := presentUnit(now, id)
@@ -45,14 +46,25 @@ func (e env) diff() error {
 		if !isNow && !wasThen {
 			return fmt.Errorf("%s is in neither the base nor the current state", id)
 		}
-		d = d.Within(topology.Subtree(id, was, now))
+		in = topology.Subtree(id, was, now)
+		d = d.Within(in)
+	}
+	then, done, err := e.storeAt(base)
+	defer done()
+	if err != nil {
+		return err
+	}
+	words, err := e.wordsSince(then, was, now, in)
+	if err != nil {
+		return err
 	}
 	if e.asJSON {
 		b, err := json.MarshalIndent(struct {
 			Base string `json:"base"`
 			Unit string `json:"unit,omitempty"`
 			topology.Diff
-		}{base, e.unit, d}, "", "  ")
+			Words []wordChange `json:"words"`
+		}{base, e.unit, d, words}, "", "  ")
 		if err != nil {
 			return err
 		}
@@ -63,9 +75,12 @@ func (e env) diff() error {
 			of = " inside " + e.unit
 		}
 		fmt.Fprintf(e.stdout, "topology%s since %s:\n%s", of, short(base), d)
+		if len(words) > 0 {
+			fmt.Fprintf(e.stdout, "words%s since %s:\n%s\n", of, short(base), strings.Join(lines(words), "\n"))
+		}
 	}
 	if e.page {
-		page, err := e.comparePage(base, d)
+		page, err := e.comparePage(base, then, d, words)
 		if err != nil {
 			return err
 		}
@@ -91,6 +106,7 @@ body.compare{margin:16px;max-width:100vw;overflow-x:hidden}
 <div class="pair"><div><h2>{{.Base}}</h2><div class="side">{{if .Before}}{{.Before}}{{else}}<p>그때의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div>
 <div><h2>지금</h2><div class="side">{{if .Now}}{{.Now}}{{else}}<p>지금의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div></div>
 <details><summary>바뀐 것 {{.Count}}줄</summary><pre>{{.Lines}}</pre></details>
+{{if .WordCount}}<details><summary>바뀐 글 {{.WordCount}}줄</summary><pre>{{.Words}}</pre></details>{{end}}
 </body></html>
 `))
 
@@ -131,6 +147,9 @@ func summary(d topology.Diff) string {
 	add(len(d.Code), "계약 코드 변경")
 	add(len(d.RelationsAdded), "관계 추가")
 	add(len(d.RelationsRemoved), "관계 제거")
+	add(len(d.Conditions), "조건 변경")
+	add(len(d.RunsAdded), "실행 관계 추가")
+	add(len(d.RunsRemoved), "실행 관계 제거")
 	add(len(d.InferredAdded), "판독한 결합 추가")
 	add(len(d.InferredDead), "근거가 죽은 결합")
 	if len(parts) == 0 {
@@ -143,7 +162,7 @@ func summary(d topology.Diff) string {
 // compare directory, and a page that sets one of its pages beside the
 // current one with the changes listed. Git and the state's fingerprint both
 // ignore the directory.
-func (e env) comparePage(base string, d topology.Diff) (string, error) {
+func (e env) comparePage(base string, at store.Store, d topology.Diff, words []wordChange) (string, error) {
 	dir := e.st.CompareDir()
 	then := filepath.Join(dir, "base")
 	if err := os.RemoveAll(then); err != nil {
@@ -155,7 +174,7 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	if err := os.WriteFile(filepath.Join(dir, ".gitignore"), []byte("*\n"), 0o644); err != nil {
 		return "", err
 	}
-	pages, err := e.pagesAt(base)
+	pages, err := e.pagesAt(base, at)
 	if err != nil {
 		return "", err
 	}
@@ -189,7 +208,7 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	nowSVG, style := drawing(load(exists("../blueprint/"+name)), anchor)
 	var b strings.Builder
 	if err := compareTmpl.Execute(&b, map[string]any{
-		"Of": of, "Base": short(base), "Summary": summary(d), "Lines": d.String(), "Count": len(d.Lines()),
+		"Of": of, "Base": short(base), "Summary": summary(d), "Lines": d.String(), "Count": len(d.Lines()), "Words": strings.Join(lines(words), "\n"), "WordCount": len(lines(words)),
 		"Style": template.CSS(style), "Before": template.HTML(wasSVG), "Now": template.HTML(nowSVG),
 		"BasePage": exists("base/" + name), "NowPage": "../blueprint/" + name,
 	}); err != nil {
@@ -199,9 +218,9 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	return page, os.WriteFile(page, []byte(b.String()), 0o644)
 }
 
-// pagesAt draws the blueprint of the state committed at base, so the base
-// reads in the renderer of now, or reads the pages the kept copy holds.
-func (e env) pagesAt(base string) (map[string][]byte, error) {
+// pagesAt draws the blueprint of at, the state committed at base, so the
+// base reads in the renderer of now, or reads the pages the kept copy holds.
+func (e env) pagesAt(base string, at store.Store) (map[string][]byte, error) {
 	if base == prev {
 		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")
 		es, err := os.ReadDir(kept)
@@ -216,13 +235,7 @@ func (e env) pagesAt(base string) (map[string][]byte, error) {
 		}
 		return pages, nil
 	}
-	at := filepath.Join(e.st.CompareDir(), "at")
-	defer os.RemoveAll(at)
-	st, err := e.st.CheckoutAt(base, at)
-	if err != nil {
-		return nil, err
-	}
-	in, err := screen.Load(st)
+	in, err := screen.Load(at)
 	if err != nil || len(in.Units) == 0 {
 		return nil, err
 	}
@@ -256,3 +269,16 @@ func (e env) unitsAt(base string) ([]model.Unit, error) {
 }
 
 func short(rev string) string { return rev[:min(len(rev), 12)] }
+
+// wordsSince is wordsDiff between then, the store at base, and now.
+func (e env) wordsSince(then store.Store, was, now []model.Unit, in func(model.ID) bool) ([]wordChange, error) {
+	before, err := writtenIn(then, was)
+	if err != nil {
+		return nil, err
+	}
+	after, err := writtenIn(e.st, now)
+	if err != nil {
+		return nil, err
+	}
+	return wordsDiff(before, after, in), nil
+}

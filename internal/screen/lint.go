@@ -79,6 +79,18 @@ type Totals struct {
 	PathsOver2  int `json:"paths_over2"`
 	TracedBends int `json:"traced_bends"`
 	Back        int `json:"back"`
+	// AgainstAxis is the lines that run against the axis the view reads
+	// by, and AgainstAxisInk their ink in px: the lines rule 13 draws back,
+	// each taken the way its relation is used, so a provides line climbing
+	// to its contract's chip on the frame top runs with the axis. A page
+	// the debt file names may not raise them, and the views together may
+	// not raise the lines past their ceiling (gate.go).
+	AgainstAxis    int `json:"against_axis"`
+	AgainstAxisInk int `json:"against_axis_ink"`
+	// FlowMonotone is the pairs of consecutive stages of the primary flow
+	// that do not stand in order along the view's flow axis (O4), 0 on a
+	// view that lays no flow out.
+	FlowMonotone int `json:"flow_monotone"`
 	// Weighed is the crossings, one more for each excess turn and
 	// stepCrossings for each step: the staircases a reader sees, which
 	// choose ranks a view's drawings by, so the gate and choose weigh a
@@ -136,6 +148,8 @@ func Sum(views []ViewLint) Totals {
 		t.Steps, t.Jogs, t.Crossings, t.Tees = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings, t.Tees+o.Tees
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
 		t.Detours += o.Detours
+		t.AgainstAxis, t.AgainstAxisInk = t.AgainstAxis+o.AgainstAxis, t.AgainstAxisInk+o.AgainstAxisInk
+		t.FlowMonotone += o.FlowMonotone
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
@@ -188,6 +202,7 @@ var criteria = []Criterion{
 	{ID: "O1", Placement: true, Says: "a box that only uses stands in the top rows", check: (*look).sourcesOnTop},
 	{ID: "O2", Placement: true, Says: "a box that is only used stands in the bottom rows", check: (*look).sinksAtBottom},
 	{ID: "O3", Hard: true, Says: "a line climbs only to close a cycle", check: (*look).climbsCloseCycles},
+	{ID: "O4", Hard: true, Says: "the primary flow's stages stand in order along the view's flow axis: left to right in one row, or down its rows", check: (*look).stagesInOrder},
 	{ID: "F1", Placement: true, Says: "a frame chip stands over or under the boxes its lines reach", check: (*look).chipsOverTheirBoxes},
 	{ID: "R", Hard: true, Says: "rules 1 to 15 and 21 hold, and every relation is traced", check: (*look).rules},
 	{ID: "S", Says: fmt.Sprintf("the drawing fits one screen, %dpx wide and %dpx tall less what its page sets above it", screenW, screenH), check: (*look).fitsOneScreen},
@@ -333,6 +348,8 @@ func lintView(v view) (ViewLint, error) {
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + vl.Totals.ExcessTurns + stepCrossings*vl.Totals.Steps
 	vl.Totals.Height = v.d.Height
+	vl.Totals.AgainstAxis, vl.Totals.AgainstAxisInk = againstAxis(v.d)
+	vl.Totals.FlowMonotone = vl.Totals.Criteria["O4"]
 	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
@@ -401,10 +418,15 @@ type look struct {
 	// rels are the view's relations between two shapes, by shape index,
 	// and boxRels those between two boxes.
 	rels, boxRels [][2]int
+	// stage is the primary flow's stage of each box the layout placed by
+	// it, by shape index, and across says the stages read along one row
+	// (flowAxis). Both are empty on a view that lays no flow out.
+	stage  map[int]int
+	across bool
 }
 
 func newLook(v view, s sheet) *look {
-	l := &look{v: v, s: s, trace: trace(s, v.d.Relations), metrics: measure(s), at: map[string]int{}, row: map[int]int{}}
+	l := &look{v: v, s: s, trace: trace(s, v.d.Relations), metrics: measure(s), at: map[string]int{}, row: map[int]int{}, stage: map[int]int{}}
 	for i, sh := range s.shapes {
 		if _, ok := l.at[sh.id]; !ok {
 			l.at[sh.id] = i
@@ -412,6 +434,14 @@ func newLook(v view, s sheet) *look {
 		for _, id := range strings.Fields(sh.id) {
 			if _, ok := l.at[id]; !ok {
 				l.at[id] = i
+			}
+		}
+	}
+	if f := v.d.axis.flow; f != nil {
+		l.across = f.across
+		for id, n := range f.stage {
+			if i, ok := l.at[id]; ok && s.shapes[i].kind == "box" {
+				l.stage[i] = n
 			}
 		}
 	}
@@ -566,6 +596,9 @@ func (l *look) usersAbove() []Breach {
 	}
 	for _, r := range l.boxRels {
 		ru, rv := l.row[r[0]], l.row[r[1]]
+		if l.staged(r[0], r[1]) {
+			continue
+		}
 		if both[r] {
 			apart, pair := abs(ru-rv), [2]int{min(r[0], r[1]), max(r[0], r[1])}
 			if apart > 1 && !far[pair] {
@@ -615,6 +648,9 @@ func (l *look) siblingsInARow() []Breach {
 	for _, k := range keys {
 		bs := groups[k]
 		sort.Ints(bs)
+		if l.staged(bs...) {
+			continue
+		}
 		rows := map[int]bool{}
 		for _, b := range bs {
 			rows[l.row[b]] = true
@@ -888,6 +924,21 @@ func backWay(pts []fpt) bool {
 	a, b := pts[0], pts[len(pts)-1]
 	dy, dx := b.y-a.y, b.x-a.x
 	return !(dy > 2 || math.Abs(dy) <= 2 && dx >= 0)
+}
+
+// againstAxis counts the routes of d that run against the reading axis, and
+// sums their ink. A route is Back by backWay's rule taken the way its
+// relation is used: from a provides line's contract to its provider. A
+// mutual line leaves the upper of its two boxes, or the left one in a row
+// (overview.go, before), so it never runs back.
+func againstAxis(d Drawing) (n, ink int) {
+	for _, r := range d.ways {
+		if r.Back {
+			n++
+			ink += runLength(r.D)
+		}
+	}
+	return n, ink
 }
 
 // turnBack is one place a path runs back against the stretch two before:
@@ -1229,6 +1280,9 @@ func (l *look) hubsCentred() []Breach {
 	var out []Breach
 	hs := l.hubs()
 	for _, h := range indexes(hs) {
+		if l.staged(h) {
+			continue
+		}
 		lo, hi := math.Inf(1), math.Inf(-1)
 		for _, u := range hs[h] {
 			c := l.s.shapes[u].r.center().x
@@ -1335,7 +1389,7 @@ func (l *look) edgeRows(set map[int]bool, dir int, what string) []Breach {
 	}
 	var out []Breach
 	for _, b := range indexes(set) {
-		if l.frameSide(b) == -dir {
+		if l.frameSide(b) == -dir || l.staged(b) {
 			continue
 		}
 		var past []int
@@ -1402,9 +1456,70 @@ func (l *look) climbsCloseCycles() []Breach {
 	}
 	var out []Breach
 	for _, r := range l.boxRels {
-		if l.row[r[0]] > l.row[r[1]] && !reaches(r[1], r[0]) {
+		if l.row[r[0]] > l.row[r[1]] && !reaches(r[1], r[0]) && !l.staged(r[0], r[1]) {
 			out = append(out, Breach{Items: l.items(r[0], r[1]), Got: l.row[r[0]] - l.row[r[1]], Allowed: 0,
 				Text: fmt.Sprintf("the line from %s climbs %s to %s, which does not reach it back", l.name(r[0]), plural(l.row[r[0]]-l.row[r[1]], "row"), l.name(r[1]))})
+		}
+	}
+	return out
+}
+
+// staged says every box of bs stands where the primary flow's stage record
+// placed it, not where the lines would: P1, P2, O1, O2, O3 and H1 leave
+// such boxes to O4, which judges them by stage order.
+func (l *look) staged(bs ...int) bool {
+	if len(l.stage) == 0 {
+		return false
+	}
+	for _, b := range bs {
+		if l.stage[b] == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+// after says box b stands past box a along the view's flow axis: across, in
+// a's row and wholly right of it; down, in a lower row.
+func (l *look) after(a, b int) bool {
+	if !l.across {
+		return l.row[b] > l.row[a]
+	}
+	ra, rb := l.s.shapes[a].r, l.s.shapes[b].r
+	return l.row[a] == l.row[b] && rb.x >= ra.x+ra.w
+}
+
+// O4. The primary flow reads in order at rest: each box of a stage stands
+// after each box of the stage before it shown on the view. Each pair of
+// consecutive shown stages that does not is one breach. By transitivity
+// every two boxes of different stages then stand in stage order, which is
+// why the other placement criteria leave staged pairs to this one, and why
+// a line between two stages runs back (rule 13) exactly when it runs from a
+// later stage to an earlier one.
+func (l *look) stagesInOrder() []Breach {
+	by := map[int][]int{}
+	for _, b := range indexes(l.stage) {
+		by[l.stage[b]] = append(by[l.stage[b]], b)
+	}
+	ns := indexes(by)
+	way := "down its rows"
+	if l.across {
+		way = "left to right in one row"
+	}
+	var out []Breach
+	for k := 1; k < len(ns); k++ {
+		var off []int
+		for _, a := range by[ns[k-1]] {
+			for _, b := range by[ns[k]] {
+				if !l.after(a, b) && !slices.Contains(off, b) {
+					off = append(off, b)
+				}
+			}
+		}
+		if len(off) > 0 {
+			items := l.items(append(slices.Clone(by[ns[k-1]]), off...)...)
+			out = append(out, Breach{Items: items, Got: len(off), Allowed: 0,
+				Text: fmt.Sprintf("stage %d (%s) does not stand after stage %d (%s) %s, allowed 0", ns[k], strings.Join(names(l.items(off...)), ", "), ns[k-1], strings.Join(names(l.items(by[ns[k-1]]...)), ", "), way)})
 		}
 	}
 	return out

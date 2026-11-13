@@ -169,3 +169,25 @@ func TestAFlowFileWritesBackTheSameBytes(t *testing.T) {
 		}
 	}
 }
+
+// Figures.Primary names a stack only when exactly one known stack is marked,
+// so a double mark lays out by neither.
+func TestThePrimaryStackIsTheOneMarked(t *testing.T) {
+	stack := func(key string, known, primary bool) Stack {
+		return Stack{Key: model.FigureKey(key), Known: known, Primary: primary}
+	}
+	for _, c := range []struct {
+		stacks []Stack
+		want   string
+	}{
+		{[]Stack{stack("a", true, false), stack("b", true, true)}, "b"},
+		{[]Stack{stack("a", true, true), stack("b", true, true)}, ""},
+		{[]Stack{stack("Bad Name", false, true)}, ""},
+		{nil, ""},
+	} {
+		got, ok := Figures{Stacks: c.stacks}.Primary()
+		if string(got.Key) != c.want || ok != (c.want != "") {
+			t.Errorf("Primary of %+v = %q, %v; want %q", c.stacks, got.Key, ok, c.want)
+		}
+	}
+}

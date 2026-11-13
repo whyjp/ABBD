@@ -5,6 +5,7 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
+    against_axis: 92
     detours: 38
     excess_turns: 487
     overflow: 6
@@ -25,6 +26,8 @@ debt:
 pages:
     MOD-0072 desktop renderer UI:
         abreast: 0
+        against_axis: 15
+        against_axis_ink: 6235
         colour_switches: 31
         combs: 0
         counts: 14
@@ -37,6 +40,8 @@ pages:
         parallel_ink: 493
     MOD-0098 src/:
         abreast: 204
+        against_axis: 5
+        against_axis_ink: 1862
         colour_switches: 43
         combs: 0
         counts: 9

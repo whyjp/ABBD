@@ -90,6 +90,9 @@ type InsideUnit struct {
 	Notes         []Note `json:",omitempty"`
 	// Concepts are the items of its module's text that name it.
 	Concepts []Block `json:",omitempty"`
+	// Rank is where the unit's box stands on its module's inside, for a
+	// unit the inside draws.
+	Rank *Rank `json:",omitempty"`
 }
 
 const (
@@ -377,6 +380,19 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	var nodes []lnode
 	var edges []ledge
 	names := map[model.ID][]string{}
+	// An inside lays out by the primary flow alone, never by a stack's
+	// tiers, and a focus view keeps its full view's order instead.
+	var stages map[string]int
+	if focus == "" {
+		stages = o.flow.stagesOn(func(id model.ID) string {
+			for _, c := range t.chain(id) {
+				if t.units[c].Parent == m {
+					return string(c)
+				}
+			}
+			return ""
+		})
+	}
 	for _, u := range inner {
 		// A focus view names its boxes by their last path segment, as
 		// frame ports are; the tooltip keeps the whole name.
@@ -386,7 +402,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		ls, w := lines2(label)
 		names[u.ID] = ls
-		nodes = append(nodes, lnode{id: string(u.ID), w: w, h: 26 + len(ls)*nameLine + 2})
+		nodes = append(nodes, lnode{id: string(u.ID), w: w, h: 26 + len(ls)*nameLine + 2, stage: stages[string(u.ID)]})
 	}
 	// The frame's top and bottom take part in the layering, so a unit that
 	// meets a port on top rises toward it and one that uses a port below
@@ -641,7 +657,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)
 	}
-	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), roads: l.roads}
+	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), roads: l.roads, axis: l.axis}
 	var unwired []port
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)
@@ -673,7 +689,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	}
 	for _, u := range inner {
 		r := l.pos[string(u.ID)]
-		b := Box{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind), Artifact: model.Words(u.Built()), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "inner"}
+		b := Box{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "inner"}
 		if len(t.children[u.ID]) > 0 {
 			b.Href, b.Class = "#m-"+string(u.ID), "inner has"
 		}

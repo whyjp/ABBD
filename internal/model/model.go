@@ -78,11 +78,15 @@ const (
 	Data      Kind = "DATA"
 	Config    Kind = "CFG"
 	Feature   Kind = "FEAT"
+	// Exec is an execution context: a thread, a worker pool, an event loop,
+	// an async runtime, or the tasks one spawn site starts.
+	Exec Kind = "EXEC"
 )
 
 var kinds = map[Kind]string{
 	Module: "architecture", Interface: "architecture", Event: "architecture",
 	Data: "architecture", Config: "architecture", Feature: "features",
+	Exec: "architecture",
 }
 
 // Domain-layer prefixes are reserved and not part of this restart.
@@ -207,6 +211,9 @@ type Unit struct {
 	// it, with whoever said it: the script that reads the build, or the
 	// supplement where no script does.
 	Artifact *Fact `yaml:"artifact,omitempty"`
+	// Run is how an execution context dispatches its work and how many of it
+	// run, as ParseRun reads it, such as "tick 1". Only an EXEC carries it.
+	Run *Fact `yaml:"run,omitempty"`
 	// Relations is the shown claim on each edge. Hidden holds the other
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
@@ -263,9 +270,9 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 }
 
 // EachShownEvidence visits the items of the claims that show: the unit's
-// own, its winning parent claim's, each shown relation's, and the note
-// that names each shown edge. An outranked claim's items cannot change what
-// anyone sees.
+// own, its winning parent claim's, each shown relation's, the claim that
+// gives a shown edge its condition or, dead, gave it, and the note that names each shown
+// edge. An outranked claim's items cannot change what anyone sees.
 func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
@@ -278,6 +285,14 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Relations {
 		for j := range u.Relations[i].Evidence {
 			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
+		}
+	}
+	for i := range u.Hidden {
+		r := &u.Hidden[i]
+		if c, ok := u.ConditionEvidence(r.Kind, r.To); ok && c == r && u.Shown(r.Kind, r.To) {
+			for j := range r.Evidence {
+				f(r.Writer, &r.Evidence[j])
+			}
 		}
 	}
 	for i := range u.Phrases {
@@ -311,6 +326,75 @@ func (u Unit) Note(kind RelationKind, to ID) (PhraseNote, bool) {
 		}
 	}
 	return best, ok
+}
+
+// Condition is the condition an edge holds under, and the origin of the
+// claim that gives it: the shown claim's own, or, when it gives none, that
+// of the first other live or drifted claim on the edge that a mask does not
+// hide. The script reads the edge, and a reader may know a condition the
+// script cannot read, such as a CMake if(). A link scope says who sees the
+// link, not when it holds, so any claim's condition shows over it.
+func (u Unit) Condition(kind RelationKind, to ID) (string, Origin) {
+	if r, ok := u.conditionClaim(kind, to, false); ok {
+		return r.When, r.Writer.Origin()
+	}
+	return "", ""
+}
+
+// ConditionEvidence is the claim whose evidence backs the edge's condition:
+// the one Condition reads, or, while no live claim gives a condition, a dead
+// one, so its death stays counted and listed until a reader refreshes or
+// retracts it.
+func (u Unit) ConditionEvidence(kind RelationKind, to ID) (*Relation, bool) {
+	return u.conditionClaim(kind, to, true)
+}
+
+func (u Unit) conditionClaim(kind RelationKind, to ID, dead bool) (*Relation, bool) {
+	rank := func(r *Relation) int {
+		n := 0
+		if Scope(r.When) {
+			n = 2
+		}
+		if r.Status() == Dead {
+			n++
+		}
+		return n
+	}
+	var best *Relation
+	for _, rs := range [][]Relation{u.Relations, u.Hidden} {
+		for i := range rs {
+			r := &rs[i]
+			if r.To != to || r.Kind != kind || r.When == "" || !dead && r.Status() == Dead || u.RelationMasked(*r) {
+				continue
+			}
+			if best == nil || rank(r) < rank(best) {
+				best = r
+			}
+		}
+	}
+	return best, best != nil
+}
+
+// ConditionConflicts lists the shown edges where another live claim gives a
+// condition, or a link scope, other than the shown claim's own. The shown
+// claim's shows; the other stays stored until its writer drops it.
+func ConditionConflicts(units []Unit) []string {
+	var out []string
+	for _, u := range Present(units) {
+		for _, r := range u.Relations {
+			if r.Dead || r.When == "" {
+				continue
+			}
+			for _, h := range u.Hidden {
+				if h.To != r.To || h.Kind != r.Kind || h.When == "" || h.When == r.When || Scope(h.When) != Scope(r.When) || h.Status() == Dead || u.RelationMasked(h) {
+					continue
+				}
+				what := map[bool]string{false: "condition", true: "scope"}[Scope(r.When)]
+				out = append(out, fmt.Sprintf("%s: the %s gives %s %q, the %s's %q shows", Edge{From: u.ID, To: r.To, Kind: r.Kind}, h.Writer, what, h.When, r.Writer, r.When))
+			}
+		}
+	}
+	return out
 }
 
 // DanglingNote is a phrase note that names no line, by its edge and writer.
@@ -387,6 +471,14 @@ func (u Unit) Validate() error {
 	if len(u.Entries) > 0 && !u.Kind.IsContract() {
 		return fmt.Errorf("%s: only contracts carry entries", u.ID)
 	}
+	if u.Run != nil {
+		if u.Kind != Exec {
+			return fmt.Errorf("%s: only an execution context carries a run", u.ID)
+		}
+		if _, err := ParseRun(u.Run.Value); err != nil {
+			return fmt.Errorf("%s: %w", u.ID, err)
+		}
+	}
 	if err := ValidateEntries(u.Entries); err != nil {
 		return fmt.Errorf("%s: %w", u.ID, err)
 	}
@@ -458,6 +550,9 @@ func (r Relation) validate() error {
 		return err
 	}
 	if err := validateEvidence(r.Evidence); err != nil {
+		return err
+	}
+	if err := r.Kind.Quoted(len(r.Evidence)); err != nil {
 		return err
 	}
 	if err := sourced(r.Writer, r.Source); err != nil {
@@ -544,6 +639,10 @@ var viaSynonyms = map[Via][]string{
 	"convention":    {"conventions", "naming"},
 	"load":          {"loads", "dynamic load", "plugin load", "dlopen"},
 	"spawn":         {"spawns", "process", "subprocess", "exec"},
+	"queue":         {"queues", "enqueue", "work queue"},
+	"channel":       {"channels", "sends", "message", "messages"},
+	"signal":        {"signals", "notify", "wakes", "wake up"},
+	"proxy":         {"proxies", "forwards", "delegates"},
 }
 
 // restates reports whether a phrase only says the via in other words.
@@ -599,24 +698,54 @@ const (
 	DependsOn RelationKind = "depends_on"
 	Consumes  RelationKind = "consumes"
 	Provides  RelationKind = "provides"
+	// RunsOn says the unit's code runs on an execution context. From one
+	// execution context to another, its tasks run on that runtime.
+	RunsOn RelationKind = "runs_on"
+	// PostsTo says the unit hands work or data to an execution context.
+	PostsTo RelationKind = "posts_to"
 )
 
 // ends says which kinds of unit each relation kind may join: a module or a
-// feature provides a contract, and anything may consume a contract or depend
-// on any unit.
-var ends = map[RelationKind]struct{ from, to func(Kind) bool }{
+// feature provides a contract, anything may consume a contract or depend on
+// any unit, a module, a feature or an execution context runs on an execution
+// context, and a module or an execution context posts to one. Quotes is the
+// fewest evidence items a claim of the kind needs: a posts_to quotes the
+// producer and the consumer.
+var ends = map[RelationKind]struct {
+	from, to func(Kind) bool
+	quotes   int
+}{
 	Provides:  {from: implementer, to: Kind.IsContract},
 	Consumes:  {from: anyKind, to: Kind.IsContract},
 	DependsOn: {from: anyKind, to: anyKind},
+	RunsOn:    {from: func(k Kind) bool { return implementer(k) || k == Exec }, to: isExec},
+	PostsTo:   {from: func(k Kind) bool { return k == Module || k == Exec }, to: isExec, quotes: 2},
 }
 
 func implementer(k Kind) bool { return k == Module || k == Feature }
 func anyKind(Kind) bool       { return true }
+func isExec(k Kind) bool      { return k == Exec }
 
 // Uses reports whether a relation of kind k runs from a unit that uses the
 // other: it consumes it or depends on it. A provides runs from the unit that
-// implements a contract to the contract it serves, and uses nothing.
+// implements a contract to the contract it serves, and uses nothing. A
+// runs_on or a posts_to is a run-time fact, not a dependency of the code:
+// the context calls the code that runs on it, and the code a producer calls
+// to post is its own depends_on or consumes. Neither is a use, so neither
+// breaches a layer.
 func (k RelationKind) Uses() bool { return k == Consumes || k == DependsOn }
+
+// RunTime reports whether a relation of kind k says what runs on an
+// execution context or what is handed to one.
+func (k RelationKind) RunTime() bool { return k == RunsOn || k == PostsTo }
+
+// Quoted checks that a claim of kind k cites enough evidence items.
+func (k RelationKind) Quoted(n int) error {
+	if q := ends[k].quotes; n < q {
+		return fmt.Errorf("a %s quotes both the producer and the consumer, so it needs %d or more evidence items, got %d", k, q, n)
+	}
+	return nil
+}
 
 func (k RelationKind) Validate() error {
 	if _, ok := ends[k]; !ok {
@@ -632,7 +761,26 @@ func (k RelationKind) Joins(from, to Kind) error {
 		return err
 	}
 	if e := ends[k]; !e.from(from) || !e.to(to) {
-		return fmt.Errorf("%s %s %s is not a relation ABBD knows: a module or feature provides a contract, and anything consumes a contract or depends_on any unit", from, k, to)
+		return fmt.Errorf("%s %s %s is not a relation ABBD knows: a module or feature provides a contract, anything consumes a contract or depends_on any unit, a module, feature or EXEC runs_on an EXEC, and a module or EXEC posts_to an EXEC", from, k, to)
+	}
+	return nil
+}
+
+// MaxWhen bounds a relation's condition, which names a feature, a cfg or a
+// scope rather than restating the build file.
+const MaxWhen = 60
+
+// Scope says a relation's when is a link scope, which says who sees the
+// link rather than when it holds.
+func Scope(when string) bool {
+	return when == "PRIVATE" || when == "PUBLIC" || when == "INTERFACE"
+}
+
+// ValidateWhen refuses a condition that runs over MaxWhen characters or
+// over one line.
+func ValidateWhen(w string) error {
+	if strings.ContainsAny(w, "\r\n") || len([]rune(w)) > MaxWhen {
+		return fmt.Errorf("condition %q: one line of at most %d characters, such as feature = \"sinks-kafka\", cfg(unix) or dev", w, MaxWhen)
 	}
 	return nil
 }
@@ -695,12 +843,14 @@ var vias = map[Via]bool{
 	"import": true, "trait": true, "callback": true, "macro": true, "config": true,
 	"build-feature": true, "data": true, "convention": true, "call": true,
 	"load": true, "spawn": true, "link": true,
+	"queue": true, "channel": true, "signal": true, "proxy": true,
 }
 
 var viaWords = map[Via]string{
 	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
 	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
 	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행", "link": "링크",
+	"queue": "큐", "channel": "채널", "signal": "신호", "proxy": "프록시",
 }
 
 // plain are the vias whose word a line's style already says: a solid line
@@ -716,7 +866,7 @@ func (v Via) Plain() bool { return plain[v] }
 
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {
-		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load, spawn or link", v)
+		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load, spawn, link, queue, channel, signal or proxy", v)
 	}
 	return nil
 }
@@ -815,6 +965,10 @@ type Relation struct {
 	Entries []string `yaml:"entries,omitempty"`
 	// Digest fingerprints the lines that hold the live evidence.
 	Digest string `yaml:"digest,omitempty"`
+	// When is the condition the relation holds under, as the build says it:
+	// a feature, a cfg, a dev or build dependency, or a link scope such as
+	// PRIVATE. Empty means it always holds.
+	When string `yaml:"when,omitempty"`
 	// Origin and Dead are derived by Resolve. Dead marks a claim whose
 	// evidence is all dead.
 	Origin Origin `yaml:"-"`

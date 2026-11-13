@@ -52,6 +52,8 @@ type Drawing struct {
 	Card *Card `json:",omitempty"`
 	// roads says its lines ride roads (confluence.go).
 	roads bool
+	// axis is what its layout ranked the rows by (rank.go).
+	axis axis
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for
@@ -279,8 +281,17 @@ const (
 func kindWord(k model.Kind) string {
 	return map[model.Kind]string{
 		model.Module: "모듈", model.Interface: "인터페이스", model.Event: "이벤트",
-		model.Data: "데이터", model.Config: "설정", model.Feature: "기능",
+		model.Data: "데이터", model.Config: "설정", model.Feature: "기능", model.Exec: "실행",
 	}[k]
+}
+
+// boxTag is the line under a box's name: the build artifact a module is, or
+// how an execution context runs, such as "TICK · 1".
+func boxTag(u model.Unit) string {
+	if r, ok := u.Ran(); ok {
+		return r.Words()
+	}
+	return model.Words(u.Built())
 }
 
 // gist is the first clause of a unit's sentence, so a box says what it does
@@ -475,6 +486,9 @@ type overview struct {
 	more        map[model.ID]int
 	counted     [][2]string
 	countedRels []string
+	// flow is the stack marked the primary flow, which orders the full
+	// overview and the insides of the units it crosses, nil for none.
+	flow *layering
 }
 
 // top lists the top-level units, those with no parent, and the drawn
@@ -691,6 +705,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		}
 	}
 	tiers, steps := map[string]int{}, map[string]int{}
+	var stages map[string]int
 	if focus == "" {
 		box := func(u model.ID) string {
 			if c := o.tree.chain(u); len(c) > 0 && isModule[c[0]] {
@@ -698,6 +713,8 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			}
 			return ""
 		}
+		o.flow = primaryOf(stacks)
+		stages = o.flow.stagesOn(box)
 		for i, g := range stackOf(stacks, box, func(ids []string) []string { return ids }) {
 			for _, id := range g.ids {
 				tiers[id] = i + 1
@@ -719,7 +736,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)]})
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
@@ -751,6 +768,10 @@ type attach struct {
 	one bool
 	// runs are the x each of its lines runs at toward the edge.
 	runs []int
+	// to is the least ID of the places its lines lead to. Chips that lead
+	// to one x stand in its order, not in the order of the contracts they
+	// carry, so a chip keeps its place when its line gains a contract.
+	to string
 }
 
 // reorder moves chips of an edge settle set out to other places in their
@@ -803,6 +824,9 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 	sort.SliceStable(items, func(i, j int) bool {
 		if items[i].other != items[j].other {
 			return items[i].other < items[j].other
+		}
+		if items[i].to != items[j].to {
+			return items[i].to < items[j].to
 		}
 		return items[i].key < items[j].key
 	})
@@ -951,14 +975,20 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	// One line per user and provider, however many contracts it carries:
 	// it leaves the user's chip for those contracts and reaches the
 	// provider's.
-	toward := map[string][]int{}
+	toward, to := map[string][]int{}, map[string]string{}
+	lead := func(key string, x int, place model.ID) {
+		if xs := toward[key]; len(xs) == 0 || string(place) < to[key] {
+			to[key] = string(place)
+		}
+		toward[key] = append(toward[key], x)
+	}
 	for _, k := range o.pairs {
 		u, p := k[0], k[1]
 		in, out := chipKey(u, o.carry[k], false), string(p)
-		toward[in] = append(toward[in], l.toward(string(u), string(p)))
+		lead(in, l.toward(string(u), string(p)), p)
 		if isModule(p) {
 			out = chipKey(p, o.carry[k], true)
-			toward[out] = append(toward[out], l.toward(string(p), string(u)))
+			lead(out, l.toward(string(p), string(u)), u)
 		}
 		var titles, rels []string
 		for _, c := range o.carry[k] {
@@ -980,7 +1010,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 					}
 					other /= len(xs)
 				}
-				a := attach{key: ch.key, label: ch.label, other: other}
+				a := attach{key: ch.key, label: ch.label, other: other, to: to[ch.key]}
 				if side == 0 {
 					tops[m] = append(tops[m], a)
 				} else {
@@ -1041,10 +1071,17 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			bypasses[[2]model.ID{s.from, s.to}] = i
 		}
 	}
+	// Two stages that stand next to each other on a spine keep a hop each
+	// way (hops): the one that runs in stage order carries one head, as the
+	// numbered lead reads it, and the other runs back on a lane of its own.
+	staged := func(a, b model.ID) bool {
+		f := l.axis.flow
+		return f != nil && f.across && f.stage[string(a)] > 0 && f.stage[string(b)] > 0 && l.row[string(a)] == l.row[string(b)] && l.besides(string(a), string(b))
+	}
 	gone := map[int]bool{}
 	for i, s := range merged {
 		j, ok := bypasses[[2]model.ID{s.to, s.from}]
-		if s.kind != "bypass" || !ok || gone[i] || gone[j] {
+		if s.kind != "bypass" || !ok || gone[i] || gone[j] || staged(s.from, s.to) {
 			continue
 		}
 		keep, drop := i, j
@@ -1093,11 +1130,11 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads, axis: l.axis}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: model.Words(u.Built()), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		bands := o.chipBands[m]
 		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2

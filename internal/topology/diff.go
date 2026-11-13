@@ -15,6 +15,8 @@ type Ref struct {
 	Kind model.Kind         `json:"kind"`
 	Name string             `json:"name"`
 	Why  model.AbsentReason `json:"why,omitempty"`
+	// Run is how an execution context runs, as its unit stores it.
+	Run string `json:"run,omitempty"`
 }
 
 // Changed is one field of a unit that changed: its name, its parent, its
@@ -72,6 +74,14 @@ type Relation struct {
 	ToName   string             `json:"to_name"`
 }
 
+// Condition is a relation, there before and now, whose condition changed:
+// the feature, cfg or scope it holds under, "" for always.
+type Condition struct {
+	Relation
+	Old string `json:"old"`
+	New string `json:"new"`
+}
+
 // Coupling is a reader's relation, with how it arises and the code it rests on.
 type Coupling struct {
 	Relation
@@ -106,7 +116,13 @@ type Diff struct {
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
 	RelationsRemoved []Relation `json:"relations_removed"`
-	InferredAdded    []Coupling `json:"inferred_added"`
+	// Conditions are the relations whose condition changed.
+	Conditions []Condition `json:"relation_conditions_changed"`
+	// RunsAdded and RunsRemoved are the live runs_on and posts_to
+	// relations, from any writer, between the units they join.
+	RunsAdded     []Coupling `json:"runs_added"`
+	RunsRemoved   []Coupling `json:"runs_removed"`
+	InferredAdded []Coupling `json:"inferred_added"`
 	// InferredDead are reader's couplings that were live and whose
 	// evidence is now dead, so the blueprint no longer draws them.
 	InferredDead []Coupling `json:"inferred_dead"`
@@ -156,6 +172,17 @@ func Compare(base, now []model.Unit) Diff {
 			d.RelationsRemoved = append(d.RelationsRemoved, was[k])
 		}
 	}
+	wasRun, isRun := runs(b), runs(n)
+	for _, k := range keys(isRun) {
+		if _, ok := wasRun[k]; !ok {
+			d.RunsAdded = append(d.RunsAdded, isRun[k])
+		}
+	}
+	for _, k := range keys(wasRun) {
+		if _, ok := isRun[k]; !ok {
+			d.RunsRemoved = append(d.RunsRemoved, wasRun[k])
+		}
+	}
 	d.UsesAdded, d.UsesRemoved = newUses(b, n, was, is), newUses(n, b, is, was)
 	d.UsesWidened, d.UsesNarrowed = widened(b, n, was, is), widened(n, b, is, was)
 	old := inferred(b)
@@ -175,6 +202,7 @@ func Compare(base, now []model.Unit) Diff {
 			d.InferredDead = append(d.InferredDead, died[k])
 		}
 	}
+	d.Conditions = conditions(base, now)
 	return d
 }
 
@@ -192,12 +220,15 @@ func (d *Diff) fields(old, u model.Unit) {
 	nr, ro := val(u.Responsibility)
 	oa, _ := val(old.Artifact)
 	na, ao := val(u.Artifact)
+	orun, _ := val(old.Run)
+	nrun, runo := val(u.Run)
 	for _, c := range []Changed{
 		{Field: "name", Old: old.Name.Value, New: u.Name.Value, Origin: u.Name.Origin},
 		{Field: "parent", Old: string(old.Parent), New: string(u.Parent), Origin: u.ParentOrigin},
 		{Field: "purpose", Old: op, New: np, Origin: no},
 		{Field: "responsibility", Old: or, New: nr, Origin: ro},
 		{Field: "artifact", Old: oa, New: na, Origin: ao},
+		{Field: "run", Old: orun, New: nrun, Origin: runo},
 	} {
 		if c.Old != c.New {
 			c.Ref = ref(u)
@@ -344,10 +375,10 @@ func (d Diff) Boundary() bool {
 func (d Diff) Lines() []string {
 	var out []string
 	for _, r := range d.UnitsAdded {
-		out = append(out, fmt.Sprintf("+ unit %s %s", r.ID, r.Name))
+		out = append(out, fmt.Sprintf("+ %s %s %s%s", unitWord(r), r.ID, r.Name, runOf(r)))
 	}
 	for _, r := range d.UnitsRemoved {
-		s := fmt.Sprintf("- unit %s %s", r.ID, r.Name)
+		s := fmt.Sprintf("- %s %s %s%s", unitWord(r), r.ID, r.Name, runOf(r))
 		if r.Why != "" {
 			s += " (" + string(r.Why) + ")"
 		}
@@ -399,6 +430,16 @@ func (d Diff) Lines() []string {
 	for _, r := range d.RelationsRemoved {
 		out = append(out, "- relation "+r.line())
 	}
+	for _, c := range d.RunsAdded {
+		s := "+ run " + c.line() + viaOf(c.Via)
+		if c.Quote != "" {
+			s += ": " + c.Quote
+		}
+		out = append(out, s)
+	}
+	for _, c := range d.RunsRemoved {
+		out = append(out, "- run "+c.line()+viaOf(c.Via))
+	}
 	for _, u := range d.UsesAdded {
 		out = append(out, fmt.Sprintf("+ entry use %s %s %s %s (%s %s %s)", u.From, u.Kind, u.To, u.Entry, u.FromName, u.Kind, u.ToName))
 	}
@@ -421,6 +462,9 @@ func (d Diff) Lines() []string {
 			out = append(out, fmt.Sprintf("~ %s %s %s: %q -> %q%s", c.Field, c.ID, c.Name, c.Old, c.New, by(c.Origin)))
 		}
 	}
+	for _, c := range d.Conditions {
+		out = append(out, fmt.Sprintf("~ condition %s %s %s: %q -> %q (%s %s %s)", c.From, c.Kind, c.To, c.Old, c.New, c.FromName, c.Kind, c.ToName))
+	}
 	for _, c := range d.InferredDead {
 		out = append(out, "- inferred dead "+c.line())
 	}
@@ -435,6 +479,29 @@ func (d Diff) Lines() []string {
 		out = append(out, s)
 	}
 	return out
+}
+
+// unitWord names an execution context apart from the other units, since a
+// reviewer weighs a new thread or pool on its own.
+func unitWord(r Ref) string {
+	if r.Kind == model.Exec {
+		return "exec"
+	}
+	return "unit"
+}
+
+func runOf(r Ref) string {
+	if r.Run == "" {
+		return ""
+	}
+	return ": " + r.Run
+}
+
+func viaOf(v model.Via) string {
+	if v == "" {
+		return ""
+	}
+	return " via " + string(v)
 }
 
 func orTop(p string) string {
@@ -481,7 +548,13 @@ func keys[V any](m map[string]V) []string {
 	return out
 }
 
-func ref(u model.Unit) Ref { return Ref{ID: u.ID, Kind: u.Kind, Name: u.Name.Value} }
+func ref(u model.Unit) Ref {
+	r := Ref{ID: u.ID, Kind: u.Kind, Name: u.Name.Value}
+	if u.Run != nil {
+		r.Run = u.Run.Value
+	}
+	return r
+}
 
 func sig(u model.Unit) string {
 	if u.Signature == nil {
@@ -508,7 +581,7 @@ func between(units map[model.ID]model.Unit) map[string]Relation {
 	out := map[string]Relation{}
 	for _, u := range units {
 		for _, r := range u.Relations {
-			if _, ok := units[r.To]; !ok || !r.Counts() {
+			if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {
 				continue
 			}
 			e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}
@@ -520,18 +593,43 @@ func between(units map[model.ID]model.Unit) map[string]Relation {
 	return out
 }
 
+// runs lists the live runs_on and posts_to relations, keyed by edge, each
+// with every quote it rests on, so a posts_to shows its producer and its
+// consumer. A reader writes most of them, so they are listed whoever wrote
+// them, and the reader's lists leave them out.
+func runs(units map[model.ID]model.Unit) map[string]Coupling {
+	out := map[string]Coupling{}
+	for _, u := range units {
+		for _, r := range u.Relations {
+			if _, ok := units[r.To]; !ok || r.Dead || !r.Kind.RunTime() {
+				continue
+			}
+			c := Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
+			var qs []string
+			for _, e := range r.Evidence {
+				qs = append(qs, e.String())
+			}
+			c.Quote = strings.Join(qs, ", ")
+			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = c
+		}
+	}
+	return out
+}
+
 // inferred lists the live reader's couplings, keyed by edge.
 func inferred(units map[model.ID]model.Unit) map[string]Coupling {
 	out := map[string]Coupling{}
 	for _, u := range units {
 		for _, r := range u.Relations {
-			if _, ok := units[r.To]; !ok || !r.Guess() || r.Dead {
+			if _, ok := units[r.To]; !ok || !r.Guess() || r.Dead || r.Kind.RunTime() {
 				continue
 			}
 			c := Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
-			if len(r.Evidence) > 0 {
-				c.Quote = r.Evidence[0].String()
+			var qs []string
+			for _, e := range r.Evidence {
+				qs = append(qs, e.String())
 			}
+			c.Quote = strings.Join(qs, ", ")
 			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = c
 		}
 	}
@@ -544,7 +642,7 @@ func deadInferred(units map[model.ID]model.Unit) map[string]Coupling {
 	out := map[string]Coupling{}
 	for _, u := range units {
 		for _, r := range u.Relations {
-			if _, ok := units[r.To]; !ok || !r.Guess() || !r.Dead {
+			if _, ok := units[r.To]; !ok || !r.Guess() || !r.Dead || r.Kind.RunTime() {
 				continue
 			}
 			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
@@ -573,6 +671,9 @@ func (d Diff) Within(in func(model.ID) bool) Diff {
 		UsesNarrowed:     rels(d.UsesNarrowed),
 		RelationsAdded:   rels(d.RelationsAdded),
 		RelationsRemoved: rels(d.RelationsRemoved),
+		Conditions:       keep(d.Conditions, func(c Condition) bool { return in(c.From) || in(c.To) }),
+		RunsAdded:        keep(d.RunsAdded, func(c Coupling) bool { return in(c.From) || in(c.To) }),
+		RunsRemoved:      keep(d.RunsRemoved, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		InferredAdded:    keep(d.InferredAdded, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		InferredDead:     keep(d.InferredDead, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		Changed:          keep(d.Changed, func(c Changed) bool { return in(c.ID) }),
@@ -675,4 +776,38 @@ func sigDelta(old, now string) string {
 		return "the same words in another order; --json has both"
 	}
 	return strings.Join(d, " ") + "; --json has both"
+}
+
+// conditions lists the live relations, there in base and now, whose
+// condition changed, in the order of their edges.
+func conditions(base, now []model.Unit) []Condition {
+	when := func(units []model.Unit) map[string]Condition {
+		name := map[model.ID]string{}
+		for _, u := range units {
+			name[u.ID] = u.Name.Value
+		}
+		out := map[string]Condition{}
+		for _, u := range model.Present(units) {
+			for _, r := range u.Relations {
+				if r.Dead {
+					continue
+				}
+				w, _ := u.Condition(r.Kind, r.To)
+				out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Condition{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: name[r.To]}, New: w}
+			}
+		}
+		return out
+	}
+	was, is := when(base), when(now)
+	var out []Condition
+	for _, k := range keys(is) {
+		b, ok := was[k]
+		if !ok || b.New == is[k].New {
+			continue
+		}
+		c := is[k]
+		c.Old = b.New
+		out = append(out, c)
+	}
+	return out
 }

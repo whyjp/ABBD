@@ -151,6 +151,9 @@ func (e env) recordRelation(pos []string) error {
 	}
 	if phrased {
 		fmt.Fprintf(e.stdout, "recorded %s.phrase, %s: %q names what crosses it while its evidence is live and a claim shows on the edge\n", edge, w.Origin(), note.Text)
+		if w.Origin() == model.Inferred {
+			e.checkLanguage(edge.String()+".phrase", note.Text)
+		}
 	}
 	if labels {
 		fmt.Fprintf(e.stdout, "the edge already shows, so its claims stay as they were\n")
@@ -295,10 +298,12 @@ func place(id model.ID) string {
 	return string(id)
 }
 
-// statedFields are the why-fields a human states; code facts come from the script.
+// statedFields are the fields a human states: the why-fields, and how an
+// execution context runs. Code facts come from the script.
 var statedFields = map[string]func(*model.Unit) **model.Fact{
 	"purpose":        func(u *model.Unit) **model.Fact { return &u.Purpose },
 	"responsibility": func(u *model.Unit) **model.Fact { return &u.Responsibility },
+	"run":            func(u *model.Unit) **model.Fact { return &u.Run },
 }
 
 // recordFact writes what a human stated about a unit, with where they said it.
@@ -309,7 +314,7 @@ func (e env) recordFact(key string) error {
 	_, isSlot := model.SlotNamed(slot)
 	switch {
 	case !ok && !isSlot:
-		return fmt.Errorf("%q is not ID.purpose, ID.responsibility or ID.decisions.KEY", key)
+		return fmt.Errorf("%q is not ID.purpose, ID.responsibility, EXEC-ID.run or ID.decisions.KEY", key)
 	case strings.TrimSpace(e.value) == "":
 		return fmt.Errorf("give the stated text with --value")
 	case e.sourceRef() == "":
@@ -325,7 +330,15 @@ func (e env) recordFact(key string) error {
 	if !ok {
 		return fmt.Errorf("%s is not a unit of the state", id)
 	}
-	f := model.Stated(strings.TrimSpace(e.value), e.sourceRef())
+	value := strings.TrimSpace(e.value)
+	if field == "run" {
+		r, err := model.ParseRun(value)
+		if err != nil {
+			return err
+		}
+		value = r.String()
+	}
+	f := model.Stated(value, e.sourceRef())
 	*at(&u) = &f
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
@@ -369,12 +382,18 @@ type target struct {
 	edge  *model.Edge
 	// phrase says the target is the phrase note on edge, not its claims.
 	phrase bool
+	// when says the target is the claims on edge that give it a condition.
+	when bool
 }
 
 func parseTarget(s string) (target, error) {
 	if e, ok := strings.CutSuffix(s, ".phrase"); ok && strings.Count(e, ".") == 2 {
 		edge, err := model.ParseEdge(e)
 		return target{id: edge.From, edge: &edge, phrase: true}, err
+	}
+	if e, ok := strings.CutSuffix(s, ".when"); ok && strings.Count(e, ".") == 2 {
+		edge, err := model.ParseEdge(e)
+		return target{id: edge.From, edge: &edge, when: true}, err
 	}
 	if strings.Count(s, ".") == 2 {
 		edge, err := model.ParseEdge(s)
@@ -387,7 +406,7 @@ func parseTarget(s string) (target, error) {
 	switch field {
 	case "", "parent", "purpose", "responsibility":
 	default:
-		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility, an edge such as MOD-0001.depends_on.MOD-0002 or its phrase, EDGE.phrase", s)
+		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility, an edge such as MOD-0001.depends_on.MOD-0002, its phrase, EDGE.phrase, or its condition, EDGE.when", s)
 	}
 	return target{id: model.ID(id), field: field}, nil
 }
@@ -443,7 +462,7 @@ func (e env) refresh(s string) error {
 	case t.edge != nil:
 		var base *model.Relation
 		for _, r := range u.Claims() {
-			if r.To == t.edge.To && r.Kind == t.edge.Kind && (r.Writer == model.Reader || r.Writer == model.Supplement && base == nil) {
+			if r.To == t.edge.To && r.Kind == t.edge.Kind && (!t.when || r.When != "") && (r.Writer == model.Reader || r.Writer == model.Supplement && base == nil) {
 				base = &r
 			}
 		}
@@ -516,7 +535,7 @@ func (e env) retract(s string) error {
 		key := model.PhraseTarget(t.edge.Kind, t.edge.To)
 		for _, n := range slices.Clone(u.Phrases) {
 			switch {
-			case n.To != t.edge.To || n.Kind != t.edge.Kind:
+			case t.when || n.To != t.edge.To || n.Kind != t.edge.Kind:
 			case n.Writer == w:
 				u.DropNotes(func(o model.PhraseNote) bool { return o.To == n.To && o.Kind == n.Kind && o.Writer == w })
 				changed = true
@@ -533,7 +552,9 @@ func (e env) retract(s string) error {
 			what = "the phrase"
 		}
 		key = model.RelationTarget(t.edge.Kind, t.edge.To)
-		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool { return r.To != t.edge.To || r.Kind != t.edge.Kind })
+		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool {
+			return r.To != t.edge.To || r.Kind != t.edge.Kind || t.when && r.When == ""
+		})
 		for _, r := range claims {
 			switch {
 			case r.Writer == w:

@@ -1138,6 +1138,10 @@
   shared:
     path: internal/model/model.go
 - new: MOD-0030
+  existing: MOD-0032
+  shared:
+    path: internal/model/model.go
+- new: MOD-0030
   existing: MOD-0033
   shared:
     path: internal/model/model.go
@@ -1155,6 +1159,10 @@
     path: internal/screen/page.go
 - new: MOD-0041
   existing: MOD-0042
+  shared:
+    path: internal/store/store.go
+- new: MOD-0041
+  existing: MOD-0044
   shared:
     path: internal/store/store.go
 - new: MOD-0041
