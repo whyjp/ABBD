@@ -54,6 +54,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 
 RG = "ripgrep overview"
+RG1 = "ripgrep overview focus MOD-0001 ripgrep"
 R72 = "orca MOD-0072 desktop renderer UI"
 F73 = "orca MOD-0072 focus MOD-0073 renderer/app-shell"
 S98 = "orca MOD-0098 src/"
@@ -189,6 +190,15 @@ def x_travel(frm, to, *more):
     def m(t, view):
         return round(sum(abs(b[0] - a[0]) for f in (frm, *more) for w in [ways(t, view, f, to)[0]["pts"]]
                          for a, b in zip(w, w[1:])))
+    return m
+
+
+def x_slack(frm, *tos):
+    """Pixels the lines from frm to each of tos run sideways past the x span
+    between their two ends."""
+    def m(t, view):
+        return round(sum(sum(abs(b[0] - a[0]) for a, b in zip(w, w[1:])) - abs(w[-1][0] - w[0][0])
+                         for to in tos for w in [ways(t, view, frm, to)[0]["pts"]]))
     return m
 
 
@@ -741,8 +751,9 @@ CASES = [
          on(doubles), 0, "guard: two lanes of one line read as one doubled line"),
     Case("rg-matcher-out", "today", RG, "px grep -> grep-matcher runs past its ends' x span",
          past_ends(GREP, MATCHER), 0, "row 71: it passes at x=769 to reach 337 from 428"),
-    Case("rg-matcher-out-ripgrep", "today", RG, "px ripgrep -> grep-matcher runs past its ends' x span",
-         past_ends('box "ripgrep" (MOD-0001)', MATCHER), 0, "the same bus as grep's line, from 578"),
+    Case("rg-matcher-out-ripgrep", "today", RG1, "px ripgrep -> grep-matcher runs past its ends' x span",
+         past_ends('box "ripgrep" (MOD-0001)', MATCHER), 0,
+         "the same bus as grep's line, from 578, on the overview; its density cut draws the line only here since b95ffaf8"),
     Case("rg-matcher-back", "today", RG, "turn-backs of lines at grep-matcher",
          on(backs, MATCHER), 0, "grep-matcher's arrivals ride around a row and back"),
     Case("r72-straight", "today", R72, "lines between boxes in one column that turn",
@@ -815,14 +826,15 @@ CASES = [
     Case("ps-parallel", EYE, "pstack overview", PARALLEL, parallel_ink, 7 * 61,
          Q_PS + "; lines 12 and 21 run 24px on one track, 17 and 41 40px; target 7px a line, user-07's, over 61 lines (user-08: 0)"),
     Case("ps-bends", EYE, "pstack overview", BENDS, bends_per_line, 100, Q_PS + "; " + EXEMPLAR_BENDS),
-    Case("rg-left-turns", EYE, RG, "turns of ripgrep -> grep-searcher and grep-matcher",
+    Case("rg-left-turns", EYE, RG1, "turns of ripgrep -> grep-searcher and grep-matcher",
          turns_of(RIPGREP, SEARCHER, MATCHER), 4,
-         Q_RG_LEFT + "; each leaves at 578, joins grep's trunk at 428 between the rows and turns 4 times; round the left, 2 each"),
-    Case("rg-left-crossings", EYE, RG, "crossings of ripgrep -> grep-searcher and grep-matcher",
-         crossings(RIPGREP, SEARCHER, MATCHER), 0, Q_RG_LEFT + "; the trunk at 428 runs through the middle of the drawing"),
-    Case("rg-left-sideways", EYE, RG, "px ripgrep -> grep-searcher and grep-matcher run sideways",
-         lambda t, v: x_travel(RIPGREP, SEARCHER)(t, v) + x_travel(RIPGREP, MATCHER)(t, v), 505,
-         "guard: 505 is the x span between their ends; the way round the left must not add sideways for its fewer turns"),
+         Q_RG_LEFT + "; on the overview each left at 578, joined grep's trunk at 428 between the rows and turned 4 times;"
+         " 2 each; the density cut draws both lines only here since b95ffaf8"),
+    Case("rg-left-crossings", EYE, RG1, "crossings of ripgrep -> grep-searcher and grep-matcher",
+         crossings(RIPGREP, SEARCHER, MATCHER), 0, Q_RG_LEFT + "; the overview's trunk at 428 ran through the middle of the drawing"),
+    Case("rg-left-sideways", EYE, RG1, "px ripgrep -> grep-searcher and grep-matcher run sideways past the x span between their ends",
+         x_slack(RIPGREP, SEARCHER, MATCHER), 0,
+         "guard: on the overview the 505 they ran was their ends' x span; the way round must not add sideways for its fewer turns"),
     Case("rg-regex-steps", EYE, RG, "steps of grep-regex -> grep-matcher", on(steps, REGEX, MATCHER), 0,
          "\"grep-regex -> grep-matcher 로 가는 선의 계단이 불필요하게 발생\"; 483,340 down to 372, left to 448, down to 508, left to 376, down: 4 turns"),
     Case("s98-parallel", EYE, S98, PARALLEL, parallel_ink, 7 * 37,
