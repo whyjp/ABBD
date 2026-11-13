@@ -27,3 +27,374 @@ pages:
         label_repeats: 0
         labelled: 13
         parallel_ink: 511
+prose:
+    language: ko
+    reason: written before project.yaml named ko; each text is written in ko when it is next read again, stale or touched
+    owed:
+        - project purpose
+        - CFG-0001 purpose
+        - CFG-0001 responsibility
+        - CFG-0002 purpose
+        - CFG-0002 responsibility
+        - DATA-0001 purpose
+        - DATA-0001 responsibility
+        - DATA-0001 phrase depends_on FEAT-0001
+        - DATA-0001 phrase depends_on FEAT-0004
+        - DATA-0001 phrase depends_on FEAT-0008
+        - DATA-0002 purpose
+        - DATA-0002 responsibility
+        - DATA-0003 purpose
+        - DATA-0003 responsibility
+        - DATA-0004 purpose
+        - DATA-0004 responsibility
+        - DATA-0005 purpose
+        - DATA-0006 purpose
+        - DATA-0006 responsibility
+        - DATA-0007 purpose
+        - DATA-0007 responsibility
+        - DATA-0008 purpose
+        - DATA-0008 responsibility
+        - DATA-0009 purpose
+        - DATA-0009 responsibility
+        - DATA-0010 responsibility
+        - DATA-0011 responsibility
+        - DATA-0012 responsibility
+        - DATA-0013 responsibility
+        - DATA-0014 responsibility
+        - DATA-0015 responsibility
+        - DATA-0017 responsibility
+        - DATA-0018 responsibility
+        - DATA-0019 responsibility
+        - DATA-0020 responsibility
+        - DATA-0021 responsibility
+        - DATA-0022 responsibility
+        - DATA-0023 responsibility
+        - FEAT-0001 purpose
+        - FEAT-0001 responsibility
+        - FEAT-0001 phrase consumes IF-0001
+        - FEAT-0001 phrase consumes IF-0003
+        - FEAT-0001 phrase consumes IF-0004
+        - FEAT-0001 phrase consumes IF-0007
+        - FEAT-0001 phrase consumes IF-0008
+        - FEAT-0001 phrase consumes IF-0009
+        - FEAT-0001 phrase consumes IF-0010
+        - FEAT-0001 phrase consumes IF-0011
+        - FEAT-0001 phrase consumes IF-0013
+        - FEAT-0001 phrase consumes IF-0014
+        - FEAT-0001 phrase consumes IF-0020
+        - FEAT-0001 phrase consumes IF-0021
+        - FEAT-0001 phrase consumes IF-0022
+        - FEAT-0001 phrase consumes IF-0023
+        - FEAT-0001 phrase consumes IF-0024
+        - FEAT-0001 phrase consumes IF-0025
+        - FEAT-0002 purpose
+        - FEAT-0002 responsibility
+        - FEAT-0002 phrase consumes IF-0004
+        - FEAT-0002 phrase consumes IF-0007
+        - FEAT-0002 phrase consumes IF-0008
+        - FEAT-0002 phrase consumes IF-0012
+        - FEAT-0002 phrase consumes IF-0013
+        - FEAT-0002 phrase consumes IF-0018
+        - FEAT-0002 phrase consumes IF-0020
+        - FEAT-0003 responsibility
+        - FEAT-0003 phrase depends_on FEAT-0002
+        - FEAT-0004 responsibility
+        - FEAT-0004 phrase consumes IF-0003
+        - FEAT-0004 phrase consumes IF-0004
+        - FEAT-0004 phrase consumes IF-0007
+        - FEAT-0004 phrase consumes IF-0008
+        - FEAT-0006 responsibility
+        - FEAT-0006 phrase consumes IF-0010
+        - FEAT-0006 phrase consumes IF-0011
+        - FEAT-0006 phrase consumes IF-0013
+        - FEAT-0007 responsibility
+        - FEAT-0007 phrase consumes IF-0009
+        - FEAT-0007 phrase consumes IF-0010
+        - FEAT-0008 responsibility
+        - FEAT-0008 phrase consumes IF-0001
+        - FEAT-0008 phrase consumes IF-0006
+        - FEAT-0009 responsibility
+        - FEAT-0009 phrase consumes IF-0001
+        - FEAT-0009 phrase consumes IF-0002
+        - FEAT-0009 phrase consumes IF-0014
+        - FEAT-0011 responsibility
+        - FEAT-0011 phrase depends_on FEAT-0023
+        - FEAT-0012 responsibility
+        - FEAT-0012 phrase depends_on FEAT-0023
+        - FEAT-0013 responsibility
+        - FEAT-0014 responsibility
+        - FEAT-0014 phrase consumes IF-0012
+        - FEAT-0016 responsibility
+        - FEAT-0016 phrase depends_on FEAT-0001
+        - FEAT-0016 phrase consumes IF-0005
+        - FEAT-0017 responsibility
+        - FEAT-0017 phrase consumes IF-0009
+        - FEAT-0017 phrase consumes IF-0018
+        - FEAT-0018 responsibility
+        - FEAT-0020 responsibility
+        - FEAT-0023 responsibility
+        - FEAT-0023 phrase depends_on FEAT-0018
+        - FEAT-0023 phrase depends_on FEAT-0020
+        - FEAT-0025 responsibility
+        - FEAT-0025 phrase depends_on FEAT-0023
+        - FEAT-0025 phrase consumes IF-0013
+        - FEAT-0026 responsibility
+        - FEAT-0026 phrase depends_on MOD-0055
+        - IF-0001 purpose
+        - IF-0001 responsibility
+        - IF-0002 purpose
+        - IF-0002 responsibility
+        - IF-0003 purpose
+        - IF-0003 responsibility
+        - IF-0004 purpose
+        - IF-0004 responsibility
+        - IF-0005 purpose
+        - IF-0005 responsibility
+        - IF-0006 purpose
+        - IF-0006 responsibility
+        - IF-0007 purpose
+        - IF-0007 responsibility
+        - IF-0008 purpose
+        - IF-0008 responsibility
+        - IF-0009 purpose
+        - IF-0009 responsibility
+        - IF-0010 purpose
+        - IF-0010 responsibility
+        - IF-0011 purpose
+        - IF-0011 responsibility
+        - IF-0012 purpose
+        - IF-0012 responsibility
+        - IF-0013 purpose
+        - IF-0013 responsibility
+        - IF-0014 purpose
+        - IF-0014 responsibility
+        - IF-0015 purpose
+        - IF-0015 responsibility
+        - IF-0016 purpose
+        - IF-0016 responsibility
+        - IF-0017 purpose
+        - IF-0017 responsibility
+        - MOD-0001 purpose
+        - MOD-0001 responsibility
+        - MOD-0001 phrase consumes CFG-0002
+        - MOD-0001 phrase consumes DATA-0002
+        - MOD-0001 phrase consumes DATA-0004
+        - MOD-0001 phrase consumes IF-0015
+        - MOD-0001 phrase depends_on MOD-0009
+        - MOD-0001 phrase depends_on MOD-0010
+        - MOD-0001 phrase depends_on MOD-0013
+        - MOD-0001 phrase depends_on MOD-0014
+        - MOD-0001 phrase depends_on MOD-0017
+        - MOD-0001 phrase depends_on MOD-0022
+        - MOD-0001 phrase depends_on MOD-0023
+        - MOD-0001 phrase depends_on MOD-0025
+        - MOD-0001 phrase depends_on MOD-0026
+        - MOD-0001 phrase depends_on MOD-0029
+        - MOD-0001 phrase depends_on MOD-0030
+        - MOD-0001 phrase depends_on MOD-0034
+        - MOD-0001 phrase depends_on MOD-0039
+        - MOD-0001 phrase depends_on MOD-0041
+        - MOD-0001 phrase depends_on MOD-0043
+        - MOD-0001 phrase depends_on MOD-0044
+        - MOD-0001 phrase depends_on MOD-0046
+        - MOD-0001 phrase depends_on MOD-0047
+        - MOD-0001 phrase depends_on MOD-0048
+        - MOD-0001 phrase depends_on MOD-0054
+        - MOD-0001 phrase depends_on MOD-0056
+        - MOD-0002 purpose
+        - MOD-0002 responsibility
+        - MOD-0002 phrase consumes DATA-0004
+        - MOD-0002 phrase depends_on MOD-0013
+        - MOD-0002 phrase depends_on MOD-0022
+        - MOD-0002 phrase depends_on MOD-0047
+        - MOD-0003 purpose
+        - MOD-0003 responsibility
+        - MOD-0004 purpose
+        - MOD-0004 responsibility
+        - MOD-0004 phrase consumes CFG-0002
+        - MOD-0004 phrase consumes DATA-0002
+        - MOD-0004 phrase depends_on MOD-0013
+        - MOD-0004 phrase depends_on MOD-0022
+        - MOD-0004 phrase depends_on MOD-0026
+        - MOD-0005 purpose
+        - MOD-0005 responsibility
+        - MOD-0005 phrase depends_on MOD-0047
+        - MOD-0006 purpose
+        - MOD-0006 responsibility
+        - MOD-0006 phrase consumes DATA-0004
+        - MOD-0006 phrase consumes IF-0015
+        - MOD-0006 phrase depends_on MOD-0013
+        - MOD-0007 purpose
+        - MOD-0007 responsibility
+        - MOD-0007 phrase depends_on MOD-0034
+        - MOD-0008 purpose
+        - MOD-0008 responsibility
+        - MOD-0008 phrase consumes DATA-0002
+        - MOD-0008 phrase depends_on MOD-0009
+        - MOD-0009 purpose
+        - MOD-0009 responsibility
+        - MOD-0009 phrase depends_on MOD-0030
+        - MOD-0010 purpose
+        - MOD-0010 responsibility
+        - MOD-0011 purpose
+        - MOD-0011 responsibility
+        - MOD-0013 purpose
+        - MOD-0013 responsibility
+        - MOD-0013 phrase depends_on MOD-0030
+        - MOD-0014 purpose
+        - MOD-0014 responsibility
+        - MOD-0015 purpose
+        - MOD-0015 responsibility
+        - MOD-0016 purpose
+        - MOD-0016 responsibility
+        - MOD-0017 purpose
+        - MOD-0017 responsibility
+        - MOD-0017 phrase depends_on MOD-0030
+        - MOD-0018 purpose
+        - MOD-0018 responsibility
+        - MOD-0019 purpose
+        - MOD-0019 responsibility
+        - MOD-0020 purpose
+        - MOD-0020 responsibility
+        - MOD-0020 phrase depends_on MOD-0022
+        - MOD-0021 purpose
+        - MOD-0021 responsibility
+        - MOD-0022 purpose
+        - MOD-0022 responsibility
+        - MOD-0023 purpose
+        - MOD-0023 responsibility
+        - MOD-0024 purpose
+        - MOD-0024 responsibility
+        - MOD-0025 purpose
+        - MOD-0025 responsibility
+        - MOD-0026 purpose
+        - MOD-0026 responsibility
+        - MOD-0026 phrase consumes DATA-0006
+        - MOD-0026 phrase depends_on MOD-0030
+        - MOD-0027 purpose
+        - MOD-0027 responsibility
+        - MOD-0027 phrase depends_on MOD-0024
+        - MOD-0028 purpose
+        - MOD-0028 responsibility
+        - MOD-0029 purpose
+        - MOD-0029 responsibility
+        - MOD-0030 purpose
+        - MOD-0030 responsibility
+        - MOD-0031 purpose
+        - MOD-0031 responsibility
+        - MOD-0032 purpose
+        - MOD-0032 responsibility
+        - MOD-0033 purpose
+        - MOD-0033 responsibility
+        - MOD-0034 purpose
+        - MOD-0034 responsibility
+        - MOD-0034 phrase consumes IF-0015
+        - MOD-0034 phrase depends_on MOD-0025
+        - MOD-0034 phrase depends_on MOD-0030
+        - MOD-0034 phrase depends_on MOD-0042
+        - MOD-0034 phrase depends_on MOD-0046
+        - MOD-0034 phrase depends_on MOD-0047
+        - MOD-0034 phrase depends_on MOD-0056
+        - MOD-0035 purpose
+        - MOD-0035 responsibility
+        - MOD-0036 purpose
+        - MOD-0036 responsibility
+        - MOD-0037 purpose
+        - MOD-0037 responsibility
+        - MOD-0037 phrase depends_on MOD-0030
+        - MOD-0038 purpose
+        - MOD-0038 responsibility
+        - MOD-0039 purpose
+        - MOD-0039 responsibility
+        - MOD-0039 phrase consumes DATA-0006
+        - MOD-0039 phrase depends_on MOD-0022
+        - MOD-0039 phrase depends_on MOD-0041
+        - MOD-0040 purpose
+        - MOD-0040 responsibility
+        - MOD-0040 phrase consumes DATA-0008
+        - MOD-0040 phrase depends_on MOD-0041
+        - MOD-0041 purpose
+        - MOD-0041 responsibility
+        - MOD-0041 phrase depends_on MOD-0013
+        - MOD-0041 phrase depends_on MOD-0022
+        - MOD-0041 phrase depends_on MOD-0026
+        - MOD-0041 phrase depends_on MOD-0030
+        - MOD-0041 phrase depends_on MOD-0057
+        - MOD-0042 purpose
+        - MOD-0042 responsibility
+        - MOD-0043 purpose
+        - MOD-0043 responsibility
+        - MOD-0043 phrase depends_on MOD-0027
+        - MOD-0044 purpose
+        - MOD-0044 responsibility
+        - MOD-0045 purpose
+        - MOD-0045 responsibility
+        - MOD-0046 purpose
+        - MOD-0046 responsibility
+        - MOD-0047 purpose
+        - MOD-0047 responsibility
+        - MOD-0047 phrase consumes IF-0015
+        - MOD-0047 phrase depends_on MOD-0030
+        - MOD-0048 purpose
+        - MOD-0048 responsibility
+        - MOD-0049 purpose
+        - MOD-0049 responsibility
+        - MOD-0050 purpose
+        - MOD-0050 responsibility
+        - MOD-0051 purpose
+        - MOD-0051 responsibility
+        - MOD-0052 purpose
+        - MOD-0052 responsibility
+        - MOD-0053 purpose
+        - MOD-0053 responsibility
+        - MOD-0054 phrase depends_on MOD-0030
+        - MOD-0055 responsibility
+        - FEAT-0026 text
+        - MOD-0005 text
+        - MOD-0009 text
+        - MOD-0013 text
+        - MOD-0017 text
+        - MOD-0022 text
+        - MOD-0026 text
+        - MOD-0034 text
+        - MOD-0047 text
+        - DATA-0006 note semantics
+        - DATA-0006 note states
+        - DATA-0006 note decisions.revision-stays
+        - DATA-0006 note entries.blueprint
+        - DATA-0006 note entries.fingerprint
+        - DATA-0006 note entries.high-water
+        - DATA-0006 note entries.rendered
+        - IF-0001 note entries.base
+        - IF-0001 note entries.check
+        - IF-0001 note entries.json
+        - IF-0003 note entries.check
+        - IF-0004 note entries.features
+        - flow sync
+        - flow sync step 1
+        - flow sync step 2
+        - flow sync step 3
+        - flow sync step 4
+        - flow sync step 5
+        - flow sync step 6
+        - flow sync step 7
+        - flow sync step 8
+        - flow sync step 9
+        - flow sync step 10
+        - flow sync step 11
+        - flow sync step 12
+        - flow sync step 13
+        - stack cli
+        - stack cli layer 1
+        - stack cli layer 2
+        - stack cli layer 3
+        - stack cli layer 4
+        - stack cli layer 5
+        - stack cli layer 6
+        - table cli-files columns
+        - table cli-files
+        - table cli-files row 1
+        - table cli-files row 2
+        - table cli-files row 3
+        - table cli-files row 4
+        - table cli-files row 5
