@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // lines prints each record as "LINE KIND API to=TO ch=CHANNEL".
@@ -204,5 +206,39 @@ mod integration_tests {
 `)
 	if rs := ScanFile("src/sinks/http/tests.rs", []byte("fn f() { tokio::spawn(x()); }\n")); len(rs) != 0 {
 		t.Errorf("a tests.rs module is read: %v", rs)
+	}
+}
+
+func TestReviewedEdgeCases(t *testing.T) {
+	check(t, "x/turkish.go", "\npackage p\n\nfunc İşle(done chan int) {\n\tgo worker(done)\n<-done\n\tx := 1\n<-done\n}\n", `
+4 spawn go to=worker ch=
+5 recv <- to= ch=done
+7 recv <- to= ch=done
+`)
+	check(t, "win/t.c", `
+void start(void) {
+#ifdef _WIN32
+    CreateThread(NULL, 0, run, NULL, 0, NULL);
+#endif
+}
+`, `
+3 spawn CreateThread to=run ch=
+`)
+}
+
+func TestAPostsToQuotingAnyEndOfItsPairIsStored(t *testing.T) {
+	rs := []Record{
+		rec(Send, "cond_signal", "", "popCond", "lib/pool/pool.c", 20, "cond_signal(&ctx->popCond);"),
+		rec(Send, "cond_signal", "", "popCond", "lib/pool/pool.c", 30, "cond_broadcast(&ctx->popCond);"),
+		rec(Recv, "cond_wait", "", "popCond", "lib/pool/pool.c", 40, "cond_wait(&ctx->popCond, &m);"),
+	}
+	m := mod("MOD-0002", "lib/pool")
+	m.Relations = []model.Relation{{To: "EXEC-0001", Kind: model.PostsTo, Evidence: []model.Evidence{
+		{Path: "lib/pool/pool.c", Lines: "30", Quote: "cond_broadcast"},
+		{Path: "lib/pool/pool.c", Lines: "40", Quote: "cond_wait"},
+	}}}
+	cs := Candidates(rs, []model.Unit{m})
+	if len(cs) != 1 || !cs[0].Stored {
+		t.Errorf("a posts_to quoting the second send and the recv should hold the pair:\n%s", show(cs))
 	}
 }

@@ -119,7 +119,7 @@ func ScanFile(p string, src []byte) []Record {
 	}
 	var out []Record
 	seen := map[int]bool{}
-	lower := bytes.ToLower(code)
+	lower := asciiLower(code)
 	for _, e := range Catalog {
 		if e.Lang != lang {
 			continue
@@ -148,7 +148,7 @@ func ScanFile(p string, src []byte) []Record {
 			}
 			seen[at] = true
 			r := Record{Kind: e.Kind, API: cmp.Or(group("api"), e.API), Confidence: "syntactic", Via: "catalog", Configs: []string{}}
-			r.To = cmp.Or(group("fn"), name(nth(args, e.FnArg)))
+			r.To = cmp.Or(name(group("fn")), name(nth(args, e.FnArg)))
 			r.Channel = cmp.Or(name(group("ch")), name(nth(args, e.ChanArg)))
 			if a, ok := alias[r.Channel]; ok {
 				r.Channel = a
@@ -273,7 +273,7 @@ var callKeywords = map[string]bool{
 
 // declares reports whether the name at i reads as declared rather than
 // called: a type or a keyword such as fn stands right before it. A
-// preprocessor line such as #endif before it ends no declaration.
+// word on a preprocessor line, such as #endif or #ifdef X, declares nothing.
 func declares(code []byte, i int) bool {
 	j := i
 	for j > 0 && (isSpace(code[j-1]) || code[j-1] == '*' || code[j-1] == '&') {
@@ -283,11 +283,9 @@ func declares(code []byte, i int) bool {
 	for k > 0 && isWord(code[k-1]) {
 		k--
 	}
-	h := k
-	for h > 0 && (code[h-1] == ' ' || code[h-1] == '\t') {
-		h--
-	}
-	return k < j && !callKeywords[string(code[k:j])] && (h == 0 || code[h-1] != '#')
+	line := bytes.LastIndexByte(code[:k], '\n') + 1
+	directive := strings.HasPrefix(strings.TrimLeft(string(code[line:k]), " \t"), "#")
+	return k < j && !callKeywords[string(code[k:j])] && !directive
 }
 
 // callArgs reads the arguments of the call whose opening bracket ends just
@@ -357,7 +355,7 @@ func (f file) goArrows(skip func(int) bool, seen map[int]bool) []Record {
 			continue
 		}
 		j := i
-		for j > 0 && isSpace(code[j-1]) {
+		for j > 0 && (code[j-1] == ' ' || code[j-1] == '	') {
 			j--
 		}
 		k := j
@@ -377,7 +375,7 @@ func (f file) goArrows(skip func(int) bool, seen map[int]bool) []Record {
 			}
 			seen[k] = true
 			r.Evidence = f.site(k)
-		} else if j > 0 && (code[j-1] == ')' || code[j-1] == ']') {
+		} else if k == j && j > 0 && (code[j-1] == ')' || code[j-1] == ']') {
 			continue
 		} else {
 			m := goRecvChan.FindString(after)
@@ -432,4 +430,17 @@ func (f file) lineEnd(n int) int {
 		return f.starts[n+1]
 	}
 	return len(f.code)
+}
+
+// asciiLower lowers ASCII letters only, byte for byte, so every offset in
+// the result is the same offset in the code, whatever runes it holds.
+func asciiLower(b []byte) []byte {
+	out := make([]byte, len(b))
+	for i, c := range b {
+		if 'A' <= c && c <= 'Z' {
+			c += 'a' - 'A'
+		}
+		out[i] = c
+	}
+	return out
 }

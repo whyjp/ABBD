@@ -69,16 +69,20 @@ func candidateLine(c runscan.Candidate) string {
 
 // runtimeLine is the status line for the run-time pass: how many catalog
 // candidates the state does not hold yet. It is "" when the catalog finds
-// nothing, as in a library that starts no thread. An open candidate is a
+// no candidate, as in a library that starts no thread. An open candidate is a
 // lead, not a debt, so it never fails a check.
 func runtimeLine(root string, units []model.Unit) string {
 	rs, err := runscan.Scan(root)
-	if err != nil || len(rs) == 0 {
+	if err != nil {
+		return ""
+	}
+	cs := runscan.Candidates(rs, units)
+	if len(cs) == 0 {
 		return ""
 	}
 	n := map[runscan.Fact]int{}
 	all := 0
-	for _, c := range runscan.Candidates(rs, units) {
+	for _, c := range cs {
 		all++
 		if !c.Stored {
 			n[c.Fact]++

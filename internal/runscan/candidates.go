@@ -35,7 +35,10 @@ type Candidate struct {
 	Entry   string
 	Channel string
 	Sites   []Site
-	Stored  bool
+	// sends and recvs are every end of a posts_to pair, any one of each of
+	// which a stored posts_to may quote.
+	sends, recvs []Site
+	Stored       bool
 }
 
 // Candidates maps records onto the units: the owner of each site is the
@@ -81,15 +84,18 @@ func Candidates(rs []Record, units []model.Unit) []Candidate {
 		if len(rs) == 0 {
 			continue
 		}
-		seen := map[[2]model.ID]bool{}
+		pairs := map[[2]model.ID]int{}
 		for _, s := range ss {
 			for _, r := range rs {
 				pair := [2]model.ID{s.owner, r.owner}
-				if seen[pair] {
-					continue
+				i, ok := pairs[pair]
+				if !ok {
+					i, pairs[pair] = len(out), len(out)
+					out = append(out, Candidate{Fact: PostsToFact, Owner: s.owner, Other: r.owner, API: s.r.API, Channel: s.r.Channel, Sites: []Site{s.r.Evidence, r.r.Evidence}})
 				}
-				seen[pair] = true
-				out = append(out, Candidate{Fact: PostsToFact, Owner: s.owner, Other: r.owner, API: s.r.API, Channel: s.r.Channel, Sites: []Site{s.r.Evidence, r.r.Evidence}})
+				c := &out[i]
+				c.sends = appendSite(c.sends, s.r.Evidence)
+				c.recvs = appendSite(c.recvs, r.r.Evidence)
 			}
 		}
 	}
@@ -167,10 +173,18 @@ func contract(units []model.Unit, name string) model.ID {
 }
 
 // stored reports whether the state already holds the candidate: an EXEC, or
-// a relation of the candidate's kind, whose evidence cites every site.
+// a relation of the candidate's kind, whose evidence cites its site, or for
+// a posts_to one send and one recv of its pair.
 func stored(units []model.Unit, c Candidate) bool {
+	quotes := func(es []model.Evidence, ss []Site) bool {
+		return slices.ContainsFunc(ss, func(s Site) bool { return slices.ContainsFunc(es, func(e model.Evidence) bool { return cited(e, s) }) })
+	}
+	ends := [][]Site{c.Sites}
+	if c.Fact == PostsToFact {
+		ends = [][]Site{c.sends, c.recvs}
+	}
 	cites := func(es []model.Evidence) bool {
-		return !slices.ContainsFunc(c.Sites, func(s Site) bool { return !slices.ContainsFunc(es, func(e model.Evidence) bool { return cited(e, s) }) })
+		return !slices.ContainsFunc(ends, func(ss []Site) bool { return !quotes(es, ss) })
 	}
 	for _, u := range units {
 		if c.Fact == ExecFact {
@@ -200,4 +214,11 @@ func cited(e model.Evidence, s Site) bool {
 	}
 	q := strings.TrimSpace(e.Quote)
 	return q != "" && strings.Contains(s.Quote, q)
+}
+
+func appendSite(ss []Site, s Site) []Site {
+	if slices.Contains(ss, s) {
+		return ss
+	}
+	return append(ss, s)
 }
