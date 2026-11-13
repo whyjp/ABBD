@@ -19829,15 +19829,7 @@
                 "Code": false
               },
               {
-                "Text": "Zone",
-                "Code": true
-              },
-              {
-                "Text": "과 ",
-                "Code": false
-              },
-              {
-                "Text": "Line",
+                "Text": "StandsAt",
                 "Code": true
               },
               {
@@ -19845,11 +19837,74 @@
                 "Code": false
               },
               {
-                "Text": "overview.go",
+                "Text": "layer.go",
                 "Code": true
               },
               {
-                "Text": ")은 overview가 따로 저장하는 구역과 고른 선이다. 주 흐름은 주 흐름 stack이 맡으므로 여기에는 단계 타입이 없다. ",
+                "Text": ")은 어느 파트도 이름 짓지 않은 상자가 서는 첫 파트와 그 안에서 이름 지어진 unit을 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "Home",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "figure.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 unit의 anchor가 함께 놓인 가장 깊은 디렉터리다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Overview의 구역과 선",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Zone",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Line",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "LineCandidates",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/model/overview.go",
+                "Code": true
+              },
+              {
+                "Text": "): overview가 따로 저장하는 구역과 고른 선이다. 주 흐름은 주 흐름 stack이 맡으므로 여기에는 단계 타입이 없다. ",
                 "Code": false
               },
               {
@@ -19945,7 +20000,7 @@
                 "Code": true
               },
               {
-                "Text": "). ",
+                "Text": "). 제공자와 사용자는 module이나 feature 상자만 세고, 계약을 스스로 제공하는 상자의 사용은 세지 않는다. ",
                 "Code": false
               },
               {
@@ -19953,7 +20008,7 @@
                 "Code": true
               },
               {
-                "Text": "는 overview가 상자로 그리는 unit을 주고, ",
+                "Text": "는 overview가 상자로 그리는 module, feature, 제공자 없는 계약을 주고, ",
                 "Code": false
               },
               {
@@ -19969,39 +20024,7 @@
                 "Code": true
               },
               {
-                "Text": " 순(runs, wires, imports)으로, 같은 순위에서는 그 순위의 relation 수와 전체 수로 매겨 첫 인용과 함께 준다. ",
-                "Code": false
-              },
-              {
-                "Text": "StandsAt",
-                "Code": true
-              },
-              {
-                "Text": "(",
-                "Code": false
-              },
-              {
-                "Text": "layer.go",
-                "Code": true
-              },
-              {
-                "Text": ")은 어느 파트도 이름 짓지 않은 상자가 서는 첫 파트와 그 안에서 이름 지어진 unit을 준다. ",
-                "Code": false
-              },
-              {
-                "Text": "Home",
-                "Code": true
-              },
-              {
-                "Text": "(",
-                "Code": false
-              },
-              {
-                "Text": "figure.go",
-                "Code": true
-              },
-              {
-                "Text": ")은 unit의 anchor가 함께 놓인 가장 깊은 디렉터리다.",
+                "Text": " 순(runs, wires, imports)으로, 같은 순위에서는 그 순위의 relation 수와 전체 수로 매겨 첫 인용과 함께 준다.",
                 "Code": false
               }
             ]
@@ -35439,21 +35462,19 @@
         "config",
         "data"
       ],
-      "relations": 15
+      "relations": 9
     },
     {
       "from": "MOD-0001",
       "to": "MOD-0034",
       "word": "청사진 Build",
       "kinds": [
-        "consumes",
         "depends_on"
       ],
       "vias": [
-        "call",
-        "data"
+        "call"
       ],
-      "relations": 4
+      "relations": 3
     },
     {
       "from": "MOD-0034",
