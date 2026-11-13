@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(variants C)
+add_library(my-lib-static STATIC mylib/mylib.c)
+add_library(my-lib-shared SHARED mylib/mylib.c)
+add_library(my_lib STATIC other/other.c)
+add_executable(app app/main.c)
+target_link_libraries(app PRIVATE my-lib-shared my_lib)
