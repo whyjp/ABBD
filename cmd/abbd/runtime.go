@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/extract/runscan"
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // runtime prints the run-time work list: each catalog candidate the state
@@ -15,12 +15,13 @@ func (e env) runtime() error {
 	if err != nil {
 		return err
 	}
-	if e.records {
-		return runscan.WriteJSON(e.stdout, rs)
-	}
 	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
+	}
+	if e.records {
+		runscan.Own(rs, units)
+		return runscan.WriteJSON(e.stdout, rs)
 	}
 	cs := runscan.Candidates(rs, units)
 	open := 0

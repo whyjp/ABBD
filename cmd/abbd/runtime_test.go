@@ -59,9 +59,9 @@ func TestRuntimeRecordsAreTheSharedJSONLines(t *testing.T) {
 		t.Fatalf("setup:\n%s", out)
 	}
 	got := p.want(0, "", "runtime", "--records")
-	want := `{"kind":"spawn","api":"go","from":"","to":"work","channel":"","evidence":{"path":"app/sub/w.go","line":4,"quote":"go work(q)"},"configs":[],"confidence":"syntactic","via":"catalog"}
-{"kind":"send","api":"<-","from":"","to":"","channel":"q","evidence":{"path":"app/sub/w.go","line":5,"quote":"q <- 1"},"configs":[],"confidence":"syntactic","via":"catalog"}
-{"kind":"recv","api":"<-","from":"","to":"","channel":"q","evidence":{"path":"app/sub/w.go","line":8,"quote":"func work(q chan int) { <-q }"},"configs":[],"confidence":"syntactic","via":"catalog"}
+	want := `{"kind":"spawn","api":"go","module":"MOD-0002","from":"","to":{"name":"work","def":"app/sub/w.go:8"},"channel":"","evidence":{"path":"app/sub/w.go","line":4,"quote":"go work(q)"},"configs":[],"confidence":"syntactic","via":"catalog"}
+{"kind":"send","api":"<-","module":"MOD-0002","from":"","to":{},"channel":"q","evidence":{"path":"app/sub/w.go","line":5,"quote":"q <- 1"},"configs":[],"confidence":"syntactic","via":"catalog"}
+{"kind":"recv","api":"<-","module":"MOD-0002","from":"","to":{},"channel":"q","evidence":{"path":"app/sub/w.go","line":8,"quote":"func work(q chan int) { <-q }"},"configs":[],"confidence":"syntactic","via":"catalog"}
 `
 	if got != want {
 		t.Errorf("records:\n%s\nwant:\n%s", got, want)

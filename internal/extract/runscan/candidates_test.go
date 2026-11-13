@@ -9,7 +9,7 @@ import (
 )
 
 func rec(k Kind, api, to, ch, path string, line int, quote string) Record {
-	return Record{Kind: k, API: api, To: to, Channel: ch, Evidence: Site{path, line, quote}, Confidence: "syntactic", Via: "catalog"}
+	return Record{Kind: k, API: api, To: Target{Name: to}, Channel: ch, Evidence: Site{path, line, quote}, Confidence: "syntactic", Via: "catalog"}
 }
 
 func mod(id, path string) model.Unit {

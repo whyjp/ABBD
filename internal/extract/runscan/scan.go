@@ -48,7 +48,9 @@ func LangOf(p string) Lang {
 // Scan reads every file under root the catalog knows and returns its
 // records, sorted. In a git work tree it reads the files git lists, tracked
 // or not but not ignored; elsewhere it walks the tree and skips dot
-// directories.
+// directories. It reads the code twice: first for the project's own spawn
+// wrappers and aliases, then for the sites, so a call through a wrapper
+// defined in another file counts.
 func Scan(root string) ([]Record, error) {
 	files := gitx.WorkingFiles(root)
 	if files == nil {
@@ -69,20 +71,42 @@ func Scan(root string) ([]Record, error) {
 			return nil, err
 		}
 	}
-	var out []Record
-	for _, f := range files {
-		f = filepath.ToSlash(f)
-		if LangOf(f) == "" {
+	var fs []file
+	for _, p := range files {
+		p = filepath.ToSlash(p)
+		if LangOf(p) == "" {
 			continue
 		}
-		src, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(f)))
+		src, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(p)))
 		if err != nil {
 			continue
 		}
-		out = append(out, ScanFile(f, src)...)
+		fs = append(fs, newFile(p, src))
+	}
+	return scanFiles(fs), nil
+}
+
+// ScanFile returns the records of one file, its path given with slashes,
+// with only the wrappers and aliases that file defines.
+func ScanFile(p string, src []byte) []Record {
+	if LangOf(p) == "" {
+		return nil
+	}
+	return scanFiles([]file{newFile(p, src)})
+}
+
+func scanFiles(fs []file) []Record {
+	slices.SortFunc(fs, func(a, b file) int { return cmp.Compare(a.path, b.path) })
+	ix := newIndex(fs)
+	var out []Record
+	for _, f := range fs {
+		out = append(out, f.records(ix)...)
+	}
+	for i := range out {
+		out[i].To.Def = ix.def(LangOf(out[i].Evidence.Path), out[i].To.Name)
 	}
 	Sort(out)
-	return out, nil
+	return out
 }
 
 // Sort orders records by site, then kind, API, channel and function, so
@@ -95,79 +119,141 @@ func Sort(rs []Record) {
 			cmp.Compare(a.Kind, b.Kind),
 			cmp.Compare(a.API, b.API),
 			cmp.Compare(a.Channel, b.Channel),
-			cmp.Compare(a.To, b.To),
+			cmp.Compare(a.To.Name, b.To.Name),
 		)
 	})
 }
 
-// ScanFile returns the records of one file, its path given with slashes.
-func ScanFile(p string, src []byte) []Record {
+func newFile(p string, src []byte) file {
 	lang := LangOf(p)
-	if lang == "" {
-		return nil
-	}
 	src = bytes.ReplaceAll(src, []byte("\r\n"), []byte("\n"))
 	code := blank(src, lang)
-	f := file{path: p, src: src, code: code, starts: lineStarts(src)}
-	skip := f.skipped(lang)
+	f := file{path: p, lang: lang, src: src, code: code, lower: asciiLower(code), starts: lineStarts(src)}
+	f.skip = f.skipped(lang)
+	f.defs = f.findDefs()
+	return f
+}
+
+// hit is one catalog match: where its site starts, where the pattern
+// ends, and the call's arguments when it opens one.
+type hit struct {
+	e       Entry
+	at, end int
+	args    []string
+	opened  bool
+	group   func(string) string
+}
+
+// hits runs the catalog's entries of the file's language over the code.
+// A hit on a line the scan skips is kept only when keepSkipped is set,
+// as the wrapper search reads macro bodies.
+func (f file) hits(keepSkipped bool) []hit {
+	var out []hit
+	seen := map[int]bool{}
+	for _, e := range Catalog {
+		if e.Lang != f.lang {
+			continue
+		}
+		for _, m := range f.matches(e, f.lower) {
+			if h, ok := f.hitAt(e, m, keepSkipped); ok && !seen[h.at] {
+				seen[h.at] = true
+				out = append(out, h)
+			}
+		}
+	}
+	return out
+}
+
+// hitAt turns one match of e, its offsets in code, into a hit, or reports
+// false for a match that is no site: skipped, a declaration, or a call
+// that needs arguments and has none.
+func (f file) hitAt(e Entry, m []int, keepSkipped bool) (hit, bool) {
+	code := f.code
+	at := m[0]
+	if i := e.Pattern.SubexpIndex("at"); i > 0 && m[2*i] >= 0 {
+		at = m[2*i]
+	} else {
+		for at < m[1] && isSpace(code[at]) {
+			at++
+		}
+	}
+	if (f.skip(at) && !e.Directive && !keepSkipped) || (e.Call && declares(code, at)) {
+		return hit{}, false
+	}
+	args, opened := callArgs(code, m[1])
+	if e.Args && (!opened || len(args) == 0) {
+		return hit{}, false
+	}
+	group := func(name string) string {
+		if i := e.Pattern.SubexpIndex(name); i > 0 && m[2*i] >= 0 && m[2*i+1] <= len(code) {
+			return string(code[m[2*i]:m[2*i+1]])
+		}
+		return ""
+	}
+	return hit{e: e, at: at, end: m[1], args: args, opened: opened, group: group}, true
+}
+
+// records returns the file's sites: each catalog hit, each call through
+// a wrapper the index holds, and each catalog call spelled by an alias.
+func (f file) records(ix *index) []Record {
 	alias := map[string]string{}
-	if lang == Rust {
-		for _, m := range rustChannel.FindAllSubmatch(code, -1) {
+	if f.lang == Rust {
+		for _, m := range rustChannel.FindAllSubmatch(f.code, -1) {
 			pair := string(m[1]) + "/" + string(m[2])
 			alias[string(m[1])], alias[string(m[2])] = pair, pair
 		}
 	}
-	var out []Record
 	seen := map[int]bool{}
-	lower := asciiLower(code)
-	for _, e := range Catalog {
-		if e.Lang != lang {
-			continue
+	var out []Record
+	add := func(r Record, at int) {
+		if seen[at] {
+			return
 		}
-		for _, m := range f.matches(e, lower) {
-			at := m[0]
-			if i := e.Pattern.SubexpIndex("at"); i > 0 && m[2*i] >= 0 {
-				at = m[2*i]
-			} else {
-				for at < m[1] && isSpace(code[at]) {
-					at++
-				}
-			}
-			if seen[at] || (skip(at) && !e.Directive) || (e.Call && declares(code, at)) {
-				continue
-			}
-			group := func(name string) string {
-				if i := e.Pattern.SubexpIndex(name); i > 0 && m[2*i] >= 0 {
-					return string(code[m[2*i]:m[2*i+1]])
-				}
-				return ""
-			}
-			args, opened := callArgs(code, m[1])
-			if e.Args && (!opened || len(args) == 0) {
-				continue
-			}
-			seen[at] = true
-			r := Record{Kind: e.Kind, API: cmp.Or(group("api"), e.API), Confidence: "syntactic", Via: "catalog", Configs: []string{}}
-			r.To = cmp.Or(name(group("fn")), name(nth(args, e.FnArg)))
-			r.Channel = cmp.Or(name(group("ch")), name(nth(args, e.ChanArg)))
-			if a, ok := alias[r.Channel]; ok {
-				r.Channel = a
-			}
-			r.Evidence = f.site(at)
-			out = append(out, r)
+		seen[at] = true
+		if a, ok := alias[r.Channel]; ok {
+			r.Channel = a
+		}
+		r.Evidence = f.site(at)
+		out = append(out, r)
+	}
+	for _, h := range f.hits(false) {
+		add(h.record(), h.at)
+	}
+	spawned := map[int]bool{}
+	for _, r := range out {
+		if r.Kind == Spawn {
+			spawned[r.Evidence.Line] = true
 		}
 	}
-	if lang == Go {
-		out = append(out, f.goArrows(skip, seen)...)
+	for _, c := range ix.wrapperCalls(f) {
+		if !spawned[f.line(c.at)] {
+			add(c.r, c.at)
+		}
+	}
+	for _, c := range ix.aliasCalls(f) {
+		add(c.r, c.at)
+	}
+	if f.lang == Go {
+		out = append(out, f.goArrows(f.skip, seen)...)
 	}
 	Sort(out)
 	return out
 }
 
+func (h hit) record() Record {
+	r := Record{Kind: h.e.Kind, API: cmp.Or(h.group("api"), h.e.API), Confidence: "syntactic", Via: "catalog", Configs: []string{}}
+	r.To.Name = cmp.Or(name(h.group("fn")), name(nth(h.args, h.e.FnArg)))
+	r.Channel = cmp.Or(name(h.group("ch")), name(nth(h.args, h.e.ChanArg)))
+	return r
+}
+
 type file struct {
-	path      string
-	src, code []byte
-	starts    []int
+	path             string
+	lang             Lang
+	src, code, lower []byte
+	starts           []int
+	skip             func(int) bool
+	defs             []def
 }
 
 func lineStarts(src []byte) []int {

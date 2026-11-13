@@ -9,6 +9,15 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
+// Own sets each record's module: the module or feature that anchors its
+// site most closely, as Candidates reads ownership.
+func Own(rs []Record, units []model.Unit) {
+	present := model.Present(units)
+	for i := range rs {
+		rs[i].Module = string(ownerOf(present, rs[i].Evidence.Path))
+	}
+}
+
 // Fact is what a reader stores once a candidate holds.
 type Fact string
 
@@ -59,11 +68,11 @@ func Candidates(rs []Record, units []model.Unit) []Candidate {
 		o := owner(r.Evidence.Path)
 		switch r.Kind {
 		case Spawn:
-			out = append(out, Candidate{Fact: ExecFact, Owner: o, API: r.API, Entry: r.To, Sites: []Site{r.Evidence}})
+			out = append(out, Candidate{Fact: ExecFact, Owner: o, API: r.API, Entry: r.To.Name, Sites: []Site{r.Evidence}})
 		case RegisterCallback:
-			out = append(out, Candidate{Fact: RunsOnFact, Owner: o, API: r.API, Entry: r.To, Sites: []Site{r.Evidence}})
+			out = append(out, Candidate{Fact: RunsOnFact, Owner: o, API: r.API, Entry: r.To.Name, Sites: []Site{r.Evidence}})
 		case Impl:
-			out = append(out, Candidate{Fact: ProvidesFact, Owner: o, Other: contract(present, r.To), API: r.API, Entry: r.To, Sites: []Site{r.Evidence}})
+			out = append(out, Candidate{Fact: ProvidesFact, Owner: o, Other: contract(present, r.To.Name), API: r.API, Entry: r.To.Name, Sites: []Site{r.Evidence}})
 		case Send, Recv:
 			if r.Channel == "" {
 				continue

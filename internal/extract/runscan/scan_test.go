@@ -15,7 +15,7 @@ import (
 func lines(rs []Record) string {
 	var b strings.Builder
 	for _, r := range rs {
-		fmt.Fprintf(&b, "%d %s %s to=%s ch=%s\n", r.Evidence.Line, r.Kind, r.API, r.To, r.Channel)
+		fmt.Fprintf(&b, "%d %s %s to=%s ch=%s\n", r.Evidence.Line, r.Kind, r.API, r.To.Name, r.Channel)
 	}
 	return b.String()
 }
@@ -137,7 +137,7 @@ func TestScanIsSortedAndDeterministic(t *testing.T) {
 		}
 	}
 	write("b/b.go", "package b\nfunc f() {\n\tgo g()\n}\n")
-	write("a/a.rs", "fn f() {\r\n    tokio::spawn(g());\r\n}\r\n")
+	write("a/a.rs", "fn f() {\r\n    tokio::spawn(g());\r\n}\r\nasync fn g() {}\r\n")
 	write("tests/t.rs", "fn f() { tokio::spawn(g()); }\n")
 	var runs [2]bytes.Buffer
 	for i := range runs {
@@ -149,8 +149,8 @@ func TestScanIsSortedAndDeterministic(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	want := `{"kind":"spawn","api":"tokio::spawn","from":"","to":"g","channel":"","evidence":{"path":"a/a.rs","line":2,"quote":"tokio::spawn(g());"},"configs":[],"confidence":"syntactic","via":"catalog"}
-{"kind":"spawn","api":"go","from":"","to":"g","channel":"","evidence":{"path":"b/b.go","line":3,"quote":"go g()"},"configs":[],"confidence":"syntactic","via":"catalog"}
+	want := `{"kind":"spawn","api":"tokio::spawn","module":"","from":"","to":{"name":"g","def":"a/a.rs:4"},"channel":"","evidence":{"path":"a/a.rs","line":2,"quote":"tokio::spawn(g());"},"configs":[],"confidence":"syntactic","via":"catalog"}
+{"kind":"spawn","api":"go","module":"","from":"","to":{"name":"g"},"channel":"","evidence":{"path":"b/b.go","line":3,"quote":"go g()"},"configs":[],"confidence":"syntactic","via":"catalog"}
 `
 	if runs[0].String() != want {
 		t.Errorf("scan:\n%s\nwant:\n%s", runs[0].String(), want)
@@ -185,27 +185,134 @@ void start(int n) {
 
 func TestRustWrappersAndTestGatedCode(t *testing.T) {
 	check(t, "src/topology/running.rs", `
-pub fn spawn_named<T>(task: T, name: &str) {}
+pub fn spawn_named<T: Future>(task: T, name: &str) { tokio::spawn(task.instrument(span(name))); }
 fn start(&mut self) {
     let h = spawn_named(task, "sink");
     auth.spawn_regenerate_token();
     crate::spawn_in_current_span(async move {});
     let respawn_on_exit = true;
 }
+fn serve(addr: Addr) { tokio::spawn(async move { listen(addr).await }); }
+fn run() { serve(addr); }
 #[cfg(not(test))]
 fn real() { tokio::spawn(x()); }
 #[cfg(all(test, feature = "redis-integration-tests"))]
 mod integration_tests {
-    fn t() { tokio::spawn(x()); }
+    fn t() { tokio::spawn(x()); spawn_named(y(), "t"); }
 }
 `, `
-3 spawn spawn_named to= ch=
-4 spawn spawn_regenerate_token to= ch=
-5 spawn spawn_in_current_span to= ch=
-9 spawn tokio::spawn to=x ch=
+1 spawn tokio::spawn to=instrument ch=
+3 spawn running::spawn_named to=task ch=
+8 spawn tokio::spawn to= ch=
+11 spawn tokio::spawn to=x ch=
 `)
 	if rs := ScanFile("src/sinks/http/tests.rs", []byte("fn f() { tokio::spawn(x()); }\n")); len(rs) != 0 {
 		t.Errorf("a tests.rs module is read: %v", rs)
+	}
+}
+
+// scanTree writes files under a temporary root, scans it and prints its
+// spawn records as "PATH:LINE API to=TO def=DEF".
+func scanTree(t *testing.T, files map[string]string) string {
+	t.Helper()
+	root := t.TempDir()
+	for p, s := range files {
+		full := filepath.Join(root, filepath.FromSlash(p))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(strings.TrimPrefix(s, "\n")), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rs, err := Scan(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var b strings.Builder
+	for _, r := range rs {
+		if r.Kind == Spawn {
+			fmt.Fprintf(&b, "%s:%d %s to=%s def=%s\n", r.Evidence.Path, r.Evidence.Line, r.API, r.To.Name, r.To.Def)
+		}
+	}
+	return b.String()
+}
+
+func TestWrappersAndAliasesAcrossFiles(t *testing.T) {
+	got := scanTree(t, map[string]string{
+		"core/src/async_runtime.rs": `
+use tokio::runtime::{Handle as TokioHandle, Runtime as TokioRuntime};
+pub fn spawn<F: Future>(task: F) -> JoinHandle<F::Output> {
+  let runtime = RUNTIME.get_or_init(default_runtime);
+  runtime.spawn(task)
+}
+fn default_runtime() -> Runtime { Runtime::Tokio(TokioRuntime::new().unwrap()) }
+`,
+		"core/src/app.rs": `
+fn setup() {
+  crate::async_runtime::spawn(async move { listen().await });
+  let child = SharedChild::spawn(&mut cmd);
+  let rt = TokioRuntime::new();
+}
+`,
+		"lib/thread.h": `
+#define start_thread_alias pthread_create
+int os_thread_run(os_thread_t *t, void *(*fn)(void *), void *arg);
+`,
+		"lib/thread.c": `
+int os_thread_run(os_thread_t *t, void *(*fn)(void *), void *arg)
+{
+	return pthread_create(&t->handle, NULL, fn, arg);
+}
+static void *run_loop(void *p) { return p; }
+static int start_loop(struct ctx *c)
+{
+	return pthread_create(&c->thread, NULL, run_loop, c);
+}
+void begin(void)
+{
+	os_thread_run(&t, run_loop, NULL);
+	start_loop(&c);
+	start_thread_alias(&t, NULL, run_loop, NULL);
+}
+`,
+		"lib/user.c": `
+void other(void) { os_thread_run(&t, worker, NULL); }
+`,
+		"run/pool.go": `
+package run
+
+func Go(f func()) { go func() { f() }() }
+func Watch(dir string, on func()) { go func() { for range events(dir) { on() } }() }
+func Start(n int) { go serve(n) }
+`,
+		"cmd/main.go": `
+package main
+
+func main() { run.Go(work); run.Start(3); run.Watch(".", work) }
+`,
+	})
+	want := `cmd/main.go:3 run.Go to=work def=
+core/src/app.rs:2 async_runtime::spawn to= def=
+run/pool.go:3 go to= def=
+run/pool.go:5 go to=serve def=
+core/src/async_runtime.rs:4 spawn (method) to=task def=
+core/src/async_runtime.rs:6 tokio Runtime::new to= def=
+lib/thread.c:3 pthread_create to=fn def=
+lib/thread.c:8 pthread_create to=run_loop def=lib/thread.c:5
+lib/thread.c:12 os_thread_run to=run_loop def=lib/thread.c:5
+lib/thread.c:14 pthread_create to=run_loop def=lib/thread.c:5
+lib/user.c:1 os_thread_run to=worker def=
+`
+	for _, line := range strings.Split(strings.TrimSpace(want), "\n") {
+		if !strings.Contains(got, line+"\n") {
+			t.Errorf("missing %q in:\n%s", line, got)
+		}
+	}
+	for _, bad := range []string{"core/src/app.rs:3 ", "lib/thread.c:13 ", "cmd/main.go:3 run.Start", "run.Watch"} {
+		if strings.Contains(got, bad) {
+			t.Errorf("%q is no spawn through a wrapper:\n%s", bad, got)
+		}
 	}
 }
 

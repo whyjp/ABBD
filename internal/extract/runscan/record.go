@@ -39,11 +39,14 @@ type Site struct {
 type Record struct {
 	Kind Kind   `json:"kind"`
 	API  string `json:"api"`
+	// Module is the unit that owns the site, once the records are mapped
+	// onto the state, and "" before or where no unit anchors the code.
+	Module string `json:"module"`
 	// From is the code that acts, when the front-end knows it.
 	From string `json:"from"`
 	// To is the function a spawn or a registration runs, or the contract an
 	// impl implements, when the call names it.
-	To string `json:"to"`
+	To Target `json:"to"`
 	// Channel names what a send or a recv goes through, as the code spells it.
 	Channel  string   `json:"channel"`
 	Evidence Site     `json:"evidence"`
@@ -52,6 +55,14 @@ type Record struct {
 	// that resolved the symbol.
 	Confidence string `json:"confidence"`
 	Via        string `json:"via"`
+}
+
+// Target is what a record points at: its name as the call spells it, and
+// its definition as path:line when one definition of that name stands in
+// the scanned code. An unresolved target is {}.
+type Target struct {
+	Name string `json:"name,omitempty"`
+	Def  string `json:"def,omitempty"`
 }
 
 // WriteJSON prints records as JSON lines.
