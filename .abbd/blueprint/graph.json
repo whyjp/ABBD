@@ -687,7 +687,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Runs abbd setup with script and supplement, and says how to fix each refusal it can give.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -733,7 +734,7 @@
       "Parent": "FEAT-0002",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"## Extraction format\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes` or `provides`.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes`, `provides`, `runs_on`\""
       ]
     },
     {
@@ -1089,7 +1090,7 @@
       "ID": "IF-0015",
       "Kind": "IF",
       "Name": "relation key",
-      "Signature": "ID.{consumes,depends_on,provides}.ID",
+      "Signature": "ID.{consumes,depends_on,posts_to,provides,runs_on}.ID",
       "Purpose": {
         "Value": "so a relation can be named on the command line and as a map key without characters a shell treats specially",
         "Badge": "inferred"
@@ -1977,6 +1978,7 @@
         "internal/model/flow.go",
         "internal/model/layer.go",
         "internal/model/model.go",
+        "internal/model/run.go",
         "internal/model/slot.go",
         "internal/model/table.go"
       ]
@@ -2026,7 +2028,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go \"var ends = map[RelationKind]struct {\"",
         "internal/model/model.go \"var vias = map[Via]bool{\""
       ]
     },
@@ -2422,6 +2424,7 @@
       "Anchors": [
         "internal/topology",
         "internal/topology/diff.go",
+        "internal/topology/direction.go",
         "internal/topology/entry.go",
         "internal/topology/feature.go",
         "internal/topology/find.go",
@@ -2458,11 +2461,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a PR shows what changed in the architecture, not in the lines",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Compares two unit sets into sorted categories: units added and removed, contract signatures changed, contract code changed under the same signature, drawn relations between top-level units (an inside unit's relation lifted to its module), and reader couplings added.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/topology/diff.go Compare",
@@ -4888,7 +4893,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
     },
     {
       "From": "MOD-0047",
@@ -4964,7 +4969,7 @@
       "Via": "call",
       "Phrase": "Relation.Counts",
       "PhraseOrigin": "INFERRED",
-      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
     },
     {
       "From": "MOD-0048",
@@ -5774,6 +5779,7 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6237,7 +6243,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -9666,6 +9672,7 @@
         "Provides": 1,
         "Uses": 0,
         "Direct": 3,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -9696,7 +9703,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -11454,6 +11461,7 @@
         "Provides": 1,
         "Uses": 1,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11506,7 +11514,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -12819,6 +12827,12 @@
                 "Key": "units-artifacts",
                 "Name": "units.artifacts",
                 "Shape": "[]model.Artifact",
+                "Need": "선택"
+              },
+              {
+                "Key": "units-run",
+                "Name": "units.run",
+                "Shape": "string",
                 "Need": "선택"
               },
               {
@@ -14475,6 +14489,7 @@
         "Provides": 4,
         "Uses": 2,
         "Direct": 3,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14515,7 +14530,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -15679,6 +15694,7 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15801,7 +15817,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -19449,7 +19465,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\"",
             "internal/topology/query.go \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -19468,7 +19484,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
           ]
         },
         {
@@ -19508,6 +19524,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20711,7 +20728,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -28636,6 +28653,36 @@
                 "Need": "선택"
               },
               {
+                "Key": "run",
+                "Name": "run",
+                "Shape": "*Fact",
+                "Need": "선택"
+              },
+              {
+                "Key": "run-value",
+                "Name": "run.value",
+                "Shape": "string",
+                "Need": "필수"
+              },
+              {
+                "Key": "run-writer",
+                "Name": "run.writer",
+                "Shape": "Writer",
+                "Need": "필수"
+              },
+              {
+                "Key": "run-source",
+                "Name": "run.source",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "run-digest",
+                "Name": "run.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "relations",
                 "Name": "relations",
                 "Shape": "[]Relation",
@@ -29218,6 +29265,7 @@
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -29348,7 +29396,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -30985,7 +31033,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\"",
             "internal/topology/query.go \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -31049,7 +31097,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
           ]
         },
         {
