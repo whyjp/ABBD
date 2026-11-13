@@ -43,11 +43,18 @@ type cmakeTarget struct {
 		CompileGroupIndex *int   `json:"compileGroupIndex"`
 	} `json:"sources"`
 	CompileGroups []struct{ Language string } `json:"compileGroups"`
-	Dependencies  []struct{ ID string }       `json:"dependencies"`
-	Backtrace     *int                        `json:"backtrace"`
-	Graph         struct {
-		Nodes []struct{ File int } `json:"nodes"`
-		Files []string             `json:"files"`
+	Dependencies  []struct {
+		ID        string `json:"id"`
+		Backtrace *int   `json:"backtrace"`
+	} `json:"dependencies"`
+	Backtrace *int `json:"backtrace"`
+	Graph     struct {
+		Nodes []struct {
+			File    int  `json:"file"`
+			Command *int `json:"command"`
+		} `json:"nodes"`
+		Files    []string `json:"files"`
+		Commands []string `json:"commands"`
 	} `json:"backtraceGraph"`
 }
 
@@ -143,7 +150,9 @@ func cmake(t tree) (extract.Doc, error) {
 			g.anchors = append(g.anchors, model.Anchor{Path: f, Symbol: tg.Name})
 		}
 		for _, d := range tg.Dependencies {
-			g.deps = append(g.deps, d.ID)
+			if tg.command(d.Backtrace) != "add_dependencies" {
+				g.deps = append(g.deps, d.ID)
+			}
 		}
 		byID[tg.ID] = g
 	}
@@ -205,6 +214,19 @@ func (t tree) defined(tg cmakeTarget) (string, bool) {
 		p = filepath.Join(t.dir, p)
 	}
 	return t.rel(p)
+}
+
+// command is the CMake command at a backtrace node. A dependency that
+// add_dependencies made only orders the build and links nothing.
+func (tg cmakeTarget) command(node *int) string {
+	if node == nil || *node >= len(tg.Graph.Nodes) {
+		return ""
+	}
+	c := tg.Graph.Nodes[*node].Command
+	if c == nil || *c >= len(tg.Graph.Commands) {
+		return ""
+	}
+	return tg.Graph.Commands[*c]
 }
 
 // moduleRefs names each module by its target, or a module of several

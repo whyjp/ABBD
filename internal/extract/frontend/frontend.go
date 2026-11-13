@@ -55,8 +55,10 @@ func ParseSpec(s string) (Spec, error) {
 }
 
 // Extract runs each front-end over its directory under root and returns
-// one document. cache holds the build trees a front-end configures, and
-// must lie outside root so a run never changes the code it reads.
+// one document. A spec named twice runs once, and two specs that make a unit
+// of the same ref are an error, since setup could not tell the units apart.
+// cache holds the build trees a front-end configures, and must lie outside
+// root so a run never changes the code it reads.
 func Extract(root, cache string, specs []Spec) (extract.Doc, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
@@ -69,7 +71,11 @@ func Extract(root, cache string, specs []Spec) (extract.Doc, error) {
 		return extract.Doc{}, fmt.Errorf("the build cache %s lies inside the repository; set ABBD_CACHE_DIR to a directory outside it", cache)
 	}
 	var doc extract.Doc
-	for _, s := range specs {
+	from := map[string]Spec{}
+	for i, s := range specs {
+		if slices.Contains(specs[:i], s) {
+			continue
+		}
 		f := frontends[s.Name]
 		dir := filepath.Join(root, filepath.FromSlash(s.Dir))
 		if _, err := os.Stat(filepath.Join(dir, f.manifest)); err != nil {
@@ -78,6 +84,12 @@ func Extract(root, cache string, specs []Spec) (extract.Doc, error) {
 		d, err := f.run(tree{root: root, dir: dir, cache: cache})
 		if err != nil {
 			return extract.Doc{}, fmt.Errorf("%s: %w", s.Name, err)
+		}
+		for _, u := range d.Units {
+			if o, ok := from[u.Ref]; ok {
+				return extract.Doc{}, fmt.Errorf("%s=%s and %s=%s both make a unit %s; name only one of them", o.Name, o.Dir, s.Name, s.Dir, u.Ref)
+			}
+			from[u.Ref] = s
 		}
 		doc.Units = append(doc.Units, d.Units...)
 		doc.Relations = append(doc.Relations, d.Relations...)

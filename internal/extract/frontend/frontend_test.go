@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/extract"
@@ -176,6 +177,45 @@ func TestASpecNamesABundledFrontEndAndADirectoryInsideTheRoot(t *testing.T) {
 	for _, bad := range []string{"gradle", "cargo=../other"} {
 		if _, err := ParseSpec(bad); err == nil {
 			t.Errorf("%q: want an error", bad)
+		}
+	}
+}
+
+func TestABuildOrderFromAddDependenciesIsNoLink(t *testing.T) {
+	d := run(t, "cmake", "cmake-order")
+	want := map[string]model.Via{"cmake:cli -> cmake:core": "link"}
+	if got := relations(d); !maps.Equal(got, want) {
+		t.Errorf("relations %v, want %v; add_dependencies(other cli) only orders the build", got, want)
+	}
+}
+
+func TestARegistryCrateNamedLikeAMemberIsNoRelation(t *testing.T) {
+	d := run(t, "cargo", "cargo-registry")
+	unit(t, d, "cargo:serde")
+	if got := relations(d); len(got) != 0 {
+		t.Errorf("relations %v, want none; app depends on serde from the registry, not on the member", got)
+	}
+}
+
+func TestASpecNamedTwiceRunsOnceAndTwoSpecsMakingOneRefFail(t *testing.T) {
+	if _, err := exec.LookPath("cargo"); err != nil {
+		t.Skip("cargo is not installed")
+	}
+	cache := t.TempDir()
+	d, err := Extract(filepath.Join("testdata", "cargo"), cache, []Spec{{"cargo", "."}, {"cargo", "."}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(d.Units) != 3 {
+		t.Errorf("want the 3 members once, got %+v", d.Units)
+	}
+	_, err = Extract(filepath.Join("testdata", "cargo-twice"), cache, []Spec{{"cargo", "one"}, {"cargo", "two"}})
+	if err == nil {
+		t.Fatal("want an error for crate a in two workspaces")
+	}
+	for _, s := range []string{"cargo:a", "cargo=one", "cargo=two"} {
+		if !strings.Contains(err.Error(), s) {
+			t.Errorf("error %q does not name %s", err, s)
 		}
 	}
 }

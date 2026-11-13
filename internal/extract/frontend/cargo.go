@@ -17,6 +17,7 @@ type cargoMetadata struct {
 		ManifestPath string `json:"manifest_path"`
 		Dependencies []struct {
 			Name     string  `json:"name"`
+			Path     string  `json:"path"`
 			Kind     *string `json:"kind"`
 			Optional bool    `json:"optional"`
 		} `json:"dependencies"`
@@ -51,9 +52,11 @@ func cargo(t tree) (extract.Doc, error) {
 	}
 	var doc extract.Doc
 	procMacro := map[string]bool{}
-	member := map[string]bool{}
+	// A dependency names a member by its path, since a registry crate can
+	// share a member's name.
+	member := map[string]string{}
 	for _, p := range md.Packages {
-		member[p.Name] = true
+		member[filepath.Clean(filepath.Dir(p.ManifestPath))] = p.Name
 		manifest, ok := t.rel(p.ManifestPath)
 		if !ok {
 			continue
@@ -89,18 +92,19 @@ func cargo(t tree) (extract.Doc, error) {
 	for _, p := range md.Packages {
 		vias := map[string]model.Via{}
 		for _, d := range p.Dependencies {
-			if !member[d.Name] || d.Name == p.Name || d.Kind != nil && *d.Kind == "dev" {
+			to, ok := member[filepath.Clean(d.Path)]
+			if d.Path == "" || !ok || to == p.Name || d.Kind != nil && *d.Kind == "dev" {
 				continue
 			}
 			v := model.Via("import")
 			switch {
 			case d.Optional || d.Kind != nil && *d.Kind == "build":
 				v = "build-feature"
-			case procMacro[d.Name]:
+			case procMacro[to]:
 				v = "macro"
 			}
-			if had, ok := vias[d.Name]; !ok || rank(v) < rank(had) {
-				vias[d.Name] = v
+			if had, ok := vias[to]; !ok || rank(v) < rank(had) {
+				vias[to] = v
 			}
 		}
 		for to, v := range vias {
