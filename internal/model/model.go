@@ -78,11 +78,15 @@ const (
 	Data      Kind = "DATA"
 	Config    Kind = "CFG"
 	Feature   Kind = "FEAT"
+	// Exec is an execution context: a thread, a worker pool, an event loop,
+	// an async runtime, or the tasks one spawn site starts.
+	Exec Kind = "EXEC"
 )
 
 var kinds = map[Kind]string{
 	Module: "architecture", Interface: "architecture", Event: "architecture",
 	Data: "architecture", Config: "architecture", Feature: "features",
+	Exec: "architecture",
 }
 
 // Domain-layer prefixes are reserved and not part of this restart.
@@ -207,6 +211,9 @@ type Unit struct {
 	// it, with whoever said it: the script that reads the build, or the
 	// supplement where no script does.
 	Artifact *Fact `yaml:"artifact,omitempty"`
+	// Run is how an execution context dispatches its work and how many of it
+	// run, as ParseRun reads it, such as "tick 1". Only an EXEC carries it.
+	Run *Fact `yaml:"run,omitempty"`
 	// Relations is the shown claim on each edge. Hidden holds the other
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
@@ -387,6 +394,14 @@ func (u Unit) Validate() error {
 	if len(u.Entries) > 0 && !u.Kind.IsContract() {
 		return fmt.Errorf("%s: only contracts carry entries", u.ID)
 	}
+	if u.Run != nil {
+		if u.Kind != Exec {
+			return fmt.Errorf("%s: only an execution context carries a run", u.ID)
+		}
+		if _, err := ParseRun(u.Run.Value); err != nil {
+			return fmt.Errorf("%s: %w", u.ID, err)
+		}
+	}
 	if err := ValidateEntries(u.Entries); err != nil {
 		return fmt.Errorf("%s: %w", u.ID, err)
 	}
@@ -458,6 +473,9 @@ func (r Relation) validate() error {
 		return err
 	}
 	if err := validateEvidence(r.Evidence); err != nil {
+		return err
+	}
+	if err := r.Kind.Quoted(len(r.Evidence)); err != nil {
 		return err
 	}
 	if err := sourced(r.Writer, r.Source); err != nil {
@@ -544,6 +562,10 @@ var viaSynonyms = map[Via][]string{
 	"convention":    {"conventions", "naming"},
 	"load":          {"loads", "dynamic load", "plugin load", "dlopen"},
 	"spawn":         {"spawns", "process", "subprocess", "exec"},
+	"queue":         {"queues", "enqueue", "work queue"},
+	"channel":       {"channels", "sends", "message", "messages"},
+	"signal":        {"signals", "notify", "wakes", "wake up"},
+	"proxy":         {"proxies", "forwards", "delegates"},
 }
 
 // restates reports whether a phrase only says the via in other words.
@@ -599,24 +621,51 @@ const (
 	DependsOn RelationKind = "depends_on"
 	Consumes  RelationKind = "consumes"
 	Provides  RelationKind = "provides"
+	// RunsOn says the unit's code runs on an execution context. From one
+	// execution context to another, its tasks run on that runtime.
+	RunsOn RelationKind = "runs_on"
+	// PostsTo says the unit hands work or data to an execution context.
+	PostsTo RelationKind = "posts_to"
 )
 
 // ends says which kinds of unit each relation kind may join: a module or a
-// feature provides a contract, and anything may consume a contract or depend
-// on any unit.
-var ends = map[RelationKind]struct{ from, to func(Kind) bool }{
+// feature provides a contract, anything may consume a contract or depend on
+// any unit, a module, a feature or an execution context runs on an execution
+// context, and a module or an execution context posts to one. Quotes is the
+// fewest evidence items a claim of the kind needs: a posts_to quotes the
+// producer and the consumer.
+var ends = map[RelationKind]struct {
+	from, to func(Kind) bool
+	quotes   int
+}{
 	Provides:  {from: implementer, to: Kind.IsContract},
 	Consumes:  {from: anyKind, to: Kind.IsContract},
 	DependsOn: {from: anyKind, to: anyKind},
+	RunsOn:    {from: func(k Kind) bool { return implementer(k) || k == Exec }, to: isExec},
+	PostsTo:   {from: func(k Kind) bool { return k == Module || k == Exec }, to: isExec, quotes: 2},
 }
 
 func implementer(k Kind) bool { return k == Module || k == Feature }
 func anyKind(Kind) bool       { return true }
+func isExec(k Kind) bool      { return k == Exec }
 
 // Uses reports whether a relation of kind k runs from a unit that uses the
 // other: it consumes it or depends on it. A provides runs from the unit that
-// implements a contract to the contract it serves, and uses nothing.
+// implements a contract to the contract it serves, and uses nothing. A
+// runs_on or a posts_to is a run-time fact, not a dependency of the code:
+// the context calls the code that runs on it, and the code a producer calls
+// to post is its own depends_on or consumes. Neither is a use, so neither
+// breaches a layer, as impact and path also follow only consumes and
+// depends_on.
 func (k RelationKind) Uses() bool { return k == Consumes || k == DependsOn }
+
+// Quoted checks that a claim of kind k cites enough evidence items.
+func (k RelationKind) Quoted(n int) error {
+	if q := ends[k].quotes; n < q {
+		return fmt.Errorf("a %s quotes both the producer and the consumer, so it needs %d or more evidence items, got %d", k, q, n)
+	}
+	return nil
+}
 
 func (k RelationKind) Validate() error {
 	if _, ok := ends[k]; !ok {
@@ -632,7 +681,7 @@ func (k RelationKind) Joins(from, to Kind) error {
 		return err
 	}
 	if e := ends[k]; !e.from(from) || !e.to(to) {
-		return fmt.Errorf("%s %s %s is not a relation ABBD knows: a module or feature provides a contract, and anything consumes a contract or depends_on any unit", from, k, to)
+		return fmt.Errorf("%s %s %s is not a relation ABBD knows: a module or feature provides a contract, anything consumes a contract or depends_on any unit, a module, feature or EXEC runs_on an EXEC, and a module or EXEC posts_to an EXEC", from, k, to)
 	}
 	return nil
 }
@@ -695,12 +744,14 @@ var vias = map[Via]bool{
 	"import": true, "trait": true, "callback": true, "macro": true, "config": true,
 	"build-feature": true, "data": true, "convention": true, "call": true,
 	"load": true, "spawn": true, "link": true,
+	"queue": true, "channel": true, "signal": true, "proxy": true,
 }
 
 var viaWords = map[Via]string{
 	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
 	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
 	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행", "link": "링크",
+	"queue": "큐", "channel": "채널", "signal": "신호", "proxy": "프록시",
 }
 
 // Word is the via in the blueprint's words, or "" for none.
@@ -708,7 +759,7 @@ func (v Via) Word() string { return viaWords[v] }
 
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {
-		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load, spawn or link", v)
+		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load, spawn, link, queue, channel, signal or proxy", v)
 	}
 	return nil
 }
