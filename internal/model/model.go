@@ -641,11 +641,17 @@ func (k RelationKind) Joins(from, to Kind) error {
 // scope rather than restating the build file.
 const MaxWhen = 60
 
+// Scope says a relation's when is a link scope, which says who sees the
+// link rather than when it holds.
+func Scope(when string) bool {
+	return when == "PRIVATE" || when == "PUBLIC" || when == "INTERFACE"
+}
+
 // ValidateWhen refuses a condition that runs over MaxWhen characters or
 // over one line.
 func ValidateWhen(w string) error {
 	if strings.ContainsAny(w, "\r\n") || len([]rune(w)) > MaxWhen {
-		return fmt.Errorf("condition %q: one line of at most %d characters, such as feature = \"sinks-kafka\", cfg(unix) or PRIVATE", w, MaxWhen)
+		return fmt.Errorf("condition %q: one line of at most %d characters, such as feature = \"sinks-kafka\", cfg(unix) or dev", w, MaxWhen)
 	}
 	return nil
 }

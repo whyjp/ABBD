@@ -38,7 +38,10 @@ func (l Link) Label() string {
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
 	}
-	if l.When != "" {
+	switch {
+	case model.Scope(l.When):
+		s += ", scope " + l.When
+	case l.When != "":
 		s += ", when " + l.When
 	}
 	if l.Drifted {

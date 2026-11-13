@@ -183,7 +183,10 @@ func (e env) explain(s string) error {
 		if l.Via != "" {
 			line += " via " + string(l.Via)
 		}
-		if l.When != "" {
+		switch {
+		case model.Scope(l.When):
+			line += " scope " + l.When
+		case l.When != "":
 			line += " when " + l.When
 		}
 		if l.Drifted {

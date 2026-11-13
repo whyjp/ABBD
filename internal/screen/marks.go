@@ -517,12 +517,17 @@ func said(t tree, lines [][]string) []string {
 	return out
 }
 
-// conditions are the conditions the line's relations hold under, each
-// with how many of its relations it gates, so a feature that gates one
-// relation of ten does not pass for the line's.
-func conditions(t tree, lines [][]string) []string {
+// conditions are the conditions the line's relations hold under, or with
+// scope their link scopes, each with how many of its relations it gates,
+// so a feature that gates one relation of ten does not pass for the line's.
+func conditions(t tree, lines [][]string, scope bool) []string {
 	us := units(lines)
-	n := carried(us, func(r string) string { return t.whens[r] })
+	n := carried(us, func(r string) string {
+		if w := t.whens[r]; model.Scope(w) == scope {
+			return w
+		}
+		return ""
+	})
 	out := make([]string, 0, len(n))
 	for s, c := range n {
 		out = append(out, fmt.Sprintf("%s %d/%d", s, c, len(us)))
@@ -595,8 +600,11 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
 		}
-		if cs := conditions(t, w.lines); len(cs) > 0 {
+		if cs := conditions(t, w.lines, false); len(cs) > 0 {
 			d.Wires[i].Title += "\n조건: " + strings.Join(cs, ", ")
+		}
+		if cs := conditions(t, w.lines, true); len(cs) > 0 {
+			d.Wires[i].Title += "\n범위: " + strings.Join(cs, ", ")
 		}
 		// A bus shows its count only from three lines (rule 22), and says
 		// instead the word every one of its lines says, once it is set.

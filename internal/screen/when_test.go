@@ -29,3 +29,23 @@ func TestALineSaysTheConditionsItsRelationsHoldUnder(t *testing.T) {
 		}
 	}
 }
+
+// A link scope says who sees the link, not when it holds, so the tooltip
+// names it as the line's 범위 and never as a 조건.
+func TestALineSaysALinkScopeAsItsScope(t *testing.T) {
+	units := ripgrep()
+	units[0].Relations[0].When = "PRIVATE"
+	m := Build(Input{Units: units})
+	found := false
+	for _, w := range m.Overview.Wires {
+		if strings.Contains(w.Title, "범위: PRIVATE 1/") {
+			found = true
+		}
+		if strings.Contains(w.Title, "조건:") {
+			t.Errorf("a link scope reads as a condition: %q", w.Title)
+		}
+	}
+	if !found {
+		t.Error("no overview line names its relation's link scope")
+	}
+}
