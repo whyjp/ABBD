@@ -33,3 +33,31 @@ jobs:
         run: go vet ./...
       - name: go test
         run: go test -timeout 20m ./...
+      - name: Digest the synced .abbd output
+        if: success() || failure()
+        shell: bash
+        run: |
+          go run ./cmd/abbd sync > /dev/null
+          find .abbd -type f | LC_ALL=C sort | while read -r f; do
+            echo "$(git hash-object --no-filters "$f") $f"
+          done > abbd-digest-${{ matrix.os }}.txt
+      - uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: abbd-digest-${{ matrix.os }}
+          path: abbd-digest-${{ matrix.os }}.txt
+  # abbd sync writes the same bytes on every OS for this repository's own state.
+  same-output:
+    needs: test
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: abbd-digest-*
+          merge-multiple: true
+      - name: Compare the digests
+        run: |
+          ls abbd-digest-*.txt
+          diff abbd-digest-ubuntu-latest.txt abbd-digest-windows-latest.txt
+          diff abbd-digest-ubuntu-latest.txt abbd-digest-macos-latest.txt
