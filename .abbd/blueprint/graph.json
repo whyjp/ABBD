@@ -7982,26 +7982,29 @@
                   "Ref": "IF-0001.entries.json",
                   "Title": "항목",
                   "Key": "json",
-                  "Stale": true,
-                  "Changed": [
-                    "cmd/abbd/diff.go (the lines around it changed)"
-                  ],
+                  "Stale": false,
                   "Blocks": [
                     {
                       "Kind": "p",
                       "Parts": [
                         {
-                          "Text": "Prints the same categories as JSON, with the base revision, for a tool rather than a reader.",
+                          "Text": "Prints the same categories as JSON, with the base revision and the written sentences that changed (",
+                          "Code": false
+                        },
+                        {
+                          "Text": "words",
+                          "Code": true
+                        },
+                        {
+                          "Text": ", null when none), for a tool rather than a reader.",
                           "Code": false
                         }
                       ]
                     }
                   ],
                   "Quotes": [
-                    "cmd/abbd/diff.go \"if e.asJSON {\""
-                  ],
-                  "RereadBy": "concept-orch (Claude Opus 5.5)",
-                  "RereadOn": "2026-11-10"
+                    "cmd/abbd/diff.go \"Words []string `json:\\\"words\\\"`\""
+                  ]
                 }
               },
               {

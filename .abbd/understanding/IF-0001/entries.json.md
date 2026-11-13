@@ -2,19 +2,14 @@
 unit: IF-0001
 slot: entries.json
 origin: INFERRED
-digest: 99615a53ca1fde3c
+digest: 7e0f5a4c8876d4b5
 format: 3
 evidence:
     - path: cmd/abbd/diff.go
-      lines: "49"
-      quote: if e.asJSON {
+      lines: 56-61
+      quote: Words []string `json:"words"`
 code:
-    cmd/abbd/diff.go#quote-698196f9: 7532039e363702bf
-reread:
-    by: concept-orch (Claude Opus 5.5)
-    "on": "2026-11-10"
-    moved:
-        - cmd/abbd/diff.go (the lines around it changed)
+    cmd/abbd/diff.go#quote-8d8181f6: 3e7346802750bd2b
 ---
 
-Prints the same categories as JSON, with the base revision, for a tool rather than a reader.
+Prints the same categories as JSON, with the base revision and the written sentences that changed (`words`, null when none), for a tool rather than a reader.
