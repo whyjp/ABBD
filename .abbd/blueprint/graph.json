@@ -553,9 +553,8 @@
       "Signature": "",
       "Purpose": null,
       "Responsibility": {
-        "Value": "Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "일하기 전에 요청이 닿는 모듈의 청사진을 열고, status, explain, path, impact 질의로 질문에 답한다.",
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -573,9 +572,8 @@
       "Signature": "",
       "Purpose": null,
       "Responsibility": {
-        "Value": "Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module's how text.",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "reader가 찾은 결합과 unit을 그대로 옮긴 인용과 함께 되돌려 적고, STALE 모듈 글을 다시 저장한다.",
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -5223,12 +5221,130 @@
           "ID": "FEAT-0004",
           "Name": "/abbd ask the blueprint before the code",
           "Kind": "기능",
-          "Sentence": "Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.",
+          "Sentence": "일하기 전에 요청이 닿는 모듈의 청사진을 열고, status, explain, path, impact 질의로 질문에 답한다.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null,
+          "Understanding": {
+            "Reader": "pstack poteto-mode 0.15.36",
+            "Stale": false,
+            "Blocks": [
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Overview",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "p",
+                "Parts": [
+                  {
+                    "Text": "/abbd",
+                    "Code": true
+                  },
+                  {
+                    "Text": "의 \"Before work\" 1·2단계다. 일을 시작하기 전에 요청이 닿는 모듈의 청사진(",
+                    "Code": false
+                  },
+                  {
+                    "Text": ".abbd/blueprint/index.html",
+                    "Code": true
+                  },
+                  {
+                    "Text": ")을 열고, 코드를 grep하기 전에 topology에 묻는다. 상태가 작업 트리와 맞는지는 IF-0003 abbd status로 확인한다. 질문은 IF-0007 abbd explain, IF-0008 abbd path, IF-0004 abbd impact로 푼다. 질의는 손에 든 것을 받는다. unit ID나 이름, 파일이나 디렉터리 경로, 심볼, 몇 낱말이 그렇다. ID가 아니면 맞은 unit을 좋은 것부터 이유와 함께 먼저 나열한다. FEAT-0023 abbd reader가 이 질의가 이름 지은 unit에서 코드 읽기를 시작하고, DATA-0001 CLAUDE.md abbd block이 이 순서를 모든 assistant에게 알린다. 이 단계는 코드를 읽거나 상태에 쓰지 않는다. 코드 읽기는 reader가, 쓰기는 FEAT-0006 /abbd record what a reader found가 맡는다.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Key Concepts",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "청사진 먼저",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": ": 개요는 모듈과 그 사이 계약만 그린다. 모듈마다 자기 페이지가 있고, 흐름, 스택, 표도 저마다 페이지가 있다. ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "contracts.html",
+                    "Code": true
+                  },
+                  {
+                    "Text": "과 ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "units.html",
+                    "Code": true
+                  },
+                  {
+                    "Text": "은 브라우저 찾기를 위한 목록이다.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "explain의 흐름 줄",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": ": explain과 ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "abbd brief",
+                    "Code": true
+                  },
+                  {
+                    "Text": "는 unit이 저장된 흐름마다 몇 단계에 있고 바로 앞뒤 단계가 어느 unit인지 한 줄씩 적는다. 개요가 굵게 그리는 흐름이 맨 앞에 주 흐름으로 온다. 흐름에 없으면 한 줄로 일을 넘기고 받는 것, 데이터로 읽는 것과 읽는 쪽, 계약이면 제공하는 쪽을 적는다. 제공은 순서를 정하지 않는다.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "path와 impact",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": ": path는 두 unit이 어떻게 이어지는지 홉마다 종류, via, origin으로 보이고, 같은 계약을 함께 쓸 뿐인 두 unit은 그 계약의 제공자를 거쳐 잇는다. impact는 바꿀 unit이 닿는 곳을 직접과 먼 층으로 나누고, ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "--features",
+                    "Code": true
+                  },
+                  {
+                    "Text": "로 기능별로 묶는다.",
+                    "Code": false
+                  }
+                ]
+              }
+            ]
+          },
           "Rank": {
             "Basis": "dependency",
             "N": 3,
@@ -5239,12 +5355,106 @@
           "ID": "FEAT-0006",
           "Name": "/abbd record what a reader found",
           "Kind": "기능",
-          "Sentence": "Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module's how text.",
+          "Sentence": "reader가 찾은 결합과 unit을 그대로 옮긴 인용과 함께 되돌려 적고, STALE 모듈 글을 다시 저장한다.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null,
+          "Understanding": {
+            "Reader": "pstack poteto-mode 0.15.36",
+            "Stale": false,
+            "Blocks": [
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Overview",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "p",
+                "Parts": [
+                  {
+                    "Text": "/abbd",
+                    "Code": true
+                  },
+                  {
+                    "Text": "의 \"Before work\" 4·5단계다. reader가 코드에서 찾았지만 상태에 없는 결합이나 unit을 그대로 옮긴 인용과 함께 되돌려 적고, 다시 읽은 STALE 모듈 글을 새로 저장한다. 결합은 IF-0010 abbd record relation으로, 스크립트가 못 보는 unit은 IF-0011 abbd record unit으로, 모듈 글은 IF-0013 abbd understand로 저장한다. 읽기 자체는 FEAT-0023 abbd reader가 맡고, 이 단계는 그 결과를 적을 뿐 코드를 판단하거나 결정을 기록하지 않는다.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Key Concepts",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "결합과 구절",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": ": 적는 결합마다 ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "--phrase",
+                    "Code": true
+                  },
+                  {
+                    "Text": "로 무엇이 건너가는지 4낱말, 24자 안에서 이름 짓는다. via를 다시 말하지 않고, 건너가는 곳의 코드를 인용해 그 코드가 바뀌면 구절도 떠나게 한다. 이미 보이는 선에는 구절만 저장된다.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "틀린 주장 철회",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": ": reader가 저장된 INFERRED 주장이 틀렸다고 보면 ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "abbd retract",
+                    "Code": true
+                  },
+                  {
+                    "Text": "로 한 번에 지운다. 사람이 철회한 결합은 구절로 되살아나지 않는다.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "STALE 글 다시 저장",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": ": 모듈 글이 STALE이면 reader가 다시 읽고 Overview와 Key Concepts를 understand로 저장한다. 글은 모듈과 그 아래 모든 unit의 파일을 설명하므로, 안쪽 모듈이 바뀌면 그 위 모듈의 글도 STALE이 된다.",
+                    "Code": false
+                  }
+                ]
+              }
+            ]
+          },
           "Rank": {
             "Basis": "dependency",
             "N": 1,
@@ -6912,7 +7122,7 @@
                 "Code": true
               },
               {
-                "Text": ")로 유닛이 저장된 흐름의 몇 단계에 있고 앞뒤 단계가 어느 유닛인지를, 저장된 흐름에 없으면 posts_to와 data 관계로 일이나 데이터를 넘겨주는 유닛과 받는 유닛을 프로젝트 언어로 찍으며(",
+                "Text": ")을 프로젝트 언어로 찍는다(",
                 "Code": false
               },
               {
@@ -6920,7 +7130,47 @@
                 "Code": true
               },
               {
-                "Text": "가 ko와 en 낱말을 갖고, 다른 언어는 en으로 읽는다), 이웃은 세 개까지 이름 짓고 나머지는 개수로 센다. impact는 파일에 걸린 유닛을 모두 씨앗으로 삼아 ",
+                "Text": "가 ko와 en 낱말을 갖고, 다른 언어는 en으로 읽는다). 저장된 흐름마다 한 줄에 유닛이 맡은 단계와 바로 앞뒤 단계의 유닛을 적고, 안쪽 유닛이 맡은 단계는 유닛마다 한 번씩 묶는다. 셋 이상 이어진 단계 번호는 양 끝만 적는다(",
+                "Code": false
+              },
+              {
+                "Text": "2–12",
+                "Code": true
+              },
+              {
+                "Text": "). 저장된 흐름이 둘 이상이면 ",
+                "Code": false
+              },
+              {
+                "Text": "screen.LeadFlow",
+                "Code": true
+              },
+              {
+                "Text": "로 개요가 굵게 그리는 흐름을 찾아 맨 앞에 ",
+                "Code": false
+              },
+              {
+                "Text": "주 흐름",
+                "Code": true
+              },
+              {
+                "Text": "으로 적는다. 저장된 흐름에 없으면 ",
+                "Code": false
+              },
+              {
+                "Text": "주고받기",
+                "Code": true
+              },
+              {
+                "Text": " 한 줄에 일을 넘기고 받는 유닛, 데이터로 읽는 것과 읽는 쪽, 계약이면 제공하는 쪽을 역할로 나눠 적는다. 모든 목록은 셋까지 이름 짓고 나머지는 ",
+                "Code": false
+              },
+              {
+                "Text": "외 N개",
+                "Code": true
+              },
+              {
+                "Text": "로 센다. impact는 파일에 걸린 유닛을 모두 씨앗으로 삼아 ",
                 "Code": false
               },
               {
@@ -7203,7 +7453,7 @@
                 "Code": true
               },
               {
-                "Text": ")을 덧붙인다. 같은 흐름 줄도 Read first에 실어 글이 모듈의 흐름 속 자리를 말하게 한다. 노트는 한 번만 나오는 인용을 인용하고, flow, stack, table은 그림 작성기 하나를 나눠 쓴다.",
+                "Text": ")을 덧붙인다. explain과 같은 흐름 줄도 Read first에 실어, 글의 Overview가 모듈이 주 흐름에서 어디 있는지, 흐름에 없으면 무엇을 주고받는지 말하게 한다. 노트는 한 번만 나오는 인용을 인용하고, flow, stack, table은 그림 작성기 하나를 나눠 쓴다.",
                 "Code": false
               }
             ]
@@ -22485,7 +22735,47 @@
                 "Code": true
               },
               {
-                "Text": "이 정한다). 번호는 홉의 1번에서 이어 가고, 제목은 흐름과 단계 번호를 적으며, 진입점을 채운다. 홉은 저마다 뷰가 이미 그리는 경로이고, 상자, 라벨, 개수를 피하고 다른 모든 배지와 ",
+                "Text": "이 정한다). 번호는 홉의 1번에서 이어 가고, 제목은 흐름과 단계 번호를 적으며, 진입점을 채운다. ",
+                "Code": false
+              },
+              {
+                "Text": "LeadFlow",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": "가 개요를 그리는 그대로(",
+                "Code": false
+              },
+              {
+                "Text": "drawOverview",
+                "Code": true
+              },
+              {
+                "Text": ") 개요 하나만 그려 그 굵은 흐름의 키를 돌려준다. 그래서 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd explain",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd brief",
+                "Code": true
+              },
+              {
+                "Text": "는 이 규칙을 따로 짜지 않고 개요가 굵게 그리는 흐름을 맨 앞에 적는다. 홉은 저마다 뷰가 이미 그리는 경로이고, 상자, 라벨, 개수를 피하고 다른 모든 배지와 ",
                 "Code": false
               },
               {
@@ -31092,7 +31382,7 @@
                 "Code": false
               },
               {
-                "Text": "owner",
+                "Text": "parents.within",
                 "Code": true
               },
               {
@@ -31133,6 +31423,14 @@
                 "Code": true
               },
               {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "Side",
+                "Code": true
+              },
+              {
                 "Text": " (",
                 "Code": false,
                 "Bold": true
@@ -31142,7 +31440,7 @@
                 "Code": true
               },
               {
-                "Text": "): unit이 주된 흐름에서 어디 있는지다. 호출자가 넘긴 저장된 흐름(",
+                "Text": "): unit이 흐름에서 어디 있는지다. 호출자가 넘긴 저장된 흐름(",
                 "Code": false
               },
               {
@@ -31150,7 +31448,15 @@
                 "Code": true
               },
               {
-                "Text": ", 단계마다의 unit)마다 unit이나 그 안의 unit이 맡은 단계(",
+                "Text": ", 단계마다의 unit과 개요가 굵게 그리는지를 뜻하는 ",
+                "Code": false
+              },
+              {
+                "Text": "Lead",
+                "Code": true
+              },
+              {
+                "Text": ")마다 unit이나 그 안의 unit이 맡은 단계(",
                 "Code": false
               },
               {
@@ -31166,23 +31472,39 @@
                 "Code": true
               },
               {
-                "Text": ", 그 단계 바로 앞과 뒤 단계의 unit을 ",
+                "Text": "를 담고, 바로 앞과 뒤 단계의 unit을 ",
                 "Code": false
               },
               {
-                "Text": "Upstream",
+                "Text": "Before",
                 "Code": true
               },
               {
-                "Text": "과 ",
+                "Text": "와 ",
                 "Code": false
               },
               {
-                "Text": "Downstream",
+                "Text": "After",
                 "Code": true
               },
               {
-                "Text": "에 흐름 순서로 담는다. 어떤 저장된 흐름에도 없으면 ",
+                "Text": " 역할의 ",
+                "Code": false
+              },
+              {
+                "Text": "Side",
+                "Code": true
+              },
+              {
+                "Text": "에 흐름 순서로 담는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Lead",
+                "Code": true
+              },
+              {
+                "Text": "인 위치가 맨 앞에 온다. 어떤 저장된 흐름에도 없으면 ",
                 "Code": false
               },
               {
@@ -31190,15 +31512,7 @@
                 "Code": true
               },
               {
-                "Text": "가 빈 위치 하나를 ",
-                "Code": false
-              },
-              {
-                "Text": "posts_to",
-                "Code": true
-              },
-              {
-                "Text": "와 via data relation에서 읽는다. ",
+                "Text": "가 빈 위치 하나를 relation에서 읽는다. ",
                 "Code": false
               },
               {
@@ -31206,7 +31520,7 @@
                 "Code": true
               },
               {
-                "Text": "가 방향을 정한다. ",
+                "Text": "가 relation이 무엇을 옮기는지 정한다. ",
                 "Code": false
               },
               {
@@ -31214,7 +31528,63 @@
                 "Code": true
               },
               {
-                "Text": "와 data를 provides하는 쪽은 앞에서 뒤로, data를 consumes하거나 depends_on하는 쪽은 읽는 대상에서 자신으로 흐른다. 둘 다 없으면 위치가 없다. 한 unit이 여러 단계를 맡으면 각 단계의 앞뒤 unit을 한 번씩만 모으고, 자신이나 안쪽 unit은 앞뒤로 세지 않는다. ",
+                "Text": "는 일을 넘기고(",
+                "Code": false
+              },
+              {
+                "Text": "WorkTo",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "WorkFrom",
+                "Code": true
+              },
+              {
+                "Text": "), via data로 consumes하거나 depends_on하면 그 계약을 읽는다(",
+                "Code": false
+              },
+              {
+                "Text": "Reads",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "ReadBy",
+                "Code": true
+              },
+              {
+                "Text": "). via data로 provides하는 것은 계약을 구현하거나 정의할 뿐 데이터가 어느 쪽으로 가는지는 말하지 않으므로, 그 계약 자신에만 ",
+                "Code": false
+              },
+              {
+                "Text": "ProvidedBy",
+                "Code": true
+              },
+              {
+                "Text": "로 붙고 순서를 정하지 않는다. 일이나 데이터를 옮기는 relation이 없으면 위치도 없다. 각 ",
+                "Code": false
+              },
+              {
+                "Text": "Side",
+                "Code": true
+              },
+              {
+                "Text": "는 이미 이름 지은 unit 안에 있는 unit을 빼고(",
+                "Code": false
+              },
+              {
+                "Text": "parents.within",
+                "Code": true
+              },
+              {
+                "Text": "), 자신이나 안쪽 unit은 세지 않는다. ",
                 "Code": false
               },
               {
