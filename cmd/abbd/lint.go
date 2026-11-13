@@ -8,6 +8,7 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/screen"
 	"github.com/whyjp/abbd/internal/store"
+	"github.com/whyjp/abbd/internal/topology"
 )
 
 // lintSchema is the version of the JSON abbd lint prints. It rises when a
@@ -35,6 +36,9 @@ type lintReport struct {
 	// Undescribed names the drawn boxes that say only their kind, since
 	// their units record neither a purpose nor a responsibility.
 	Undescribed []model.ID `json:"undescribed,omitempty"`
+	// Direction names the plug-point contracts whose relations look
+	// recorded the wrong way round. It advises and never fails the gate.
+	Direction []topology.Reversed `json:"direction,omitempty"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -109,6 +113,7 @@ func (e env) lint(pos []string) error {
 		r.Ceilings = debt.Ceilings
 		r.Unphrased = unphrased(in.Units, m.Overview)
 		r.Undescribed = undescribed(in.Units)
+		r.Direction = topology.ReversedPlugPoints(in.Units)
 	}
 	if r.Failures == nil {
 		r.Failures = []string{}
@@ -175,6 +180,9 @@ func printLint(e env, r lintReport) {
 	}
 	if len(r.Undescribed) > 0 {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
+	}
+	for _, d := range r.Direction {
+		fmt.Fprintf(e.stdout, "lint: direction: %s %s looks reversed: its entries are callback slots, %s provides it and %d units consume it via call. The modules that implement or register a plug point provide it, and the host that calls through it consumes it\n", d.Contract, d.Name, d.Provider, len(d.Callers))
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
