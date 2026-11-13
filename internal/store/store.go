@@ -224,6 +224,9 @@ func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 	if want := string(u.ID) + ".md"; filepath.Base(path) != want {
 		return u, old, fmt.Errorf("file name does not match id %s", u.ID)
 	}
+	if u.Kind.Dir() == "" && !u.Kind.Reserved() {
+		return u, old, fmt.Errorf("unknown kind %q: a newer abbd wrote this state, so run that abbd; the one first on the PATH may be an older install", u.Kind)
+	}
 	return u, old, u.Validate()
 }
 

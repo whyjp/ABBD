@@ -81,3 +81,23 @@ func TestLineCandidatesMatchWhatTheOverviewDraws(t *testing.T) {
 		}
 	}
 }
+
+// A unit two levels inside a module is drawn in the outermost box, so the
+// draft offers its relation as a line from that box, and names the unit it
+// runs from among the candidate's ends.
+func TestADeepUnitIsDrawnInItsOutermostBox(t *testing.T) {
+	t.Parallel()
+	units := []Unit{
+		{ID: "MOD-0001", Kind: Module},
+		{ID: "MOD-0002", Kind: Module, Parent: "MOD-0001"},
+		{ID: "MOD-0003", Kind: Module, Parent: "MOD-0002", Relations: []Relation{{To: "MOD-0004", Kind: DependsOn, Via: "call"}}},
+		{ID: "MOD-0004", Kind: Module},
+	}
+	if got, want := Boxes(units), []ID{"MOD-0001", "MOD-0004"}; !slices.Equal(got, want) {
+		t.Errorf("boxes: got %v, want %v", got, want)
+	}
+	got := LineCandidates(units)
+	if len(got) != 1 || got[0].From != "MOD-0001" || got[0].To != "MOD-0004" || !slices.Equal(got[0].Ends, [][2]ID{{"MOD-0003", "MOD-0004"}}) {
+		t.Errorf("the line runs from the outermost box, its end the deep unit: %+v", got)
+	}
+}

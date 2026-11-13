@@ -46,6 +46,13 @@ func distinctive(name string) bool {
 	return len(name) >= 5 && (strings.Contains(name, "_") || strings.ToLower(name) != name)
 }
 
+// plainWord is a lower-case name with no underscore, such as names or
+// that: a word of prose as often as a type, as when a help text's line
+// starts with "type names".
+func plainWord(name string) bool {
+	return strings.ToLower(name) == name && !strings.Contains(name, "_")
+}
+
 // shouting is a name in capitals, a macro or a fixed-width typedef such as
 // U32, which says nothing of the module's design.
 func shouting(name string) bool { return strings.ToUpper(name) == name }
@@ -148,13 +155,25 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 var ident = regexp.MustCompile(`[A-Za-z_]\w*`)
 
 // common are names a language or its standard library uses everywhere,
-// which a module may declare again but which say nothing of it.
-var common = map[string]bool{"Result": true, "Error": true, "Err": true, "Value": true, "Option": true, "String": true, "Config": true, "Builder": true, "Context": true, "Handle": true, "State": true, "class": true, "Item": true, "try_from": true, "as_ref": true, "as_str": true, "is_empty": true, "to_string": true, "into_iter": true, "from_str": true}
+// which a module may declare again but which say nothing of it: a count of
+// them across the repository counts every use of the library's own.
+var common = func() map[string]bool {
+	m := map[string]bool{}
+	for _, n := range strings.Fields(`Result Error Err Value Option String Config Builder Context Handle State class Item
+		Debug Display Clone Default Copy Drop Send Sync Into From Hash Iterator Vec Box Map List Set Node Object Type
+		File Path Reader Writer Buffer Stream Kind Mode Name Data Info Options Args Self None Some Event Message
+		try_from as_ref as_str is_empty to_string into_iter from_str as_bytes into_bytes as_slice to_vec to_owned
+		from_utf8 as_mut into_inner with_capacity is_some is_none unwrap_or as_path to_str as_ptr from_bytes to_bytes
+		get_mut iter_mut toString valueOf hashCode`) {
+		m[n] = true
+	}
+	return m
+}()
 
 // declaration is the type or distinctive function a line declares, "" else.
 func declaration(line string) string {
 	for _, re := range types {
-		if m := re.FindStringSubmatch(line); m != nil && !shouting(m[1]) && !common[m[1]] {
+		if m := re.FindStringSubmatch(line); m != nil && !shouting(m[1]) && !common[m[1]] && !plainWord(m[1]) {
 			return m[1]
 		}
 	}

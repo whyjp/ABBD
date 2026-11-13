@@ -511,6 +511,9 @@ func (e env) sync() error {
 	for _, id := range res.Unmatched {
 		fmt.Fprintf(e.stdout, "%s unmatched\n", id)
 	}
+	if len(res.Unmatched) > 0 {
+		fmt.Fprintln(e.stdout, "unmatched: the extraction no longer reports these units; abbd keeps each, drawn nowhere and failing no check, so its ID returns if its code does. No command clears them, and none needs to")
+	}
 	e.attention(res.Units)
 	return nil
 }

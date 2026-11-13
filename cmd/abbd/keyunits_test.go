@@ -43,3 +43,18 @@ func TestADunderIsNoKeyUnit(t *testing.T) {
 		t.Errorf("distinctive misjudges a dunder or a snake-case name")
 	}
 }
+
+// A name a language or its library spells everywhere, or a plain word a help
+// text starts a line with, is no key unit; a distinctive type is.
+func TestAGenericNameIsNoKeyUnit(t *testing.T) {
+	for _, line := range []string{"type names", "    type that the", "struct Debug;", "struct File;", "pub fn as_bytes(&self) -> &[u8] {", "pub fn into_bytes(self) -> Vec<u8> {"} {
+		if got := declaration(line); got != "" {
+			t.Errorf("%q declares %q, a name too generic to count", line, got)
+		}
+	}
+	for line, want := range map[string]string{"pub struct HiArgs {": "HiArgs", "typedef struct lua_State {": "lua_State", "class SearchWorker:": "SearchWorker"} {
+		if got := declaration(line); got != want {
+			t.Errorf("%q declares %q, want %q", line, got, want)
+		}
+	}
+}
