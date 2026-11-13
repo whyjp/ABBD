@@ -35,6 +35,10 @@ type lintReport struct {
 	// Undescribed names the drawn boxes that say only their kind, since
 	// their units record neither a purpose nor a responsibility.
 	Undescribed []model.ID `json:"undescribed,omitempty"`
+	// Prose names each stored text that does not read in the language
+	// project.yaml names, as unit field, note or figure.
+	Prose    []string       `json:"prose,omitempty"`
+	Language model.Language `json:"language,omitempty"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -85,6 +89,9 @@ func (e env) lint(pos []string) error {
 		}
 		d := screen.Record(views, debt)
 		d.Levels = kept
+		if t := in.Project.Language; t != "" {
+			d.Prose = proseDebt(foreignProse(in, t), t, debt.Prose)
+		}
 		if err := e.st.SaveLintDebt(d); err != nil {
 			return err
 		}
@@ -109,6 +116,14 @@ func (e env) lint(pos []string) error {
 		r.Ceilings = debt.Ceilings
 		r.Unphrased = unphrased(in.Units, m.Overview)
 		r.Undescribed = undescribed(in.Units)
+		// Only a language project.yaml names gates the prose, so the
+		// gate does not move with the machine lint runs on.
+		if t := in.Project.Language; t != "" {
+			r.Language, r.Prose = t, foreignProse(in, t)
+			fails, lower := proseGate(r.Prose, t, debt.Prose)
+			r.Failures = append(r.Failures, fails...)
+			r.Lowerable = append(r.Lowerable, lower...)
+		}
 	}
 	if r.Failures == nil {
 		r.Failures = []string{}
@@ -173,6 +188,7 @@ func printLint(e env, r lintReport) {
 			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
 		}
 	}
+	printProse(e.stdout, r.Prose, r.Language)
 	if len(r.Undescribed) > 0 {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
 	}

@@ -151,6 +151,9 @@ func (e env) recordRelation(pos []string) error {
 	}
 	if phrased {
 		fmt.Fprintf(e.stdout, "recorded %s.phrase, %s: %q names what crosses it while its evidence is live and a claim shows on the edge\n", edge, w.Origin(), note.Text)
+		if w.Origin() == model.Inferred {
+			e.checkLanguage(edge.String()+".phrase", note.Text)
+		}
 	}
 	if labels {
 		fmt.Fprintf(e.stdout, "the edge already shows, so its claims stay as they were\n")

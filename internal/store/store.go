@@ -422,6 +422,18 @@ type LintDebt struct {
 	Views    map[string]map[string]int `yaml:"debt,omitempty"`
 	Pages    map[string]map[string]int `yaml:"pages,omitempty"`
 	Levels   map[string]string         `yaml:"levels,omitempty"`
+	// Prose is the stored prose that does not read in the project's
+	// language, carried until each text is written again.
+	Prose *ProseDebt `yaml:"prose,omitempty"`
+}
+
+// ProseDebt names the texts abbd lint lets stand in another language than
+// Language, by the keys lint reports them under, and why. It holds only
+// while project.yaml names the same language.
+type ProseDebt struct {
+	Language model.Language `yaml:"language"`
+	Reason   string         `yaml:"reason"`
+	Owed     []string       `yaml:"owed"`
 }
 
 // LoadLintDebt reads what the drawings owe. With no file they owe nothing
@@ -438,6 +450,8 @@ const lintDebtHead = `# What the drawings owe the drawing criteria of docs/bluep
 # placement debt more than 2% past its ceiling.
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
+# prose names the texts not yet written in project.yaml's language; lint
+# fails on any other, and each leaves the list when it is written again.
 `
 
 func (s Store) SaveLintDebt(d LintDebt) error {
@@ -559,6 +573,19 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// Language is the BCP-47 tag of the language a person reads the
+	// stored prose in, such as ko. Loading refuses a tag that is no
+	// BCP-47 tag. The zero Language leaves the choice to the OS.
+	Language model.Language `yaml:"language,omitempty"`
+}
+
+// Lang is the language readers write the prose in: the one project.yaml
+// sets, else the one the OS names for its user.
+func (p Project) Lang() model.Language {
+	if p.Language != "" {
+		return p.Language
+	}
+	return model.DefaultLanguage()
 }
 
 // Cut says whether the overview draws its primary links only.
