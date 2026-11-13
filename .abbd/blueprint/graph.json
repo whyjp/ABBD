@@ -9638,6 +9638,7 @@
         "Provides": 1,
         "Uses": 0,
         "Direct": 3,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -9668,7 +9669,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -11426,6 +11427,7 @@
         "Provides": 1,
         "Uses": 1,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11478,7 +11480,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -19488,6 +19490,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20691,7 +20694,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -29178,6 +29181,7 @@
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -29308,7 +29312,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
