@@ -37,12 +37,15 @@ func (e env) relateExtraction(args []string) error {
 	if err := dec.Decode(&doc); err != nil {
 		return fmt.Errorf("the extraction to relate: %w", err)
 	}
-	doc, skipped, err := relate.Relate(e.root, doc, specs)
+	doc, unread, err := relate.Relate(e.root, doc, specs)
 	if err != nil {
 		return err
 	}
-	if skipped > 0 {
-		fmt.Fprintf(e.stderr, "relate: %d Go files were skipped by build constraints (read as GOOS=linux, GOARCH=amd64, CGO_ENABLED=0)\n", skipped)
+	for _, u := range unread {
+		fmt.Fprintf(e.stderr, "relate: %s: %d files were not read, %s:\n", u.Relater, len(u.Paths), u.Why)
+		for _, p := range u.Paths {
+			fmt.Fprintf(e.stderr, "  %s\n", p)
+		}
 	}
 	return doc.Encode(e.stdout)
 }

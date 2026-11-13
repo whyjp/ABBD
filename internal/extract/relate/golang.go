@@ -37,7 +37,7 @@ func golang(t tree, o owners) (found, error) {
 	for _, p := range pkgs {
 		for _, f := range p.IgnoredFiles {
 			if r, ok := t.rel(f); ok && strings.HasSuffix(r, ".go") && !strings.HasSuffix(r, "_test.go") {
-				g.f.skipped++
+				g.f.unread = append(g.f.unread, r)
 			}
 		}
 		for _, e := range p.Errors {
