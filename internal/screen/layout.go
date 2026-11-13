@@ -490,16 +490,23 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sorted := sortRows
 		sortRows = func(g *layered) { sorted(g); g.huddle(tiers, steps) }
 	}
-	// The stages set their rows' order, so every other row is ordered again
-	// around them: what the first sweeps chose stood against an order the
-	// stages then overrode.
+	// The stages set the order of a row that holds two or more of them, so
+	// every other row is ordered again around those: what the first sweeps
+	// chose stood against an order the stages then overrode. A row with one
+	// stage sets no order and is ordered again too.
 	if fa != nil {
 		huddled := sortRows
 		sortRows = func(g *layered) {
 			huddled(g)
 			g.fixed = make([]bool, len(g.rows))
 			for r, row := range g.rows {
-				g.fixed[r] = slices.ContainsFunc(row, func(id string) bool { return tiers[id] > 0 })
+				n := 0
+				for _, id := range row {
+					if tiers[id] > 0 {
+						n++
+					}
+				}
+				g.fixed[r] = n > 1
 			}
 			g.order(t)
 			g.fixed = nil
