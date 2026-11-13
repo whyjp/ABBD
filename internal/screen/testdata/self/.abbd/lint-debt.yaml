@@ -10,7 +10,7 @@ ceilings:
     overflow: 0
     placement: 40
     tees: 4
-    weighed: 346
+    weighed: 345
 debt:
     MOD-0030 internal/model:
         R: 1
@@ -22,7 +22,7 @@ pages:
         counts: 2
         density: 28
         doglegs: 14
-        dots: 3
+        dots: 2
         false_joins: 0
         label_repeats: 0
         labelled: 4
