@@ -239,6 +239,9 @@ func (e env) statusLines() error {
 	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
+	if l := runtimeLine(e.root, in.Units); l != "" {
+		fmt.Fprintln(e.stdout, l)
+	}
 	if ev[model.Drifted] > 0 {
 		behind = append(behind, fmt.Sprintf("%d evidence item(s) drifted, abbd evidence lists them", ev[model.Drifted]))
 	}

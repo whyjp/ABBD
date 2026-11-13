@@ -198,7 +198,14 @@ abbd status [--check] [--verbose] [--root DIR]
                                      do not fail it; long:, unbacked:, unmentioned: and names:
                                      lines fold into one count each unless --verbose lists them;
                                      unmentioned: is a unit inside a module its text never
-                                     names, names: a path its text names outside its code`
+                                     names, names: a path its text names outside its code
+abbd runtime [--records] [--verbose] [--root DIR]
+                                     list the run-time candidates the catalog finds and the state
+                                     does not hold: a spawn site with no EXEC, a send and a recv
+                                     on one channel with no posts_to; each is a lead a reader
+                                     confirms and stores with its run and quotes, never a fact;
+                                     --verbose lists the stored ones too, --records prints every
+                                     site found as JSON lines, all syntactic, via catalog`
 
 const (
 	exitOK    = 0
@@ -232,6 +239,7 @@ type opts struct {
 	sentence         string
 	page             bool
 	asJSON, check    bool
+	records          bool
 	list, record     bool
 	features         bool
 	verbose, restamp bool
@@ -272,6 +280,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.BoolVar(&o.page, "page", false, "write a compare view to .abbd/compare: the blueprint at the base beside the current one")
 	},
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
+	"records": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.records, "records", false, "print every site the catalog finds as JSON lines, the record shape the language front-ends share")
+	},
 	"features": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.features, "features", false, "group the result by the features it reaches, with the contracts and entries each uses")
 	},
@@ -355,6 +366,7 @@ var commands = map[string]command{
 	"review":          {flags: []string{"root", "base", "features", "markdown"}, pos: []int{0}, run: func(e env, _ []string) error { return e.review() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"runtime":         {flags: []string{"root", "records", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.runtime() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
 }
 
@@ -506,6 +518,9 @@ func (e env) attention(units []model.Unit) {
 	}
 	for _, w := range uncovered(e.root, units) {
 		fmt.Fprintln(e.stdout, w)
+	}
+	if l := runtimeLine(e.root, units); l != "" {
+		fmt.Fprintln(e.stdout, l)
 	}
 }
 
