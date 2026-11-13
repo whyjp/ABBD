@@ -4942,6 +4942,16 @@
       "PhraseOrigin": "INFERRED"
     },
     {
+      "From": "MOD-0047",
+      "To": "MOD-0031",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Phrase": "Relation.Counts",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
+    },
+    {
       "From": "MOD-0048",
       "To": "MOD-0049",
       "Kind": "depends_on",
@@ -19167,6 +19177,15 @@
           ]
         },
         {
+          "From": "internal/topology",
+          "To": "guess versus topology rule",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
+          ]
+        },
+        {
           "From": "internal/group",
           "To": "unit absent flag",
           "Kind": "provides",
@@ -28749,7 +28768,7 @@
         "Direct": 1,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 4
+        "Dead": 3
       },
       "Units": [
         {
@@ -30403,6 +30422,15 @@
           "Via": "data",
           "Quotes": [
             "internal/topology/impact.go \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+          ]
+        },
+        {
+          "From": "internal/topology",
+          "To": "guess versus topology rule",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() || r.Kind.RunTime() {\""
           ]
         },
         {
