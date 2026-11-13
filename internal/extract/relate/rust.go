@@ -294,6 +294,9 @@ func (s rustSymbol) callable() bool {
 // rustRequests bounds the requests in flight at once.
 const rustRequests = 8
 
+// rustRead reads the workspace under one configuration. Diagnostics are on
+// because the server resolves names in code its cfg leaves out too, and
+// says which code that is only as inactive-code diagnostics.
 func rustRead(t tree, o owners, ra string, c rustConfig, files []string, crates []rustCrate) (rustRun, error) {
 	init := map[string]any{
 		"cargo": map[string]any{
@@ -303,7 +306,7 @@ func rustRead(t tree, o owners, ra string, c rustConfig, files []string, crates 
 		"procMacro":    map[string]any{"enable": false},
 		"cfg":          map[string]any{"setTest": false},
 		"checkOnSave":  false,
-		"diagnostics":  map[string]any{"enable": false},
+		"diagnostics":  map[string]any{"enable": true},
 		"cachePriming": map[string]any{"enable": true},
 	}
 	ctx := context.Background()
@@ -337,9 +340,10 @@ type rustReader struct {
 	// server lists a trait method's implementations among its references.
 	decl map[string]bool
 	// shown are the links some reference outside a private use declaration
-	// shows. The server resolves the use declarations of a cfg-inactive
-	// module, such as cfg(test) tests, and nothing else in it, so a link
-	// that only private uses show may live in code no build compiles.
+	// shows. A private use spells a path whose every segment is a
+	// reference, as use other_crate::module::Item names the crate root
+	// too; the link that counts goes to what it imports, whose own
+	// references show it where it is used.
 	shown map[link]bool
 }
 
@@ -381,10 +385,21 @@ func (r *rustReader) read(ctx context.Context, files []string, crates []rustCrat
 		if err != nil {
 			return err
 		}
+		diags, err := r.srv.Diagnostics(ctx, r.abs(p))
+		if err != nil {
+			return err
+		}
+		src := readRust(b)
+		for _, d := range diags {
+			// Older rust-analyzer releases spell it inactive-code.
+			if strings.ReplaceAll(string(d.Code), "-", "_") == "inactive_code" {
+				src.hide(d.Range)
+			}
+		}
 		unit, _ := r.of(p)
 		r.mu.Lock()
 		defer r.mu.Unlock()
-		r.src[p] = readRust(b)
+		r.src[p] = src
 		// The items of a trait impl are never asked about: the server files
 		// a call to one under the trait's method, and lists every binding of
 		// the trait's associated type, any impl's, under each impl's type.
@@ -570,6 +585,12 @@ func (r *rustReader) uses(ctx context.Context, s rustSymbol) error {
 	for _, l := range impls {
 		p, u, line, ok := r.place(l)
 		if !ok || u == s.unit {
+			continue
+		}
+		r.mu.Lock()
+		src := r.src[p]
+		r.mu.Unlock()
+		if src.at(l.Range.Start.Line, l.Range.Start.Character) == inText {
 			continue
 		}
 		if contract {

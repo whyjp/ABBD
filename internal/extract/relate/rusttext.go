@@ -10,8 +10,8 @@ import (
 
 // span is what a byte of Rust source sits in, as far as reading a
 // reference needs: code, an attribute, a private use declaration, a pub use
-// that re-exports, or text the compiler never resolves (a comment or a
-// literal), where a doc link names a symbol without using it.
+// that re-exports, or text the compiler never resolves (a comment, a
+// literal, or code cfg leaves out), where a name uses nothing.
 type span byte
 
 const (
@@ -75,6 +75,25 @@ func (s rustSource) bang(p lsp.Position) bool {
 		return false
 	}
 	return strings.HasPrefix(strings.TrimLeft(s.lines[p.Line][p.Character:], " "), "!")
+}
+
+// hide marks a range, such as code cfg leaves out, as text, with the
+// re-exports in it.
+func (s *rustSource) hide(r lsp.Range) {
+	off := func(p lsp.Position) int {
+		if p.Line >= len(s.starts) {
+			return len(s.spans)
+		}
+		return min(max(s.starts[max(p.Line, 0)]+p.Character, 0), len(s.spans))
+	}
+	from, to := off(r.Start), off(r.End)
+	for i := from; i < to; i++ {
+		s.spans[i] = inText
+	}
+	s.exports = slices.DeleteFunc(s.exports, func(p lsp.Position) bool {
+		at := off(p)
+		return at >= from && at < to
+	})
 }
 
 // at is the span the byte at line and column sits in.
