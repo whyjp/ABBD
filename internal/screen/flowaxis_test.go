@@ -482,3 +482,34 @@ func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
 		t.Errorf("%d lines counted back, want none", n)
 	}
 }
+
+// Down the flow, two units of one stage that stand side by side in its row
+// join straight across, as on a spine, not by a lane under the row.
+func TestTwoUnitsOfAStageDownTheFlowJoinStraightAcross(t *testing.T) {
+	id := func(i int) model.ID { return model.ID(fmt.Sprintf("MOD-%04d", i)) }
+	var units []model.Unit
+	var parts []store.Part[model.Layer]
+	for i := 1; i <= 6; i++ {
+		var rels []model.Relation
+		if i < 6 {
+			rels = deps(id(i + 1))
+		}
+		units = append(units, called(id(i), fmt.Sprintf("a stage with a name long enough to fill its box %d", i), rels...))
+		parts = append(parts, band(fmt.Sprint("stage ", i), id(i)))
+	}
+	units = append(units, called("MOD-0011", "reader", deps(id(1))...))
+	parts[0] = band("stage 1", "MOD-0011", id(1))
+	d := Build(Input{Units: units, Figures: primaryStack(parts...)}).Overview
+	if f := d.axis.flow; f == nil || f.across {
+		t.Fatalf("the flow is laid down: %+v", f)
+	}
+	for _, r := range d.Routes {
+		if slices.Equal(r.ends, []string{"MOD-0011", string(id(1))}) {
+			if len(r.runs) != 1 || r.runs[0][0].y != r.runs[0][1].y {
+				t.Errorf("the line between the two units of stage 1 runs %v, want one straight run across", r.runs)
+			}
+			return
+		}
+	}
+	t.Fatal("no line between the two units of stage 1")
+}

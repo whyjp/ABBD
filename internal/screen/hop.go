@@ -2,15 +2,15 @@ package screen
 
 import "slices"
 
-// hops says which requests join two stages of a flow laid across that stand
-// next to each other on the spine, both ends on the boxes themselves, not
-// on a chip. Such a line runs straight across from one box's facing side
+// hops says which requests join two stages of the primary flow that stand
+// next to each other in one row, on the spine or in a stage's own row down
+// the flow, both ends on the boxes themselves, not on a chip. Such a line runs straight across from one box's facing side
 // into the other's, as a pipeline is drawn: it joins no bus, so it never
 // leaves its box beside a bundle of its kind (rule 4) nor dips under the
 // row and comes back up (B3). It is nil when no line does.
 func (l *layout) hops(reqs []wireReq) []bool {
 	f := l.axis.flow
-	if f == nil || !f.across {
+	if f == nil {
 		return nil
 	}
 	bare := func(e end) bool {

@@ -151,7 +151,7 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // times to keep one, and no measure it compares them by reads where a
 // count stands, while placing the counts was most of a lay.
 //
-// Lines between neighbouring stages of a flow laid across (hops) take no
+// Lines between stages that stand side by side in one row (hops) take no
 // part in any of that: they run straight across between the two boxes.
 func (l *layout) route(reqs []wireReq) routing {
 	var r routing
