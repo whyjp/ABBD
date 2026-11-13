@@ -6249,7 +6249,6 @@
         "Provides": 33,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6755,7 +6754,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6786,7 +6785,7 @@
                 "Code": true
               },
               {
-                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table, overview다. 읽기 동사는 extract, explain, brief, path, impact, diff, review, evidence, status, lint다. ",
+                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table, overview다. 읽기 동사는 extract, relate, explain, brief, path, impact, diff, review, evidence, status, lint다. ",
                 "Code": false
               },
               {
@@ -6963,7 +6962,15 @@
                 "Code": true
               },
               {
-                "Text": " 분리는 setup에만 허용한다. 플래그는 ",
+                "Text": " 분리는 setup과 relate에만 허용한다(",
+                "Code": false
+              },
+              {
+                "Text": "dashArgv",
+                "Code": true
+              },
+              {
+                "Text": "). 플래그는 ",
                 "Code": false
               },
               {
@@ -7137,6 +7144,67 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "CLAUDE.md abbd block",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/install.go",
+                "Code": true
+              },
+              {
+                "Text": "): 어시스턴트에게 블루프린트를 먼저 묻고, sync하고, diff를 남기고, ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": "를 커밋하라고 이르는 표시된 글이다. 표시는 혼자 한 줄에 있고 펜스 밖에 있을 때만 센다. 짝 없는 표시는 오류이고, install은 줄바꿈과 파일의 나머지를 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "blueprint publish",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/screen.go",
+                "Code": true
+              },
+              {
+                "Text": "): 트리 스냅숏과 함께 화면 입력을 읽어 블루프린트 파일을 쓰고, 입력과 렌더 해시를 상태에 남긴다. 유닛이 없으면 아무것도 하지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "번들 추출 도구",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "bundled front-ends",
                 "Code": false,
                 "Bold": true
@@ -7183,7 +7251,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "CLAUDE.md abbd block",
+                "Text": "bundled relaters",
                 "Code": false,
                 "Bold": true
               },
@@ -7192,41 +7260,59 @@
                 "Code": false
               },
               {
-                "Text": "cmd/abbd/install.go",
+                "Text": "cmd/abbd/relate.go",
                 "Code": true
               },
               {
-                "Text": "): 어시스턴트에게 블루프린트를 먼저 묻고, sync하고, diff를 남기고, ",
+                "Text": "): ",
                 "Code": false
               },
               {
-                "Text": ".abbd",
+                "Text": "abbd relate go|rust[=DIR] -- EXTRACT-ARGV",
                 "Code": true
               },
               {
-                "Text": "를 커밋하라고 이르는 표시된 글이다. 표시는 혼자 한 줄에 있고 펜스 밖에 있을 때만 센다. 짝 없는 표시는 오류이고, install은 줄바꿈과 파일의 나머지를 지킨다.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "blueprint publish",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": " (",
+                "Text": "는 ",
                 "Code": false
               },
               {
-                "Text": "cmd/abbd/screen.go",
+                "Text": "--",
                 "Code": true
               },
               {
-                "Text": "): 트리 스냅숏과 함께 화면 입력을 읽어 블루프린트 파일을 쓰고, 입력과 렌더 해시를 상태에 남긴다. 유닛이 없으면 아무것도 하지 않는다.",
+                "Text": " 뒤 명령이 찍은 추출을, 없으면 stdin을 모르는 field를 거부하며 읽고, bundled relater(MOD-0060)가 그 unit 사이에서 읽은 코드 수준 relation을 더해 ",
+                "Code": false
+              },
+              {
+                "Text": "Doc.Encode",
+                "Code": true
+              },
+              {
+                "Text": "로 다시 찍는다. ",
+                "Code": false
+              },
+              {
+                "Text": "--",
+                "Code": true
+              },
+              {
+                "Text": " 뒤 명령은 sync와 같은 ",
+                "Code": false
+              },
+              {
+                "Text": "runScript",
+                "Code": true
+              },
+              {
+                "Text": "로 띄운다. 어느 구성도 컴파일하지 않아 읽지 못한 파일은 relater와 이유와 함께 stderr에 나열한다. 상태는 읽지도 쓰지도 않으므로 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd setup -- abbd relate go -- EXTRACT-ARGV",
+                "Code": true
+              },
+              {
+                "Text": "로 등록하면 추출 스크립트가 된다.",
                 "Code": false
               }
             ]
@@ -12487,7 +12573,6 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -12617,7 +12702,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -12636,7 +12721,7 @@
                 "Code": true
               },
               {
-                "Text": "는 ABBD가 추출 JSON을 읽는 곳이다. 추출 JSON은 프로젝트의 추출 스크립트가 찍는 unit과 relation 문서이고, pstack의 supplement도 같은 스키마를 쓴다. 파일은 ",
+                "Text": "는 ABBD가 추출 JSON을 읽는 곳이다. 추출 JSON은 프로젝트의 추출 스크립트가 찍는 unit과 relation 문서이고, pstack의 supplement도 같은 스키마를 쓴다. 검사는 ",
                 "Code": false
               },
               {
@@ -12644,7 +12729,7 @@
                 "Code": true
               },
               {
-                "Text": " 하나이고, 패키지 주석은 이곳을 \"the boundary where untrusted model output becomes typed units\"라고 부른다. 스크립트는 모델이 썼고 supplement는 모델 reader가 썼으므로, 이 패키지가 모양을 한 번 검사하고 하위 코드는 다시 검사하지 않는다. ",
+                "Text": " 한 파일에 있고, 패키지 주석은 이곳을 \"the boundary where untrusted model output becomes typed units\"라고 부른다. 스크립트는 모델이 썼고 supplement는 모델 reader가 썼으므로, 이 패키지가 모양을 한 번 검사하고 하위 코드는 다시 검사하지 않는다. ",
                 "Code": false
               },
               {
@@ -13188,6 +13273,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "하위 모듈",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -13465,6 +13559,90 @@
               },
               {
                 "Text": "가 스크립트에 대고 풀도록 남는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "bundled relater",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (MOD-0060 internal/extract/relate): 추출이 unit을 이름 지은 뒤 도는 하위 모듈로, 언어의 컴파일러 front-end로 코드를 읽어 그 unit 사이의 코드 수준 relation을 근거가 되는 호출, import, 구현과 함께 더한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Names",
+                "Code": true
+              },
+              {
+                "Text": "가 나열하는 ",
+                "Code": false
+              },
+              {
+                "Text": "go",
+                "Code": true
+              },
+              {
+                "Text": "(go/types, VTA로 푼 호출)와 ",
+                "Code": false
+              },
+              {
+                "Text": "rust",
+                "Code": true
+              },
+              {
+                "Text": "(rust-analyzer) 둘이다. ",
+                "Code": false
+              },
+              {
+                "Text": "Relate",
+                "Code": true
+              },
+              {
+                "Text": "는 relater가 코드를 읽은 unit 사이의 depends_on을 맡아 추출의 것을 바꾸고, unit은 만들지 않으며, provides나 consumes는 추출에 없는 곳에만 더한다. 계약은 추출이 맡기 때문이다. via는 call, trait, macro, import 순으로 좋고, relation 하나는 가장 좋은 via의 인용을 셋까지 단다. 어느 구성도 컴파일하지 않은 코드를 품은 unit은 일부만 읽혔으므로, relater가 흔적을 찾지 못한 추출의 depends_on도 남긴다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd relate",
+                "Code": true
+              },
+              {
+                "Text": "가 그 문서를 찍으므로 결과도 ",
+                "Code": false
+              },
+              {
+                "Text": "Parse",
+                "Code": true
+              },
+              {
+                "Text": "의 검사를 거친다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "언어 서버 클라이언트",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (MOD-0061 internal/extract/lsp): relater들이 나눠 쓰는 LSP 클라이언트 하나다. 한 번의 일괄 읽기 동안 서버를 stdio로 띄워 초기화하고, 작업 공간 색인을 기다린 뒤 질문하고 끝낸다. 대화형으로 답하지 않고 파일을 고치지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "rust",
+                "Code": true
+              },
+              {
+                "Text": " relater가 rust-analyzer를 이것으로 부른다.",
                 "Code": false
               }
             ]
