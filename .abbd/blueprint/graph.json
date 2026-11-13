@@ -1366,7 +1366,8 @@
         "cmd/abbd/stack.go",
         "cmd/abbd/table.go",
         "cmd/abbd/uncovered.go",
-        "cmd/abbd/understand.go"
+        "cmd/abbd/understand.go",
+        "cmd/abbd/words.go"
       ],
       "Rank": {
         "Basis": "stack",
@@ -2427,18 +2428,21 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a diff can compare today's units with those committed at a base revision",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
+        "internal/store/store.go",
         "internal/store/store.go UnitsAt"
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go \"files, err := gitx.Files(project, rev, dirs...)\""
+        "internal/store/store.go \"files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return strings.HasSuffix(f, \\\".md\\\") }, dirs...)\""
       ]
     },
     {
@@ -6029,6 +6033,7 @@
         "Provides": 31,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6534,7 +6539,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -7060,7 +7065,63 @@
                 "Code": true
               },
               {
-                "Text": "에서는 경계 변경만이 실패가 된다. ",
+                "Text": "에서는 경계 변경만이 실패가 된다. diff는 ",
+                "Code": false
+              },
+              {
+                "Text": "words.go",
+                "Code": true
+              },
+              {
+                "Text": "가 기준과 지금의 상태에서 각각 읽은 ",
+                "Code": false
+              },
+              {
+                "Text": "written",
+                "Code": true
+              },
+              {
+                "Text": "을 견줘, 기준 이후 생기거나 사라지거나 바뀐 모듈 글, 노트, flow step도 잃은 문장과 얻은 문장과 함께 이른다. 모듈 글은 모듈 ID를 키로 삼으므로 이름이 바뀌어도 이어지고, flow step은 먼저 맞춰 세우므로(",
+                "Code": false
+              },
+              {
+                "Text": "aligned",
+                "Code": true
+              },
+              {
+                "Text": ") 넣거나 뺀 step은 변경 하나다. 텍스트 출력은 방향마다 문장을 넷까지 보이고, ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": "은 모두 보인다. 기준의 글은 ",
+                "Code": false
+              },
+              {
+                "Text": "CheckoutAt",
+                "Code": true
+              },
+              {
+                "Text": "이 풀어 놓은 기준 체크아웃에서 읽고, ",
+                "Code": false
+              },
+              {
+                "Text": "--page",
+                "Code": true
+              },
+              {
+                "Text": "는 같은 체크아웃에서 기준의 페이지를 ",
+                "Code": false
+              },
+              {
+                "Text": "pagesAt",
+                "Code": true
+              },
+              {
+                "Text": "으로 다시 그린다. ",
                 "Code": false
               },
               {
@@ -8472,23 +8533,39 @@
                   "Ref": "IF-0001.entries.json",
                   "Title": "항목",
                   "Key": "json",
+                  "Reader": "pstack poteto-mode 0.15.36",
                   "Stale": false,
                   "Blocks": [
                     {
                       "Kind": "p",
                       "Parts": [
                         {
-                          "Text": "Prints the same categories as JSON, with the base revision, for a tool rather than a reader.",
+                          "Text": "같은 범주를 기준 리비전과 함께 JSON으로 찍고, ",
+                          "Code": false
+                        },
+                        {
+                          "Text": "words",
+                          "Code": true
+                        },
+                        {
+                          "Text": "도 담는다. ",
+                          "Code": false
+                        },
+                        {
+                          "Text": "words",
+                          "Code": true
+                        },
+                        {
+                          "Text": "는 기준 이후 생기거나 사라지거나 바뀐 모듈 글, slot 노트, flow step마다 항목 하나이고, 각 항목은 키, 종류, 유닛, 변경, 그리고 잃은 문장과 얻은 문장을 개수 제한 없이 모두 담는다. 사람이 아니라 도구가 읽는 출력이다.",
                           "Code": false
                         }
                       ]
                     }
                   ],
                   "Quotes": [
-                    "cmd/abbd/diff.go \"if e.asJSON {\""
-                  ],
-                  "RereadBy": "concept-orch (Claude Opus 5.5)",
-                  "RereadOn": "2026-11-10"
+                    "cmd/abbd/diff.go \"Words []wordChange `json:\\\"words\\\"`\"",
+                    "cmd/abbd/words.go \"Lost   []string `json:\\\"lost\\\"`\""
+                  ]
                 }
               },
               {
@@ -14113,6 +14190,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -14132,7 +14210,7 @@
                 "Code": true
               },
               {
-                "Text": " is ABBD's only channel to git. It is one file, ",
+                "Text": "는 ABBD가 git에 닿는 유일한 통로다. 파일은 ",
                 "Code": false
               },
               {
@@ -14140,7 +14218,7 @@
                 "Code": true
               },
               {
-                "Text": ", with nine exported, stateless functions, private helpers ",
+                "Text": " 하나이고, 상태 없는 공개 함수 열한 개와 비공개 도우미 ",
                 "Code": false
               },
               {
@@ -14188,7 +14266,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -14196,7 +14274,15 @@
                 "Code": true
               },
               {
-                "Text": ", and one private type, ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "ignored",
+                "Code": true
+              },
+              {
+                "Text": ", 그리고 서브모듈의 경로와 기록된 커밋을 담는 비공개 타입 ",
                 "Code": false
               },
               {
@@ -14204,7 +14290,7 @@
                 "Code": true
               },
               {
-                "Text": ", a submodule's path and recorded commit. Each function runs ",
+                "Text": " 하나로 이루어진다. 각 함수는 ",
                 "Code": false
               },
               {
@@ -14212,7 +14298,7 @@
                 "Code": true
               },
               {
-                "Text": " and turns stdout into a string, slice or map. The package exports no types, keeps no state and imports only the standard library. It never writes the user's index, refs or commits.",
+                "Text": "을 돌려 stdout을 문자열, 슬라이스, 맵으로 바꾼다. 공개 타입이 없고, 상태를 두지 않으며, 표준 라이브러리만 가져온다. 사용자의 index, ref, 커밋은 결코 쓰지 않는다.",
                 "Code": false
               }
             ]
@@ -14221,7 +14307,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The central idea is the working-tree fingerprint. ",
+                "Text": "중심 개념은 작업 트리 지문이다. ",
                 "Code": false
               },
               {
@@ -14229,7 +14315,7 @@
                 "Code": true
               },
               {
-                "Text": " stages the whole working tree into a throwaway index, untracked files included and the ",
+                "Text": "은 추적되지 않은 파일까지 포함한 작업 트리 전체를 버릴 index에 올리되 ",
                 "Code": false
               },
               {
@@ -14237,7 +14323,7 @@
                 "Code": true
               },
               {
-                "Text": " path left out, then runs ",
+                "Text": " 경로는 빼고, ",
                 "Code": false
               },
               {
@@ -14245,7 +14331,7 @@
                 "Code": true
               },
               {
-                "Text": ". It names no exclude for a path .gitignore already ignores (",
+                "Text": "를 돌린다. .gitignore가 이미 무시하는 경로는 exclude로 이름 붙이지 않는다(",
                 "Code": false
               },
               {
@@ -14253,7 +14339,7 @@
                 "Code": true
               },
               {
-                "Text": ", through ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -14261,7 +14347,7 @@
                 "Code": true
               },
               {
-                "Text": ", so a tracked .abbd does not sway it), since git refuses such a pathspec and a whitelist .gitignore such as ",
+                "Text": "를 거치므로 추적되는 .abbd에 흔들리지 않는다). git이 그런 pathspec을 거부하고, ",
                 "Code": false
               },
               {
@@ -14269,7 +14355,7 @@
                 "Code": true
               },
               {
-                "Text": " ignores ",
+                "Text": " 같은 허용 목록 .gitignore는 ",
                 "Code": false
               },
               {
@@ -14277,7 +14363,7 @@
                 "Code": true
               },
               {
-                "Text": " too. A submodule enters as the commit the superproject's index records, not the one checked out, so a clean clone of a synced commit snapshots the same tree. Callers pass ",
+                "Text": "도 무시하기 때문이다. 서브모듈은 체크아웃된 커밋이 아니라 상위 프로젝트 index가 기록한 커밋으로 들어가므로, sync된 커밋을 새로 클론해도 같은 트리가 나온다. 호출자는 ",
                 "Code": false
               },
               {
@@ -14285,7 +14371,7 @@
                 "Code": true
               },
               {
-                "Text": ", so ",
+                "Text": "을 넘기므로 ",
                 "Code": false
               },
               {
@@ -14293,7 +14379,7 @@
                 "Code": true
               },
               {
-                "Text": " never counts. ",
+                "Text": "는 세지 않는다. abbd CLI의 ",
                 "Code": false
               },
               {
@@ -14301,15 +14387,7 @@
                 "Code": true
               },
               {
-                "Text": " in ",
-                "Code": false
-              },
-              {
-                "Text": "cmd/abbd/main.go",
-                "Code": true
-              },
-              {
-                "Text": " stores that tree as ",
+                "Text": "은 그 트리를 ",
                 "Code": false
               },
               {
@@ -14317,7 +14395,7 @@
                 "Code": true
               },
               {
-                "Text": " and the result of ",
+                "Text": "로, ",
                 "Code": false
               },
               {
@@ -14325,7 +14403,7 @@
                 "Code": true
               },
               {
-                "Text": " as ",
+                "Text": "의 결과를 ",
                 "Code": false
               },
               {
@@ -14333,7 +14411,7 @@
                 "Code": true
               },
               {
-                "Text": ". On the next sync, ",
+                "Text": "으로 저장한다. 다음 sync에서 ",
                 "Code": false
               },
               {
@@ -14341,7 +14419,7 @@
                 "Code": true
               },
               {
-                "Text": " diffs the stored and fresh trees so ",
+                "Text": "가 저장된 트리와 새 트리를 비교해 ",
                 "Code": false
               },
               {
@@ -14349,7 +14427,7 @@
                 "Code": true
               },
               {
-                "Text": " can follow moved files. ",
+                "Text": "이 옮겨진 파일을 따라가게 한다. ",
                 "Code": false
               },
               {
@@ -14357,7 +14435,7 @@
                 "Code": true
               },
               {
-                "Text": " takes a fresh snapshot so ",
+                "Text": "은 새 스냅숏을 떠서 ",
                 "Code": false
               },
               {
@@ -14365,15 +14443,7 @@
                 "Code": true
               },
               {
-                "Text": " and the blueprint can call the state STALE. ",
-                "Code": false
-              },
-              {
-                "Text": "keepingCurrent",
-                "Code": true
-              },
-              {
-                "Text": " in ",
+                "Text": "와 블루프린트가 상태를 STALE이라 부를 수 있게 한다. ",
                 "Code": false
               },
               {
@@ -14381,7 +14451,15 @@
                 "Code": true
               },
               {
-                "Text": " snapshots around an edit outside ",
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "keepingCurrent",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -14389,7 +14467,7 @@
                 "Code": true
               },
               {
-                "Text": " and moves the fingerprint along only when the state was current. The other functions serve wider reads. ",
+                "Text": " 밖을 고치는 앞뒤로 스냅숏을 뜨고, 상태가 CURRENT였을 때만 지문을 옮긴다. 나머지 함수는 더 넓은 읽기를 맡는다. ",
                 "Code": false
               },
               {
@@ -14397,7 +14475,7 @@
                 "Code": true
               },
               {
-                "Text": " picks the base for ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -14405,23 +14483,15 @@
                 "Code": true
               },
               {
-                "Text": ", and ",
+                "Text": "의 기준을 고르고, ",
                 "Code": false
               },
               {
-                "Text": "Files",
+                "Text": "FilesAt",
                 "Code": true
               },
               {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Show",
-                "Code": true
-              },
-              {
-                "Text": " let ",
+                "Text": "은 그 리비전에서 한 경로 아래 파일을 모두 git 호출 두 번으로 읽어 ",
                 "Code": false
               },
               {
@@ -14429,7 +14499,15 @@
                 "Code": true
               },
               {
-                "Text": " read unit files at that revision. ",
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "store.CheckoutAt",
+                "Code": true
+              },
+              {
+                "Text": "에 준다. ",
                 "Code": false
               },
               {
@@ -14437,7 +14515,7 @@
                 "Code": true
               },
               {
-                "Text": " lists what git would commit. ",
+                "Text": "는 git이 커밋할 파일을 나열한다. ",
                 "Code": false
               },
               {
@@ -14445,7 +14523,7 @@
                 "Code": true
               },
               {
-                "Text": " uses that list for move candidates, and ",
+                "Text": "는 그 목록으로 이동 후보를 찾고, ",
                 "Code": false
               },
               {
@@ -14453,7 +14531,7 @@
                 "Code": true
               },
               {
-                "Text": " uses it when a query names a file.",
+                "Text": "는 질의가 파일을 이를 때 그 목록을 쓴다.",
                 "Code": false
               }
             ]
@@ -14484,7 +14562,7 @@
                 "Code": true
               },
               {
-                "Text": "): the private helper every function goes through. It runs ",
+                "Text": "): 모든 함수가 거치는 비공개 도우미다. 덧붙인 환경 변수와 함께 ",
                 "Code": false
               },
               {
@@ -14492,7 +14570,7 @@
                 "Code": true
               },
               {
-                "Text": " with extra environment variables appended, captures stdout and leaves stderr unattached, so git's messages are dropped. ",
+                "Text": "를 돌려 stdout을 받고, stderr는 잇지 않으므로 git의 메시지는 버려진다. ",
                 "Code": false
               },
               {
@@ -14500,7 +14578,7 @@
                 "Code": true
               },
               {
-                "Text": " is the same with a string on stdin, which ",
+                "Text": "은 stdin에 문자열을 넣는 같은 도우미이고, ",
                 "Code": false
               },
               {
@@ -14508,7 +14586,69 @@
                 "Code": true
               },
               {
-                "Text": " feeds paths and index lines through.",
+                "Text": "가 경로와 index 줄을, ",
+                "Code": false
+              },
+              {
+                "Text": "FilesAt",
+                "Code": true
+              },
+              {
+                "Text": "이 객체 ID를 그것으로 흘려보낸다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "FilesAt",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): 한 리비전에서 주어진 경로 아래 파일을 ",
+                "Code": false
+              },
+              {
+                "Text": "dir",
+                "Code": true
+              },
+              {
+                "Text": " 기준 경로로 돌려주되 ",
+                "Code": false
+              },
+              {
+                "Text": "keep",
+                "Code": true
+              },
+              {
+                "Text": "이 거절한 것은 뺀다. ",
+                "Code": false
+              },
+              {
+                "Text": "git ls-tree -r -z",
+                "Code": true
+              },
+              {
+                "Text": "로 blob을 나열하고 ",
+                "Code": false
+              },
+              {
+                "Text": "git cat-file --batch",
+                "Code": true
+              },
+              {
+                "Text": " 한 번으로 모두 읽으므로, 파일 수백 개짜리 상태도 git 호출 두 번이면 된다. 읽을 수 없는 머리줄은 그 파일 이름과 함께 오류가 된다.",
                 "Code": false
               }
             ]
@@ -14526,7 +14666,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Snapshot",
+                "Text": "working-tree snapshot",
                 "Code": false,
                 "Bold": true
               },
@@ -14535,11 +14675,11 @@
                 "Code": false
               },
               {
-                "Text": "gitx.go",
+                "Text": "Snapshot",
                 "Code": true
               },
               {
-                "Text": "): a tree object of the tracked and untracked, non-ignored files under ",
+                "Text": "): ",
                 "Code": false
               },
               {
@@ -14547,7 +14687,7 @@
                 "Code": true
               },
               {
-                "Text": ", minus ",
+                "Text": " 아래 추적되거나 추적되지 않았지만 무시되지 않은 파일에서 ",
                 "Code": false
               },
               {
@@ -14555,7 +14695,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": "를 뺀 트리 객체다. ",
                 "Code": false
               },
               {
@@ -14563,7 +14703,7 @@
                 "Code": true
               },
               {
-                "Text": " reads each submodule's recorded commit with ",
+                "Text": "가 ",
                 "Code": false
               },
               {
@@ -14571,7 +14711,7 @@
                 "Code": true
               },
               {
-                "Text": ", the add skips the submodule paths, and ",
+                "Text": "로 각 서브모듈의 기록된 커밋을 읽고, add는 서브모듈 경로를 건너뛰며, ",
                 "Code": false
               },
               {
@@ -14579,7 +14719,7 @@
                 "Code": true
               },
               {
-                "Text": " puts the recorded commits back. ",
+                "Text": "가 기록된 커밋을 되돌려 놓는다. ",
                 "Code": false
               },
               {
@@ -14587,7 +14727,7 @@
                 "Code": true
               },
               {
-                "Text": " refuses a nested repository with no commit yet, so ",
+                "Text": "는 아직 커밋이 없는 중첩 저장소를 거부하므로, ",
                 "Code": false
               },
               {
@@ -14595,7 +14735,7 @@
                 "Code": true
               },
               {
-                "Text": " finds each one, an untracked entry with a trailing slash whose ",
+                "Text": "가 그런 저장소, 곧 끝에 슬래시가 붙은 추적되지 않은 항목 중 ",
                 "Code": false
               },
               {
@@ -14603,7 +14743,7 @@
                 "Code": true
               },
               {
-                "Text": " is empty, and the add skips it. ",
+                "Text": "가 빈 것을 모두 찾고 add는 그것을 건너뛴다. 그다음 ",
                 "Code": false
               },
               {
@@ -14611,7 +14751,7 @@
                 "Code": true
               },
               {
-                "Text": " then adds its files, as ",
+                "Text": "가 그 안의 파일을 ",
                 "Code": false
               },
               {
@@ -14619,7 +14759,7 @@
                 "Code": true
               },
               {
-                "Text": " lists them inside it, through ",
+                "Text": "가 나열하는 대로 ",
                 "Code": false
               },
               {
@@ -14627,7 +14767,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -14635,7 +14775,7 @@
                 "Code": true
               },
               {
-                "Text": ", so the fingerprint sees it as the untracked directory it is. ",
+                "Text": "로 더해, 지문이 그것을 실제 모습대로 추적되지 않은 디렉터리로 보게 한다. ",
                 "Code": false
               },
               {
@@ -14643,7 +14783,7 @@
                 "Code": true
               },
               {
-                "Text": " keeps what ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -14651,7 +14791,7 @@
                 "Code": true
               },
               {
-                "Text": " would add: a regular file as 100644 or 100755, and a symlink as 120000, whose blob is the link's target, not the target's content. It drops a path that is gone, is neither a file nor a symlink, or sits below a symlinked directory. A Windows junction is not a symlink to git, which walks into it, and ",
+                "Text": "가 더할 것만 남긴다. 일반 파일은 100644나 100755로, 심볼릭 링크는 120000으로 더하고, 링크의 blob은 대상의 내용이 아니라 링크가 가리키는 대상이다. 사라진 경로, 파일도 심볼릭 링크도 아닌 경로, 심볼릭 링크 디렉터리 아래의 경로는 버린다. Windows 정션은 git에게 심볼릭 링크가 아니어서 git이 그 안으로 들어가고, ",
                 "Code": false
               },
               {
@@ -14659,7 +14799,7 @@
                 "Code": true
               },
               {
-                "Text": " calls it irregular, so a parent that is irregular and resolves to a directory counts as a directory. That repository's index can list such a path when a file is deleted or renamed before the first commit, or when a directory later becomes a symlink, and ",
+                "Text": "은 그것을 불규칙이라 부르므로, 불규칙이면서 디렉터리로 풀리는 부모는 디렉터리로 센다. 첫 커밋 전에 파일을 지우거나 이름을 바꿨을 때, 또는 디렉터리가 나중에 심볼릭 링크가 됐을 때 그 저장소의 index가 그런 경로를 나열할 수 있고, ",
                 "Code": false
               },
               {
@@ -14667,7 +14807,7 @@
                 "Code": true
               },
               {
-                "Text": " would refuse a path below a symlink. ",
+                "Text": "는 심볼릭 링크 아래 경로를 거부한다. 그다음 ",
                 "Code": false
               },
               {
@@ -14675,7 +14815,7 @@
                 "Code": true
               },
               {
-                "Text": " then drops what ",
+                "Text": "가 ",
                 "Code": false
               },
               {
@@ -14683,7 +14823,7 @@
                 "Code": true
               },
               {
-                "Text": " says the project ignores. Each path to ",
+                "Text": "가 프로젝트에서 무시한다고 하는 것을 버린다. ",
                 "Code": false
               },
               {
@@ -14691,7 +14831,7 @@
                 "Code": true
               },
               {
-                "Text": " goes in C-style quotes, so a name may hold a newline. git reads the paths of ",
+                "Text": "로 가는 경로는 모두 C 형식 따옴표로 감싸므로 이름에 줄바꿈이 있어도 된다. git은 ",
                 "Code": false
               },
               {
@@ -14707,7 +14847,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -14715,15 +14855,7 @@
                 "Code": true
               },
               {
-                "Text": " from the top of the work tree, so they and the submodule paths take the prefix ",
-                "Code": false
-              },
-              {
-                "Text": "rev-parse --show-prefix",
-                "Code": true
-              },
-              {
-                "Text": " gives when ",
+                "Text": "의 경로를 작업 트리 꼭대기 기준으로 읽으므로, ",
                 "Code": false
               },
               {
@@ -14731,7 +14863,15 @@
                 "Code": true
               },
               {
-                "Text": " is a subdirectory of the repository. ",
+                "Text": "이 저장소의 하위 디렉터리면 그 경로와 서브모듈 경로에 ",
+                "Code": false
+              },
+              {
+                "Text": "rev-parse --show-prefix",
+                "Code": true
+              },
+              {
+                "Text": "가 주는 접두사를 붙인다. ",
                 "Code": false
               },
               {
@@ -14739,7 +14879,7 @@
                 "Code": true
               },
               {
-                "Text": " points into an ",
+                "Text": "은 ",
                 "Code": false
               },
               {
@@ -14747,7 +14887,7 @@
                 "Code": true
               },
               {
-                "Text": " temp directory that is removed afterwards. Outside a repository it returns an empty string and no error.",
+                "Text": " 임시 디렉터리를 가리키고, 그 디렉터리는 끝나면 지운다. 저장소 밖에서는 빈 문자열을 돌려주고 오류는 내지 않는다.",
                 "Code": false
               }
             ]
@@ -14765,20 +14905,20 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Renames",
-                "Code": true
-              },
-              {
-                "Text": " (",
+                "Text": "rename detection",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": "gitx.go",
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "Renames",
                 "Code": true
               },
               {
-                "Text": "): old to new paths from ",
+                "Text": "): ",
                 "Code": false
               },
               {
@@ -14786,7 +14926,7 @@
                 "Code": true
               },
               {
-                "Text": ". It keeps rename entries and skips copies. Equal or empty trees give an empty map.",
+                "Text": "에서 옛 경로를 새 경로로 잇는다. 이름 변경 항목만 남기고 복사는 건너뛴다. 같은 트리나 빈 트리는 빈 맵을 준다.",
                 "Code": false
               }
             ]
@@ -14820,7 +14960,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -14828,15 +14968,7 @@
                 "Code": true
               },
               {
-                "Text": " return ",
-                "Code": false
-              },
-              {
-                "Text": "ok=false",
-                "Code": true
-              },
-              {
-                "Text": " with no error when ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -14844,7 +14976,7 @@
                 "Code": true
               },
               {
-                "Text": " cannot find the old tree, usually after ",
+                "Text": "가 옛 트리를 찾지 못하면, 대개 ",
                 "Code": false
               },
               {
@@ -14852,7 +14984,15 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " 뒤에, 오류 없이 ",
+                "Code": false
+              },
+              {
+                "Text": "ok=false",
+                "Code": true
+              },
+              {
+                "Text": "를 돌려준다. 그러면 ",
                 "Code": false
               },
               {
@@ -14860,7 +15000,7 @@
                 "Code": true
               },
               {
-                "Text": " then warns that file moves are not detected and carries on.",
+                "Text": "은 파일 이동을 알아채지 못한다고 경고하고 계속한다.",
                 "Code": false
               }
             ]
@@ -14882,7 +15022,7 @@
                 "Code": true
               },
               {
-                "Text": "): every path that differs between two snapshots, with a moved file listed under both names. Nothing in the repository calls it today.",
+                "Text": "): 두 스냅숏 사이에 다른 경로를 모두 나열하고, 옮겨진 파일은 두 이름 모두로 나온다. 지금 저장소에서 이것을 부르는 곳은 없다.",
                 "Code": false
               }
             ]
@@ -14904,7 +15044,7 @@
                 "Code": true
               },
               {
-                "Text": "): the tracked files that differ between a revision and the working tree, from ",
+                "Text": "): 한 리비전과 작업 트리 사이에 다른 추적 파일을 ",
                 "Code": false
               },
               {
@@ -14912,7 +15052,7 @@
                 "Code": true
               },
               {
-                "Text": ", and the untracked files git does not ignore, all NUL-separated and relative to the root, a renamed file under both names. ",
+                "Text": "로, 그리고 git이 무시하지 않는 추적되지 않은 파일을 모두 NUL로 나눠 루트 기준으로 돌려주며, 이름이 바뀐 파일은 두 이름 모두로 나온다. ",
                 "Code": false
               },
               {
@@ -14920,7 +15060,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it to seed from the units whose code changed.",
+                "Text": "는 이것을 읽어 코드가 바뀐 유닛에서 씨앗을 얻는다.",
                 "Code": false
               }
             ]
@@ -14942,15 +15082,7 @@
                 "Code": true
               },
               {
-                "Text": "): the date of the last commit that touched a path, as ",
-                "Code": false
-              },
-              {
-                "Text": "YYYY-MM-DD",
-                "Code": true
-              },
-              {
-                "Text": ", from ",
+                "Text": "): 한 경로를 건드린 마지막 커밋의 날짜를 ",
                 "Code": false
               },
               {
@@ -14958,7 +15090,15 @@
                 "Code": true
               },
               {
-                "Text": ", or empty. ",
+                "Text": "로 ",
+                "Code": false
+              },
+              {
+                "Text": "YYYY-MM-DD",
+                "Code": true
+              },
+              {
+                "Text": "로 주거나 빈 값을 준다. ",
                 "Code": false
               },
               {
@@ -14966,7 +15106,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it to date the oldest committed text in its coverage line.",
+                "Text": "는 이것으로 커버리지 줄에 가장 오래 커밋된 글의 날짜를 붙인다.",
                 "Code": false
               }
             ]
@@ -14988,7 +15128,7 @@
                 "Code": true
               },
               {
-                "Text": "): the first commit whose diff adds or removes a quote in the given files (",
+                "Text": "): 주어진 파일에서 한 인용을 더하거나 뺀 첫 커밋(",
                 "Code": false
               },
               {
@@ -14996,7 +15136,7 @@
                 "Code": true
               },
               {
-                "Text": "), with its date and subject, and the pull request of the first merge on the ancestry path whose first parent does not hold it yet, so a commit made on the main line itself names none. ",
+                "Text": ")을 날짜와 제목과 함께 주고, 조상 경로에서 첫 부모가 아직 그 인용을 갖지 않은 첫 병합의 풀 리퀘스트도 준다. 그래서 주 줄기에 바로 만든 커밋은 풀 리퀘스트를 이르지 않는다. ",
                 "Code": false
               },
               {
@@ -15004,7 +15144,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it under each reader's coupling, searching only the coupling's unit file.",
+                "Text": "은 reader의 결합마다 이것을 읽되 그 결합의 유닛 파일만 찾는다.",
                 "Code": false
               }
             ]
@@ -15022,20 +15162,20 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "MergeBase",
-                "Code": true
-              },
-              {
-                "Text": " (",
+                "Text": "default-branch base search",
                 "Code": false,
                 "Bold": true
               },
               {
-                "Text": "gitx.go",
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "MergeBase",
                 "Code": true
               },
               {
-                "Text": "): tries origin's ",
+                "Text": "): origin의 ",
                 "Code": false
               },
               {
@@ -15043,7 +15183,7 @@
                 "Code": true
               },
               {
-                "Text": " symbolic ref, then ",
+                "Text": " 심볼릭 ref, ",
                 "Code": false
               },
               {
@@ -15075,7 +15215,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -15083,7 +15223,7 @@
                 "Code": true
               },
               {
-                "Text": ", and returns the first merge base git accepts. When none works it returns an error asking for ",
+                "Text": "를 차례로 해 보고 git이 받는 첫 병합 기준을 돌려준다. 하나도 안 되면 ",
                 "Code": false
               },
               {
@@ -15091,7 +15231,7 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": "를 달라는 오류를 낸다.",
                 "Code": false
               }
             ]
@@ -15113,7 +15253,7 @@
                 "Code": true
               },
               {
-                "Text": "): every submodule the index records, mapped from its path to the recorded commit, read once by ",
+                "Text": "): index가 기록한 서브모듈을 모두 그 경로에서 기록된 커밋으로 잇는다. ",
                 "Code": false
               },
               {
@@ -15121,7 +15261,7 @@
                 "Code": true
               },
               {
-                "Text": " from ",
+                "Text": "가 ",
                 "Code": false
               },
               {
@@ -15129,7 +15269,7 @@
                 "Code": true
               },
               {
-                "Text": ". It is empty outside a repository. ",
+                "Text": "에서 한 번 읽는다. 저장소 밖에서는 비어 있다. ",
                 "Code": false
               },
               {
@@ -15137,7 +15277,7 @@
                 "Code": true
               },
               {
-                "Text": " hashes a submodule by its pin, so a module's digest sees a new pin on every clone, and a directory anchor inside a submodule stands for that pin. ",
+                "Text": "는 서브모듈을 그 핀으로 해시하므로 모듈의 digest는 클론마다 새 핀을 보고, 서브모듈 안의 디렉터리 anchor는 그 핀을 대신한다. ",
                 "Code": false
               },
               {
@@ -15145,7 +15285,7 @@
                 "Code": true
               },
               {
-                "Text": " reads the same list.",
+                "Text": "도 같은 목록을 읽는다.",
                 "Code": false
               }
             ]
@@ -15167,7 +15307,7 @@
                 "Code": true
               },
               {
-                "Text": "): the current commit, or an empty string outside a repository or before the first commit.",
+                "Text": "): 현재 커밋이고, 저장소 밖이나 첫 커밋 전이면 빈 문자열이다.",
                 "Code": false
               }
             ]
@@ -15197,7 +15337,7 @@
                 "Code": true
               },
               {
-                "Text": ". It is the set the fingerprint counts, except that ",
+                "Text": "다. 지문이 세는 집합과 같되 ",
                 "Code": false
               },
               {
@@ -15205,7 +15345,7 @@
                 "Code": true
               },
               {
-                "Text": " stays in. It lists a submodule as one path, never lists an ignored file, and returns nil outside a repository, where ",
+                "Text": "가 들어 있다는 점만 다르다. 서브모듈은 경로 하나로 나열하고, 무시된 파일은 결코 나열하지 않으며, 저장소 밖에서는 nil을 돌려주고 그때 ",
                 "Code": false
               },
               {
@@ -15213,7 +15353,7 @@
                 "Code": true
               },
               {
-                "Text": " walks the disk instead.",
+                "Text": "는 디스크를 직접 훑는다.",
                 "Code": false
               }
             ]
@@ -15240,7 +15380,7 @@
                 "Code": true
               },
               {
-                "Text": "): every function takes and returns paths relative to the directory it was given, through ",
+                "Text": "): 모든 함수는 받은 디렉터리 기준 경로를 받고 돌려준다. ",
                 "Code": false
               },
               {
@@ -15256,23 +15396,15 @@
                 "Code": true
               },
               {
-                "Text": " and the ",
+                "Text": ", 그리고 ",
                 "Code": false
               },
               {
-                "Text": "./path",
+                "Text": "ls-tree",
                 "Code": true
               },
               {
-                "Text": " form in ",
-                "Code": false
-              },
-              {
-                "Text": "Show",
-                "Code": true
-              },
-              {
-                "Text": ". A project root below the repository top still works.",
+                "Text": "가 현재 디렉터리 기준으로 경로를 받고 내는 방식을 거친다. 그래서 저장소 꼭대기 아래의 프로젝트 루트에서도 그대로 돈다.",
                 "Code": false
               }
             ]
@@ -28684,6 +28816,7 @@
           "Sentence": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
           "Guess": true,
           "Anchors": [
+            "internal/store/store.go",
             "internal/store/store.go UnitsAt"
           ],
           "Understanding": null,
@@ -28927,7 +29060,15 @@
                 "Code": true
               },
               {
-                "Text": "): 한 리비전에 커밋된 unit 파일을 git으로 읽어 파싱한다. ",
+                "Text": "): 한 리비전에 커밋된 unit 파일을 ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.FilesAt",
+                "Code": true
+              },
+              {
+                "Text": " 한 번으로 읽어 파싱한다. ",
                 "Code": false
               },
               {
@@ -29060,11 +29201,27 @@
                 "Code": true
               },
               {
-                "Text": "를 페이지만 빼고 디렉터리에 풀어 store를 연다. 그래서 ",
+                "Text": "를 페이지만 빼고 ",
                 "Code": false
               },
               {
-                "Text": "abbd diff --page",
+                "Text": "gitx.FilesAt",
+                "Code": true
+              },
+              {
+                "Text": " 한 번으로 읽어 디렉터리에 풀고 store를 연다. 그래서 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff",
+                "Code": true
+              },
+              {
+                "Text": "가 기준의 글, 노트, flow를 거기서 읽고, ",
+                "Code": false
+              },
+              {
+                "Text": "--page",
                 "Code": true
               },
               {
