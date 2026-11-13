@@ -2849,7 +2849,24 @@
       "Anchors": [
         "internal/extract/relate",
         "internal/extract/relate/golang.go",
-        "internal/extract/relate/relate.go"
+        "internal/extract/relate/relate.go",
+        "internal/extract/relate/rust.go",
+        "internal/extract/relate/rusttext.go"
+      ],
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
+    },
+    {
+      "ID": "MOD-0061",
+      "Kind": "MOD",
+      "Name": "internal/extract/lsp",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/extract/lsp",
+        "internal/extract/lsp/client.go",
+        "internal/extract/lsp/protocol.go"
       ],
       "Parent": "MOD-0017",
       "Zone": "읽는 쪽"
@@ -5429,6 +5446,13 @@
     {
       "From": "MOD-0060",
       "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0060",
+      "To": "MOD-0061",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
       "Via": "call"
@@ -12561,12 +12585,32 @@
           "Anchors": [
             "internal/extract/relate",
             "internal/extract/relate/golang.go",
-            "internal/extract/relate/relate.go"
+            "internal/extract/relate/relate.go",
+            "internal/extract/relate/rust.go",
+            "internal/extract/relate/rusttext.go"
           ],
           "Understanding": null,
           "Rank": {
             "Basis": "dependency",
             "N": 1,
+            "Of": 2
+          }
+        },
+        {
+          "ID": "MOD-0061",
+          "Name": "internal/extract/lsp",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/extract/lsp",
+            "internal/extract/lsp/client.go",
+            "internal/extract/lsp/protocol.go"
+          ],
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
             "Of": 2
           }
         }

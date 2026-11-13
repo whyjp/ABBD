@@ -38,6 +38,19 @@ jobs:
         run: |
           curl -fsSL https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-linux-x86_64.tar.gz | tar -xz -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/cmake-4.2.1-linux-x86_64/bin" >> "$GITHUB_PATH"
+      # The rust relater needs rust-analyzer and cargo; its tests skip without them.
+      # The pinned release 2026-11-09 is rust-analyzer 0.3.3113, the one the relater was measured with.
+      - name: Install rust-analyzer 2026-11-09
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p "$RUNNER_TEMP/rust-analyzer"
+          cd "$RUNNER_TEMP/rust-analyzer"
+          curl -fsSLO https://github.com/rust-lang/rust-analyzer/releases/download/2026-11-09/rust-analyzer-x86_64-unknown-linux-gnu.gz
+          echo "8c039b25cb338b3970c731646677a4c9d4e9dd7a92c9ab9ae459c71467fbf4a9  rust-analyzer-x86_64-unknown-linux-gnu.gz" | sha256sum -c
+          gunzip -c rust-analyzer-x86_64-unknown-linux-gnu.gz > rust-analyzer
+          chmod +x rust-analyzer
+          echo "$RUNNER_TEMP/rust-analyzer" >> "$GITHUB_PATH"
+          rustup component add rust-src
       - name: go test
         run: go test -timeout 20m ./...
       # The log stays outside the checkout: sync fingerprints every file in it.
@@ -48,6 +61,13 @@ jobs:
           log="$RUNNER_TEMP/frontend.log"
           go test -count=1 -v ./internal/extract/frontend > "$log" || { cat "$log"; exit 1; }
           grep -- '^--- ' "$log"
+          if grep -- '--- SKIP' "$log"; then exit 1; fi
+      - name: The relater tests ran, none skipped
+        if: runner.os == 'Linux'
+        run: |
+          rust-analyzer --version
+          log="$RUNNER_TEMP/relate.log"
+          go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
           if grep -- '--- SKIP' "$log"; then exit 1; fi
       - name: Digest the synced .abbd output
         if: success() || failure()

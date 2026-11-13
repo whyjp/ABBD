@@ -123,14 +123,14 @@ func TestGoRelaterKeepsNonCodeRelationsBetweenUnitsItRead(t *testing.T) {
 	}
 }
 
-func TestGoRelaterCountsFilesSkippedByBuildConstraints(t *testing.T) {
+func TestGoRelaterNamesFilesSkippedByBuildConstraints(t *testing.T) {
 	s, _ := ParseSpec("go")
-	_, skipped, err := Relate(fixture, extract.Doc{Units: modules()}, []frontend.Spec{s})
+	_, unread, err := Relate(fixture, extract.Doc{Units: modules()}, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if skipped != 1 {
-		t.Errorf("skipped = %d, want 1 (util/util_windows.go)", skipped)
+	if len(unread) != 1 || unread[0].Relater != "go" || !slices.Equal(unread[0].Paths, []string{"util/util_windows.go"}) {
+		t.Errorf("unread = %+v, want util/util_windows.go from go", unread)
 	}
 }
 
