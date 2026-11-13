@@ -61,6 +61,12 @@ func ParseOverviewDraft(b []byte) (Overview, error) {
 	if err != nil {
 		return Overview{}, err
 	}
+	var keys map[string]any
+	if yaml.Unmarshal(front, &keys) == nil {
+		if _, ok := keys["flow"]; ok {
+			return Overview{}, fmt.Errorf("the draft's frontmatter: unknown field flow; the primary flow is the stack marked primary: true, stored with abbd stack KEY FILE")
+		}
+	}
 	o, err := decodeOverview(front)
 	if err != nil {
 		return Overview{}, fmt.Errorf("the draft's frontmatter: %w", err)

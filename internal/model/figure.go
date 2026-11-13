@@ -3,7 +3,9 @@ package model
 import (
 	"fmt"
 	"maps"
+	"path"
 	"slices"
+	"strings"
 )
 
 // FigureKey names a figure: lower-case letters, digits and hyphens, as a
@@ -176,4 +178,33 @@ func (st state) strongest(from, to ID) (rel Relation, ok bool) {
 		}
 	}
 	return rel, rel.Kind != ""
+}
+
+// Home is the directory a unit's code sits in: the deepest directory that
+// holds every file it is anchored to, "." when they share none.
+func Home(u Unit) string {
+	var dirs []string
+	for _, a := range u.Anchors {
+		p := strings.TrimSuffix(a.Path, "/")
+		if path.Ext(p) != "" || strings.Contains(path.Base(p), ".") {
+			p = path.Dir(p)
+		}
+		dirs = append(dirs, p)
+	}
+	if len(dirs) == 0 {
+		return "."
+	}
+	common := strings.Split(dirs[0], "/")
+	for _, d := range dirs[1:] {
+		parts := strings.Split(d, "/")
+		n := 0
+		for n < len(common) && n < len(parts) && common[n] == parts[n] {
+			n++
+		}
+		common = common[:n]
+	}
+	if len(common) == 0 {
+		return "."
+	}
+	return strings.Join(common, "/")
 }
