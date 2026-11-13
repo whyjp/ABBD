@@ -65,15 +65,16 @@ type cited struct {
 }
 
 // via says how a relation the script reads arises, so the drawing tells a
-// design-only line from a run-time one: a package another names is called,
-// a command is called, a file contract carries data, a config is
-// read as config and an event calls back.
-func via(r relation, kind map[string]string) string {
+// design-only line from a run-time one: a package that calls a function or
+// method of another calls it, one that names only its types or values
+// imports it, a command is called, a file contract carries data, a config
+// is read as config and an event calls back.
+func via(r relation, kind map[string]string, calls map[relation]bool) string {
 	if r.Kind == "depends_on" {
-		// A dependency that names only types or values arises at build
-		// time, but drawing those dotted moves this repository's
-		// layering past its lint ceilings, so the render track decides it.
-		return "call"
+		if calls[r] {
+			return "call"
+		}
+		return "import"
 	}
 	switch kind[r.To] {
 	case "DATA":
@@ -113,6 +114,8 @@ var (
 	decls = map[string]map[string]string{}
 	// methods holds "dir.Name" for every method a package declares.
 	methods = map[string]bool{}
+	// funcs holds "dir.Name" for every function and method a package declares.
+	funcs = map[string]bool{}
 
 	// types maps "dir.Name" to its type spec and declaring file.
 	types = map[string]typeDecl{}
@@ -159,11 +162,13 @@ func run() error {
 	}
 
 	rels := map[relation]bool{}
-	refs := references(owners)
-	for from, tos := range refs {
-		for to := range tos {
+	calls := map[relation]bool{}
+	for from, tos := range references(owners) {
+		for to, call := range tos {
 			if from != to {
-				rels[relation{from, to, "depends_on"}] = true
+				r := relation{from, to, "depends_on"}
+				rels[r] = true
+				calls[r] = calls[r] || call
 			}
 		}
 	}
@@ -206,7 +211,7 @@ func run() error {
 		kind[u.Key] = u.Kind
 	}
 	for r := range rels {
-		out.Relations = append(out.Relations, cited{r, via(r, kind), featCites[r], featEntries[r]})
+		out.Relations = append(out.Relations, cited{r, via(r, kind, calls), featCites[r], featEntries[r]})
 	}
 	sort.Slice(out.Units, func(i, j int) bool { return out.Units[i].Key < out.Units[j].Key })
 	sort.Slice(out.Relations, func(i, j int) bool {
@@ -256,8 +261,11 @@ func parseTree(root string) error {
 			decls[sf.dir][name] = rel
 		}
 		for _, d := range f.Decls {
-			if fd, ok := d.(*ast.FuncDecl); ok && fd.Recv != nil {
-				methods[sf.dir+"."+fd.Name.Name] = true
+			if fd, ok := d.(*ast.FuncDecl); ok {
+				funcs[sf.dir+"."+fd.Name.Name] = true
+				if fd.Recv != nil {
+					methods[sf.dir+"."+fd.Name.Name] = true
+				}
 			}
 			if g, ok := d.(*ast.GenDecl); ok {
 				for _, s := range g.Specs {
@@ -341,7 +349,8 @@ func modules() []unit {
 	return append(out, cli)
 }
 
-// references maps each module to the modules whose symbols it uses.
+// references maps each module to the modules whose symbols it uses, true
+// where it names one of their functions or methods.
 func references(owners map[string]string) map[string]map[string]bool {
 	out := map[string]map[string]bool{}
 	for _, p := range sortedKeys(files) {
@@ -356,7 +365,8 @@ func references(owners map[string]string) map[string]map[string]bool {
 		for _, ref := range symbolRefs(f) {
 			dir, name, _ := strings.Cut(ref, ".")
 			if decl, ok := decls[dir][name]; ok && owners[decl] != "" {
-				out[from][owners[decl]] = true
+				to := owners[decl]
+				out[from][to] = out[from][to] || funcs[ref]
 			}
 		}
 	}
