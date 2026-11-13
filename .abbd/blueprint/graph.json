@@ -18,7 +18,7 @@
         "plugins/abbd/.claude-plugin/plugin.json"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 8,
         "Of": 8
       }
@@ -496,7 +496,7 @@
         "plugins/abbd/skills/abbd/SKILL.md abbd"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 3,
         "Of": 8,
         "Cycle": true
@@ -522,7 +522,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md abbd-setup"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 1,
         "Of": 8,
         "Cycle": true
@@ -1354,9 +1354,10 @@
         "cmd/abbd/understand.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 2,
-        "Of": 8
+        "Of": 8,
+        "Cycle": true
       }
     },
     {
@@ -1556,7 +1557,7 @@
         "internal/bootstrap/overlay.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 5,
         "Of": 8
       }
@@ -1625,7 +1626,7 @@
         "internal/evidence/evidence.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 6,
         "Of": 8
       }
@@ -1719,7 +1720,7 @@
         "internal/extract/extract.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 6,
         "Of": 8
       }
@@ -1834,7 +1835,7 @@
         "internal/gitx/gitx.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 6,
         "Of": 8
       }
@@ -1926,9 +1927,10 @@
         "internal/identity/identity.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 5,
-        "Of": 8
+        "Of": 8,
+        "Cycle": true
       }
     },
     {
@@ -2029,7 +2031,7 @@
         "internal/model/table.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 7,
         "Of": 8
       }
@@ -2165,9 +2167,10 @@
         "internal/screen/zone.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 3,
-        "Of": 8
+        "Of": 8,
+        "Cycle": true
       }
     },
     {
@@ -2344,9 +2347,10 @@
         "internal/store/understanding.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 4,
-        "Of": 8
+        "Of": 8,
+        "Cycle": true
       }
     },
     {
@@ -2492,7 +2496,7 @@
         "internal/topology/query.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 5,
         "Of": 8
       }
@@ -2641,7 +2645,7 @@
         "internal/group/group.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 5,
         "Of": 8
       }
@@ -2666,7 +2670,7 @@
         "plugins/abbd/skills/abbd/references/reader.md \"pstack is an optional engine behind it.\""
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 4,
         "Of": 8
       }
@@ -2683,7 +2687,7 @@
         "internal/narrative/narrative.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 6,
         "Of": 8
       }
@@ -2700,7 +2704,7 @@
         "internal/owners/owners.go"
       ],
       "Rank": {
-        "Basis": "dependency",
+        "Basis": "stack",
         "N": 5,
         "Of": 8
       }
@@ -5938,7 +5942,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6444,7 +6447,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6467,7 +6470,31 @@
                 "Code": true
               },
               {
-                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact (a purpose, a responsibility, or an execution context's run, which ",
+                "Code": false
+              },
+              {
+                "Text": "model.ParseRun",
+                "Code": true
+              },
+              {
+                "Text": " checks), abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " counts execution contexts among the kinds, and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff",
+                "Code": true
+              },
+              {
+                "Text": " counts run-time relations added and removed. ",
                 "Code": false
               },
               {
@@ -6809,7 +6836,23 @@
                 "Code": true
               },
               {
-                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import.",
+                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import. It also lists the plug-point contracts whose relations look recorded the wrong way round (",
+                "Code": false
+              },
+              {
+                "Text": "direction",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "topology.ReversedPlugPoints",
+                "Code": true
+              },
+              {
+                "Text": "): a contract of callback slots that one module provides and several consume via call. That line advises and never fails the gate.",
                 "Code": false
               }
             ]
@@ -6840,7 +6883,7 @@
                 "Code": true
               },
               {
-                "Text": "): resolve a unit by ID, name, file, symbol or phrase, listing near matches, then print explain, path and impact. Explain shows the module text CURRENT or STALE against its code digest; impact seeds every unit anchored at a file and groups by feature with ",
+                "Text": "): resolve a unit by ID, name, file, symbol or phrase, listing near matches, then print explain, path and impact. Path names two units that run on one execution context as only sharing it. Explain shows the module text CURRENT or STALE against its code digest; impact seeds every unit anchored at a file and groups by feature with ",
                 "Code": false
               },
               {
@@ -9842,7 +9885,6 @@
         "Provides": 1,
         "Uses": 0,
         "Direct": 3,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -9883,7 +9925,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -10519,6 +10561,36 @@
               },
               {
                 "Text": " fills a matched script unit's only when the script read none, written by the supplement, so the build's own reading wins and a sync keeps it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Supplement run",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "overlay.go",
+                "Code": true
+              },
+              {
+                "Text": "): a supplement unit's ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": ", how an execution context dispatches its work and how many of it run, replaces a matched script unit's, written by the supplement. The script rarely reads a run, so the reader's word stands.",
                 "Code": false
               }
             ]
@@ -11656,7 +11728,6 @@
         "Provides": 1,
         "Uses": 1,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11729,7 +11800,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -12473,7 +12544,23 @@
                 "Code": true
               },
               {
-                "Text": " checks a phrase, which only a supplement may give and only with evidence, and the evidence is normalized. A phrase goes to ",
+                "Text": " checks a phrase, which only a supplement may give and only with evidence, and the evidence is normalized. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationKind.Quoted",
+                "Code": true
+              },
+              {
+                "Text": " refuses a ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " with fewer than two evidence items, since it quotes both the producer and the consumer. A phrase goes to ",
                 "Code": false
               },
               {
@@ -12873,6 +12960,68 @@
               },
               {
                 "Text": ", a kind ABBD does not know and a kind listed twice.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Run",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "extract.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": " on a unit, one script fact, says how an execution context dispatches its work and how many of it run, as ",
+                "Code": false
+              },
+              {
+                "Text": "SHAPE COUNT",
+                "Code": true
+              },
+              {
+                "Text": " such as ",
+                "Code": false
+              },
+              {
+                "Text": "tick 1",
+                "Code": true
+              },
+              {
+                "Text": ". Parse refuses it on anything but an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": " unit, and ",
+                "Code": false
+              },
+              {
+                "Text": "model.ParseRun",
+                "Code": true
+              },
+              {
+                "Text": " refuses a shape or a count it does not know.",
                 "Code": false
               }
             ]
@@ -14718,7 +14867,6 @@
         "Provides": 4,
         "Uses": 2,
         "Direct": 3,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14774,7 +14922,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -15740,7 +15889,15 @@
                 "Code": true
               },
               {
-                "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
+                "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it. A new unit takes it too, and an execution context's ",
+                "Code": false
+              },
+              {
+                "Text": "Run",
+                "Code": true
+              },
+              {
+                "Text": " is carried the same way, by writer.",
                 "Code": false
               }
             ]
@@ -15938,7 +16095,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -16111,7 +16267,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -16833,7 +16989,7 @@
                 "Code": true
               },
               {
-                "Text": "), and ",
+                "Text": "), ",
                 "Code": false
               },
               {
@@ -16841,7 +16997,15 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ", an execution context such as a thread, a worker pool, an event loop, an async runtime or the tasks one spawn site starts. ",
                 "Code": false
               },
               {
@@ -18009,6 +18173,78 @@
                 "Code": false
               },
               {
+                "Text": "runs_on",
+                "Code": true
+              },
+              {
+                "Text": " runs from a module, a feature or an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": " to an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " from a module or an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": " to an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "RunTime",
+                "Code": true
+              },
+              {
+                "Text": " names those two. A ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " quotes both the producer and the consumer, so ",
+                "Code": false
+              },
+              {
+                "Text": "Quoted",
+                "Code": true
+              },
+              {
+                "Text": " refuses one with fewer than two evidence items. ",
+                "Code": false
+              },
+              {
                 "Text": "Uses",
                 "Code": true
               },
@@ -18029,7 +18265,7 @@
                 "Code": true
               },
               {
-                "Text": ", which run from the unit that uses the other. ",
+                "Text": ", which run from the unit that uses the other. A run-time relation is no use, so it breaches no layer. ",
                 "Code": false
               },
               {
@@ -18117,7 +18353,7 @@
                 "Code": true
               },
               {
-                "Text": " for a library loaded by name or ",
+                "Text": " for a library loaded by name, ",
                 "Code": false
               },
               {
@@ -18125,7 +18361,39 @@
                 "Code": true
               },
               {
-                "Text": " for a process started, and a phrase that only restates its via, such as dlopen for load, is refused. ",
+                "Text": " for a process started, or ",
+                "Code": false
+              },
+              {
+                "Text": "queue",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "channel",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "signal",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "proxy",
+                "Code": true
+              },
+              {
+                "Text": " for work handed across, and a phrase that only restates its via, such as dlopen for load, is refused. ",
                 "Code": false
               },
               {
@@ -18242,7 +18510,7 @@
                 "Code": true
               },
               {
-                "Text": "): one table of the writers that may claim each field, highest first. Name and signature take script, reader, supplement. Purpose and responsibility take human, reader, supplement. A relation takes script, human, reader, supplement, and a parent takes human, group, script, reader, supplement. ",
+                "Text": "): one table of the writers that may claim each field, highest first. Name and signature take script, reader, supplement. Purpose and responsibility take human, reader, supplement, and so does an execution context's run. A relation takes script, human, reader, supplement, and a parent takes human, group, script, reader, supplement. ",
                 "Code": false
               },
               {
@@ -19513,6 +19781,140 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Run",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "run.go",
+                "Code": true
+              },
+              {
+                "Text": "): how an execution context dispatches its work and how many of it run, stored on the unit as one fact ",
+                "Code": false
+              },
+              {
+                "Text": "SHAPE COUNT",
+                "Code": true
+              },
+              {
+                "Text": ", such as ",
+                "Code": false
+              },
+              {
+                "Text": "tick 1",
+                "Code": true
+              },
+              {
+                "Text": ". The shape is ",
+                "Code": false
+              },
+              {
+                "Text": "tick",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "wait",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "ready",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "complete",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "steal",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "inline",
+                "Code": true
+              },
+              {
+                "Text": ", and the count ",
+                "Code": false
+              },
+              {
+                "Text": "1",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "N",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "pool",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "ParseRun",
+                "Code": true
+              },
+              {
+                "Text": " refuses anything else, and ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Validate",
+                "Code": true
+              },
+              {
+                "Text": " refuses a run on any kind but ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ".",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "When",
                 "Code": true
               },
@@ -19818,7 +20220,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20755,7 +21156,23 @@
                   "Code": true
                 },
                 {
-                  "Text": ": on the ",
+                  "Text": ": the basis the rows follow, ",
+                  "Code": false
+                },
+                {
+                  "Text": "stack",
+                  "Code": true
+                },
+                {
+                  "Text": " where a stored stack pinned them (",
+                  "Code": false
+                },
+                {
+                  "Text": "tier",
+                  "Code": true
+                },
+                {
+                  "Text": ") and ",
                   "Code": false
                 },
                 {
@@ -20763,7 +21180,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " basis, the row the box stands in from the top of its view, the view's row count, and ",
+                  "Text": " elsewhere, the row the box is drawn in from the top of its view, the view's row count, and ",
                   "Code": false
                 },
                 {
@@ -20771,7 +21188,31 @@
                   "Code": true
                 },
                 {
-                  "Text": " when the box shares a cycle of ",
+                  "Text": " when the box shares a cycle of the lines its layout layered with another box of the view, so an agent reads boxes in the order a person sees them. ",
+                  "Code": false
+                },
+                {
+                  "Text": "arrange",
+                  "Code": true
+                },
+                {
+                  "Text": " keeps that basis and the cycles (",
+                  "Code": false
+                },
+                {
+                  "Text": "cyclic",
+                  "Code": true
+                },
+                {
+                  "Text": ", Tarjan's ",
+                  "Code": false
+                },
+                {
+                  "Text": "components",
+                  "Code": true
+                },
+                {
+                  "Text": " over the very graph it ranked: on the overview the ",
                   "Code": false
                 },
                 {
@@ -20779,7 +21220,15 @@
                   "Code": true
                 },
                 {
-                  "Text": " relations, rolled up to the boxes that hold them, with another box of the view, so an agent reads boxes in the order a person sees them.",
+                  "Text": " lines and each contract's user to its provider, on an inside its inner lines) in ",
+                  "Code": false
+                },
+                {
+                  "Text": "layout.axis",
+                  "Code": true
+                },
+                {
+                  "Text": ", and the drawing carries it, so the ranks cannot drift from the layout.",
                   "Code": false
                 }
               ]
@@ -21113,7 +21562,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -21853,7 +22302,23 @@
                 "Code": true
               },
               {
-                "Text": ": on the ",
+                "Text": ": the basis the rows follow, ",
+                "Code": false
+              },
+              {
+                "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": " where a stored stack pinned them (",
+                "Code": false
+              },
+              {
+                "Text": "tier",
+                "Code": true
+              },
+              {
+                "Text": ") and ",
                 "Code": false
               },
               {
@@ -21861,7 +22326,7 @@
                 "Code": true
               },
               {
-                "Text": " basis, the row the box stands in from the top of its view, the view's row count, and ",
+                "Text": " elsewhere, the row the box is drawn in from the top of its view, the view's row count, and ",
                 "Code": false
               },
               {
@@ -21869,7 +22334,31 @@
                 "Code": true
               },
               {
-                "Text": " when the box shares a cycle of ",
+                "Text": " when the box shares a cycle of the lines its layout layered with another box of the view, so an agent reads boxes in the order a person sees them. ",
+                "Code": false
+              },
+              {
+                "Text": "arrange",
+                "Code": true
+              },
+              {
+                "Text": " keeps that basis and the cycles (",
+                "Code": false
+              },
+              {
+                "Text": "cyclic",
+                "Code": true
+              },
+              {
+                "Text": ", Tarjan's ",
+                "Code": false
+              },
+              {
+                "Text": "components",
+                "Code": true
+              },
+              {
+                "Text": " over the very graph it ranked: on the overview the ",
                 "Code": false
               },
               {
@@ -21877,7 +22366,15 @@
                 "Code": true
               },
               {
-                "Text": " relations, rolled up to the boxes that hold them, with another box of the view, so an agent reads boxes in the order a person sees them.",
+                "Text": " lines and each contract's user to its provider, on an inside its inner lines) in ",
+                "Code": false
+              },
+              {
+                "Text": "layout.axis",
+                "Code": true
+              },
+              {
+                "Text": ", and the drawing carries it, so the ranks cannot drift from the layout.",
                 "Code": false
               }
             ]
@@ -27130,7 +27627,7 @@
                 "Code": true
               },
               {
-                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. The ",
+                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), the detours, and the lines against the axis over every view, pages the debt file does not name included, none of which may pass theirs. The ",
                 "Code": false
               },
               {
@@ -27178,7 +27675,7 @@
                 "Code": true
               },
               {
-                "Text": " as the routes rule 13 draws back, a provides line read from its contract to its provider, mutual lines left out) may not rise, and its labelled routes may not fall (a floor, ",
+                "Text": " as the routes rule 13 draws back, a provides line read from its contract to its provider; a mutual line leaves its upper box, so it never runs back) may not rise, and its labelled routes may not fall (a floor, ",
                 "Code": false
               },
               {
@@ -27218,7 +27715,7 @@
                 "Code": true
               },
               {
-                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals.",
+                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals, a line against the axis failing both its page bound and the ceiling.",
                 "Code": false
               }
             ]
@@ -29752,7 +30249,6 @@
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -29938,7 +30434,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -30754,7 +31250,39 @@
                 "Code": true
               },
               {
-                "Text": " link from parent to child, each walked either way. Cost compares joints first, then hops, nesting hops and the weakest origin. A joint is two users of one unit meeting through it. ",
+                "Text": " link from parent to child, each walked either way. Cost compares joints first, then hops, nesting hops and the weakest origin. A joint is two users of one unit meeting through it, by a ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " or a ",
+                "Code": false
+              },
+              {
+                "Text": "consumes",
+                "Code": true
+              },
+              {
+                "Text": ", or two units that ",
+                "Code": false
+              },
+              {
+                "Text": "runs_on",
+                "Code": true
+              },
+              {
+                "Text": " one execution context, which share it as two consumers share a contract. A ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " hands work over and uses nothing. ",
                 "Code": false
               },
               {
@@ -30926,6 +31454,52 @@
               },
               {
                 "Text": ", which counts as EXTRACTED when empty.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "ReversedPlugPoints",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "Reversed",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "direction.go",
+                "Code": true
+              },
+              {
+                "Text": "): the plug-point contracts whose relations look recorded the wrong way round. A plug point is an ",
+                "Code": false
+              },
+              {
+                "Text": "IF",
+                "Code": true
+              },
+              {
+                "Text": " most of whose entries are shaped as callback slots, a C function pointer, a Rust fn pointer or a method that takes self. One with exactly one provider and two or more other units that consume it via call is listed, since the modules that implement a plug point provide it and the host that calls through it consumes it. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd lint",
+                "Code": true
+              },
+              {
+                "Text": " prints each as advice and never fails on it.",
                 "Code": false
               }
             ]
