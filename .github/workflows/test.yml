@@ -40,12 +40,14 @@ jobs:
           echo "$RUNNER_TEMP/cmake-4.2.1-linux-x86_64/bin" >> "$GITHUB_PATH"
       - name: go test
         run: go test -timeout 20m ./...
+      # The log stays outside the checkout: sync fingerprints every file in it.
       - name: The front-end tests ran, none skipped
         if: runner.os == 'Linux'
         run: |
           cmake --version
-          go test -count=1 -v ./internal/extract/frontend > frontend.log || { cat frontend.log; exit 1; }
-          if grep -- '--- SKIP' frontend.log; then exit 1; fi
+          log="$RUNNER_TEMP/frontend.log"
+          go test -count=1 -v ./internal/extract/frontend > "$log" || { cat "$log"; exit 1; }
+          if grep -- '--- SKIP' "$log"; then exit 1; fi
       - name: Digest the synced .abbd output
         if: success() || failure()
         shell: bash
