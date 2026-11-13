@@ -16,7 +16,12 @@
       "Anchors": [
         ".claude-plugin/marketplace.json",
         "plugins/abbd/.claude-plugin/plugin.json"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 8,
+        "Of": 8
+      }
     },
     {
       "ID": "CFG-0002",
@@ -127,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -489,7 +494,13 @@
       "Anchors": [
         "plugins/abbd/skills/abbd",
         "plugins/abbd/skills/abbd/SKILL.md abbd"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 3,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "FEAT-0002",
@@ -509,7 +520,13 @@
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
         "plugins/abbd/skills/abbd-setup/SKILL.md abbd-setup"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 1,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "FEAT-0003",
@@ -1337,7 +1354,13 @@
         "cmd/abbd/table.go",
         "cmd/abbd/uncovered.go",
         "cmd/abbd/understand.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 2,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0002",
@@ -1534,7 +1557,12 @@
       "Anchors": [
         "internal/bootstrap",
         "internal/bootstrap/overlay.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0010",
@@ -1598,7 +1626,12 @@
       "Anchors": [
         "internal/evidence",
         "internal/evidence/evidence.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0014",
@@ -1687,7 +1720,12 @@
       "Anchors": [
         "internal/extract",
         "internal/extract/extract.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0018",
@@ -1797,7 +1835,12 @@
       "Anchors": [
         "internal/gitx",
         "internal/gitx/gitx.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0023",
@@ -1884,7 +1927,13 @@
       "Anchors": [
         "internal/identity",
         "internal/identity/identity.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0027",
@@ -1985,7 +2034,12 @@
         "internal/model/run.go",
         "internal/model/slot.go",
         "internal/model/table.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 7,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0031",
@@ -2103,6 +2157,7 @@
         "internal/screen/overview.go",
         "internal/screen/page.go",
         "internal/screen/primary.go",
+        "internal/screen/rank.go",
         "internal/screen/roadindex.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
@@ -2115,7 +2170,13 @@
         "internal/screen/weigh.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 3,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0035",
@@ -2289,7 +2350,13 @@
         "internal/store/note.go",
         "internal/store/store.go",
         "internal/store/understanding.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 4,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0042",
@@ -2432,7 +2499,12 @@
         "internal/topology/impact.go",
         "internal/topology/path.go",
         "internal/topology/query.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0048",
@@ -2576,7 +2648,12 @@
       "Anchors": [
         "internal/group",
         "internal/group/group.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0055",
@@ -2596,7 +2673,12 @@
       ],
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"pstack is an optional engine behind it.\""
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 4,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0056",
@@ -2609,7 +2691,12 @@
         "internal/narrative",
         "internal/narrative/language.go",
         "internal/narrative/narrative.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0057",
@@ -2621,7 +2708,12 @@
       "Anchors": [
         "internal/owners",
         "internal/owners/owners.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     }
   ],
   "edges": [
@@ -5110,7 +5202,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0004",
@@ -5121,7 +5218,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0006",
@@ -5132,7 +5234,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0007",
@@ -5143,7 +5250,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0008",
@@ -5154,7 +5266,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0009",
@@ -5165,7 +5282,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0023",
@@ -5176,7 +5298,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         }
       ],
       "Understanding": null,
@@ -5469,7 +5596,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0012",
@@ -5480,7 +5612,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0013",
@@ -5491,7 +5628,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0014",
@@ -5502,7 +5644,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0016",
@@ -5513,7 +5660,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0017",
@@ -5524,7 +5676,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0025",
@@ -5535,7 +5692,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0026",
@@ -5569,6 +5731,11 @@
                 ]
               }
             ]
+          },
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
           }
         }
       ],
@@ -5805,7 +5972,12 @@
             "cmd/abbd/install.go install",
             "cmd/abbd/install.go markers"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0002",
@@ -5820,7 +5992,12 @@
             "cmd/abbd/evidence.go checkEvidence",
             "cmd/abbd/evidence.go status"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0003",
@@ -5833,7 +6010,12 @@
             "cmd/abbd/main.go parseInterspersed",
             "cmd/abbd/main.go run"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0004",
@@ -5845,7 +6027,13 @@
             "cmd/abbd/main.go runScript",
             "cmd/abbd/main.go syncActual"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2,
+            "Cycle": true
+          }
         },
         {
           "ID": "MOD-0005",
@@ -6208,6 +6396,11 @@
                 ]
               }
             ]
+          },
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
           }
         },
         {
@@ -6222,7 +6415,12 @@
             "cmd/abbd/record.go statedFields",
             "cmd/abbd/understand.go understand"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0007",
@@ -6235,7 +6433,12 @@
             "cmd/abbd/screen.go publish",
             "cmd/abbd/screen.go screenInput"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0008",
@@ -6248,7 +6451,13 @@
             "cmd/abbd/setup.go readExtraction",
             "cmd/abbd/setup.go reseeded"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2,
+            "Cycle": true
+          }
         }
       ],
       "Understanding": {
@@ -6284,7 +6493,23 @@
                 "Code": true
               },
               {
-                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table이다. 읽기 동사는 explain, brief, path, impact, diff, review, evidence, status, lint다. 다만 ",
+                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table이다. 읽기 동사는 explain, brief, path, impact, diff, review, evidence, status, lint다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": "는 종류별 개수에 실행 맥락(EXEC)도 세고, ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff",
+                "Code": true
+              },
+              {
+                "Text": "는 더해지고 빠진 실행 시점 관계를 따로 센다. 다만 ",
                 "Code": false
               },
               {
@@ -6669,7 +6894,7 @@
                 "Code": true
               },
               {
-                "Text": "): 유닛을 ID, 이름, 파일, 심볼, 문구로 찾고 가까운 후보를 나열한 뒤 explain, path, impact를 찍는다. explain은 코드 다이제스트에 견줘 모듈 글을 CURRENT나 STALE로 보이고, impact는 파일에 걸린 유닛을 모두 씨앗으로 삼아 ",
+                "Text": "): 유닛을 ID, 이름, 파일, 심볼, 문구로 찾고 가까운 후보를 나열한 뒤 explain, path, impact를 찍는다. path는 한 실행 맥락 위에서 도는 두 유닛을 그 맥락을 함께 쓸 뿐인 사이로 이른다. explain은 코드 다이제스트에 견줘 모듈 글을 CURRENT나 STALE로 보이고, impact는 파일에 걸린 유닛을 모두 씨앗으로 삼아 ",
                 "Code": false
               },
               {
@@ -9790,7 +10015,12 @@
           "Anchors": [
             "internal/bootstrap/overlay.go Overlay"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0011",
@@ -9802,7 +10032,12 @@
             "internal/bootstrap/overlay.go match",
             "internal/bootstrap/overlay.go overlap"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
@@ -10665,7 +10900,12 @@
             "internal/evidence/evidence.go Apply",
             "internal/evidence/evidence.go all"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0015",
@@ -10677,7 +10917,12 @@
             "internal/evidence/evidence.go Check",
             "internal/evidence/evidence.go Slack"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0016",
@@ -10689,7 +10934,12 @@
             "internal/evidence/evidence.go file",
             "internal/evidence/evidence.go load"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
@@ -11635,7 +11885,12 @@
             "internal/extract/extract.go Parse",
             "internal/extract/extract.go parentCycle"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0019",
@@ -11646,7 +11901,12 @@
           "Anchors": [
             "internal/extract/extract.go inferred"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0020",
@@ -11657,7 +11917,12 @@
           "Anchors": [
             "internal/extract/extract.go normalizePath"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0021",
@@ -11668,7 +11933,12 @@
           "Anchors": [
             "internal/extract/extract.go parseUnits"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
@@ -13354,7 +13624,12 @@
           "Anchors": [
             "internal/gitx/gitx.go MergeBase"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0024",
@@ -13365,7 +13640,12 @@
           "Anchors": [
             "internal/gitx/gitx.go Renames"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0025",
@@ -13376,7 +13656,12 @@
           "Anchors": [
             "internal/gitx/gitx.go Snapshot"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
@@ -14716,7 +15001,12 @@
           "Anchors": [
             "internal/identity/identity.go Reconcile"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0028",
@@ -14727,7 +15017,12 @@
           "Anchors": [
             "internal/identity/identity.go heldByHuman"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0029",
@@ -14739,7 +15034,12 @@
             "internal/identity/identity.go merge",
             "internal/identity/identity.go setRelations"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
@@ -15945,7 +16245,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0012",
@@ -15956,7 +16261,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0015",
@@ -15967,7 +16277,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0019",
@@ -15978,7 +16293,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0020",
@@ -15989,7 +16309,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "IF-0016",
@@ -16001,7 +16326,12 @@
             "internal/model/model.go FormatID",
             "internal/model/model.go idPattern"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "IF-0017",
@@ -16013,7 +16343,12 @@
             "internal/model/model.go ParseEvidence",
             "internal/model/model.go Validate"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0031",
@@ -16025,7 +16360,12 @@
             "internal/model/model.go Counts",
             "internal/model/model.go Semantic"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0032",
@@ -16037,7 +16377,12 @@
             "internal/model/model.go ends",
             "internal/model/model.go vias"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0033",
@@ -16049,7 +16394,12 @@
             "internal/model/model.go sourced",
             "internal/model/model.go validate"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
@@ -19315,7 +19665,12 @@
           "Anchors": [
             "internal/screen/page.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0035",
@@ -19440,7 +19795,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0036",
@@ -19573,7 +19933,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0037",
@@ -19911,7 +20276,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0038",
@@ -19996,7 +20366,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0039",
@@ -20267,7 +20642,103 @@
                   "Code": true
                 },
                 {
-                  "Text": ", 그리고 페이지 바닥글이 적는 추출 명령을 담는다.",
+                  "Text": ", 그리고 페이지 바닥글이 적는 추출 명령을 담는다. 그림 가운데 ",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.json",
+                  "Code": true
+                },
+                {
+                  "Text": "은 그린 상자마다 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rank",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "rank.go",
+                  "Code": true
+                },
+                {
+                  "Text": ")만 담고, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": "가 마지막에 정한다. 행이 따르는 기준(저장된 stack이 행을 고정한 곳은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "stack",
+                  "Code": true
+                },
+                {
+                  "Text": ", 그 밖은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "dependency",
+                  "Code": true
+                },
+                {
+                  "Text": "), 뷰 위에서부터 센 상자의 행, 뷰의 행 수, 그리고 layout이 층을 나눈 선의 순환을 뷰의 다른 상자와 함께 가지면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Cycle",
+                  "Code": true
+                },
+                {
+                  "Text": "이다. 그래서 에이전트는 사람이 보는 순서로 상자를 읽는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "arrange",
+                  "Code": true
+                },
+                {
+                  "Text": "는 그 기준과 순환(",
+                  "Code": false
+                },
+                {
+                  "Text": "cyclic",
+                  "Code": true
+                },
+                {
+                  "Text": ", 층을 나눈 바로 그 그래프 위의 Tarjan ",
+                  "Code": false
+                },
+                {
+                  "Text": "components",
+                  "Code": true
+                },
+                {
+                  "Text": ": 개요에서는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "depends_on",
+                  "Code": true
+                },
+                {
+                  "Text": " 선과 계약 사용자에서 그 provider로 가는 선, 내부 뷰에서는 내부 선)을 ",
+                  "Code": false
+                },
+                {
+                  "Text": "layout.axis",
+                  "Code": true
+                },
+                {
+                  "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다.",
                   "Code": false
                 }
               ]
@@ -20406,7 +20877,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0040",
@@ -20594,7 +21070,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         }
       ],
       "Understanding": {
@@ -21307,7 +21788,103 @@
                 "Code": true
               },
               {
-                "Text": ", 그리고 페이지 바닥글이 적는 추출 명령을 담는다.",
+                "Text": ", 그리고 페이지 바닥글이 적는 추출 명령을 담는다. 그림 가운데 ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": "은 그린 상자마다 ",
+                "Code": false
+              },
+              {
+                "Text": "Rank",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "rank.go",
+                "Code": true
+              },
+              {
+                "Text": ")만 담고, ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": "가 마지막에 정한다. 행이 따르는 기준(저장된 stack이 행을 고정한 곳은 ",
+                "Code": false
+              },
+              {
+                "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": ", 그 밖은 ",
+                "Code": false
+              },
+              {
+                "Text": "dependency",
+                "Code": true
+              },
+              {
+                "Text": "), 뷰 위에서부터 센 상자의 행, 뷰의 행 수, 그리고 layout이 층을 나눈 선의 순환을 뷰의 다른 상자와 함께 가지면 ",
+                "Code": false
+              },
+              {
+                "Text": "Cycle",
+                "Code": true
+              },
+              {
+                "Text": "이다. 그래서 에이전트는 사람이 보는 순서로 상자를 읽는다. ",
+                "Code": false
+              },
+              {
+                "Text": "arrange",
+                "Code": true
+              },
+              {
+                "Text": "는 그 기준과 순환(",
+                "Code": false
+              },
+              {
+                "Text": "cyclic",
+                "Code": true
+              },
+              {
+                "Text": ", 층을 나눈 바로 그 그래프 위의 Tarjan ",
+                "Code": false
+              },
+              {
+                "Text": "components",
+                "Code": true
+              },
+              {
+                "Text": ": 개요에서는 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " 선과 계약 사용자에서 그 provider로 가는 선, 내부 뷰에서는 내부 선)을 ",
+                "Code": false
+              },
+              {
+                "Text": "layout.axis",
+                "Code": true
+              },
+              {
+                "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다.",
                 "Code": false
               }
             ]
@@ -26612,7 +27189,7 @@
                 "Code": true
               },
               {
-                "Text": " 합계는 가중합, 티, 초과 꺾임, 배치 부채, 넘침, 한 화면을 넘는 뷰(S), 우회다. 티는 가중합에서 한 번만 세지만 T자는 있지도 않은 가지로 읽히므로 오를 수 없다. 초과 꺾임은 가중합이 하나에 교차 하나로 값을 매기므로 변경이 굽음으로 교차를 살 수 있어, 이것도 오를 수 없다. 배치 부채는 상한의 2%까지 넘을 수 있고, 나머지는 상한을 넘을 수 없다. ",
+                "Text": " 합계는 가중합, 티, 초과 꺾임, 배치 부채, 넘침, 한 화면을 넘는 뷰(S), 우회, 그리고 부채 파일이 이름 대지 않은 페이지까지 모든 뷰에 걸친 축을 거스르는 선이다. 티는 가중합에서 한 번만 세지만 T자는 있지도 않은 가지로 읽히므로 오를 수 없다. 초과 꺾임은 가중합이 하나에 교차 하나로 값을 매기므로 변경이 굽음으로 교차를 살 수 있어, 이것도 오를 수 없다. 배치 부채는 상한의 2%까지 넘을 수 있고, 나머지는 상한을 넘을 수 없다. ",
                 "Code": false
               },
               {
@@ -26628,7 +27205,23 @@
                 "Code": true
               },
               {
-                "Text": " 아래 이름 댄 페이지마다 묶는다. 색 바뀜, 평행 잉크, 나란한 잉크, 빗, 도그레그, 라벨 되풀이는 오를 수 없고, 라벨 달린 경로는 줄어들 수 없다(바닥, ",
+                "Text": " 아래 이름 댄 페이지마다 묶는다. 색 바뀜, 평행 잉크, 나란한 잉크, 빗, 도그레그, 라벨 되풀이, 읽는 축을 거스르는 선과 그 잉크(",
+                "Code": false
+              },
+              {
+                "Text": "against_axis",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "against_axis_ink",
+                "Code": true
+              },
+              {
+                "Text": ")는 오를 수 없고, 라벨 달린 경로는 줄어들 수 없다(바닥, ",
                 "Code": false
               },
               {
@@ -26668,7 +27261,23 @@
                 "Code": true
               },
               {
-                "Text": "는 티와 초과 꺾임 상한이 각각 가중합만으로는 살 수 있는 맞바꿈을 거부하게 하고, 페이지가 paged 합계의 어떤 상승도 거부하게 한다.",
+                "Text": "는 티와 초과 꺾임 상한이 각각 가중합만으로는 살 수 있는 맞바꿈을 거부하게 하고, 페이지가 paged 합계의 어떤 상승도 거부하게 하며, 축을 거스르는 선 하나가 페이지 상한과 전체 상한에서 함께 실패하게 한다. 축을 거스르는 선은 ",
+                "Code": false
+              },
+              {
+                "Text": "lint.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "againstAxis",
+                "Code": true
+              },
+              {
+                "Text": "가 센다. 규칙 13이 뒤로 그리는 길, 곧 계약에서 그 provider로 읽은 provides 선이다. 서로 쓰는 선은 두 상자 가운데 위쪽에서 떠나므로 뒤로 가지 않는다.",
                 "Code": false
               }
             ]
@@ -27546,7 +28155,12 @@
             "internal/identity/identity.go Candidate",
             "internal/store/store.go LoadCandidates"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0007",
@@ -27558,7 +28172,12 @@
             "internal/store/store.go parseUnit",
             "internal/store/store.go renderUnit"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0018",
@@ -27569,7 +28188,12 @@
           "Anchors": [
             "internal/store/store.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0042",
@@ -27582,7 +28206,12 @@
             "internal/store/store.go InputsHash",
             "internal/store/store.go hashFiles"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0043",
@@ -27593,7 +28222,12 @@
           "Anchors": [
             "internal/store/store.go NextID"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0044",
@@ -27604,7 +28238,12 @@
           "Anchors": [
             "internal/store/store.go UnitsAt"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0045",
@@ -27615,7 +28254,12 @@
           "Anchors": [
             "internal/store/store.go writeFile"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0046",
@@ -27627,7 +28271,12 @@
             "internal/store/understanding.go",
             "internal/store/understanding.go ModuleDigest"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
@@ -29341,7 +29990,12 @@
           "Anchors": [
             "internal/topology/diff.go Diff"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0011",
@@ -29352,7 +30006,12 @@
           "Anchors": [
             "internal/topology/diff.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0013",
@@ -29363,7 +30022,12 @@
           "Anchors": [
             "internal/topology/query.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0021",
@@ -29374,7 +30038,12 @@
           "Anchors": [
             "internal/topology/diff.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0023",
@@ -29385,7 +30054,12 @@
           "Anchors": [
             "internal/topology/impact.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0048",
@@ -29396,7 +30070,12 @@
           "Anchors": [
             "internal/topology/diff.go Boundary"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0049",
@@ -29408,7 +30087,12 @@
             "internal/topology/diff.go Compare",
             "internal/topology/diff.go between"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0050",
@@ -29419,7 +30103,12 @@
           "Anchors": [
             "internal/topology/impact.go ImpactOf"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0051",
@@ -29430,7 +30119,12 @@
           "Anchors": [
             "internal/topology/impact.go Links"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0052",
@@ -29441,7 +30135,12 @@
           "Anchors": [
             "internal/topology/query.go Explain"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0053",
@@ -29453,7 +30152,12 @@
             "internal/topology/query.go Path",
             "internal/topology/query.go strength"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         }
       ],
       "Understanding": {
@@ -31543,7 +32247,12 @@
           "Anchors": [
             "internal/group/group.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         },
         {
           "ID": "DATA-0022",
@@ -31554,7 +32263,12 @@
           "Anchors": [
             "internal/group/group.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         }
       ],
       "Understanding": null,
@@ -31686,7 +32400,12 @@
             "plugins/abbd/skills/abbd/SKILL.md",
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         },
         {
           "ID": "FEAT-0020",
@@ -31698,7 +32417,12 @@
             "plugins/abbd/skills/abbd-setup/SKILL.md",
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         }
       ],
       "Understanding": null,
