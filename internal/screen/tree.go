@@ -41,8 +41,8 @@ func newTree(units []model.Unit) tree {
 		t.units[u.ID] = u
 		for _, r := range u.Relations {
 			t.vias[key(u.ID, r.Kind, r.To)] = r.Via
-			if r.When != "" {
-				t.whens[key(u.ID, r.Kind, r.To)] = r.When
+			if w := u.Condition(r.Kind, r.To); w != "" {
+				t.whens[key(u.ID, r.Kind, r.To)] = w
 			}
 			if n, ok := livePhrase(u, r.Kind, r.To); ok {
 				t.phrases[key(u.ID, r.Kind, r.To)] = phrase{n.Text, n.Writer.Origin()}

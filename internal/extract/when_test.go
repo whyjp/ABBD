@@ -39,6 +39,10 @@ func TestAnEdgeListedTwiceWithDifferentConditionsIsRefused(t *testing.T) {
 	if _, err := Parse(strings.NewReader(whenDoc(whenRel("dev") + "," + whenRel("")))); err == nil {
 		t.Error("an edge listed with and without a condition was accepted")
 	}
+	_, err = Parse(strings.NewReader(whenDoc(whenRel("PRIVATE") + "," + whenRel("PUBLIC"))))
+	if err == nil || !strings.Contains(err.Error(), "leave the scope out") || strings.Contains(err.Error(), `"a | b"`) {
+		t.Errorf("two link scopes are refused without saying a scope is not a condition: %v", err)
+	}
 	r, err := Parse(strings.NewReader(whenDoc(whenRel("cfg(unix) | cfg(windows)"))))
 	if err != nil || r.Relations[0].When != "cfg(unix) | cfg(windows)" {
 		t.Errorf("the joined conditions: %v, %+v", err, r.Relations)

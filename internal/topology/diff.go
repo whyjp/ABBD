@@ -706,7 +706,7 @@ func conditions(base, now []model.Unit) []Condition {
 				if r.Dead {
 					continue
 				}
-				out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Condition{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: name[r.To]}, New: r.When}
+				out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Condition{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: name[r.To]}, New: u.Condition(r.Kind, r.To)}
 			}
 		}
 		return out

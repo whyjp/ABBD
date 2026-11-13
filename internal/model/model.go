@@ -263,9 +263,9 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 }
 
 // EachShownEvidence visits the items of the claims that show: the unit's
-// own, its winning parent claim's, each shown relation's, and the note
-// that names each shown edge. An outranked claim's items cannot change what
-// anyone sees.
+// own, its winning parent claim's, each shown relation's, the claim that
+// gives a shown edge its condition, and the note that names each shown
+// edge. An outranked claim's items cannot change what anyone sees.
 func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
@@ -278,6 +278,14 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Relations {
 		for j := range u.Relations[i].Evidence {
 			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
+		}
+	}
+	for i := range u.Hidden {
+		r := &u.Hidden[i]
+		if c, ok := u.conditionClaim(r.Kind, r.To); ok && c == r && u.Shown(r.Kind, r.To) {
+			for j := range r.Evidence {
+				f(r.Writer, &r.Evidence[j])
+			}
 		}
 	}
 	for i := range u.Phrases {
@@ -311,6 +319,38 @@ func (u Unit) Note(kind RelationKind, to ID) (PhraseNote, bool) {
 		}
 	}
 	return best, ok
+}
+
+// Condition is the condition an edge holds under: the shown claim's own, or,
+// when it gives none, that of the first other live or drifted claim on the
+// edge that a mask does not hide. The script reads the edge, and a reader
+// may know a condition the script cannot read, such as a CMake if(). A link
+// scope says who sees the link, not when it holds, so any claim's condition
+// shows over it.
+func (u Unit) Condition(kind RelationKind, to ID) string {
+	if r, ok := u.conditionClaim(kind, to); ok {
+		return r.When
+	}
+	return ""
+}
+
+func (u Unit) conditionClaim(kind RelationKind, to ID) (*Relation, bool) {
+	var scope *Relation
+	for _, rs := range [][]Relation{u.Relations, u.Hidden} {
+		for i := range rs {
+			r := &rs[i]
+			if r.To != to || r.Kind != kind || r.When == "" || r.Status() == Dead || u.RelationMasked(*r) {
+				continue
+			}
+			if !Scope(r.When) {
+				return r, true
+			}
+			if scope == nil {
+				scope = r
+			}
+		}
+	}
+	return scope, scope != nil
 }
 
 // DanglingNote is a phrase note that names no line, by its edge and writer.

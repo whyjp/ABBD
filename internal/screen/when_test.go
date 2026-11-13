@@ -49,3 +49,24 @@ func TestALineSaysALinkScopeAsItsScope(t *testing.T) {
 		t.Error("no overview line names its relation's link scope")
 	}
 }
+
+// A bus that gathers several units' relations says how many of them a
+// condition gates, so one conditional relation among three reads as 1/3,
+// not as a condition of the whole bus.
+func TestABusSaysHowManyOfItsRelationsAConditionGates(t *testing.T) {
+	units := ripgrep()
+	units[0].Relations[1].When = "cfg(unix)"
+	m := Build(Input{Units: units})
+	found := false
+	for _, w := range m.Overview.Wires {
+		if strings.Contains(w.Title, "조건: cfg(unix) 1/3") {
+			found = true
+		}
+		if strings.Contains(w.Title, "조건: cfg(unix) 3/3") {
+			t.Errorf("a bus says its one conditional relation gates all three: %q", w.Title)
+		}
+	}
+	if !found {
+		t.Error("no bus into grep-matcher says the condition gates 1 of its 3 relations")
+	}
+}

@@ -40,7 +40,7 @@ func lines(units []model.Unit) []Line {
 			if !present[r.To] || r.Dead {
 				continue
 			}
-			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via), When: r.When}
+			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via), When: u.Condition(r.Kind, r.To)}
 			if n, ok := livePhrase(u, r.Kind, r.To); ok {
 				l.Phrase, l.PhraseOrigin = n.Text, string(n.Writer.Origin())
 			}

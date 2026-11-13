@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -50,6 +52,15 @@ func TestDiffNamesAConditionThatChanged(t *testing.T) {
 	if out := p.want(0, "", "diff", "--base", base, "--unit", "MOD-0003"); strings.Contains(out, "~ condition") {
 		t.Errorf("--unit keeps a condition change outside the unit:\n%s", out)
 	}
+	p.want(0, line, "diff", "--base", base, "--page")
+	page, err := os.ReadFile(filepath.Join(p.root, ".abbd", "compare", "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	contains(t, string(page), "조건 변경 1")
+	if strings.Contains(string(page), "토폴로지에는 바뀐 것이 없습니다.") {
+		t.Errorf("the compare page says nothing changed when a condition did")
+	}
 }
 
 // The script's conditions are rebuilt at every sync and the supplement's
@@ -82,4 +93,42 @@ func TestSyncReplacesTheScriptsConditionAndKeepsTheSupplements(t *testing.T) {
 	if strings.Contains(out, "when PRIVATE") {
 		t.Errorf("a link scope prints as a condition:\n%s", out)
 	}
+}
+
+// A CMake script reads every link but not the if() around it, so the
+// supplement gives that condition on the edge the script prints. It shows
+// after setup and after each sync, and one that differs from the script's is
+// a conflict.
+func TestTheSupplementGivesTheConditionOfAnEdgeTheScriptReads(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.code("CMakeLists.txt", "if(WIN32)\n  target_link_libraries(ledger PRIVATE billing)\nendif()\n")
+	topo := func(when string) string {
+		return strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"import"`+when+`}]}`, 1)
+	}
+	sup := p.file(t, "sup.json", `{"units":[],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"import","when":"WIN32",
+ "evidence":[{"path":"CMakeLists.txt","lines":"1","quote":"if(WIN32)"}]}]}`)
+	p.extract(topo(""))
+	out := p.setup(0, "synced: 2 unit(s)", "--supplement", sup, "--", exe)
+	if strings.Contains(out, "conflict:") {
+		t.Errorf("a condition the script does not read is reported as a conflict:\n%s", out)
+	}
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when WIN32)")
+	p.resync()
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when WIN32)")
+
+	p.extract(topo(`,"when":"cfg(unix)"`))
+	out = p.setup(0, "synced: 2 unit(s)", "--supplement", sup, "--", exe)
+	contains(t, out, `conflict: supplement relation ledger -depends_on-> billing gives condition "WIN32", the script reads "cfg(unix)"; the script's shows`)
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when cfg(unix))")
+
+	// A link scope is not a condition, so the supplement's condition shows
+	// over it.
+	p.extract(topo(`,"when":"PRIVATE"`))
+	if out := p.setup(0, "synced: 2 unit(s)", "--supplement", sup, "--", exe); strings.Contains(out, "conflict:") {
+		t.Errorf("a condition over a link scope is reported as a conflict:\n%s", out)
+	}
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when WIN32)")
 }
