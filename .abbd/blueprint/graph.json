@@ -2745,6 +2745,7 @@
         "internal/extract/runscan/candidates.go",
         "internal/extract/runscan/catalog.go",
         "internal/extract/runscan/record.go",
+        "internal/extract/runscan/recv.go",
         "internal/extract/runscan/scan.go",
         "internal/extract/runscan/wrap.go"
       ],
@@ -6033,7 +6034,6 @@
         "Provides": 31,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6539,7 +6539,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6602,7 +6602,15 @@
                 "Code": true
               },
               {
-                "Text": "는 각 레코드에 소유 모듈을 채워 JSON 줄로 찍는다. setup, sync, status는 ",
+                "Text": "는 각 레코드에 소유 모듈을 채워 JSON 줄로 찍고, wrapper를 거친 spawn 레코드에는 ",
+                "Code": false
+              },
+              {
+                "Text": "wrapper",
+                "Code": true
+              },
+              {
+                "Text": "로 그 wrapper부터 카탈로그 호출까지의 정의 자리를 함께 싣는다. setup, sync, status는 ",
                 "Code": false
               },
               {
@@ -12184,6 +12192,7 @@
             "internal/extract/runscan/candidates.go",
             "internal/extract/runscan/catalog.go",
             "internal/extract/runscan/record.go",
+            "internal/extract/runscan/recv.go",
             "internal/extract/runscan/scan.go",
             "internal/extract/runscan/wrap.go"
           ],
@@ -12214,7 +12223,95 @@
                   "Code": true
                 },
                 {
-                  "Text": ")로 찾는 추출기다. 주석과 문자열을 비우고 테스트 코드를 건너뛰며, 결과는 ",
+                  "Text": ")로 찾는 추출기다. spawn 자리는 새 실행 맥락을 만드는 줄, 곧 생성 호출 자체이거나 호출한 쪽이 돌릴 일을 넘기는 wrapper 호출이다. 고정된 진입 함수로 스레드를 여는 함수의 호출은 그 안의 생성 호출이 이미 자리이므로 자리가 아니다. C++ 카탈로그는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "std::async",
+                  "Code": true
+                },
+                {
+                  "Text": "(파일에 ",
+                  "Code": false
+                },
+                {
+                  "Text": "using namespace std",
+                  "Code": true
+                },
+                {
+                  "Text": "나 ",
+                  "Code": false
+                },
+                {
+                  "Text": "using std::async",
+                  "Code": true
+                },
+                {
+                  "Text": "가 있으면 맨 ",
+                  "Code": false
+                },
+                {
+                  "Text": "async(",
+                  "Code": true
+                },
+                {
+                  "Text": "도), ",
+                  "Code": false
+                },
+                {
+                  "Text": "std::jthread",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "QThread::create",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "QtConcurrent::run",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "dispatch_async",
+                  "Code": true
+                },
+                {
+                  "Text": " 무리를 안다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "QThread::start",
+                  "Code": true
+                },
+                {
+                  "Text": "는 같은 파일이나 같은 stem의 헤더가 ",
+                  "Code": false
+                },
+                {
+                  "Text": "QThread",
+                  "Code": true
+                },
+                {
+                  "Text": "나 그 하위 클래스로 선언한 변수에서만 센다(",
+                  "Code": false
+                },
+                {
+                  "Text": "recv.go",
+                  "Code": true
+                },
+                {
+                  "Text": "). 주석과 문자열을 비우고 테스트 코드를 건너뛰며, 결과는 ",
                   "Code": false
                 },
                 {
@@ -13581,7 +13678,95 @@
                 "Code": true
               },
               {
-                "Text": ")로 찾는 추출기다. 주석과 문자열을 비우고 테스트 코드를 건너뛰며, 결과는 ",
+                "Text": ")로 찾는 추출기다. spawn 자리는 새 실행 맥락을 만드는 줄, 곧 생성 호출 자체이거나 호출한 쪽이 돌릴 일을 넘기는 wrapper 호출이다. 고정된 진입 함수로 스레드를 여는 함수의 호출은 그 안의 생성 호출이 이미 자리이므로 자리가 아니다. C++ 카탈로그는 ",
+                "Code": false
+              },
+              {
+                "Text": "std::async",
+                "Code": true
+              },
+              {
+                "Text": "(파일에 ",
+                "Code": false
+              },
+              {
+                "Text": "using namespace std",
+                "Code": true
+              },
+              {
+                "Text": "나 ",
+                "Code": false
+              },
+              {
+                "Text": "using std::async",
+                "Code": true
+              },
+              {
+                "Text": "가 있으면 맨 ",
+                "Code": false
+              },
+              {
+                "Text": "async(",
+                "Code": true
+              },
+              {
+                "Text": "도), ",
+                "Code": false
+              },
+              {
+                "Text": "std::jthread",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "QThread::create",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "QtConcurrent::run",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "dispatch_async",
+                "Code": true
+              },
+              {
+                "Text": " 무리를 안다. ",
+                "Code": false
+              },
+              {
+                "Text": "QThread::start",
+                "Code": true
+              },
+              {
+                "Text": "는 같은 파일이나 같은 stem의 헤더가 ",
+                "Code": false
+              },
+              {
+                "Text": "QThread",
+                "Code": true
+              },
+              {
+                "Text": "나 그 하위 클래스로 선언한 변수에서만 센다(",
+                "Code": false
+              },
+              {
+                "Text": "recv.go",
+                "Code": true
+              },
+              {
+                "Text": "). 주석과 문자열을 비우고 테스트 코드를 건너뛰며, 결과는 ",
                 "Code": false
               },
               {
@@ -13667,7 +13852,23 @@
                 "Code": true
               },
               {
-                "Text": "를 별칭으로 모은다. 다음에는 wrapper 호출과 별칭으로 쓴 카탈로그 호출도 spawn 자리로 찍는다. 한 단계만 따라가고, 이름 규칙은 쓰지 않는다.",
+                "Text": "를 별칭으로 모은다. 다음에는 wrapper 호출과 별칭으로 쓴 카탈로그 호출도 spawn 자리로 찍는다. 두 번째 단계로, 자기 매개변수를 첫 단계 wrapper 호출의 일거리로 넘기는 함수도 wrapper가 된다. 둘째 단계는 첫 단계가 찾은 wrapper만 읽어서 파일 순서에 기대지 않고, 셋째 단계는 없다. wrapper 호출 레코드의 ",
+                "Code": false
+              },
+              {
+                "Text": "wrapper",
+                "Code": true
+              },
+              {
+                "Text": "는 그 wrapper부터 카탈로그 호출까지의 정의 자리를 ",
+                "Code": false
+              },
+              {
+                "Text": "path:line",
+                "Code": true
+              },
+              {
+                "Text": "으로 든다. 이름 규칙은 쓰지 않는다.",
                 "Code": false
               }
             ]
