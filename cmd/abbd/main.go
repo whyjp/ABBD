@@ -35,10 +35,15 @@ abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
                                      print the extraction that EXTRACT-ARGV prints, or stdin,
                                      with the code-level relations a bundled relater reads
                                      between its units: go (go.mod; go/types, calls resolved
-                                     with VTA, tests left out, GOOS=linux) or rust (Cargo.toml;
+                                     with VTA, tests left out, GOOS=linux), rust (Cargo.toml;
                                      rust-analyzer from $ABBD_LSP_RUST or the PATH, tests left
                                      out, default and all features for x86_64-unknown-linux-gnu,
-                                     a relation found under one only says so in when); files no
+                                     a relation found under one only says so in when) or c (C and
+                                     C++: DIR's compile_commands.json, else its CMakeLists.txt
+                                     configured in $ABBD_CACHE_DIR; clangd from $ABBD_LSP_C or
+                                     the PATH; tests left out; function-pointer tables become
+                                     provides and consumes, or a callback from host to filler;
+                                     code #if leaves out is named on stderr); files no
                                      configuration compiles are named on stderr; it replaces the
                                      depends_on between units whose code it read, and adds a
                                      provides or consumes only where the extraction has none;
