@@ -134,6 +134,20 @@ func rustAnalyzer() (string, error) {
 	return ra, nil
 }
 
+// rustVersion is what the server says its version is.
+func rustVersion(ra string) string {
+	out, err := exec.Command(ra, "--version").Output()
+	if err != nil {
+		return "(unknown version)"
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// before is whether position a comes before b.
+func before(a, b lsp.Position) bool {
+	return a.Line < b.Line || a.Line == b.Line && a.Character < b.Character
+}
+
 type cargoMeta struct {
 	WorkspaceRoot string        `json:"workspace_root"`
 	Packages      []cargoMember `json:"packages"`
@@ -321,7 +335,7 @@ func rustRead(t tree, o owners, ra string, c rustConfig, files []string, crates 
 	if err := srv.Wait(ctx, time.Second); err != nil {
 		return rustRun{}, err
 	}
-	r := rustReader{tree: t, owners: o, srv: srv, run: rustRun{read: map[string]bool{}}, src: map[string]rustSource{}, decl: map[string]bool{}, shown: map[link]bool{}}
+	r := rustReader{tree: t, owners: o, srv: srv, ra: ra, run: rustRun{read: map[string]bool{}}, src: map[string]rustSource{}, decl: map[string]bool{}, shown: map[link]bool{}}
 	if err := r.read(ctx, files, crates); err != nil {
 		return rustRun{}, err
 	}
@@ -333,6 +347,7 @@ type rustReader struct {
 	tree
 	owners
 	srv *lsp.Client
+	ra  string
 	mu  sync.Mutex
 	run rustRun
 	src map[string]rustSource
@@ -390,11 +405,24 @@ func (r *rustReader) read(ctx context.Context, files []string, crates []rustCrat
 			return err
 		}
 		src := readRust(b)
+		var inactive []lsp.Range
 		for _, d := range diags {
 			// Older rust-analyzer releases spell it inactive-code.
 			if strings.ReplaceAll(string(d.Code), "-", "_") == "inactive_code" {
-				src.hide(d.Range)
+				inactive = append(inactive, d.Range)
 			}
+		}
+		// A rust-analyzer.toml in the repository can disable the
+		// diagnostic, and the server then says nothing of the code its cfg
+		// leaves out. The cfgs the settings fix to false must come back
+		// inactive, or the relations read from that code would be wrong.
+		for _, at := range src.falseCfgs() {
+			if !slices.ContainsFunc(inactive, func(r lsp.Range) bool { return !before(at, r.Start) && before(at, r.End) }) {
+				return fmt.Errorf("rust-analyzer %s reported no inactive code for a false cfg at %s:%d, so %s may disable the inactive-code diagnostic (check rust-analyzer.toml); the relations would include code the build leaves out", rustVersion(r.ra), p, at.Line+1, p)
+			}
+		}
+		for _, r := range inactive {
+			src.hide(r)
 		}
 		unit, _ := r.of(p)
 		r.mu.Lock()

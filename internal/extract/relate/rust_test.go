@@ -11,6 +11,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/extract/frontend"
+	"github.com/whyjp/abbd/internal/extract/lsp"
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -149,5 +150,42 @@ func TestRustSourceTellsCodeFromUsesAttributesAndComments(t *testing.T) {
 		if got := s.at(c.line, c.col); got != c.want {
 			t.Errorf("%d:%d %q = %d, want %d", c.line, c.col, s.lines[c.line][c.col:], got, c.want)
 		}
+	}
+}
+
+// A rust-analyzer.toml that disables the inactive-code diagnostic leaves the
+// server silent about code cfg leaves out, so the relater must fail, naming
+// the file and the server version, rather than return that code's relations.
+func TestRustRefusesAWorkspaceThatSilencesInactiveCode(t *testing.T) {
+	needRust(t)
+	dir := t.TempDir()
+	if err := os.CopyFS(dir, os.DirFS(rustFixture)); err != nil {
+		t.Fatal(err)
+	}
+	toml := "[diagnostics]\ndisabled = [\"inactive-code\", \"inactive_code\"]\n"
+	if err := os.WriteFile(dir+"/rust-analyzer.toml", []byte(toml), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	s, err := ParseSpec("rust")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, err = Relate(dir, extract.Doc{Units: rustUnits()}, []frontend.Spec{s})
+	if err == nil {
+		t.Fatal("relations came back from a workspace whose server reports no inactive code")
+	}
+	for _, want := range []string{"rust-analyzer", "lib.rs", "inactive"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("error %q does not name %q", err, want)
+		}
+	}
+}
+
+func TestRustFalseCfgsAreOnlyAttributesInCode(t *testing.T) {
+	src := readRust([]byte("// #[cfg(test)]\n#[cfg( test )]\nmod a {}\nconst S: &str = \"#[cfg(windows)]\";\n#[cfg(not(test))]\n#[cfg(windows)] fn b() {}\n"))
+	got := src.falseCfgs()
+	want := []lsp.Position{{Line: 1, Character: 0}, {Line: 5, Character: 0}}
+	if !slices.Equal(got, want) {
+		t.Errorf("falseCfgs = %v, want %v", got, want)
 	}
 }

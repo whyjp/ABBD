@@ -77,6 +77,32 @@ func (s rustSource) bang(p lsp.Position) bool {
 	return strings.HasPrefix(strings.TrimLeft(s.lines[p.Line][p.Character:], " "), "!")
 }
 
+// falseCfgs are the places where an attribute names a cfg the fixed target
+// and settings make false, #[cfg(test)] and #[cfg(windows)], as the server
+// must report as inactive code.
+func (s rustSource) falseCfgs() []lsp.Position {
+	var out []lsp.Position
+	for i, l := range s.lines {
+		for from := 0; ; {
+			at := strings.Index(l[from:], "#[")
+			if at < 0 {
+				break
+			}
+			at += from
+			from = at + 2
+			end := strings.Index(l[at:], "]")
+			if end < 0 || s.at(i, at) != inAttr {
+				continue
+			}
+			switch strings.Join(strings.Fields(l[at+2:at+end]), "") {
+			case "cfg(test)", "cfg(windows)":
+				out = append(out, lsp.Position{Line: i, Character: at})
+			}
+		}
+	}
+	return out
+}
+
 // hide marks a range, such as code cfg leaves out, as text, with the
 // re-exports in it.
 func (s *rustSource) hide(r lsp.Range) {
