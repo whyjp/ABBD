@@ -411,3 +411,24 @@ func TestALineBetweenStagesApartRunsOverTheSpine(t *testing.T) {
 		t.Fatal("no line between config and sources")
 	}
 }
+
+// The boxes under a spine stand in the spine's order, not in the order the
+// rows had before the stages set it: each stage's own library stands under
+// it, so the lines down run side by side.
+func TestTheRowsUnderASpineFollowItsOrder(t *testing.T) {
+	var units []model.Unit
+	var parts []store.Part[model.Layer]
+	var libs []string
+	for i := 1; i <= 4; i++ {
+		stage, lib := model.ID(fmt.Sprintf("MOD-%04d", 5-i)), model.ID(fmt.Sprintf("MOD-%04d", 10+i))
+		units = append(units, called(stage, fmt.Sprint("stage ", i), deps(lib)...), called(lib, fmt.Sprint("library ", i)))
+		parts = append(parts, band(fmt.Sprint("stage ", i), stage))
+		libs = append(libs, string(lib))
+	}
+	bs := boxes(Build(Input{Units: units, Figures: primaryStack(parts...)}).Overview)
+	for i := 1; i < len(libs); i++ {
+		if a, b := bs[libs[i-1]], bs[libs[i]]; b.X < a.X {
+			t.Errorf("library %d %+v stands left of library %d %+v, against the stages that use them", i+1, b, i, a)
+		}
+	}
+}
