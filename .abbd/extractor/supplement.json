@@ -273,6 +273,39 @@
       "responsibility": "Prints the freshness of the state against the tree and of the blueprint against the state, with unit, relation and understanding counts."
     },
     {
+      "ref": "if-cli-runtime",
+      "kind": "IF",
+      "name": "abbd runtime",
+      "anchors": [
+        {
+          "path": "cmd/abbd/runtime.go",
+          "symbol": "runtime"
+        }
+      ],
+      "purpose": "so a reader gets the run-time work list: the spawn sites and channel pairs the state does not hold yet",
+      "responsibility": "Scans the tree with the run-time catalog and lists each EXEC, posts_to, runs_on or provides candidate the state does not cite, or with --records prints every site as the JSON lines the language front-ends share."
+    },
+    {
+      "ref": "mod-runscan",
+      "kind": "MOD",
+      "name": "internal/runscan",
+      "anchors": [
+        {
+          "path": "internal/runscan"
+        }
+      ],
+      "parent": "mod-cmd-abbd",
+      "parent_evidence": [
+        {
+          "path": "cmd/abbd/runtime.go",
+          "lines": "8",
+          "quote": "\"github.com/whyjp/abbd/internal/runscan\""
+        }
+      ],
+      "purpose": "so the reader's run-time pass starts from the threads, tasks, pools and channels the code names, not from a blank page",
+      "responsibility": "Matches each language's spawn and channel calls from an embedded catalog with comments, strings and test code blanked out, and maps the records onto units as EXEC, posts_to, runs_on and provides candidates, each a lead until a reader stores it."
+    },
+    {
       "ref": "if-cli-sync",
       "kind": "IF",
       "name": "abbd sync",
