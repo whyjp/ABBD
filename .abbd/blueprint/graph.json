@@ -2341,18 +2341,21 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a diff can compare today's units with those committed at a base revision",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
+        "internal/store/store.go",
         "internal/store/store.go UnitsAt"
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go \"files, err := gitx.Files(project, rev, dirs...)\""
+        "internal/store/store.go \"files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return strings.HasSuffix(f, \\\".md\\\") }, dirs...)\""
       ]
     },
     {
@@ -6850,7 +6853,23 @@
                 "Code": true
               },
               {
-                "Text": ", the sentences of each module text, note and flow step that were lost or gained since the base. Brief also lists the module's lines that bind at run time (",
+                "Text": ", each module text (keyed by its module's ID, so a rename keeps it), note and flow step that came, went or changed since the base, with the sentences it lost and gained. Flow steps are aligned first (",
+                "Code": false
+              },
+              {
+                "Text": "aligned",
+                "Code": true
+              },
+              {
+                "Text": "), so a step put in or taken out is one change. The text output lists at most four sentences each way, and ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": " lists them all. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
@@ -6906,7 +6925,7 @@
                 "Code": true
               },
               {
-                "Text": ", from the state checked out at that revision, since git holds no pages. Evidence and status (",
+                "Text": ", from the same checkout of the base the words are read from, since git holds no pages. Evidence and status (",
                 "Code": false
               },
               {
@@ -7996,7 +8015,7 @@
                       "Kind": "p",
                       "Parts": [
                         {
-                          "Text": "Prints the same categories as JSON, with the base revision and the written sentences that changed (",
+                          "Text": "Prints the same categories as JSON, with the base revision and ",
                           "Code": false
                         },
                         {
@@ -8004,14 +8023,15 @@
                           "Code": true
                         },
                         {
-                          "Text": ", null when none), for a tool rather than a reader.",
+                          "Text": ": one entry per module text, slot note or flow step that came, went or changed since the base, with its key, kind, unit, change and every sentence it lost and gained, uncapped, for a tool rather than a reader.",
                           "Code": false
                         }
                       ]
                     }
                   ],
                   "Quotes": [
-                    "cmd/abbd/diff.go \"Words []string `json:\\\"words\\\"`\""
+                    "cmd/abbd/diff.go \"Words []wordChange `json:\\\"words\\\"`\"",
+                    "cmd/abbd/words.go \"Lost   []string `json:\\\"lost\\\"`\""
                   ]
                 }
               },
@@ -13131,6 +13151,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -13427,19 +13448,11 @@
                 "Code": false
               },
               {
-                "Text": "Files",
+                "Text": "FilesAt",
                 "Code": true
               },
               {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Show",
-                "Code": true
-              },
-              {
-                "Text": " let ",
+                "Text": " reads every file under a path at that revision in two git calls, for ",
                 "Code": false
               },
               {
@@ -13447,7 +13460,15 @@
                 "Code": true
               },
               {
-                "Text": " read unit files at that revision. ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "store.CheckoutAt",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -27593,6 +27614,7 @@
           "Sentence": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
           "Guess": true,
           "Anchors": [
+            "internal/store/store.go",
             "internal/store/store.go UnitsAt"
           ],
           "Understanding": null
@@ -27622,6 +27644,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -27812,7 +27835,15 @@
                 "Code": true
               },
               {
-                "Text": "): reads and parses the committed unit files at a revision through git, so a revision without ",
+                "Text": "): reads and parses the committed unit files at a revision through one ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.FilesAt",
+                "Code": true
+              },
+              {
+                "Text": " pass, so a revision without ",
                 "Code": false
               },
               {
@@ -27961,15 +27992,31 @@
                 "Code": true
               },
               {
-                "Text": " committed at a revision, its pages aside, into a directory and opens a store there, so ",
+                "Text": " committed at a revision, its pages aside, read in one ",
                 "Code": false
               },
               {
-                "Text": "abbd diff --page",
+                "Text": "gitx.FilesAt",
                 "Code": true
               },
               {
-                "Text": " can draw the base again in the renderer of now.",
+                "Text": " pass, into a directory and opens a store there, so ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff",
+                "Code": true
+              },
+              {
+                "Text": " reads the base's texts, notes and flows from it and ",
+                "Code": false
+              },
+              {
+                "Text": "--page",
+                "Code": true
+              },
+              {
+                "Text": " draws the base again in the renderer of now.",
                 "Code": false
               }
             ]
