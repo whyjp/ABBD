@@ -20,6 +20,18 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
    The text covers every one of these lists: name the lifecycle, the threads, the failure paths and the run-time binding in Key Concepts, or say in one line that the module has none.
 4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
 
+## Run-time pass
+
+Run this pass when `abbd status` prints a `runtime:` line. `abbd runtime` lists each spawn site, channel pair, registration and impl that the CLI's catalog matched by name and the state does not cite yet. Each line is a lead, never a fact. Read its code before you store anything, and leave a line that does not hold.
+
+1. **A spawn site** (`open EXEC`). Open the function the line names after `runs`, or the closure it passes, and read its loop. Set `run` from that loop: `tick` for a periodic loop, `wait` for one that blocks on a queue or a condition, `ready` for select, epoll or an event loop, `complete` for a completion queue, `steal` for a work-stealing pool such as tokio's multi-thread runtime, `inline` when the work runs on its caller. Set the count to `1`, to `N` when one site starts a fixed number, or to `pool`. Store an `EXEC` in the supplement with the owner the line names as `parent` and the spawn line as `evidence`. One site that starts N threads is one `EXEC`. A wrapper that only forwards to another spawn call is not an `EXEC` of its own. Store the `EXEC` at the call that names what runs.
+2. **A channel pair** (`open posts_to`). The line quotes a push and a pop on one channel. Read both. The push is the producer, and the context whose loop pops is the target `EXEC`. Store `posts_to` from the producer's module or `EXEC` to that `EXEC`, with `via` `queue`, `channel`, `signal` or `proxy`, a phrase that names what crosses, and both quotes. The catalog pairs ends only by name inside one module, so find the pairs that cross modules yourself: follow where the channel is made and where each end is passed.
+3. **What runs where.** For each `EXEC`, find the calls its entry function makes into other modules' code. Store `runs_on` from each such module to the `EXEC`, quoting the call. A registration line (`open runs_on`) quotes where a handler is handed to a context. Quote the line that calls the handler too.
+4. **An impl** (`open provides`). The line quotes code that implements a contract the host calls through. Store it as `provides`, per the plug-point rule under What you store.
+5. **A counterexample.** Before you store a `runs_on`, grep for the other callers of the same function. When it is also called on another thread, store a `runs_on` to each context, or none when you cannot tell which.
+
+Rerun setup with the supplement. `abbd runtime` drops each line the state now cites. A line you left stays listed, and the `runtime:` count never fails a check.
+
 ## Before you store: look for a counterexample
 
 A universal or exclusive claim is the easiest one to get wrong. Before you keep a sentence that says "never", "always", "only", "each", "every", "all", "no", "none" or "cannot", search the module for a case that breaks it, with grep for the names involved and a read of each hit. Keep the sentence only when no counterexample turns up. When one does, narrow the claim to what holds, such as "on the main thread" or "except when", or drop it. A claim you could not check is worded as what you read, not as a law.
