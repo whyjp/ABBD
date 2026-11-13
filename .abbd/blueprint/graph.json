@@ -5751,6 +5751,7 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6213,7 +6214,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -11271,6 +11272,7 @@
         "Provides": 1,
         "Uses": 1,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11322,7 +11324,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -15462,6 +15464,7 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15583,7 +15586,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -19282,6 +19285,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20484,7 +20488,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -28756,6 +28760,7 @@
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -28885,7 +28890,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
