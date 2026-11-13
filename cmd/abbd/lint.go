@@ -36,6 +36,10 @@ type lintReport struct {
 	// Undescribed names the drawn boxes that say only their kind, since
 	// their units record neither a purpose nor a responsibility.
 	Undescribed []model.ID `json:"undescribed,omitempty"`
+	// Prose names each stored text that does not read in the language
+	// project.yaml names, as unit field, note or figure.
+	Prose    []string       `json:"prose,omitempty"`
+	Language model.Language `json:"language,omitempty"`
 	// Direction names the plug-point contracts whose relations look
 	// recorded the wrong way round. It advises and never fails the gate.
 	Direction []topology.Reversed `json:"direction,omitempty"`
@@ -89,6 +93,12 @@ func (e env) lint(pos []string) error {
 		}
 		d := screen.Record(views, debt)
 		d.Levels = kept
+		var unowed []string
+		if t := in.Project.Language; t != "" {
+			found := foreignProse(in, t)
+			d.Prose = proseDebt(found, t, debt.Prose)
+			unowed, _ = proseGate(found, t, d.Prose)
+		}
 		if err := e.st.SaveLintDebt(d); err != nil {
 			return err
 		}
@@ -98,6 +108,10 @@ func (e env) lint(pos []string) error {
 			}
 		}
 		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["tees"], d.Ceilings["excess_turns"], d.Ceilings["placement"], d.Ceilings["overflow"], d.Ceilings["detours"], store.Dir)
+		if n := len(unowed); n > 0 {
+			t := in.Project.Language
+			return fmt.Errorf("prose: %s not in %s left out of the debt, which only shrinks; lint fails until each is written in %s", plural(n, "text"), t, t)
+		}
 		return nil
 	}
 	every := only == ""
@@ -113,6 +127,15 @@ func (e env) lint(pos []string) error {
 		r.Ceilings = debt.Ceilings
 		r.Unphrased = unphrased(in.Units, m.Overview)
 		r.Undescribed = undescribed(in.Units)
+		// Only a language project.yaml names gates the prose, so the
+		// gate does not move with the machine lint runs on.
+		if t := in.Project.Language; t != "" {
+			found := foreignProse(in, t)
+			r.Language, r.Prose = t, proseKeys(found)
+			fails, lower := proseGate(found, t, debt.Prose)
+			r.Failures = append(r.Failures, fails...)
+			r.Lowerable = append(r.Lowerable, lower...)
+		}
 		r.Direction = topology.ReversedPlugPoints(in.Units)
 	}
 	if r.Failures == nil {
@@ -178,6 +201,7 @@ func printLint(e env, r lintReport) {
 			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
 		}
 	}
+	printProse(e.stdout, r.Prose, r.Language)
 	if len(r.Undescribed) > 0 {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
 	}

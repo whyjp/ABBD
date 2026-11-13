@@ -30,3 +30,369 @@ pages:
         label_repeats: 0
         labelled: 13
         parallel_ink: 511
+prose:
+    language: ko
+    reason: written before project.yaml named ko; each text is written in ko when it is next read again, stale or touched
+    owed:
+        CFG-0001 purpose: 1aa3bd9d
+        CFG-0001 responsibility: 3d38f51c
+        CFG-0002 purpose: 0da41e06
+        CFG-0002 responsibility: b10ec7bc
+        DATA-0001 phrase depends_on FEAT-0001: 5faaa22d
+        DATA-0001 phrase depends_on FEAT-0004: c7f6b673
+        DATA-0001 phrase depends_on FEAT-0008: ffde0f5a
+        DATA-0001 purpose: 694d44d9
+        DATA-0001 responsibility: 58f210a4
+        DATA-0002 purpose: e5d56942
+        DATA-0002 responsibility: 48e99af1
+        DATA-0003 purpose: 07c20a7e
+        DATA-0003 responsibility: 797b3135
+        DATA-0004 purpose: 561c6766
+        DATA-0004 responsibility: ae48a30c
+        DATA-0005 purpose: 2bc53dcb
+        DATA-0006 note decisions.revision-stays: 6992ae9e
+        DATA-0006 note entries.blueprint: b951b158
+        DATA-0006 note entries.fingerprint: 38ab5564
+        DATA-0006 note entries.high-water: f05739cc
+        DATA-0006 note entries.rendered: 7d999d5c
+        DATA-0006 note semantics: 1356f716
+        DATA-0006 note states: a587e7fa
+        DATA-0006 purpose: bbb578ae
+        DATA-0006 responsibility: 4473de67
+        DATA-0007 purpose: e3b8ce55
+        DATA-0007 responsibility: 16f30bf2
+        DATA-0008 purpose: eebabdec
+        DATA-0008 responsibility: 6f39a8dc
+        DATA-0009 purpose: 3b3f85aa
+        DATA-0009 responsibility: 3daaa958
+        DATA-0010 responsibility: 84fb0144
+        DATA-0011 responsibility: 4b165a78
+        DATA-0012 responsibility: 58959f25
+        DATA-0013 responsibility: 3616a154
+        DATA-0014 responsibility: ece834ae
+        DATA-0015 responsibility: 7174d06d
+        DATA-0017 responsibility: 6ac56356
+        DATA-0018 responsibility: a4f326d2
+        DATA-0019 responsibility: 6d1ddfb9
+        DATA-0020 responsibility: 37914f05
+        DATA-0021 responsibility: 74d75348
+        DATA-0022 responsibility: aee5ce56
+        DATA-0023 responsibility: 9bbe305a
+        FEAT-0001 phrase consumes IF-0001: 9e4a8b64
+        FEAT-0001 phrase consumes IF-0003: c8e87a00
+        FEAT-0001 phrase consumes IF-0004: cbcfb2e1
+        FEAT-0001 phrase consumes IF-0007: 9742188c
+        FEAT-0001 phrase consumes IF-0008: b5429fbe
+        FEAT-0001 phrase consumes IF-0009: c93a47e9
+        FEAT-0001 phrase consumes IF-0010: 88dbf48b
+        FEAT-0001 phrase consumes IF-0011: 14c3bc18
+        FEAT-0001 phrase consumes IF-0013: 0569e72e
+        FEAT-0001 phrase consumes IF-0014: d3102a89
+        FEAT-0001 phrase consumes IF-0020: 50c0e300
+        FEAT-0001 phrase consumes IF-0021: 9d6cc7ae
+        FEAT-0001 phrase consumes IF-0022: c80e140c
+        FEAT-0001 phrase consumes IF-0023: ff903184
+        FEAT-0001 phrase consumes IF-0024: eecb3093
+        FEAT-0001 phrase consumes IF-0025: ff8cb45a
+        FEAT-0001 purpose: bf6564f7
+        FEAT-0001 responsibility: d648e2d8
+        FEAT-0002 phrase consumes IF-0004: cbcfb2e1
+        FEAT-0002 phrase consumes IF-0007: b2c0f8e7
+        FEAT-0002 phrase consumes IF-0008: b5429fbe
+        FEAT-0002 phrase consumes IF-0012: 219b292b
+        FEAT-0002 phrase consumes IF-0013: 0569e72e
+        FEAT-0002 phrase consumes IF-0018: e4d1f113
+        FEAT-0002 phrase consumes IF-0020: 50c0e300
+        FEAT-0002 purpose: 9404ee01
+        FEAT-0002 responsibility: a77218e9
+        FEAT-0003 phrase depends_on FEAT-0002: 9285659c
+        FEAT-0003 responsibility: 2f19570d
+        FEAT-0004 phrase consumes IF-0003: 75b86673
+        FEAT-0004 phrase consumes IF-0004: 04acdc14
+        FEAT-0004 phrase consumes IF-0007: b2c0f8e7
+        FEAT-0004 phrase consumes IF-0008: "00380103"
+        FEAT-0004 responsibility: e1352e01
+        FEAT-0006 phrase consumes IF-0010: e9827298
+        FEAT-0006 phrase consumes IF-0011: 996eca40
+        FEAT-0006 phrase consumes IF-0013: 40bac679
+        FEAT-0006 responsibility: 21f35fe5
+        FEAT-0007 phrase consumes IF-0009: 8ffffc15
+        FEAT-0007 phrase consumes IF-0010: 867ad02f
+        FEAT-0007 responsibility: fef31766
+        FEAT-0008 phrase consumes IF-0001: ffde0f5a
+        FEAT-0008 phrase consumes IF-0006: ffde0f5a
+        FEAT-0008 responsibility: fc0c6cab
+        FEAT-0009 phrase consumes IF-0001: 9e4a8b64
+        FEAT-0009 phrase consumes IF-0002: c5434d2e
+        FEAT-0009 phrase consumes IF-0014: d3102a89
+        FEAT-0009 responsibility: 445eb0bc
+        FEAT-0011 phrase depends_on FEAT-0023: f1e0969d
+        FEAT-0011 responsibility: 23ba99a2
+        FEAT-0012 phrase depends_on FEAT-0023: de77f43f
+        FEAT-0012 responsibility: 15549f52
+        FEAT-0013 responsibility: e618df6e
+        FEAT-0014 phrase consumes IF-0012: 18823d7f
+        FEAT-0014 responsibility: f7add24d
+        FEAT-0016 phrase consumes IF-0005: 6bb2c721
+        FEAT-0016 phrase depends_on FEAT-0001: 9285659c
+        FEAT-0016 responsibility: 097dd36f
+        FEAT-0017 phrase consumes IF-0009: 1fbb0738
+        FEAT-0017 phrase consumes IF-0018: 88f1a6ae
+        FEAT-0017 responsibility: ed014445
+        FEAT-0018 responsibility: a00d3adb
+        FEAT-0020 responsibility: 39a6fd4d
+        FEAT-0023 phrase depends_on FEAT-0018: 78f3a51b
+        FEAT-0023 phrase depends_on FEAT-0020: 5c854c3f
+        FEAT-0023 responsibility: 4bacf781
+        FEAT-0025 phrase consumes IF-0013: 0569e72e
+        FEAT-0025 phrase depends_on FEAT-0023: 3e1dbeff
+        FEAT-0025 responsibility: 34251c66
+        FEAT-0026 phrase depends_on MOD-0055: 5850b944
+        FEAT-0026 responsibility: 8dbdce18
+        FEAT-0026 text: 6b724b95
+        IF-0001 note entries.base: 87a82831
+        IF-0001 note entries.check: d07c367f
+        IF-0001 note entries.json: 1255aeb2
+        IF-0001 purpose: 0e1812a7
+        IF-0001 responsibility: 76dff335
+        IF-0002 purpose: c4671126
+        IF-0002 responsibility: 3314e808
+        IF-0003 note entries.check: 57a9d333
+        IF-0003 purpose: 119f5890
+        IF-0003 responsibility: 3d36e51a
+        IF-0004 note entries.features: 633f9102
+        IF-0004 purpose: 1e4ec601
+        IF-0004 responsibility: 2e09fe0b
+        IF-0005 purpose: 01f1f3f7
+        IF-0005 responsibility: 9d205cea
+        IF-0006 purpose: dcec966d
+        IF-0006 responsibility: 135a1cc8
+        IF-0007 purpose: ccdbefa7
+        IF-0007 responsibility: 90f5cf58
+        IF-0008 purpose: 83512ac1
+        IF-0008 responsibility: 85b31b1b
+        IF-0009 purpose: f271a63e
+        IF-0009 responsibility: 4a9332a4
+        IF-0010 purpose: c5c9c0a3
+        IF-0010 responsibility: 509190a5
+        IF-0011 purpose: b9b6d504
+        IF-0011 responsibility: e2189169
+        IF-0012 purpose: dc2d7666
+        IF-0012 responsibility: b5853e32
+        IF-0013 purpose: 7ccb7794
+        IF-0013 responsibility: 5c1eb581
+        IF-0014 purpose: 74bfa07c
+        IF-0014 responsibility: f85fd3a9
+        IF-0015 purpose: b88f5583
+        IF-0015 responsibility: 7b01b0b0
+        IF-0016 purpose: e3631e3c
+        IF-0016 responsibility: bbdd2dd0
+        IF-0017 purpose: 3087516a
+        IF-0017 responsibility: be65a506
+        MOD-0001 phrase consumes CFG-0002: 7ee1fb0a
+        MOD-0001 phrase consumes DATA-0002: 8925e9af
+        MOD-0001 phrase consumes DATA-0004: 8fc3d8b4
+        MOD-0001 phrase consumes IF-0015: 78ee3873
+        MOD-0001 phrase depends_on MOD-0009: 4b927955
+        MOD-0001 phrase depends_on MOD-0010: 4b927955
+        MOD-0001 phrase depends_on MOD-0013: cf5298f0
+        MOD-0001 phrase depends_on MOD-0014: cf5298f0
+        MOD-0001 phrase depends_on MOD-0017: 8925e9af
+        MOD-0001 phrase depends_on MOD-0022: 43ef2fe8
+        MOD-0001 phrase depends_on MOD-0023: 43ef2fe8
+        MOD-0001 phrase depends_on MOD-0025: 43ef2fe8
+        MOD-0001 phrase depends_on MOD-0026: 5dfcef03
+        MOD-0001 phrase depends_on MOD-0029: 45b239e4
+        MOD-0001 phrase depends_on MOD-0030: d3c3e0b9
+        MOD-0001 phrase depends_on MOD-0034: 414fddc9
+        MOD-0001 phrase depends_on MOD-0039: 3d460fb2
+        MOD-0001 phrase depends_on MOD-0041: 8fc3d8b4
+        MOD-0001 phrase depends_on MOD-0043: 9c758de0
+        MOD-0001 phrase depends_on MOD-0044: 8fc3d8b4
+        MOD-0001 phrase depends_on MOD-0046: 3b2a20e8
+        MOD-0001 phrase depends_on MOD-0047: 73b7b376
+        MOD-0001 phrase depends_on MOD-0048: dd977250
+        MOD-0001 phrase depends_on MOD-0054: 70be20f4
+        MOD-0001 phrase depends_on MOD-0056: b9c0c148
+        MOD-0001 purpose: 6b8ae4c4
+        MOD-0001 responsibility: f3f0aaee
+        MOD-0002 phrase consumes DATA-0004: 8fc3d8b4
+        MOD-0002 phrase depends_on MOD-0013: cf5298f0
+        MOD-0002 phrase depends_on MOD-0022: 43ef2fe8
+        MOD-0002 phrase depends_on MOD-0047: 7b2bd7f9
+        MOD-0002 purpose: 9dd379cc
+        MOD-0002 responsibility: 3676abe7
+        MOD-0003 purpose: 40f30543
+        MOD-0003 responsibility: da2de919
+        MOD-0004 phrase consumes CFG-0002: 7ee1fb0a
+        MOD-0004 phrase consumes DATA-0002: 8925e9af
+        MOD-0004 phrase depends_on MOD-0013: cf5298f0
+        MOD-0004 phrase depends_on MOD-0022: 43ef2fe8
+        MOD-0004 phrase depends_on MOD-0026: 5dfcef03
+        MOD-0004 purpose: 761ffd54
+        MOD-0004 responsibility: 2fd060a9
+        MOD-0005 phrase depends_on MOD-0047: f7b7c0b5
+        MOD-0005 purpose: aa580643
+        MOD-0005 responsibility: 7c73857e
+        MOD-0005 text: 34b0dae8
+        MOD-0006 phrase consumes DATA-0004: 8fc3d8b4
+        MOD-0006 phrase consumes IF-0015: 78ee3873
+        MOD-0006 phrase depends_on MOD-0013: cf5298f0
+        MOD-0006 purpose: 2450733e
+        MOD-0006 responsibility: 8ea02881
+        MOD-0007 phrase depends_on MOD-0034: 414fddc9
+        MOD-0007 purpose: b8583d73
+        MOD-0007 responsibility: "96741778"
+        MOD-0008 phrase consumes DATA-0002: 8925e9af
+        MOD-0008 phrase depends_on MOD-0009: 4b927955
+        MOD-0008 purpose: 0aa8023e
+        MOD-0008 responsibility: 96aebd65
+        MOD-0009 phrase depends_on MOD-0030: 16e9ac1c
+        MOD-0009 purpose: 343a3960
+        MOD-0009 responsibility: 7003d37f
+        MOD-0010 purpose: 810c2f49
+        MOD-0010 responsibility: b354f9e7
+        MOD-0011 purpose: 8571c437
+        MOD-0011 responsibility: 6cda3f86
+        MOD-0013 phrase depends_on MOD-0030: edd01b2e
+        MOD-0013 purpose: a0ba51c4
+        MOD-0013 responsibility: bb1989ba
+        MOD-0013 text: 96c67002
+        MOD-0014 purpose: f304a6c4
+        MOD-0014 responsibility: e7215171
+        MOD-0015 purpose: c14f38ef
+        MOD-0015 responsibility: ab1ffd86
+        MOD-0016 purpose: a9cc1349
+        MOD-0016 responsibility: a3cb80fb
+        MOD-0017 phrase depends_on MOD-0030: 38ce0682
+        MOD-0017 purpose: 6c98bcdb
+        MOD-0017 responsibility: 762a5cbe
+        MOD-0018 purpose: 1fafb7cd
+        MOD-0018 responsibility: 72d90212
+        MOD-0019 purpose: 76cc2870
+        MOD-0019 responsibility: c0315626
+        MOD-0020 phrase depends_on MOD-0022: 11d586f2
+        MOD-0020 purpose: 11c7b7e4
+        MOD-0020 responsibility: e408d1c8
+        MOD-0021 purpose: e3d10d2a
+        MOD-0021 responsibility: 27ecc395
+        MOD-0022 purpose: 3ff3d9b3
+        MOD-0022 responsibility: 4c76524f
+        MOD-0022 text: b5afe7d7
+        MOD-0023 purpose: 69e6b2ca
+        MOD-0023 responsibility: d365368b
+        MOD-0024 purpose: 952b4c35
+        MOD-0024 responsibility: 0935b36c
+        MOD-0025 purpose: 5edd3cae
+        MOD-0025 responsibility: 81f56a04
+        MOD-0026 phrase consumes DATA-0006: 63cfd67e
+        MOD-0026 phrase depends_on MOD-0030: cc0de147
+        MOD-0026 purpose: 6ec2798c
+        MOD-0026 responsibility: 26a990e7
+        MOD-0027 phrase depends_on MOD-0024: af8c0cd1
+        MOD-0027 purpose: "78944623"
+        MOD-0027 responsibility: 06ea36d1
+        MOD-0028 purpose: 9d1bbb1d
+        MOD-0028 responsibility: e412afcf
+        MOD-0029 purpose: a621d930
+        MOD-0029 responsibility: 58bbf60f
+        MOD-0030 purpose: d585033f
+        MOD-0030 responsibility: bcc385f8
+        MOD-0031 purpose: 673d9cae
+        MOD-0031 responsibility: 91b1d62f
+        MOD-0032 purpose: 41b75680
+        MOD-0032 responsibility: c85bfd4b
+        MOD-0033 purpose: 5e5588b1
+        MOD-0033 responsibility: 1acfeb16
+        MOD-0034 phrase consumes IF-0015: 78ee3873
+        MOD-0034 phrase depends_on MOD-0025: 975afa91
+        MOD-0034 phrase depends_on MOD-0030: 6ffbd1f6
+        MOD-0034 phrase depends_on MOD-0042: 210bf37c
+        MOD-0034 phrase depends_on MOD-0046: 3b2a20e8
+        MOD-0034 phrase depends_on MOD-0047: 8f5451bb
+        MOD-0034 phrase depends_on MOD-0056: 5386d26f
+        MOD-0034 purpose: ff9ce85e
+        MOD-0034 responsibility: fe26e42a
+        MOD-0035 purpose: 2509d173
+        MOD-0035 responsibility: 7a0dc3cf
+        MOD-0036 purpose: 27bc92db
+        MOD-0036 responsibility: b38023a5
+        MOD-0037 phrase depends_on MOD-0030: f55f363f
+        MOD-0037 purpose: 1b60f79c
+        MOD-0037 responsibility: 189d2f8d
+        MOD-0038 purpose: dcef7aec
+        MOD-0038 responsibility: f19679e1
+        MOD-0039 phrase consumes DATA-0006: 37e85bc3
+        MOD-0039 phrase depends_on MOD-0022: 975afa91
+        MOD-0039 phrase depends_on MOD-0041: 210bf37c
+        MOD-0039 purpose: bbe44024
+        MOD-0039 responsibility: cceaaa0d
+        MOD-0040 phrase consumes DATA-0008: 77dd5f56
+        MOD-0040 phrase depends_on MOD-0041: 77dd5f56
+        MOD-0040 purpose: 7893b5da
+        MOD-0040 responsibility: 4dbb890c
+        MOD-0041 phrase depends_on MOD-0013: e7e8ab42
+        MOD-0041 phrase depends_on MOD-0022: 2990e8ac
+        MOD-0041 phrase depends_on MOD-0026: 5fb14431
+        MOD-0041 phrase depends_on MOD-0030: 8cc7fbc3
+        MOD-0041 phrase depends_on MOD-0057: a638ec1d
+        MOD-0041 purpose: 36e6d661
+        MOD-0041 responsibility: 9c45a060
+        MOD-0042 purpose: ba72a000
+        MOD-0042 responsibility: "43338367"
+        MOD-0043 phrase depends_on MOD-0027: a15cb038
+        MOD-0043 purpose: d7f0d492
+        MOD-0043 responsibility: c8f9016a
+        MOD-0044 purpose: 884d744a
+        MOD-0044 responsibility: b521f99c
+        MOD-0045 purpose: dfeb61b4
+        MOD-0045 responsibility: 0fda75c0
+        MOD-0046 purpose: 2a5127bc
+        MOD-0046 responsibility: 5e0999e6
+        MOD-0047 phrase consumes IF-0015: 78ee3873
+        MOD-0047 phrase depends_on MOD-0030: afb7556b
+        MOD-0047 purpose: f00fb234
+        MOD-0047 responsibility: 7886f5a0
+        MOD-0048 purpose: 3e8c409f
+        MOD-0048 responsibility: 7e281fe8
+        MOD-0049 purpose: fb4a823f
+        MOD-0049 responsibility: 1bb42ca1
+        MOD-0050 purpose: e15b42a4
+        MOD-0050 responsibility: 9ecbffd6
+        MOD-0051 purpose: e1548b70
+        MOD-0051 responsibility: b8973f34
+        MOD-0052 purpose: 40cce935
+        MOD-0052 responsibility: b74019a7
+        MOD-0053 purpose: 9e95e434
+        MOD-0053 responsibility: b4eea606
+        MOD-0054 phrase depends_on MOD-0030: 8e8be360
+        MOD-0055 responsibility: b0a5f86c
+        flow sync: 39f936e0
+        flow sync step MOD-0004: 580c41e9
+        flow sync step MOD-0007: cb1082aa
+        flow sync step MOD-0013: e6c1d195
+        flow sync step MOD-0017: 239d3934
+        flow sync step MOD-0022: bd16ae19
+        'flow sync step MOD-0022 #2': 40def817
+        'flow sync step MOD-0022 #3': 5554e589
+        flow sync step MOD-0026: 7f70b522
+        flow sync step MOD-0041: e991d2be
+        'flow sync step MOD-0041 #2': c4c1b939
+        'flow sync step MOD-0041 #3': ccfc968a
+        'flow sync step MOD-0041 #4': 9d6e167f
+        flow sync step MOD-0054: 752c49c0
+        project purpose: 619e2e86
+        stack cli: 7becd832
+        stack cli layer blueprint rendering: e115b646
+        stack cli layer commands: 8370df1e
+        stack cli layer readers: 4bbbbf30
+        stack cli layer store: ffe04d11
+        stack cli layer topology rules: d99fa2a8
+        stack cli layer vocabulary: b050dacb
+        table cli-files: 7a7ca9fd
+        table cli-files columns: 4f87fbe9
+        table cli-files row MOD-0002: 1e148bc4
+        table cli-files row MOD-0004: 45ba4a13
+        table cli-files row MOD-0005: 5a4dd08b
+        table cli-files row MOD-0006: c2889a62
+        table cli-files row MOD-0007: 7c88244a
