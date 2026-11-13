@@ -158,23 +158,6 @@ func (f *file) find(e model.Evidence) (match, bool) {
 	return match{}, false
 }
 
-// Misplaced reports where e's quote is found when e names lines and the quote
-// lies more than Slack lines from them, as a quote that moved, or was cited
-// with the wrong lines, does. Check still finds such a quote when its file
-// holds it once, so a stored citation follows the code; a new one is refused.
-func (c *Checker) Misplaced(e model.Evidence) (string, bool) {
-	first, last, bounded := e.Span()
-	f := c.load(e.Path)
-	if !bounded || f == nil {
-		return "", false
-	}
-	m, ok := f.find(e)
-	if !ok || max(m.start-last, first-m.end, 0) <= Slack {
-		return "", false
-	}
-	return f.result(m).At, true
-}
-
 // Around returns the lines that hold e's quote now and n lines on each side,
 // or false when Check would not find the quote.
 func (c *Checker) Around(e model.Evidence, n int) (string, bool) {

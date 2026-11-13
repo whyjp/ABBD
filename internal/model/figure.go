@@ -129,6 +129,11 @@ func (st state) within(id ID, tops []ID) bool {
 	return slices.ContainsFunc(tops, func(top ID) bool { return st.under(id, top) })
 }
 
+// rests reports whether one quote at least lies in code that one of tops, or
+// a unit inside it, anchors more closely than any other unit does, or that a
+// contract one of them provides anchors so. A file two units share lends a
+// quote only to the unit whose anchor names it best, and a root anchor of .
+// only the files no closer anchor names.
 // Rests reports, over units, whether a quote lies in the code of the units
 // tops, or of a unit inside them, as a part of a figure or the overview must
 // cite.
@@ -137,11 +142,6 @@ func Rests(units []Unit) func(tops []ID, quote Evidence) bool {
 	return func(tops []ID, quote Evidence) bool { return st.rests(tops, []Evidence{quote}) }
 }
 
-// rests reports whether one quote at least lies in code that one of tops, or
-// a unit inside it, anchors more closely than any other unit does, or that a
-// contract one of them provides anchors so. A file two units share lends a
-// quote only to the unit whose anchor names it best, and a root anchor of .
-// only the files no closer anchor names.
 func (st state) rests(tops []ID, quotes []Evidence) bool {
 	provides := func(c ID) bool {
 		for _, u := range st {
