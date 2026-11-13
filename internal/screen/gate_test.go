@@ -137,6 +137,14 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		t.Errorf("recording a line against the axis on %s sets its bounds %v and ceiling %d, want them kept at %v and %d", page, got.Pages[page], got.Ceilings["against_axis"], debt.Pages[page], debt.Ceilings["against_axis"])
 	}
 	risen = slices.Clone(views)
+	risen[at].Totals.TwoLaneOff++
+	if fails, want := Gate(risen, debt, true), []string{
+		fmt.Sprintf("%s: two_lane_off %d, past its page bound %d", page, risen[at].Totals.TwoLaneOff, debt.Pages[page]["two_lane_off"]),
+		fmt.Sprintf("two_lane_off %d, past its ceiling %d by more than 0", Sum(risen).TwoLaneOff, debt.Ceilings["two_lane_off"]),
+	}; !slices.Equal(fails, want) {
+		t.Errorf("one more px of lines both ways side by side off a two-lane road on %s fails the gate with %q, want its page past its bound and the views past their ceiling: %q", page, fails, want)
+	}
+	risen = slices.Clone(views)
 	risen[at].Totals.Criteria = maps.Clone(risen[at].Totals.Criteria)
 	risen[at].Totals.Criteria["J3"]++
 	if fails := Gate(risen, debt, true); !slices.Contains(fails, fmt.Sprintf("%s: false_joins %d, past its page bound %d", page, risen[at].Totals.Criteria["J3"], debt.Pages[page]["false_joins"])) {
