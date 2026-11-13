@@ -56,6 +56,26 @@ func TestTwoLaneRoadIsNoParallelInk(t *testing.T) {
 	}
 }
 
+// Two lines on one track opposite ways share their ink where they overlap:
+// 80px here, counted once though a third line rides one way with them.
+// Lines on one track the same way share none.
+func TestOppositeSharedCountsTrackBothWays(t *testing.T) {
+	boxes := []string{"A 40 0 80 20", "B 40 140 80 20"}
+	rels := [][2]string{{"A", "B"}, {"B", "A"}}
+	for _, c := range []struct {
+		name, body string
+		want       int
+	}{
+		{"both ways", `<path class="w contract" d="M80 20 V120"/><path class="w contract back" d="M80 140 V40"/><path class="w contract" d="M80 30 V100"/>`, 80},
+		{"one way", `<path class="w contract" d="M80 20 V120"/><path class="w contract" d="M80 40 V140"/>`, 0},
+	} {
+		l := lookAt(t, boxes, c.body, rels)
+		if got := oppositeShared(l.s); got != c.want {
+			t.Errorf("%s: opposite shared %d, want %d", c.name, got, c.want)
+		}
+	}
+}
+
 // The two lanes of a two-lane road stand closer than the pitch of lines
 // that run near each other, and no closer than rule 6 lets two lines run,
 // and the renderer draws them where the lint looks for them.

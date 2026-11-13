@@ -174,28 +174,64 @@ func twoLaneOff(s sheet) int {
 	return int(math.Round(total))
 }
 
-// oppositeShared is how far, in px, two lines run on one track opposite
-// ways: ink a reader takes to run one way, which joins places no line
-// joins. It reads each line's route where the drawing holds them, else
-// its drawn paths.
+// oppositeShared is how far, in px, a track carries lines both ways: ink
+// a reader takes to run one way, which joins places no line joins. Each
+// stretch of track counts once, however many lines share it. It reads each
+// line's route where the drawing holds them, else its drawn paths.
 func oppositeShared(s sheet) int {
 	ws := s.routes
 	if !s.routed {
 		ws = s.strokes
 	}
+	type track struct {
+		upright bool
+		at      float64
+	}
+	spans := map[track][2][][2]float64{}
+	for _, w := range ws {
+		for _, p := range stretches(w.pts) {
+			a, b := p[0], p[1]
+			var k track
+			var lo, hi float64
+			switch {
+			case a.y == b.y && a.x != b.x:
+				k, lo, hi = track{false, a.y}, a.x, b.x
+			case a.x == b.x && a.y != b.y:
+				k, lo, hi = track{true, a.x}, a.y, b.y
+			default:
+				continue
+			}
+			sp, way := spans[k], 0
+			if hi < lo {
+				lo, hi, way = hi, lo, 1
+			}
+			sp[way] = append(sp[way], [2]float64{lo, hi})
+			spans[k] = sp
+		}
+	}
 	total := 0.0
-	for i, a := range ws {
-		for _, b := range ws[i+1:] {
-			for _, p := range stretches(a.pts) {
-				for _, q := range stretches(b.pts) {
-					if collinear(p[0], p[1], q[0], q[1]) && dirOf(p[0], p[1]) == dirOf(q[1], q[0]) {
-						total += spanOf(p[0].x+p[0].y, p[1].x+p[1].y, q[0].x+q[0].y, q[1].x+q[1].y)
-					}
-				}
+	for _, sp := range spans {
+		for _, a := range union(sp[0]) {
+			for _, b := range union(sp[1]) {
+				total += math.Max(0, math.Min(a[1], b[1])-math.Max(a[0], b[0]))
 			}
 		}
 	}
 	return int(math.Round(total))
+}
+
+// union merges spans that overlap or touch.
+func union(spans [][2]float64) [][2]float64 {
+	sort.Slice(spans, func(i, j int) bool { return spans[i][0] < spans[j][0] })
+	var out [][2]float64
+	for _, s := range spans {
+		if n := len(out); n > 0 && s[0] <= out[n-1][1] {
+			out[n-1][1] = math.Max(out[n-1][1], s[1])
+			continue
+		}
+		out = append(out, s)
+	}
+	return out
 }
 
 // abreastGap is the width, in px, across which three or more drawn paths

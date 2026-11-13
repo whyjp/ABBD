@@ -8,7 +8,7 @@ ceilings:
     against_axis: 2
     detours: 0
     excess_turns: 28
-    opposite_shared: 386
+    opposite_shared: 283
     overflow: 0
     placement: 10
     tees: 1

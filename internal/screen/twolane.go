@@ -57,7 +57,7 @@ func runWay(ways [][]pt, r straightRun) int {
 // share one track both ways stay there: moving them apart reveals the
 // crossings the shared ink hides (see the pull request of #232).
 func (r *routing) twoLanes(ways [][]pt, v roadView) [][]pt {
-	tried := map[[3]int]bool{}
+	tried := map[[4]int]bool{}
 	for n := 0; n < roadMoves; n++ {
 		next, ok := r.twoLane(ways, v, tried)
 		if !ok {
@@ -69,8 +69,8 @@ func (r *routing) twoLanes(ways [][]pt, v roadView) [][]pt {
 }
 
 // twoLane makes the first move twoLanes keeps, if any. tried holds the
-// moves weighed already, by the run's first route run and where it goes.
-func (r *routing) twoLane(ways [][]pt, v roadView, tried map[[3]int]bool) ([][]pt, bool) {
+// moves weighed already, by the run's track and span and where it goes.
+func (r *routing) twoLane(ways [][]pt, v roadView, tried map[[4]int]bool) ([][]pt, bool) {
 	rs := roadRunsBy(ways, v, true)
 	way := make([]int, len(rs))
 	for i, run := range rs {
@@ -98,7 +98,10 @@ func (r *routing) twoLane(ways [][]pt, v roadView, tried map[[3]int]bool) ([][]p
 				moves[0], moves[1], moves[2], moves[3] = moves[1], moves[0], moves[3], moves[2]
 			}
 			for _, m := range moves {
-				k := [3]int{m.run.segs[0][0], m.run.segs[0][1], m.at}
+				k := [4]int{m.run.at, m.run.lo, m.run.hi, m.at}
+				if m.run.vertical {
+					k[0] = -1 - k[0]
+				}
 				if tried[k] || !m.run.moves(m.at) {
 					continue
 				}
