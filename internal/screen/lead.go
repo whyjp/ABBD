@@ -31,8 +31,11 @@ import (
 // from, and Hue that box's colour, which the lead is drawn in.
 type Lead struct {
 	Key, Title, Entry, Hue string
-	Hops                   []Hop
-	Stay                   *Stay `json:",omitempty"`
+	// Primary says the lead follows the stack marked the primary flow, its
+	// stages, not a stored flow's steps.
+	Primary bool `json:",omitempty"`
+	Hops    []Hop
+	Stay    *Stay `json:",omitempty"`
 }
 
 // Stay numbers the steps a stored flow runs on one box of the overview
@@ -280,8 +283,10 @@ func (d *Drawing) uses() []use {
 func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	hops, best, stay := d.leadHops(t, flows, d.uses(), whole)
 	var key, title string
+	primary := false
 	if best >= 0 {
 		key, title = flows[best].key, flows[best].question
+		primary = flows[best].primary
 	} else {
 		title = "주 흐름 (추정): 아무도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감"
 	}
@@ -296,7 +301,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	}
 	// The primary flow starts at its first stage the view shows, though
 	// no numbered hop leaves it.
-	if len(hops) > 0 && len(flows) > 0 && flows[0].primary && key == flows[0].key {
+	if len(hops) > 0 && primary {
 		box := d.shown(t)
 		for _, u := range flows[0].units {
 			if b := box(u); b != "" {
@@ -305,7 +310,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 			}
 		}
 	}
-	l := &Lead{Key: key, Title: title, Entry: entry, Stay: stay}
+	l := &Lead{Key: key, Title: title, Entry: entry, Primary: primary, Stay: stay}
 	for _, b := range d.Boxes {
 		if b.ID == l.Entry {
 			l.Hue = b.Hue

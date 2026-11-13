@@ -3,6 +3,7 @@ package screen
 import (
 	"fmt"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -301,4 +302,265 @@ func TestAStageBandKeepsItsStageNumber(t *testing.T) {
 	if !slices.Contains(got, "1 · read") || !slices.Contains(got, "3 · write") {
 		t.Errorf("bands %q, want 1 · read and 3 · write", got)
 	}
+}
+
+// The key under a drawing whose lead follows the primary stack names the
+// stack, never a stored flow.
+func TestTheKeyNamesThePrimaryStack(t *testing.T) {
+	files, err := Files(Build(Input{Units: pipeline(), Figures: pipelineStages()}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	page := string(files["index.html"])
+	if !strings.Contains(page, "주 흐름: stack pipeline의 단계 순서") || strings.Contains(page, "저장된 흐름 pipeline") {
+		t.Errorf("the overview's key must name stack pipeline as the primary flow")
+	}
+}
+
+// climbs counts the O3 breaches of a view: lines that climb to a box that
+// does not reach them back.
+func climbs(t *testing.T, m Model, view string) int {
+	t.Helper()
+	vs, err := Lint(m, view)
+	if err != nil {
+		t.Fatal(err)
+	}
+	n := 0
+	for _, v := range vs {
+		for _, b := range v.Breaches {
+			if b.Criterion == "O3" {
+				n++
+			}
+		}
+	}
+	return n
+}
+
+// Down the stages, boxes on a chain from one stage to the next stand
+// between the two stages' rows, so no line climbs.
+func TestABoxStandsBetweenTheStagesItJoins(t *testing.T) {
+	id := func(i int) model.ID { return model.ID(fmt.Sprintf("MOD-%04d", i)) }
+	var units []model.Unit
+	var parts []store.Part[model.Layer]
+	for i := 1; i <= 6; i++ {
+		var rels []model.Relation
+		if i < 6 {
+			rels = deps(id(i + 1))
+		}
+		if i == 1 {
+			rels = append(rels, deps("MOD-0011")...)
+		}
+		units = append(units, called(id(i), fmt.Sprintf("a stage with a name long enough to fill its box %d", i), rels...))
+		parts = append(parts, band(fmt.Sprint("stage ", i), id(i)))
+	}
+	units = append(units, called("MOD-0011", "zbuff", deps("MOD-0012")...), called("MOD-0012", "decompressor", deps(id(2))...))
+	m := Build(Input{Units: units, Figures: primaryStack(parts...)})
+	if f := m.Overview.axis.flow; f == nil || f.across {
+		t.Fatalf("the flow is laid down: %+v", f)
+	}
+	bs := boxes(m.Overview)
+	if d, s := bs["MOD-0012"], bs[string(id(2))]; d.Y+d.H > s.Y {
+		t.Errorf("the decompressor %+v stands above stage 2 %+v, which it uses", d, s)
+	}
+	if n := climbs(t, m, "overview"); n != 0 {
+		t.Errorf("%d lines climb, want none", n)
+	}
+}
+
+// Across, a box the first stage uses that uses the last stage stands in
+// the spine row, before that stage, so no line climbs to the spine.
+func TestABoxBetweenStagesStandsOnTheSpine(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "frontend", deps("MOD-0004")...),
+		called("MOD-0002", "plugins", deps("MOD-0003")...),
+		called("MOD-0003", "libobs"),
+		called("MOD-0004", "shared", deps("MOD-0003")...),
+	}
+	m := Build(Input{Units: units, Figures: primaryStack(band("app", "MOD-0001"), band("sources", "MOD-0002"), band("render", "MOD-0003"))})
+	if f := m.Overview.axis.flow; f == nil || !f.across {
+		t.Fatalf("the flow is laid across: %+v", f)
+	}
+	bs := boxes(m.Overview)
+	if s, l := bs["MOD-0004"], bs["MOD-0003"]; s.Y != l.Y || s.X > l.X {
+		t.Errorf("shared %+v stands in the spine row before libobs %+v", s, l)
+	}
+	if n := climbs(t, m, "overview"); n != 0 {
+		t.Errorf("%d lines climb, want none", n)
+	}
+}
+
+// A line between two stages that do not stand side by side runs over the
+// spine, clear of the lines the stages send down to the boxes below.
+func TestALineBetweenStagesApartRunsOverTheSpine(t *testing.T) {
+	m := Build(Input{Units: pipeline(), Figures: pipelineStages()})
+	d := m.Overview
+	spine := boxes(d)["MOD-0001"]
+	n := 0
+	for _, r := range d.Routes {
+		if !slices.Equal(r.ends, []string{"MOD-0001", "MOD-0003"}) && !slices.Equal(r.ends, []string{"MOD-0003", "MOD-0001"}) {
+			continue
+		}
+		n++
+		for _, run := range r.runs {
+			if run[0].y > spine.Y || run[1].y > spine.Y {
+				t.Errorf("the line between config and sources runs %v, below the spine's top %d", run, spine.Y)
+			}
+		}
+	}
+	if n == 0 {
+		t.Fatal("no line between config and sources")
+	}
+}
+
+// The boxes under a spine stand in the spine's order, not in the order the
+// rows had before the stages set it: each stage's own library stands under
+// it, so the lines down run side by side.
+func TestTheRowsUnderASpineFollowItsOrder(t *testing.T) {
+	var units []model.Unit
+	var parts []store.Part[model.Layer]
+	var libs []string
+	for i := 1; i <= 4; i++ {
+		stage, lib := model.ID(fmt.Sprintf("MOD-%04d", 5-i)), model.ID(fmt.Sprintf("MOD-%04d", 10+i))
+		units = append(units, called(stage, fmt.Sprint("stage ", i), deps(lib)...), called(lib, fmt.Sprint("library ", i)))
+		parts = append(parts, band(fmt.Sprint("stage ", i), stage))
+		libs = append(libs, string(lib))
+	}
+	bs := boxes(Build(Input{Units: units, Figures: primaryStack(parts...)}).Overview)
+	for i := 1; i < len(libs); i++ {
+		if a, b := bs[libs[i-1]], bs[libs[i]]; b.X < a.X {
+			t.Errorf("library %d %+v stands left of library %d %+v, against the stages that use them", i+1, b, i, a)
+		}
+	}
+}
+
+// On an inside, a unit that joins no stage, only the world outside the
+// module, stands off the spine's row, as the overview keeps it.
+func TestAnInsideKeepsItsSpineToTheStages(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "core"),
+		inside("MOD-0002", "MOD-0001"),
+		inside("MOD-0003", "MOD-0001", rel("MOD-0002", model.DependsOn)),
+		inside("MOD-0004", "MOD-0001", rel("MOD-0003", model.DependsOn), rel("MOD-0009", model.DependsOn)),
+		inside("MOD-0006", "MOD-0001", rel("MOD-0009", model.DependsOn)),
+		called("MOD-0005", "cli", rel("MOD-0002", model.DependsOn)),
+		called("MOD-0009", "lib"),
+	}
+	m := Build(Input{Units: units, Figures: primaryStack(band("bridge", "MOD-0002"), band("manager", "MOD-0003"), band("ipc", "MOD-0004"))})
+	for _, ins := range m.Insides {
+		if ins.ID != "MOD-0001" {
+			continue
+		}
+		bs := boxes(ins.Drawing)
+		if o, s := bs["MOD-0006"], bs["MOD-0002"]; o.Y == s.Y {
+			t.Errorf("a unit tied only to the outside %+v stands in the spine's row %+v", o, s)
+		}
+		return
+	}
+	t.Fatal("no inside of MOD-0001")
+}
+
+// backToConfig is five stages in a chain that each use the first, config,
+// so every line to config runs from a later stage to an earlier one.
+func backToConfig() ([]model.Unit, []store.Part[model.Layer]) {
+	units := []model.Unit{called("MOD-0001", "config")}
+	var parts []store.Part[model.Layer]
+	parts = append(parts, band("config", "MOD-0001"))
+	for i := 2; i <= 5; i++ {
+		id := model.ID(fmt.Sprintf("MOD-%04d", i))
+		rels := deps("MOD-0001")
+		if i < 5 {
+			rels = append(rels, deps(model.ID(fmt.Sprintf("MOD-%04d", i+1)))...)
+		}
+		units = append(units, called(id, fmt.Sprint("stage ", i), rels...))
+		parts = append(parts, band(fmt.Sprint("stage ", i), id))
+	}
+	return units, parts
+}
+
+// A later stage that uses an earlier one runs back by the order the stages
+// set, which O4 judges: rule 13 leaves such lines out of its count.
+func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
+	units, parts := backToConfig()
+	vs, err := Lint(Build(Input{Units: units, Figures: primaryStack(parts...)}), "overview")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := Sum(vs).Back; n != 0 {
+		t.Errorf("%d lines counted back, want none", n)
+	}
+}
+
+// A line from a later stage to an earlier one left out of rule 13's count
+// must still be dashed: drawn solid it reads forward, and rule 13 breaks.
+func TestALineBackToAnEarlierStageDrawnSolidBreaksTheAxis(t *testing.T) {
+	units, parts := backToConfig()
+	v := views(Build(Input{Units: units, Figures: primaryStack(parts...)}))[0]
+	s, err := sheetOf(v.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	solid := 0
+	for i, w := range s.strokes {
+		if c := strings.Fields(w.class); slices.Contains(c, "back") {
+			s.strokes[i].class = strings.Join(slices.DeleteFunc(c, func(f string) bool { return f == "back" }), " ")
+			solid++
+		}
+	}
+	if solid == 0 {
+		t.Fatal("no back line drawn to make solid")
+	}
+	got := newLook(v, s).metrics.violations(v.budget)
+	if !slices.ContainsFunc(got, func(b string) bool { return strings.HasPrefix(b, "13: ") && strings.Contains(b, "drawn like forward") }) {
+		t.Errorf("%d back lines drawn solid, rule 13 says %q", solid, got)
+	}
+}
+
+// Only lines between stages run back by the stage order: on a view that
+// lays the flow out, a back line between boxes no stage holds still
+// counts against the axis.
+func TestABackLineOffTheStagesStillCountsOnAFlowView(t *testing.T) {
+	units, parts := backToConfig()
+	units[1].Relations = append(units[1].Relations, deps("MOD-0010")...)
+	units = append(units,
+		called("MOD-0010", "lib a", deps("MOD-0011")...),
+		called("MOD-0011", "lib b", deps("MOD-0012")...),
+		called("MOD-0012", "lib c", deps("MOD-0010")...))
+	vs, err := Lint(Build(Input{Units: units, Figures: primaryStack(parts...)}), "overview")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := Sum(vs).Back; n == 0 {
+		t.Error("the cycle lib a, lib b, lib c counts no line back")
+	}
+}
+
+// Down the flow, two units of one stage that stand side by side in its row
+// join straight across, as on a spine, not by a lane under the row.
+func TestTwoUnitsOfAStageDownTheFlowJoinStraightAcross(t *testing.T) {
+	id := func(i int) model.ID { return model.ID(fmt.Sprintf("MOD-%04d", i)) }
+	var units []model.Unit
+	var parts []store.Part[model.Layer]
+	for i := 1; i <= 6; i++ {
+		var rels []model.Relation
+		if i < 6 {
+			rels = deps(id(i + 1))
+		}
+		units = append(units, called(id(i), fmt.Sprintf("a stage with a name long enough to fill its box %d", i), rels...))
+		parts = append(parts, band(fmt.Sprint("stage ", i), id(i)))
+	}
+	units = append(units, called("MOD-0011", "reader", deps(id(1))...))
+	parts[0] = band("stage 1", "MOD-0011", id(1))
+	d := Build(Input{Units: units, Figures: primaryStack(parts...)}).Overview
+	if f := d.axis.flow; f == nil || f.across {
+		t.Fatalf("the flow is laid down: %+v", f)
+	}
+	for _, r := range d.Routes {
+		if slices.Equal(r.ends, []string{"MOD-0011", string(id(1))}) {
+			if len(r.runs) != 1 || r.runs[0][0].y != r.runs[0][1].y {
+				t.Errorf("the line between the two units of stage 1 runs %v, want one straight run across", r.runs)
+			}
+			return
+		}
+	}
+	t.Fatal("no line between the two units of stage 1")
 }
