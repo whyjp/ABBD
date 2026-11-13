@@ -1333,7 +1333,8 @@
         "cmd/abbd/stack.go",
         "cmd/abbd/table.go",
         "cmd/abbd/uncovered.go",
-        "cmd/abbd/understand.go"
+        "cmd/abbd/understand.go",
+        "cmd/abbd/words.go"
       ]
     },
     {
@@ -5770,6 +5771,7 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6233,8 +6235,17 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0001 ---",
+                "Code": false
+              }
+            ]
+          },
           {
             "Kind": "h",
             "Parts": [
@@ -6865,7 +6876,7 @@
                 "Code": true
               },
               {
-                "Text": "), never from code, a README, a licence or a generated mark,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": "), never from code, a README, a licence or a generated mark, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -7981,7 +7992,10 @@
                   "Ref": "IF-0001.entries.json",
                   "Title": "항목",
                   "Key": "json",
-                  "Stale": false,
+                  "Stale": true,
+                  "Changed": [
+                    "cmd/abbd/diff.go (the lines around it changed)"
+                  ],
                   "Blocks": [
                     {
                       "Kind": "p",
