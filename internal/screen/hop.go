@@ -115,3 +115,10 @@ func (l *layout) staged(r wireReq) bool {
 	f := l.axis.flow
 	return f != nil && f.across && f.stage[r.from.node] > 0 && f.stage[r.to.node] > 0
 }
+
+// over says r runs between two stages of a flow laid across that no hop
+// joins: it runs in the gap above the spine, clear of every line the
+// stages send down to the boxes below them.
+func (l *layout) over(r wireReq) bool {
+	return l.staged(r) && l.row[r.from.node] == l.row[r.to.node]
+}

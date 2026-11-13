@@ -388,3 +388,26 @@ func TestABoxBetweenStagesStandsOnTheSpine(t *testing.T) {
 		t.Errorf("%d lines climb, want none", n)
 	}
 }
+
+// A line between two stages that do not stand side by side runs over the
+// spine, clear of the lines the stages send down to the boxes below.
+func TestALineBetweenStagesApartRunsOverTheSpine(t *testing.T) {
+	m := Build(Input{Units: pipeline(), Figures: pipelineStages()})
+	d := m.Overview
+	spine := boxes(d)["MOD-0001"]
+	n := 0
+	for _, r := range d.Routes {
+		if !slices.Equal(r.ends, []string{"MOD-0001", "MOD-0003"}) && !slices.Equal(r.ends, []string{"MOD-0003", "MOD-0001"}) {
+			continue
+		}
+		n++
+		for _, run := range r.runs {
+			if run[0].y > spine.Y || run[1].y > spine.Y {
+				t.Errorf("the line between config and sources runs %v, below the spine's top %d", run, spine.Y)
+			}
+		}
+	}
+	if n == 0 {
+		t.Fatal("no line between config and sources")
+	}
+}

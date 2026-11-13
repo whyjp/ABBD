@@ -80,8 +80,10 @@ type plan struct {
 	// xs[j] passes the row between gaps j-1 and j, the last reaches the end.
 	xs []int
 	// up says the line climbs: it leaves a box's top and enters one's bottom.
-	up, same bool
-	fx, tx   int
+	// over says a line within one row runs in the gap above it, from top to
+	// top, as a line between two stages of a spine does.
+	up, same, over bool
+	fx, tx         int
 	// dep and arr are the line's departure and arrival bus, -1 for none.
 	dep, arr int
 	// ride is how many rows the line passes on its departure bus's trunk.
@@ -524,6 +526,12 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		return 1
 	}
+	sideOf := func(p *plan, isFrom bool) int {
+		if p.over {
+			return -1
+		}
+		return side(p.up, isFrom, p.same)
+	}
 	members, ends := map[slotKey][]int{}, map[slotKey][]int{}
 	leave, arrive := map[slotKey][]int{}, map[slotKey][]int{}
 	keys := make([][2]slotKey, len(reqs))
@@ -532,7 +540,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		p.dep, p.arr, p.via = -1, -1, -1
 		a, b := r.from.row, r.to.row
 		p.up, p.same = b < a, a == b
+		p.over = p.same && l.over(r)
 		switch {
+		case p.over:
+			p.gaps = []int{a}
 		case p.same:
 			p.gaps = []int{a + 1}
 		case p.up:
@@ -544,8 +555,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				p.gaps = append(p.gaps, g)
 			}
 		}
-		fk := slotKey{r.from.key, side(p.up, true, p.same)}
-		tk := slotKey{r.to.key, side(p.up, false, p.same)}
+		fk := slotKey{r.from.key, sideOf(p, true)}
+		tk := slotKey{r.to.key, sideOf(p, false)}
 		// Frame ports folded into one chip are one place: they share its
 		// slots and its buses.
 		at := func(e end, k slotKey) slotKey {
@@ -555,10 +566,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		members[at(r.from, fk)] = append(members[at(r.from, fk)], i)
 		ends[at(r.to, tk)] = append(ends[at(r.to, tk)], i)
 		// A line within one row runs on its own under it, except on a
-		// spine, whose row holds only stages and whose every box sends
-		// lines down: there a line between two stages that are not
-		// neighbours rides its box's buses, so it never leaves or reaches
-		// a box beside them (rule 4).
+		// spine, whose stages send their lines down: there a line between
+		// two stages that are not neighbours runs over the row, clear of
+		// those lines, and rides its box's buses, so it never leaves or
+		// reaches a box beside them (rule 4).
 		if p.same && !l.staged(r) {
 			continue
 		}
@@ -1607,7 +1618,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	owners := make([][]int, n+1)
 	// above[g] holds owner pairs whose first must lie above the second.
 	above := make([]map[[2]int]bool, n+1)
-	addSpan := func(g, o, a, b int, up, same bool) {
+	addSpan := func(g, o, a, b int, up, same, over bool) {
 		if spans[g] == nil {
 			spans[g] = map[int]*span{}
 			above[g] = map[[2]int]bool{}
@@ -1620,6 +1631,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		sp.lo, sp.hi = min(sp.lo, a, b), max(sp.hi, a, b)
 		switch {
+		case over:
+			sp.downs = append(sp.downs, a, b)
 		case same:
 			sp.tops = append(sp.tops, a, b)
 		case up:
@@ -1635,8 +1648,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			o := owner(i, j)
 			if p.via >= 0 && j == p.ride {
 				d := busOwner(p.dep)
-				addSpan(g, d, a, p.via, p.up, false)
-				addSpan(g, i, p.via, b, p.up, false)
+				addSpan(g, d, a, p.via, p.up, false, false)
+				addSpan(g, i, p.via, b, p.up, false, false)
 				if p.up {
 					above[g][[2]int{i, d}] = true
 				} else {
@@ -1649,11 +1662,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			if a == b && !p.same && o == i && p.arr < 0 {
 				continue
 			}
-			addSpan(g, o, a, b, p.up, p.same)
+			addSpan(g, o, a, b, p.up, p.same, p.over)
 		}
 		if p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == len(p.gaps)-1 {
 			g := p.gaps[p.ride]
-			addSpan(g, busOwner(p.arr), p.xs[p.ride], p.tx, p.up, false)
+			addSpan(g, busOwner(p.arr), p.xs[p.ride], p.tx, p.up, false, false)
 			d, a := busOwner(p.dep), busOwner(p.arr)
 			if p.up {
 				d, a = a, d
@@ -1810,9 +1823,9 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		if p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == k-1 {
 			o = busOwner(p.arr)
 		}
-		headRoom(p.gaps[k-1], o, r.to, side(p.up, false, p.same))
+		headRoom(p.gaps[k-1], o, r.to, sideOf(p, false))
 		if r.kind == "mutual" {
-			headRoom(p.gaps[0], owner(i, 0), r.from, side(p.up, true, p.same))
+			headRoom(p.gaps[0], owner(i, 0), r.from, sideOf(p, true))
 		}
 	}
 	for _, h := range ins {
@@ -1842,11 +1855,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	}
 	startOf := func(i int) pt {
 		p := &plans[i]
-		return pt{p.fx, endY(reqs[i].from, side(p.up, true, p.same))}
+		return pt{p.fx, endY(reqs[i].from, sideOf(p, true))}
 	}
 	endOf := func(i int) pt {
 		p := &plans[i]
-		return pt{p.tx, endY(reqs[i].to, side(p.up, false, p.same))}
+		return pt{p.tx, endY(reqs[i].to, sideOf(p, false))}
 	}
 
 	back := func(i int) bool {
