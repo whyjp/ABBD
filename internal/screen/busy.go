@@ -44,10 +44,12 @@ func inkStretches(s sheet) []inkStretch {
 }
 
 // axisRun is a flat or upright stretch of a drawn path: it stands at at
-// across the way it runs, from lo to hi along it.
+// across the way it runs, from lo to hi along it. way is the way its lines
+// go along it, 1 right or down and -1 left or up, or 0 when they go both.
 type axisRun struct {
 	path       int
 	at, lo, hi float64
+	way        int
 }
 
 // axisRuns are the flat and the upright stretches of s's drawn paths.
@@ -55,22 +57,78 @@ func axisRuns(s sheet) (flat, upright []axisRun) {
 	for _, p := range inkStretches(s) {
 		switch {
 		case p.a.y == p.b.y:
-			flat = append(flat, axisRun{p.path, p.a.y, math.Min(p.a.x, p.b.x), math.Max(p.a.x, p.b.x)})
+			flat = append(flat, axisRun{p.path, p.a.y, math.Min(p.a.x, p.b.x), math.Max(p.a.x, p.b.x), wayOf(s, p)})
 		case p.a.x == p.b.x:
-			upright = append(upright, axisRun{p.path, p.a.x, math.Min(p.a.y, p.b.y), math.Max(p.a.y, p.b.y)})
+			upright = append(upright, axisRun{p.path, p.a.x, math.Min(p.a.y, p.b.y), math.Max(p.a.y, p.b.y), wayOf(s, p)})
 		}
 	}
 	return flat, upright
 }
 
-// parallelInk is how far, in px, stretches of two different drawn paths
-// run along each other the same way, flat or upright, no more than
-// besideGap apart: lines doubled side by side, which a hand drawing would
-// merge into one bus, or keep apart. Each pair of stretches counts once.
-func parallelInk(s sheet) int {
+// wayOf is the way the lines on stretch p go along it: on a drawing that
+// holds each line's route, the way of every route that runs on it, 0 when
+// they go both ways; else the way its path is drawn.
+func wayOf(s sheet, p inkStretch) int {
+	if !s.routed {
+		return int(fsign(p.b.x - p.a.x + p.b.y - p.a.y))
+	}
+	way := 0
+	for _, rt := range s.routes {
+		for i := 1; i < len(rt.pts); i++ {
+			a, b := rt.pts[i-1], rt.pts[i]
+			if !collinear(a, b, p.a, p.b) {
+				continue
+			}
+			h := int(fsign(b.x - a.x + b.y - a.y))
+			if way != 0 && h != way {
+				return 0
+			}
+			way = h
+		}
+	}
+	return way
+}
+
+// collinear says straight stretches a-b and c-d lie on one flat or upright
+// line and share more than a point.
+func collinear(a, b, c, d fpt) bool {
+	switch {
+	case a.y == b.y && c.y == d.y && a.y == c.y:
+		return spanOf(a.x, b.x, c.x, d.x) > 0.5
+	case a.x == b.x && c.x == d.x && a.x == c.x:
+		return spanOf(a.y, b.y, c.y, d.y) > 0.5
+	}
+	return false
+}
+
+// pairGap is how far apart, in px, the two lanes of a two-lane road stand:
+// two lines that run opposite ways side by side, each on its own right
+// (#232). Closer than the 8px pitch of lines that merely run near each
+// other, and no closer than rule 6's minGap, the pair reads as one road
+// both ways rather than as a line drawn twice.
+const pairGap = 6.0
+
+// twoLane says runs r and q, both flat or both upright as upright says,
+// are the two lanes of a two-lane road: their lines go opposite ways, they
+// stand pairGap apart, and each keeps to its own right, below a flat lane
+// that goes right and left of an upright lane that goes down.
+func twoLane(r, q axisRun, upright bool) bool {
+	if r.way == 0 || r.way != -q.way || math.Abs(math.Abs(q.at-r.at)-pairGap) > 0.5 {
+		return false
+	}
+	right := float64(r.way)
+	if upright {
+		right = -right
+	}
+	return fsign(r.at-q.at) == right
+}
+
+// besidePairs calls f with every pair of stretches of two different drawn
+// paths that run along each other, flat or upright, no more than besideGap
+// apart, and how far they run along each other.
+func besidePairs(s sheet, f func(r, q axisRun, upright bool, along float64)) {
 	flat, upright := axisRuns(s)
-	total := 0.0
-	for _, rs := range [][]axisRun{flat, upright} {
+	for k, rs := range [][]axisRun{flat, upright} {
 		sort.Slice(rs, func(i, j int) bool { return rs[i].at < rs[j].at })
 		for i, r := range rs {
 			for _, q := range rs[i+1:] {
@@ -78,7 +136,61 @@ func parallelInk(s sheet) int {
 					break
 				}
 				if q.path != r.path {
-					total += math.Max(0, math.Min(r.hi, q.hi)-math.Max(r.lo, q.lo))
+					if o := math.Min(r.hi, q.hi) - math.Max(r.lo, q.lo); o > 0 {
+						f(r, q, k == 1, o)
+					}
+				}
+			}
+		}
+	}
+}
+
+// parallelInk is how far, in px, stretches of two different drawn paths
+// run along each other the same way, flat or upright, no more than
+// besideGap apart: lines doubled side by side, which a hand drawing would
+// merge into one bus, or keep apart. Each pair of stretches counts once.
+// The two lanes of a two-lane road do not count: they stand side by side on
+// purpose, at a gap and side twoLaneOff holds them to.
+func parallelInk(s sheet) int {
+	total := 0.0
+	besidePairs(s, func(r, q axisRun, upright bool, along float64) {
+		if !twoLane(r, q, upright) {
+			total += along
+		}
+	})
+	return int(math.Round(total))
+}
+
+// twoLaneOff is how far, in px, lines that run opposite ways run side by
+// side, no more than besideGap apart, and not as a two-lane road: at
+// another gap than pairGap, or each on the other's right.
+func twoLaneOff(s sheet) int {
+	total := 0.0
+	besidePairs(s, func(r, q axisRun, upright bool, along float64) {
+		if r.way != 0 && r.way == -q.way && r.at != q.at && !twoLane(r, q, upright) {
+			total += along
+		}
+	})
+	return int(math.Round(total))
+}
+
+// oppositeShared is how far, in px, two lines run on one track opposite
+// ways: ink a reader takes to run one way, which joins places no line
+// joins. It reads each line's route where the drawing holds them, else
+// its drawn paths.
+func oppositeShared(s sheet) int {
+	ws := s.routes
+	if !s.routed {
+		ws = s.strokes
+	}
+	total := 0.0
+	for i, a := range ws {
+		for _, b := range ws[i+1:] {
+			for _, p := range stretches(a.pts) {
+				for _, q := range stretches(b.pts) {
+					if collinear(p[0], p[1], q[0], q[1]) && dirOf(p[0], p[1]) == dirOf(q[1], q[0]) {
+						total += spanOf(p[0].x+p[0].y, p[1].x+p[1].y, q[0].x+q[0].y, q[1].x+q[1].y)
+					}
 				}
 			}
 		}

@@ -28,6 +28,43 @@ func TestParallelInkCountsLinesSideBySide(t *testing.T) {
 	}
 }
 
+// A line from A down to B and one from B back up to A, 6px apart with each
+// on its own right, are a two-lane road (#232): no parallel ink and none
+// off the road. At the lane pitch of 8px, or each on the other's right,
+// they are a line drawn twice, and two lines down 6px apart still are.
+func TestTwoLaneRoadIsNoParallelInk(t *testing.T) {
+	boxes := []string{"A 40 0 80 20", "B 40 140 80 20"}
+	rels := [][2]string{{"A", "B"}, {"B", "A"}}
+	down := func(x int) string { return fmt.Sprintf(`<path class="w contract" d="M%d 20 V140"/>`, x) }
+	up := func(x int) string { return fmt.Sprintf(`<path class="w contract back" d="M%d 140 V20"/>`, x) }
+	for _, c := range []struct {
+		name, body string
+		ink, off   int
+	}{
+		{"two-lane road", down(76) + up(82), 0, 0},
+		{"at the lane pitch", down(76) + up(84), 120, 120},
+		{"each on the other's right", down(82) + up(76), 120, 120},
+		{"two lines down", down(76) + down(82), 120, 0},
+	} {
+		l := lookAt(t, boxes, c.body, rels)
+		if got := parallelInk(l.s); got != c.ink {
+			t.Errorf("%s: parallel ink %d, want %d", c.name, got, c.ink)
+		}
+		if got := twoLaneOff(l.s); got != c.off {
+			t.Errorf("%s: two-lane ink off the road %d, want %d", c.name, got, c.off)
+		}
+	}
+}
+
+// The two lanes of a two-lane road stand closer than the pitch of lines
+// that run near each other, and no closer than rule 6 lets two lines run,
+// and the renderer draws them where the lint looks for them.
+func TestTwoLaneGapIsUnderTheLanePitch(t *testing.T) {
+	if !(pairGap < lane && pairGap >= minGap && float64(twoLaneGap) == pairGap) {
+		t.Errorf("two-lane gap: renderer %dpx, lint %gpx, want equal, under the lane pitch %dpx and at least rule 6's %gpx", twoLaneGap, pairGap, lane, minGap)
+	}
+}
+
 // Three drawn lines that drop side by side within 30px are lines abreast
 // for as far as all three run together; two lines, or three spread wider,
 // are not, and two groups of three apart count twice.

@@ -8,9 +8,11 @@ ceilings:
     against_axis: 2
     detours: 0
     excess_turns: 28
+    opposite_shared: 386
     overflow: 0
     placement: 10
     tees: 1
+    two_lane_off: 0
     weighed: 37
 pages:
     overview:
@@ -27,3 +29,4 @@ pages:
         label_repeats: 0
         labelled: 5
         parallel_ink: 0
+        two_lane_off: 0

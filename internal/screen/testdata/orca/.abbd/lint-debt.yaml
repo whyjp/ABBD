@@ -8,9 +8,11 @@ ceilings:
     against_axis: 92
     detours: 38
     excess_turns: 487
+    opposite_shared: 14605
     overflow: 6
     placement: 122
     tees: 13
+    two_lane_off: 80
     weighed: 1208
 debt:
     MOD-0007 mobile app (Expo):
@@ -32,14 +34,15 @@ pages:
         combs: 0
         counts: 14
         density: 48
-        doglegs: 5
+        doglegs: 4
         dots: 8
         false_joins: 0
         label_repeats: 0
         labelled: 5
-        parallel_ink: 493
+        parallel_ink: 124
+        two_lane_off: 0
     MOD-0098 src/:
-        abreast: 204
+        abreast: 202
         against_axis: 5
         against_axis_ink: 1862
         colour_switches: 43
@@ -51,4 +54,5 @@ pages:
         false_joins: 0
         label_repeats: 0
         labelled: 4
-        parallel_ink: 254
+        parallel_ink: 0
+        two_lane_off: 0

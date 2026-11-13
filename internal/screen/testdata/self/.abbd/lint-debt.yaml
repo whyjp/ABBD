@@ -8,9 +8,11 @@ ceilings:
     against_axis: 26
     detours: 8
     excess_turns: 163
+    opposite_shared: 4430
     overflow: 0
     placement: 40
     tees: 4
+    two_lane_off: 66
     weighed: 345
 debt:
     MOD-0030 internal/model:
@@ -30,6 +32,7 @@ pages:
         label_repeats: 0
         labelled: 4
         parallel_ink: 0
+        two_lane_off: 0
     MOD-0041 internal/store:
         abreast: 0
         against_axis: 3
@@ -44,6 +47,7 @@ pages:
         label_repeats: 4
         labelled: 7
         parallel_ink: 0
+        two_lane_off: 0
     overview:
         abreast: 0
         against_axis: 3
@@ -57,4 +61,5 @@ pages:
         false_joins: 0
         label_repeats: 0
         labelled: 0
-        parallel_ink: 227
+        parallel_ink: 62
+        two_lane_off: 0
