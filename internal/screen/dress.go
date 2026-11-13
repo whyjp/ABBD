@@ -22,7 +22,7 @@ import (
 
 // planned are the ways a coupling arises without a call or data at run
 // time.
-var planned = map[model.Via]bool{"convention": true, "import": true, "trait": true, "macro": true, "build-feature": true}
+var planned = map[model.Via]bool{"convention": true, "import": true, "trait": true, "macro": true, "build-feature": true, "link": true}
 
 const (
 	// hubLines is the fewest lines that make a box a hub, and hubOver how
@@ -199,8 +199,19 @@ func classNumbers(cls, p string) []int {
 	return out
 }
 
-// role is what a box is in its view beyond its kind.
+// role is what a box is in its view beyond its kind: the build artifact a
+// module is, then its place in the view.
 func role(b Box) string {
+	if p := standing(b); b.Artifact != "" && p != "" {
+		return b.Artifact + " · " + p
+	} else if b.Artifact != "" {
+		return b.Artifact
+	}
+	return standing(b)
+}
+
+// standing is a box's part in its view: its hub, its entry, or outside.
+func standing(b Box) string {
 	switch {
 	case b.Role == "hub":
 		return "허브"
@@ -229,7 +240,7 @@ func (d *Drawing) subtitle(b *Box) {
 	}
 	s := kind
 	switch {
-	case r == "외부":
+	case standing(*b) == "외부":
 		s = r + " · " + kind
 	case r != "":
 		s += " · " + r

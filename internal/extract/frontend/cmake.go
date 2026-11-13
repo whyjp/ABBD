@@ -51,11 +51,11 @@ type cmakeTarget struct {
 	} `json:"backtraceGraph"`
 }
 
-// targetArtifacts maps a CMake target type to what the build makes.
-// UTILITY targets build nothing and are left out.
+// targetArtifacts maps a CMake target type to what the build makes. Object,
+// interface and utility targets make nothing a host or a user runs, and are
+// left out.
 var targetArtifacts = map[string]model.Artifact{
-	"EXECUTABLE": "exe", "STATIC_LIBRARY": "static", "SHARED_LIBRARY": "shared",
-	"MODULE_LIBRARY": "module", "OBJECT_LIBRARY": "object", "INTERFACE_LIBRARY": "interface",
+	"EXECUTABLE": "exe", "STATIC_LIBRARY": "static", "SHARED_LIBRARY": "shared", "MODULE_LIBRARY": "module",
 }
 
 // notBuilt are directories whose targets serve tests and samples, the
@@ -147,21 +147,18 @@ func cmake(t tree) (extract.Doc, error) {
 		}
 		byID[tg.ID] = g
 	}
-	refs := map[*group]string{}
-	taken := map[string]bool{}
+	var names [][]string
 	for _, g := range groups {
-		slices.Sort(g.names)
-		name := commonName(g.names)
-		if taken[name] {
-			name = g.names[0]
-		}
-		taken[name] = true
-		refs[g] = "cmake:" + name
+		names = append(names, g.names)
+	}
+	refs := map[*group]string{}
+	for i, r := range moduleRefs(names) {
+		refs[groups[i]] = r
 	}
 	var doc extract.Doc
 	for _, g := range groups {
-		anchors := model.SortAnchors(g.anchors)
-		doc.Units = append(doc.Units, extract.DocUnit{Ref: refs[g], Kind: model.Module, Name: strings.TrimPrefix(refs[g], "cmake:"), Anchors: anchors, Artifacts: model.SortArtifacts(g.artifacts)})
+		slices.Sort(g.artifacts)
+		doc.Units = append(doc.Units, extract.DocUnit{Ref: refs[g], Kind: model.Module, Name: strings.TrimPrefix(refs[g], "cmake:"), Anchors: model.SortAnchors(g.anchors), Artifacts: slices.Compact(g.artifacts)})
 		seen := map[string]bool{}
 		for _, id := range g.deps {
 			to, ok := byID[id]
@@ -210,23 +207,53 @@ func (t tree) defined(tg cmakeTarget) (string, bool) {
 	return t.rel(p)
 }
 
-// commonName is the words the names share at their start, such as libzstd
-// for libzstd_static and libzstd_shared, or the first name when they share
-// too little.
-func commonName(names []string) string {
-	split := func(s string) []string {
-		return strings.FieldsFunc(s, func(r rune) bool { return r == '_' || r == '-' || r == '.' })
+// moduleRefs names each module by its target, or a module of several
+// targets by the words their names share, such as libzstd for
+// libzstd_static and libzstd_shared. CMake keeps target names unique, so a
+// shared name that is also a target's, or another module's, falls back to
+// the module's first target name. The result depends only on the names,
+// never on the order CMake lists the targets in.
+func moduleRefs(names [][]string) []string {
+	targets := map[string]bool{}
+	order := make([]int, len(names))
+	for i, ns := range names {
+		slices.Sort(ns)
+		for _, n := range ns {
+			targets[n] = true
+		}
+		order[i] = i
 	}
-	common := split(names[0])
+	slices.SortFunc(order, func(a, b int) int { return strings.Compare(names[a][0], names[b][0]) })
+	refs := make([]string, len(names))
+	taken := map[string]bool{}
+	for _, i := range order {
+		name := names[i][0]
+		if c := commonName(names[i]); c != name && !targets[c] && !taken[c] {
+			name = c
+		}
+		taken[name] = true
+		refs[i] = "cmake:" + name
+	}
+	return refs
+}
+
+// commonName is the words the names share at their start, spelled as the
+// first name spells them, or the first name when they share too little.
+func commonName(names []string) string {
+	sep := func(c byte) bool { return c == '_' || c == '-' || c == '.' }
+	edge := func(s string, i int) bool { return i == len(s) || sep(s[i]) }
+	end := len(names[0])
 	for _, n := range names[1:] {
-		w := split(n)
 		i := 0
-		for i < len(common) && i < len(w) && common[i] == w[i] {
+		for i < min(end, len(n)) && names[0][i] == n[i] {
 			i++
 		}
-		common = common[:i]
+		for i > 0 && !(edge(names[0], i) && edge(n, i)) {
+			i--
+		}
+		end = i
 	}
-	if s := strings.Join(common, "_"); len(names) > 1 && len(s) >= 3 {
+	if s := strings.TrimRight(names[0][:end], "_-."); len(names) > 1 && len(s) >= 3 {
 		return s
 	}
 	return names[0]

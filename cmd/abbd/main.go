@@ -254,7 +254,7 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.supplement, "supplement", "", "semantic supplement from the setup readers")
 	},
 	"via": func(fs *flag.FlagSet, o *opts) {
-		fs.StringVar(&o.via, "via", "", "how the coupling arises: "+model.ViaList())
+		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention, call, load, spawn or link")
 	},
 	"phrase": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.phrase, "phrase", "", "what crosses the coupling in a few words, such as a route, a message or a query")
@@ -594,18 +594,18 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 func (e env) runScript(argv []string, env ...string) ([]byte, error) {
 	var out, errb bytes.Buffer
 	name := argv[0]
-	// A registered abbd extract runs the abbd that syncs, never another one
-	// on the PATH whose front-ends read differently.
+	// The script, and a registered abbd extract, run the abbd that syncs,
+	// never another one on the PATH whose front-ends read differently.
+	self, err := os.Executable()
+	if err != nil {
+		return nil, fmt.Errorf("find the running abbd: %w", err)
+	}
 	if name == "abbd" {
-		if self, err := os.Executable(); err == nil {
-			name = self
-		}
+		name = self
 	}
 	cmd := exec.Command(name, argv[1:]...)
 	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
-	if len(env) > 0 {
-		cmd.Env = append(os.Environ(), env...)
-	}
+	cmd.Env = append(append(os.Environ(), "ABBD_BIN="+self), env...)
 	if err := cmd.Run(); err != nil {
 		return nil, fmt.Errorf("extraction script failed: %w\n%s", err, errb.String())
 	}

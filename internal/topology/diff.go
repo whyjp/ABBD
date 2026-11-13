@@ -18,7 +18,8 @@ type Ref struct {
 }
 
 // Changed is one field of a unit that changed: its name, its parent, its
-// purpose or its responsibility, with the origin of the value now.
+// purpose, its responsibility or the build artifact it is, with the origin
+// of the value now.
 type Changed struct {
 	Ref
 	Field  string       `json:"field"`
@@ -189,26 +190,20 @@ func (d *Diff) fields(old, u model.Unit) {
 	np, no := val(u.Purpose)
 	or, _ := val(old.Responsibility)
 	nr, ro := val(u.Responsibility)
+	oa, _ := val(old.Artifact)
+	na, ao := val(u.Artifact)
 	for _, c := range []Changed{
 		{Field: "name", Old: old.Name.Value, New: u.Name.Value, Origin: u.Name.Origin},
 		{Field: "parent", Old: string(old.Parent), New: string(u.Parent), Origin: u.ParentOrigin},
 		{Field: "purpose", Old: op, New: np, Origin: no},
 		{Field: "responsibility", Old: or, New: nr, Origin: ro},
-		{Field: "artifacts", Old: artifacts(old), New: artifacts(u), Origin: model.Extracted},
+		{Field: "artifact", Old: oa, New: na, Origin: ao},
 	} {
 		if c.Old != c.New {
 			c.Ref = ref(u)
 			d.Changed = append(d.Changed, c)
 		}
 	}
-}
-
-func artifacts(u model.Unit) string {
-	s := make([]string, len(u.Artifacts))
-	for i, a := range u.Artifacts {
-		s[i] = string(a)
-	}
-	return strings.Join(s, ", ")
 }
 
 // contract notes how one contract changed: its signature, its entries one

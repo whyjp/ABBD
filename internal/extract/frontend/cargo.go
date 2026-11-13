@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/extract"
@@ -27,10 +28,12 @@ type cargoMetadata struct {
 }
 
 // crateArtifacts maps the cargo target kinds a crate ships to what the
-// build makes. Tests, examples, benches and build scripts are left out.
+// build makes. A plain library or a proc-macro is code other crates compile
+// in, so it stays a module that builds no artifact of its own. Tests,
+// examples, benches and build scripts are left out.
 var crateArtifacts = map[string]model.Artifact{
-	"bin": "exe", "lib": "lib", "rlib": "lib", "staticlib": "static",
-	"cdylib": "shared", "dylib": "shared", "proc-macro": "module",
+	"bin": "exe", "staticlib": "static", "cdylib": "cdylib", "dylib": "shared",
+	"lib": "", "rlib": "", "proc-macro": "",
 }
 
 // cargo makes each workspace member a module and each dependency of one
@@ -67,7 +70,9 @@ func cargo(t tree) (extract.Doc, error) {
 				if k == "proc-macro" {
 					procMacro[p.Name] = true
 				}
-				u.Artifacts = append(u.Artifacts, a)
+				if a != "" && !slices.Contains(u.Artifacts, a) {
+					u.Artifacts = append(u.Artifacts, a)
+				}
 				// The crate's top source directory, never the crate's own
 				// directory, which is the whole tree for a root crate.
 				if r, err := filepath.Rel(dir, tg.SrcPath); err == nil && !strings.HasPrefix(r, "..") {

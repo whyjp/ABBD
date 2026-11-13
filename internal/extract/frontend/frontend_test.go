@@ -75,10 +75,10 @@ func TestCargoWorkspaceMembersAreModulesAndTheirDependenciesRelations(t *testing
 	d := run(t, "cargo", "cargo")
 	for ref, want := range map[string][]model.Artifact{
 		"cargo:app":          {"exe"},
-		"cargo:fixture-core": {"lib", "shared"},
-		"cargo:macros":       {"module"},
+		"cargo:fixture-core": {"cdylib"},
+		"cargo:macros":       nil,
 	} {
-		if got := model.SortArtifacts(unit(t, d, ref).Artifacts); !slices.Equal(got, want) {
+		if got := unit(t, d, ref).Artifacts; !slices.Equal(got, want) {
 			t.Errorf("%s builds %v, want %v", ref, got, want)
 		}
 	}
@@ -120,7 +120,47 @@ func TestCMakeTargetsAreModulesCarryingTheirArtifactAndLinks(t *testing.T) {
 	}
 }
 
-func TestBuildsOfOneSourceSetAreOneModule(t *testing.T) {
+func TestAStaticAndASharedBuildOfOneLibraryAreOneModule(t *testing.T) {
+	d := run(t, "cmake", "cmake-variants")
+	lib := unit(t, d, "cmake:my-lib")
+	if !slices.Equal(lib.Artifacts, []model.Artifact{"shared", "static"}) {
+		t.Errorf("my-lib builds %v, want shared and static", lib.Artifacts)
+	}
+	want := []model.Anchor{{Path: "CMakeLists.txt", Symbol: "my-lib-shared"}, {Path: "CMakeLists.txt", Symbol: "my-lib-static"}, {Path: "mylib"}}
+	if !slices.Equal(lib.Anchors, want) {
+		t.Errorf("my-lib anchors %v, want %v", lib.Anchors, want)
+	}
+	var refs []string
+	for _, u := range d.Units {
+		refs = append(refs, u.Ref)
+	}
+	if want := []string{"cmake:app", "cmake:my-lib", "cmake:my_lib"}; !slices.Equal(refs, want) {
+		t.Errorf("units %v, want %v", refs, want)
+	}
+	if got := relations(d); got["cmake:app -> cmake:my-lib"] != "link" || got["cmake:app -> cmake:my_lib"] != "link" {
+		t.Errorf("relations %v, want app linking both libraries", got)
+	}
+}
+
+func TestAModuleNameNeverTakesAnotherTargetsName(t *testing.T) {
+	merged := []string{"my_lib_static", "my_lib_shared"}
+	for _, names := range [][][]string{
+		{slices.Clone(merged), {"my_lib"}},
+		{{"my_lib"}, slices.Clone(merged)},
+	} {
+		got := moduleRefs(names)
+		byFirst := map[string]string{}
+		for i, ns := range names {
+			byFirst[ns[0]] = got[i]
+		}
+		want := map[string]string{"my_lib": "cmake:my_lib", "my_lib_shared": "cmake:my_lib_shared"}
+		if !maps.Equal(byFirst, want) {
+			t.Errorf("refs %v, want %v whatever order CMake lists the targets in", byFirst, want)
+		}
+	}
+	if got := moduleRefs([][]string{{"zstd_a", "zstd_b"}, {"zstd_c", "zstd_d"}}); got[0] == got[1] {
+		t.Errorf("two modules share the ref %s", got[0])
+	}
 	if got := commonName([]string{"libzstd_shared", "libzstd_static"}); got != "libzstd" {
 		t.Errorf("got %q, want libzstd", got)
 	}

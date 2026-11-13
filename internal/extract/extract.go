@@ -36,11 +36,11 @@ type DocUnit struct {
 	Purpose        string           `json:"purpose,omitempty"`
 	Responsibility string           `json:"responsibility,omitempty"`
 	Digest         string           `json:"digest,omitempty"`
+	Artifacts      []model.Artifact `json:"artifacts,omitempty"`
 	Parent         string           `json:"parent,omitempty"`
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
 	Entries        []model.Entry    `json:"entries,omitempty"`
-	Artifacts      []model.Artifact `json:"artifacts,omitempty"`
 }
 
 // DocRelation is one relation of the extraction JSON, naming units by ref.
@@ -99,8 +99,8 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
+	Artifact       *model.Fact
 	Entries        []model.Entry
-	Artifacts      []model.Artifact
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
 	// parent is the script's claim; a supplement's becomes a Placement.
@@ -138,9 +138,6 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		}
 		if foreignParents && len(u.Entries) > 0 {
 			return Result{}, fmt.Errorf("supplement unit %q lists entries; entries are what the code spells, so the extraction script reports them", u.Name.Value)
-		}
-		if foreignParents && len(u.Artifacts) > 0 {
-			return Result{}, fmt.Errorf("supplement unit %q lists artifacts; the build system's model says what it makes, so the extraction script reports them", u.Name.Value)
 		}
 	}
 	for _, u := range units {
@@ -276,17 +273,23 @@ func parseUnits(r io.Reader) ([]Unit, Doc, error) {
 			f := model.Said(model.Script, ru.Signature)
 			sig = &f
 		}
+		for j, a := range ru.Artifacts {
+			if err := a.Validate(); err != nil {
+				return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+			}
+			if slices.Contains(ru.Artifacts[:j], a) {
+				return nil, raw, fmt.Errorf("unit %d (%s): artifact %s is listed twice", i, ru.Name, a)
+			}
+		}
+		if len(ru.Artifacts) > 0 && ru.Kind != model.Module {
+			return nil, raw, fmt.Errorf("unit %d (%s): only a module is a build artifact", i, ru.Name)
+		}
 		es, err := normalizeEntries(ru.Kind, ru.Entries)
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
 		}
-		artifacts := model.SortArtifacts(ru.Artifacts)
-		if err := model.ValidateArtifacts(ru.Kind, artifacts); err != nil {
-			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
-		}
 		out = append(out, Unit{
 			Key:            cmp.Or(ru.Ref, ru.Key),
-			Artifacts:      artifacts,
 			Entries:        es,
 			Signature:      sig,
 			Kind:           ru.Kind,
@@ -295,6 +298,7 @@ func parseUnits(r io.Reader) ([]Unit, Doc, error) {
 			Purpose:        inferred(ru.Purpose),
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
+			Artifact:       said(ru.Artifacts),
 			Parent:         ru.Parent,
 			ParentEvidence: parentEvidence,
 			Evidence:       evidence,
@@ -359,6 +363,15 @@ func normalizePath(p string) (string, error) {
 
 // Extraction reads code, so any statement of intent it makes is a guess, and
 // it ranks with the supplement's.
+// said is the set of build artifacts the script read, or nil for none.
+func said(as []model.Artifact) *model.Fact {
+	if len(as) == 0 {
+		return nil
+	}
+	f := model.Said(model.Script, model.ArtifactSet(as))
+	return &f
+}
+
 func inferred(v string) *model.Fact {
 	if v == "" {
 		return nil
@@ -389,7 +402,8 @@ func (d Doc) Encode(w io.Writer) error {
 	slices.SortFunc(d.Units, func(a, b DocUnit) int { return cmp.Compare(cmp.Or(a.Ref, a.Key), cmp.Or(b.Ref, b.Key)) })
 	for i := range d.Units {
 		slices.SortFunc(d.Units[i].Anchors, func(a, b model.Anchor) int { return cmp.Compare(a.Key(), b.Key()) })
-		d.Units[i].Artifacts = model.SortArtifacts(d.Units[i].Artifacts)
+		slices.Sort(d.Units[i].Artifacts)
+		d.Units[i].Artifacts = slices.Compact(d.Units[i].Artifacts)
 	}
 	slices.SortFunc(d.Relations, func(a, b DocRelation) int {
 		return cmp.Or(cmp.Compare(a.From, b.From), cmp.Compare(a.To, b.To), cmp.Compare(a.Kind, b.Kind), cmp.Compare(a.Via, b.Via))
