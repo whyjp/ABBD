@@ -132,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -5963,7 +5963,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6469,7 +6468,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7200,7 +7199,31 @@
                 "Code": true
               },
               {
-                "Text": "). 명령은 flow나 table에 붙은 표시와, 이미 다른 stack이 표시된 상태의 두 번째 표시를 거부한다. 병합으로 두 stack이 표시되면 status가 ",
+                "Text": "). 명령은 flow나 table에 붙은 표시와, 이미 다른 stack이 표시된 상태의 두 번째 표시를 거부한다. ",
+                "Code": false
+              },
+              {
+                "Text": "primary",
+                "Code": true
+              },
+              {
+                "Text": "를 뺀 초안은 저장된 표시를 그대로 두고 그렇게 했다고 알리며, 사람이 말한 stack의 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "--source",
+                "Code": true
+              },
+              {
+                "Text": "를 단 ",
+                "Code": false
+              },
+              {
+                "Text": "primary: false",
+                "Code": true
+              },
+              {
+                "Text": "로만 지워진다. 병합으로 두 stack이 표시되면 status가 ",
                 "Code": false
               },
               {
@@ -7208,7 +7231,23 @@
                 "Code": true
               },
               {
-                "Text": " 줄을 내고 실패한다.",
+                "Text": " 줄을 내고 실패하고, 손으로 flow나 table에 남긴 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "warning:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 이름만 댄다. 주 흐름 stack에는 breach를 세지 않으므로 stack 명령과 status는 그 stack의 거꾸로 쓰는 관계를 보고하지 않는다(",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/stack.go",
+                "Code": true
+              },
+              {
+                "Text": ").",
                 "Code": false
               }
             ]
@@ -23941,7 +23980,15 @@
                 "Code": true
               },
               {
-                "Text": ", 단계 번호, 단계 수, 단계 이름을 준다. graph.json의 ",
+                "Text": ", 단계 번호, 단계 수, 단계 이름을 준다. 단계가 직접 이름 댄 unit은 흐름을 놓지 않는 뷰, 곧 그것을 품은 상자의 안쪽에서도 같은 단계로 순위를 받는다(",
+                "Code": false
+              },
+              {
+                "Text": "PrimaryFlow.stageOf",
+                "Code": true
+              },
+              {
+                "Text": "). 단계 띠(zone)는 그려진 띠 수가 아니라 단계 번호를 달고, 초점 뷰는 흐름을 놓지 않고 전체 뷰의 왼쪽-오른쪽 순서를 seat로 이어받는다. graph.json의 ",
                 "Code": false
               },
               {
@@ -23957,7 +24004,7 @@
                 "Code": true
               },
               {
-                "Text": "는 주 흐름을 먼저 놓아 리드가 단계 사이 걸음을 쉬는 상태에서 번호로 그린다. 척추에서 이웃한 두 단계 상자 사이 선은 버스를 타지 않고 마주 보는 옆변 사이 곧은 홉으로 그린다(",
+                "Text": "는 주 흐름을 먼저 놓고, 흐름을 놓는 뷰의 리드는 다른 저장된 흐름보다 이것을 따르며 첫 단계 상자에서 시작한다. 번호는 리드 위 상자에서 다음 단계 상자로 가는 머리 하나짜리 선에만 붙으므로 모든 번호가 단계 순서로 읽힌다. 단계 순서를 거스르는 선이나 머리 둘인 선으로만 닿는 단계는 번호 없이 리드에 들고 리드는 거기서 이어간다. 척추에서 이웃한 두 단계 상자 사이 선은 버스를 타지 않고 마주 보는 옆변 사이 곧은 홉으로 그린다(",
                 "Code": false
               },
               {
@@ -23973,7 +24020,15 @@
                 "Code": true
               },
               {
-                "Text": "만큼 떨어진 제 차선을 가지므로 반대 방향 선은 합쳐지지 않는다.",
+                "Text": "만큼 떨어진 제 차선을 가지므로 반대 방향 선은 합쳐지지 않는다. 서로 쓰는 이웃 단계는 머리 둘인 선 하나 대신 방향마다 홉 하나를 받아, 단계 순서의 홉은 머리 하나를 갖고 반대 홉은 점선으로 거슬러 간다. 검사기의 ",
+                "Code": false
+              },
+              {
+                "Text": "stubs",
+                "Code": true
+              },
+              {
+                "Text": "는 점선 여부가 같은 선들만 한 stub으로 합치므로, 실선 stub에서 갈라지는 점선은 갈림으로 센다.",
                 "Code": false
               }
             ]
@@ -26849,7 +26904,7 @@
                 "Code": false
               },
               {
-                "Text": "model.Breaches",
+                "Text": "store.Breaches",
                 "Code": true
               },
               {
@@ -26861,7 +26916,15 @@
                 "Code": true
               },
               {
-                "Text": "으로 앉아 양 끝, 관계의 동사, 더 높은 층을 이름 댄다. 더 높은 층의 계약을 제공하는 낮은 단위는 칩을 보이지 않는다. 스택의 ",
+                "Text": "으로 앉아 양 끝, 관계의 동사, 더 높은 층을 이름 댄다. 더 높은 층의 계약을 제공하는 낮은 단위는 칩을 보이지 않는다. 주 흐름으로 표시된 스택은 위반이 없고 ",
+                "Code": false
+              },
+              {
+                "Text": "Primary",
+                "Code": true
+              },
+              {
+                "Text": "를 달아 페이지가 주 흐름이라 말한다. 스택의 ",
                 "Code": false
               },
               {
@@ -29334,7 +29397,15 @@
                 "Code": true
               },
               {
-                "Text": "를 읽고 켜졌을 때만 쓰므로, 표시 없는 파일의 바이트는 그대로다. ",
+                "Text": "를 읽고 켜졌을 때만 쓰므로, 표시 없는 파일의 바이트는 그대로다. 초안이 이 키를 아예 적었는지는 ",
+                "Code": false
+              },
+              {
+                "Text": "MarkSaid",
+                "Code": true
+              },
+              {
+                "Text": "가 기억하므로, 키를 뺀 초안은 저장된 표시를 지우지 않는다. ",
                 "Code": false
               },
               {
@@ -29350,7 +29421,15 @@
                 "Code": true
               },
               {
-                "Text": "는 표시된 키를 나열한다.",
+                "Text": "는 표시될 수 있는 종류(stack)에서만 표시된 키를 나열한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Breaches",
+                "Code": true
+              },
+              {
+                "Text": "는 stack이 거꾸로 쓰는 관계를 주되, 주 흐름으로 표시된 stack에는 아무것도 주지 않는다. 뒤 단계가 앞 단계를 쓰는 것은 흐름이 도는 방식이기 때문이다.",
                 "Code": false
               }
             ]
