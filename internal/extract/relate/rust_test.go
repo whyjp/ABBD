@@ -174,7 +174,9 @@ func TestRustRefusesAWorkspaceThatSilencesInactiveCode(t *testing.T) {
 	if err == nil {
 		t.Fatal("relations came back from a workspace whose server reports no inactive code")
 	}
-	for _, want := range []string{"rust-analyzer", "lib.rs", "inactive"} {
+	// The files are read in parallel, so whichever false cfg is checked
+	// first, in app/src/lib.rs or app/src/gates.rs, is the one named.
+	for _, want := range []string{"rust-analyzer", "app/src/", "inactive"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("error %q does not name %q", err, want)
 		}
