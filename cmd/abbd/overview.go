@@ -10,31 +10,14 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// overview stores the overview's zones and lines from a draft, or prints the
-// stored ones as a draft when no FILE is given. Every check of a draft
+// overview stores the overview's zones and lines from a draft, or prints a
+// draft to write one from when no FILE is given (overviewDraft). Every check of a draft
 // happens here, as it does for a figure, so the store and the screen trust
 // what they read. The primary flow is the stack marked primary, stored with
 // abbd stack.
 func (e env) overview(args []string) error {
 	if len(args) == 0 {
-		prev, err := e.st.LoadOverview()
-		switch {
-		case err != nil:
-			return err
-		case prev.File == "":
-			return fmt.Errorf("there is no overview; store one with abbd overview FILE")
-		case !prev.Known:
-			return fmt.Errorf("%s %s, so it is no overview; store one with abbd overview FILE", prev.File, prev.Why)
-		}
-		for _, l := range overviewStale(prev, nil) {
-			fmt.Fprintln(e.stderr, "abbd:", l.text)
-		}
-		b, err := store.OverviewDraft(prev)
-		if err != nil {
-			return err
-		}
-		_, err = e.stdout.Write(b)
-		return err
+		return e.overviewDraft()
 	}
 	text, err := e.readInput(args[0], "pass an overview draft: frontmatter with zones and lines, and a caption")
 	if err != nil {
@@ -179,14 +162,16 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 
 // overviewWords are the words explain prints for a unit's place in the
 // overview, by the project's language: Korean, else English.
-var overviewWords = map[bool]struct{ stage, zone string }{
-	true:  {"주 흐름 %s %d/%d단계 %s", "구역 %s"},
-	false: {"primary flow %s, stage %d of %d: %s", "zone: %s"},
+var overviewWords = map[bool]struct{ stage, through, zone string }{
+	true:  {"주 흐름 %s %d/%d단계 %s", ", 안의 %s로", "구역 %s"},
+	false: {"primary flow %s, stage %d of %d: %s", ", through %s inside it", "zone: %s"},
 }
 
 // explainOverview prints the stage of the primary flow, the stack marked
 // primary, and the zone of the overview that hold the unit, itself or
-// through a unit that holds it.
+// through a unit that holds it. A unit no stage holds stands, as the
+// overview draws its box, at the first stage that names a unit inside it,
+// and explain names that unit.
 func (e env) explainOverview(units []model.Unit, id model.ID) error {
 	figs, err := e.st.LoadFigures()
 	if err != nil {
@@ -209,6 +194,8 @@ func (e env) explainOverview(units []model.Unit, id model.ID) error {
 		layers := p.Claims()
 		if n, ok := model.Holders(layers, units)[id]; ok {
 			fmt.Fprintf(e.stdout, words.stage+"\n", p.Key, n, len(layers), layers[n-1].Name)
+		} else if n, inner := model.StandsAt(layers, units, id); n > 0 {
+			fmt.Fprintf(e.stdout, words.stage+words.through+"\n", p.Key, n, len(layers), layers[n-1].Name, inner)
 		}
 	}
 	if n, ok := model.Holders(store.ClaimsOf(o.Zones), units)[id]; ok {
