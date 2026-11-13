@@ -89,7 +89,7 @@ func TestForgetRemovesANoteAndSaysWhatItWas(t *testing.T) {
 	p.want(1, "notes: 5 slot note(s), 1 STALE, 2 orphaned", "status", "--check")
 
 	p.want(1, "there is no note at .abbd/understanding/MOD-0001/semantics.md", "forget", "MOD-0001.semantics")
-	p.want(1, "name the note as ID.SLOT[.KEY]", "forget", "MOD-0001")
+	p.want(1, "name a note as ID.SLOT[.KEY]", "forget", "MOD-0001")
 	p.want(0, "forgot MOD-0001.a (misfiled, it says it is MOD-0001.states): removed .abbd/understanding/MOD-0001/a.md", "forget", "MOD-0001.a")
 	p.want(0, "forgot MOD-0099.failure (orphaned): removed .abbd/understanding/MOD-0099/failure.md", "forget", "MOD-0099.failure")
 	p.want(0, "forgot MOD-0001.states (STALE): removed .abbd/understanding/MOD-0001/states.md", "forget", "MOD-0001.states")
@@ -176,4 +176,29 @@ func TestTheSkillAndTheCheckNameTheNoteCommands(t *testing.T) {
 	p.code("billing/retry.go", statesCommented())
 	p.resync()
 	p.want(1, "1 note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or with abbd understand ID.SLOT --reread-by WHO when it still holds as written, or drop it with abbd forget ID.SLOT", "status", "--check")
+}
+
+// A unit the extraction stopped reporting stays, listed as unmatched on
+// every sync, until abbd forget removes it. Forget refuses a present unit
+// and one the state still names, and sync lists the unit no more after.
+func TestForgetRemovesAnUnmatchedUnit(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("a/a.go", "package a\n\nfunc A() { b.B() }\n")
+	p.code("b/b.go", "package b\n\nfunc B() {}\n")
+	p.extract(`{"units":[
+ {"key":"a","kind":"MOD","name":"a","anchors":[{"path":"a/a.go","symbol":"A"}]},
+ {"key":"b","kind":"MOD","name":"b","anchors":[{"path":"b/b.go","symbol":"B"}]}]}`)
+	p.setup(0, "synced: 2 unit(s)", "--", exe)
+	p.want(0, "recorded", "record", "relation", "MOD-0001", "depends_on", "MOD-0002", "--via", "call", "--evidence", "a/a.go:3:b.B()")
+	p.want(1, "MOD-0002 is present", "forget", "MOD-0002")
+	p.extract(`{"units":[{"key":"a","kind":"MOD","name":"a","anchors":[{"path":"a/a.go","symbol":"A"}]}]}`)
+	p.want(0, "MOD-0002 unmatched", "sync")
+	p.want(1, "MOD-0002 is still named in .abbd/architecture/MOD-0001.md", "forget", "MOD-0002")
+	p.want(0, "", "retract", "MOD-0001.depends_on.MOD-0002", "--reason", "b is gone")
+	p.want(0, "forgot MOD-0002 b", "forget", "MOD-0002")
+	if out := p.want(0, "0 unmatched", "sync"); strings.Contains(out, "MOD-0002") {
+		t.Fatalf("sync still lists the forgotten unit:\n%s", out)
+	}
+	p.want(1, "there is no unit MOD-0002", "forget", "MOD-0002")
 }

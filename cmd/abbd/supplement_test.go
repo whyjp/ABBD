@@ -146,3 +146,57 @@ func TestScriptContractWithoutSignatureTakesTheReaders(t *testing.T) {
 	p.want(0, "", "sync")
 	contains(t, p.want(0, "", "explain", "http api"), "signature: GET /charges?all (INFERRED)")
 }
+
+// A flat package's script reports one module per file, and the reader groups
+// them into responsibilities. The grouping quotes its members' code, since no
+// other code is there to quote, and its members name it as their parent, so
+// it stays a module of its own and no member merges into it, through setup
+// and the syncs after. A grouping quoting code of a module that does not name
+// it is still refused.
+func TestSupplementGroupingQuotesItsMembersCode(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("pkg/globals.py", "from .ctx import _cv_app\ncurrent_app = _cv_app.get\n")
+	p.code("pkg/ctx.py", "_cv_app = ContextVar('flask.app_ctx')\n")
+	p.code("pkg/app.py", "class Flask:\n    pass\n")
+	p.extract(`{"units":[
+ {"key":"f:globals","kind":"MOD","name":"globals","anchors":[{"path":"pkg/globals.py"}]},
+ {"key":"f:ctx","kind":"MOD","name":"ctx","anchors":[{"path":"pkg/ctx.py"}]},
+ {"key":"f:app","kind":"MOD","name":"app","anchors":[{"path":"pkg/app.py"}]}]}`)
+	member := func(key, file, quote string) string {
+		return `{"key":"` + key + `","kind":"MOD","name":"` + key[2:] + `","anchors":[{"path":"pkg/` + file + `"}],"parent":"grp:context",
+  "parent_evidence":[{"path":"pkg/` + file + `","quote":"` + quote + `"}]}`
+	}
+	group := `{"key":"grp:context","kind":"MOD","name":"request context",
+  "evidence":[{"path":"pkg/globals.py","lines":"2","quote":"current_app = _cv_app.get"}]}`
+	sup := `{"units":[` + group + `,
+ ` + member("f:globals", "globals.py", "from .ctx import _cv_app") + `,
+ ` + member("f:ctx", "ctx.py", "_cv_app = ContextVar('flask.app_ctx')") + `]}`
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", sup), "--", exe)
+	check := func(when string) {
+		t.Helper()
+		g := p.want(0, "", "explain", "request context")
+		contains(t, g, "request context (MOD, INFERRED)", "inside:\n", "globals (MOD)", "ctx (MOD)")
+		contains(t, p.want(0, "", "explain", "globals"), "globals (MOD, EXTRACTED)", "inside MOD-0004 request context")
+		if n := len(units(t, p.root)); n != 4 {
+			t.Fatalf("%s: want 4 units, the grouping beside its three file modules, got %d", when, n)
+		}
+	}
+	check("after setup")
+	p.want(0, "", "sync")
+	check("after sync")
+	p.want(0, "", "sync")
+	check("after a second sync")
+
+	q, exe := bare(t)
+	q.code("pkg/globals.py", "from .ctx import _cv_app\ncurrent_app = _cv_app.get\n")
+	q.code("pkg/ctx.py", "_cv_app = ContextVar('flask.app_ctx')\n")
+	q.code("pkg/app.py", "class Flask:\n    pass\n")
+	q.extract(`{"units":[
+ {"key":"f:globals","kind":"MOD","name":"globals","anchors":[{"path":"pkg/globals.py"}]},
+ {"key":"f:ctx","kind":"MOD","name":"ctx","anchors":[{"path":"pkg/ctx.py"}]}]}`)
+	q.setup(1, "would merge into it", "--supplement", q.file(t, "sup.json", `{"units":[
+ {"key":"grp:context","kind":"MOD","name":"request context",
+  "evidence":[{"path":"pkg/globals.py","lines":"2","quote":"current_app = _cv_app.get"}]},
+ `+member("f:ctx", "ctx.py", "_cv_app = ContextVar('flask.app_ctx')")+`]}`), "--", exe)
+}

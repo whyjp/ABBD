@@ -31,8 +31,10 @@ func TestSetupRegistersTheScriptAndSyncs(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "synced: 3 unit(s)", "--", exe)
-	if !strings.Contains(p.read("project.yaml"), filepath.Base(exe)) {
-		t.Fatalf("setup should record the extraction script:\n%s", p.read("project.yaml"))
+	// The script here is the running abbd binary, so setup records it as
+	// the bare abbd, without the local path it was given.
+	if y := p.read("project.yaml"); !strings.Contains(y, "extract:\n    - abbd\n") || strings.Contains(y, filepath.Base(exe)) {
+		t.Fatalf("setup should record the running abbd as abbd:\n%s", y)
 	}
 	if md := p.read("architecture/MOD-0001.md"); !strings.Contains(md, "takes payments\n    writer: supplement") || strings.Contains(md, "confirmation") {
 		t.Fatalf("a purpose the script guessed is INFERRED and waits for nobody:\n%s", md)
@@ -244,4 +246,39 @@ func TestSetupWorksUnderAWhitelistGitignore(t *testing.T) {
 	p.extract(codeOnly)
 	p.setup(0, "synced", "--", exe)
 	p.want(0, "state: CURRENT", "status")
+}
+
+// setup records a command that names the abbd binary by a path as the bare
+// abbd, at the head of the argv and after a "--", and keeps every other
+// command as written.
+func TestSetupRecordsAnAbbdBinaryPathAsAbbd(t *testing.T) {
+	t.Parallel()
+	root := t.TempDir()
+	for _, c := range []struct{ in, want string }{
+		{"../abbd.exe relate go -- go run .abbd/extractor/extract.go", "abbd relate go -- go run .abbd/extractor/extract.go"},
+		{"D:/tools/abbd relate rust -- ./bin/ABBD.EXE extract cargo", "abbd relate rust -- abbd extract cargo"},
+		{"python .abbd/extractor/extract.py abbd.exe", "python .abbd/extractor/extract.py abbd.exe"},
+		{"abbd extract cmake=.", "abbd extract cmake=."},
+	} {
+		if got := strings.Join(portable(root, strings.Fields(c.in)), " "); got != c.want {
+			t.Errorf("%q recorded as %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
+// abbd-setup writes the project's name and language before the first setup,
+// so the first blueprint is titled with it. Setup keeps both.
+func TestSetupKeepsTheProjectWrittenBeforeIt(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.code(".abbd/project.yaml", "name: billing app\nlanguage: en\n")
+	p.setup(0, "synced: 3 unit(s)", "--", exe)
+	y := p.read("project.yaml")
+	if !strings.Contains(y, "name: billing app") || !strings.Contains(y, "language: en") {
+		t.Fatalf("setup dropped what project.yaml said:\n%s", y)
+	}
+	if html := p.read("blueprint/index.html"); !strings.Contains(html, "billing app 청사진</title>") {
+		t.Fatalf("the first blueprint is not titled with the project's name")
+	}
 }
