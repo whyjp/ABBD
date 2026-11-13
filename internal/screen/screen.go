@@ -37,8 +37,8 @@ type Input struct {
 	// the ordered walks, with the markdown files beside them that are no
 	// figures, and why.
 	Figures store.Figures
-	// Overview is the summary a reader chose: the primary flow in stages,
-	// the zones and the chosen lines.
+	// Overview is the overview's own record a reader chose: its zones and
+	// its lines. The primary flow is the stack marked primary, in Figures.
 	Overview store.Overview
 	// Primary are the stored relations, by relation key (model.Edge's
 	// String), the overview must draw whatever else it counts instead
@@ -149,11 +149,9 @@ type UnitRow struct {
 	Parent string `json:",omitempty"`
 	// Artifact is the set of build artifacts a module is, comma-joined.
 	Artifact string `json:",omitempty"`
-	// Stage is the number of the primary flow's stage that holds the unit,
-	// and Zone the name of the zone that holds it, itself or through a unit
-	// that holds it, when the overview names them.
-	Stage int    `json:",omitempty"`
-	Zone  string `json:",omitempty"`
+	// Zone is the name of the overview's zone that holds the unit, itself
+	// or through a unit that holds it, when a zone does.
+	Zone string `json:",omitempty"`
 	// Evidence is the code a unit only a reader found rests on.
 	Evidence []string `json:",omitempty"`
 	// Notes are the unit's slots and Entries its table when no inside shows
@@ -182,11 +180,10 @@ type Model struct {
 	Flows  []FlowView
 	Stacks []StackView
 	Tables []TableView
-	// Primary, Zones and Lines are the overview a reader chose: the primary
-	// flow in stages, the zones, and the chosen lines with their words.
-	Primary *Primary
-	Zones   []ZoneView
-	Lines   []ChosenLine
+	// Zones and Lines are the overview's zones and the lines a reader chose
+	// for it, with their words.
+	Zones []ZoneView
+	Lines []ChosenLine
 	// Name and Purpose are the project's, and Parts its top-level modules
 	// and every feature with the one line each says of itself, which the
 	// overview opens with.
@@ -195,6 +192,9 @@ type Model struct {
 	// Decisions are every decision note, the unit it sits on first, for the
 	// decisions index.
 	Decisions []Decision `json:"-"`
+	// Primary is the repository's primary flow, which orders the views it
+	// crosses, nil when no stack is marked.
+	Primary *PrimaryFlow `json:",omitempty"`
 	// Edges are every live relation between present units, for graph.json.
 	Edges   []Line
 	Extract []string
@@ -205,12 +205,12 @@ type Model struct {
 func Build(in Input) Model {
 	m := Model{Extract: in.Project.Extract}
 	ov := readOverview(in)
-	m.Primary, m.Zones, m.Lines = ov.primary, ov.zones, ov.lines
+	m.Zones, m.Lines = ov.zones, ov.lines
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
 			Purpose: sentenceOf(u.Purpose, in.Digests[u.ID]), Responsibility: sentenceOf(u.Responsibility, in.Digests[u.ID]), Anchors: anchors(u), Artifact: model.ArtifactSet(u.Built()),
-			Parent: string(u.Parent), Stage: ov.stage[u.ID], Zone: ov.zone[u.ID],
+			Parent: string(u.Parent), Zone: ov.zone[u.ID],
 		}
 		for _, e := range u.Evidence {
 			row.Evidence = append(row.Evidence, cite(e))
@@ -326,6 +326,7 @@ func Build(in Input) Model {
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
+	m.Primary = o.flow.record()
 	rank(&m)
 	return m
 }
@@ -333,7 +334,7 @@ func Build(in Input) Model {
 // rank gives each unit the overview draws its Rank there, and each unit a
 // module's inside draws its Rank on that inside.
 func rank(m *Model) {
-	on := ranks(m.Overview)
+	on := ranks(m.Overview, m.Primary)
 	for i, u := range m.Units {
 		if r, ok := on[u.ID]; ok {
 			m.Units[i].Rank = &r
@@ -341,7 +342,7 @@ func rank(m *Model) {
 	}
 	for i := range m.Insides {
 		ins := &m.Insides[i]
-		on := ranks(ins.Drawing)
+		on := ranks(ins.Drawing, m.Primary)
 		for j, u := range ins.Units {
 			if r, ok := on[u.ID]; ok {
 				ins.Units[j].Rank = &r

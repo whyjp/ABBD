@@ -10,116 +10,96 @@ import (
 
 // The overview is the summary a person reads first, drawn the way a person
 // sketches a system by hand: one primary flow in numbered stages, named
-// zones, and a few chosen lines, each with a word. A reader chooses all
-// three from the code and the stored relations; abbd stores none of them as
-// a unit or a relation. OverviewZones bounds the zones and OverviewLines
-// the chosen lines, as rule 1 bounds a view's boxes. The stages are bounded
-// as a stack's layers are.
+// zones, and a few chosen lines, each with a word. The primary flow is the
+// stack marked primary (FigureKind.Primary), its layers the stages. The
+// zones and the lines are the overview's own record, chosen by a reader
+// from the code and the stored relations; abbd stores neither as a unit or
+// a relation. OverviewZones bounds the zones and OverviewLines the chosen
+// lines, as rule 1 bounds a view's boxes.
 const (
 	OverviewZones = 8
 	OverviewLines = 20
 )
 
-// Holding is a named set of stored units, each with every unit inside it, and
-// the code that shows they belong together: a stage of the primary flow or
-// a zone. Its place from 1 is its number, never stored.
-type Holding struct {
+// Zone is one named region of the overview: the stored units it holds, each
+// with every unit inside it, and the code that shows they belong together.
+// Its place from 1 is its number, never stored.
+type Zone struct {
 	Name     string     `yaml:"name"`
 	Units    []ID       `yaml:"units"`
 	Evidence []Evidence `yaml:"evidence"`
 }
 
-// Stage is one numbered stage of the overview's primary flow.
-type Stage struct {
-	Holding `yaml:",inline"`
-}
-
-// Zone is one named region of the overview.
-type Zone struct {
-	Holding `yaml:",inline"`
-}
-
-// Kind makes the primary flow's stages a kind of figure part, whose stages
-// hold each unit once between them, each under a name of its own.
-func (Stage) Kind() FigureKind[Stage] {
-	return FigureKind[Stage]{Noun: "overview", Part: "stage", Parts: "stages", Min: 2, Max: StackLayers, Whole: holdNamedOnce[Stage]}
-}
-
 // Kind makes the overview's zones a kind of figure part, whose zones hold
 // each unit once between them, each under a name of its own.
 func (Zone) Kind() FigureKind[Zone] {
-	return FigureKind[Zone]{Noun: "overview", Part: "zone", Parts: "zones", Max: OverviewZones, Whole: holdNamedOnce[Zone]}
+	return FigureKind[Zone]{Noun: "overview", Part: "zone", Parts: "zones", Max: OverviewZones, Whole: zonesOnce}
 }
 
-// holdNamedOnce keeps each unit in one stage or zone, and each name on one,
-// since the name is the label the overview draws.
-func holdNamedOnce[C Claim[C]](cols []Column, parts []C, units []Unit) []Gap {
-	gaps := holdOnce[C](0)(cols, parts, units)
-	k := KindOf[C]()
-	for i, a := range parts {
-		for j, b := range parts[i+1:] {
-			if a.Label() == b.Label() {
-				gaps = append(gaps, Gap{Text: fmt.Sprintf("%s %d and %d are both named %s; give each %s a name of its own", k.Parts, i+1, i+j+2, a.Label(), k.Part), Parts: []int{i + 1, i + j + 2}})
+// zonesOnce keeps each unit in one zone, and each name on one zone, since
+// the name is the label the overview draws.
+func zonesOnce(cols []Column, zones []Zone, units []Unit) []Gap {
+	gaps := holdOnce[Zone](0)(cols, zones, units)
+	for i, a := range zones {
+		for j, b := range zones[i+1:] {
+			if a.Name == b.Name {
+				gaps = append(gaps, Gap{Text: fmt.Sprintf("zones %d and %d are both named %s; give each zone a name of its own", i+1, i+j+2, a.Name), Parts: []int{i + 1, i + j + 2}})
 			}
 		}
 	}
 	return gaps
 }
 
-func (s Stage) Validate() error             { return s.validate("stage") }
-func (z Zone) Validate() error              { return z.validate("zone") }
-func (s Stage) Requote(es []Evidence) Stage { s.Evidence = es; return s }
-func (z Zone) Requote(es []Evidence) Zone   { z.Evidence = es; return z }
-func (s Stage) Retire() Stage               { return s }
-func (z Zone) Retire() Zone                 { return z }
+func (z Zone) Requote(es []Evidence) Zone { z.Evidence = es; return z }
+func (z Zone) Retire() Zone               { return z }
 
-// validate checks the group on its own: a name that fits on the drawing as
+// Validate checks the zone on its own: a name that fits on the drawing as
 // a phrase does, the units it holds, each named once, and the code it rests
 // on.
-func (h Holding) validate(part string) error {
-	if strings.TrimSpace(h.Name) == "" {
-		return fmt.Errorf("a %s has a name, on one line", part)
+func (z Zone) Validate() error {
+	if strings.TrimSpace(z.Name) == "" {
+		return fmt.Errorf("a zone has a name, on one line")
 	}
-	if err := ValidatePhrase(h.Name, ""); err != nil {
-		return fmt.Errorf("%s %s: %w", part, h.Name, err)
+	if err := ValidatePhrase(z.Name, ""); err != nil {
+		return fmt.Errorf("zone %s: %w", z.Name, err)
 	}
-	if len(h.Units) == 0 {
-		return fmt.Errorf("%s %s names no unit; a %s holds the stored units it names", part, h.Name, part)
+	if len(z.Units) == 0 {
+		return fmt.Errorf("zone %s names no unit; a zone holds the stored units it names", z.Name)
 	}
-	for i, id := range h.Units {
+	for i, id := range z.Units {
 		if _, _, err := ParseID(string(id)); err != nil {
 			return err
 		}
-		if slices.Contains(h.Units[:i], id) {
-			return fmt.Errorf("%s %s names %s twice", part, h.Name, id)
+		if slices.Contains(z.Units[:i], id) {
+			return fmt.Errorf("zone %s names %s twice", z.Name, id)
 		}
 	}
-	if len(h.Evidence) == 0 {
-		return fmt.Errorf("%s %s cites no code; cite the lines that show its units belong together", part, h.Name)
+	if len(z.Evidence) == 0 {
+		return fmt.Errorf("zone %s cites no code; cite the lines that show its units belong together", z.Name)
 	}
-	return validateEvidence(h.Evidence)
+	return validateEvidence(z.Evidence)
 }
 
-func (h Holding) Label() string      { return h.Name }
-func (h Holding) Names() []ID        { return h.Units }
-func (h Holding) Words() []Word      { return []Word{{"name", h.Name}} }
-func (h Holding) Quotes() []Evidence { return h.Evidence }
+func (z Zone) Label() string      { return z.Name }
+func (z Zone) Names() []ID        { return z.Units }
+func (z Zone) Words() []Word      { return []Word{{"name", z.Name}} }
+func (z Zone) Quotes() []Evidence { return z.Evidence }
 
-// Gaps reads the group against the state, as a stack's layer is read: each
+// Gaps reads the zone against the state, as a stack's layer is read: each
 // unit it names is present and is a box the overview draws, and one quote
 // at least lies in their code.
-func (h Holding) Gaps(units []Unit) []string {
+func (z Zone) Gaps(units []Unit) []string {
 	st := stateOf(units)
 	var gaps []string
-	for _, id := range h.Units {
+	for _, id := range z.Units {
 		if _, ok := st[id]; !ok {
 			gaps = append(gaps, fmt.Sprintf("%s is no longer in the state", id))
 		} else if box := st.box(id); box != id {
 			gaps = append(gaps, fmt.Sprintf("%s sits inside %s, which the overview draws as one box; name %s", id, box, box))
 		}
 	}
-	if len(gaps) == 0 && !st.rests(h.Units, h.Evidence) {
-		gaps = append(gaps, fmt.Sprintf("none of %s's quotes is in the code of its units or a unit inside them; cite the lines that show they belong together", h.Name))
+	if len(gaps) == 0 && !st.rests(z.Units, z.Evidence) {
+		gaps = append(gaps, fmt.Sprintf("none of %s's quotes is in the code of its units or a unit inside them; cite the lines that show they belong together", z.Name))
 	}
 	return gaps
 }

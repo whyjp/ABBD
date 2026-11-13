@@ -7,25 +7,8 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// Primary is the overview's primary flow as graph.json gives it: Key names
-// the record it comes from and Basis what kind of record that is, then the
-// flow's name and its stages in order, each numbered from 1.
-type Primary struct {
-	Key    string      `json:"key"`
-	Basis  string      `json:"basis"`
-	Name   string      `json:"name"`
-	Stages []StageView `json:"stages"`
-}
-
-// StageView is one stage of the primary flow, and ZoneView one zone: the
-// units each names, and why it is STALE, if it is.
-type StageView struct {
-	N       int      `json:"n"`
-	Name    string   `json:"name"`
-	Units   []string `json:"units"`
-	Reasons []string `json:"reasons,omitempty"`
-}
-
+// ZoneView is one zone of the overview: its name, the units it names, and
+// why it is STALE, if it is.
 type ZoneView struct {
 	Name    string   `json:"name"`
 	Units   []string `json:"units"`
@@ -45,15 +28,13 @@ type ChosenLine struct {
 	Reasons   []string `json:"reasons,omitempty"`
 }
 
-// chosen is the stored overview as graph.json gives it, and the stage and
-// zone of each unit they hold, itself or through a unit that holds it. It
-// is empty when there is no overview abbd can read.
+// chosen is the stored overview as graph.json gives it, and the zone of
+// each unit a zone holds, itself or through a unit that holds it. It is
+// empty when there is no overview abbd can read.
 type chosen struct {
-	primary *Primary
-	zones   []ZoneView
-	lines   []ChosenLine
-	stage   map[model.ID]int
-	zone    map[model.ID]string
+	zones []ZoneView
+	lines []ChosenLine
+	zone  map[model.ID]string
 }
 
 func readOverview(in Input) chosen {
@@ -73,10 +54,7 @@ func readOverview(in Input) chosen {
 	reasons := func(part string, n int, why []string) []string {
 		return slices.Concat(why, whole[part][n])
 	}
-	c := chosen{primary: &Primary{Key: "overview", Basis: "flow", Name: o.Flow}, zone: map[model.ID]string{}}
-	for i, s := range o.Stages {
-		c.primary.Stages = append(c.primary.Stages, StageView{N: i + 1, Name: s.Claim.Name, Units: idStrings(s.Claim.Units), Reasons: reasons("stage", i+1, s.Why(in.Units))})
-	}
+	c := chosen{zone: map[model.ID]string{}}
 	for i, z := range o.Zones {
 		c.zones = append(c.zones, ZoneView{Name: z.Claim.Name, Units: idStrings(z.Claim.Units), Reasons: reasons("zone", i+1, z.Why(in.Units))})
 	}
@@ -94,7 +72,6 @@ func readOverview(in Input) chosen {
 		cl.Kinds, cl.Vias = slices.Compact(cl.Kinds), slices.Compact(cl.Vias)
 		c.lines = append(c.lines, cl)
 	}
-	c.stage = model.Holders(store.ClaimsOf(o.Stages), in.Units)
 	for id, n := range model.Holders(store.ClaimsOf(o.Zones), in.Units) {
 		c.zone[id] = o.Zones[n-1].Claim.Name
 	}

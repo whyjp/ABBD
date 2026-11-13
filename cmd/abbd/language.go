@@ -94,7 +94,7 @@ func foreignProse(in screen.Input, t model.Language) []foreign {
 		figureProse(check, f, func(l model.Layer) []string { return []string{l.Role} })
 	}
 	if o := in.Overview; o.Known {
-		said := []string{o.Flow, o.Caption}
+		said := []string{o.Caption}
 		for _, p := range overviewParts(o) {
 			if p.kind != "line" {
 				said = append(said, p.label)

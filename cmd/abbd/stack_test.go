@@ -218,3 +218,89 @@ func TestAReaderMendsAHumansStackTheStateBrokeAsAWhole(t *testing.T) {
 	}
 	p.want(0, "stacks: 1 stack(s), 2 layer(s), 0 STALE", "status", "--check")
 }
+
+// A stack marked primary keeps its mark through the store and the printed
+// draft. A second marked stack and a marked flow are refused, and a double
+// mark left by a hand merge fails status.
+func TestOneStackAtMostIsMarkedThePrimaryFlow(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	primary := strings.Replace(chargeStack, "layers:\n", "primary: true\nlayers:\n", 1)
+	p.stack(0, "marked stack charge the primary flow", primary)
+	if stored := p.read("stacks/charge.md"); !strings.Contains(stored, "primary: true") {
+		t.Errorf("the stored stack keeps its mark:\n%s", stored)
+	}
+	if out := p.want(0, "primary: true", "stack", "charge"); !strings.Contains(out, "layers:") {
+		t.Errorf("the printed draft keeps the mark:\n%s", out)
+	}
+	p.want(1, "stack charge is marked the primary flow; store it without primary: true first", "stack", "other", p.file(t, "other.md", primary))
+	p.want(0, "stored stack other", "stack", "other", p.file(t, "plain.md", chargeStack))
+	if stored := p.read("stacks/other.md"); strings.Contains(stored, "primary") {
+		t.Errorf("an unmarked stack writes no primary key:\n%s", stored)
+	}
+	p.want(0, "marked stack charge the primary flow", "stack", "charge", p.file(t, "again.md", primary))
+	flow := strings.Replace(chargeFlow, "steps:\n", "primary: true\nsteps:\n", 1)
+	p.want(1, "a flow cannot be marked primary", "flow", "charge", p.file(t, "flow.md", flow))
+
+	merged := strings.Replace(p.read("stacks/other.md"), "format: 1\n", "format: 1\nprimary: true\n", 1)
+	if err := os.WriteFile(filepath.Join(p.root, ".abbd", "stacks", "other.md"), []byte(merged), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	p.want(1, "conflict: stacks [charge other] are each marked the primary flow", "status", "--check")
+}
+
+// A reader who stores a human's marked stack again from a draft without the
+// key keeps the mark: only a human drops it, with primary: false and
+// --source. The stack marked primary counts no breach, since a later stage
+// using an earlier one is how a flow runs.
+func TestAReaderKeepsAHumansPrimaryMark(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	primary := func(s, mark string) string { return strings.Replace(s, "layers:\n", "primary: "+mark+"\nlayers:\n", 1) }
+	p.stack(0, "marked stack charge the primary flow", primary(upsideDown(), "true"), "--source", "conversation 2026-11-03")
+	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
+	p.resync()
+	reread := strings.Replace(strings.Replace(upsideDown(), "const tries = 3", "const tries = 5", 1), "retries a failed insert", "retries a failed insert five times", 1)
+	p.stack(1, "the primary mark of stack charge is a human's word", primary(reread, "false"))
+	out := p.stack(0, "kept the mark that makes stack charge the primary flow", reread)
+	if !strings.Contains(out, "replaced the human's layers 1") || !strings.Contains(out, "breaches: none counted on the primary flow") {
+		t.Errorf("the reader replaces the stale layer, keeps the mark, and counts no breach:\n%s", out)
+	}
+	if stored := p.read("stacks/charge.md"); !strings.Contains(stored, "primary: true") {
+		t.Errorf("the human's mark survives the reader's store:\n%s", stored)
+	}
+	status := p.want(0, "breaches: 0 relation(s) run up a stack", "status", "--check")
+	if strings.Contains(status, "breach: stack charge") {
+		t.Errorf("the primary flow lists no breach:\n%s", status)
+	}
+	page := p.blueprint()
+	for _, no := range []string{"거꾸로", `class="chip breach"`} {
+		if strings.Contains(page, no) {
+			t.Errorf("the page draws no breach on the primary flow, yet holds %q", no)
+		}
+	}
+	if !strings.Contains(page, "주 흐름") {
+		t.Error("the page names the stack the primary flow")
+	}
+	p.stack(0, "breaches: 1 relation(s) run up the stack", primary(reread, "false"), "--source", "conversation 2026-11-14")
+	if stored := p.read("stacks/charge.md"); strings.Contains(stored, "primary") {
+		t.Errorf("a human's primary: false drops the mark:\n%s", stored)
+	}
+}
+
+// A mark a hand edit leaves on a flow is no primary flow: status names it
+// and abbd reads past it, so it neither conflicts nor fails the check.
+func TestStatusNamesAPrimaryMarkOnAFlow(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.want(0, "stored flow charge", "flow", "charge", p.file(t, "flow.md", chargeFlow))
+	marked := strings.Replace(p.read("flows/charge.md"), "format: 1\n", "format: 1\nprimary: true\n", 1)
+	if err := os.WriteFile(filepath.Join(p.root, ".abbd", "flows", "charge.md"), []byte(marked), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	p.resync()
+	out := p.want(0, "warning: .abbd/flows/charge.md carries primary: true, which only a stack may carry", "status", "--check")
+	if strings.Contains(out, "conflict:") {
+		t.Errorf("a mark on a flow is no conflict:\n%s", out)
+	}
+}

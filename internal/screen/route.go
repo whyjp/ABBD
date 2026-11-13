@@ -148,7 +148,22 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // Only the kept drawing's counts are anchored: route may lay a view many
 // times to keep one, and no measure it compares them by reads where a
 // count stands, while placing the counts was most of a lay.
+//
+// Lines between neighbouring stages of a flow laid across (hops) take no
+// part in any of that: they run straight across between the two boxes.
 func (l *layout) route(reqs []wireReq) routing {
+	var r routing
+	if hop := l.hops(reqs); hop != nil {
+		r = l.withHops(reqs, hop)
+	} else {
+		r = l.routeLines(reqs)
+	}
+	anchor(r.drawn, pieces(r.drawn), r.boxes)
+	return r
+}
+
+// routeLines is route but for the counts and the hops.
+func (l *layout) routeLines(reqs []wireReq) routing {
 	before := l.keep()
 	r := l.routeApart(reqs)
 	after := l.keep()
@@ -170,7 +185,6 @@ func (l *layout) route(reqs []wireReq) routing {
 	if l.roads {
 		r.confluent(reqs, l.position, len(l.rows))
 	}
-	anchor(r.drawn, pieces(r.drawn), r.boxes)
 	return r
 }
 
@@ -540,7 +554,12 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		members[at(r.from, fk)] = append(members[at(r.from, fk)], i)
 		ends[at(r.to, tk)] = append(ends[at(r.to, tk)], i)
-		if p.same {
+		// A line within one row runs on its own under it, except on a
+		// spine, whose row holds only stages and whose every box sends
+		// lines down: there a line between two stages that are not
+		// neighbours rides its box's buses, so it never leaves or reaches
+		// a box beside them (rule 4).
+		if p.same && !l.staged(r) {
 			continue
 		}
 		// A box's lines bus by the box, whichever of its chips they use,

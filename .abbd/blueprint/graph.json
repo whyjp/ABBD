@@ -81,9 +81,9 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/extract/extract.go Parse",
-        "internal/extract/extract.go rawResult",
-        "internal/extract/extract.go rawUnit"
+        "internal/extract/extract.go Doc",
+        "internal/extract/extract.go DocUnit",
+        "internal/extract/extract.go Parse"
       ]
     },
     {
@@ -132,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{basis,key,name,stages{n,name,reasons,units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of},Responsibility{Badge,Stale,Value},Signature,Stage,Zone},zones{name,reasons,units}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -1315,13 +1315,13 @@
     {
       "ID": "IF-0030",
       "Kind": "IF",
-      "Name": "abbd overview",
-      "Signature": "abbd overview pos{0,1}",
+      "Name": "abbd extract",
+      "Signature": "abbd extract pos{1,2}",
       "Purpose": null,
       "Responsibility": null,
       "Anchors": [
-        "cmd/abbd/main.go commands",
-        "cmd/abbd/overview.go overview"
+        "cmd/abbd/extract.go extractBundled",
+        "cmd/abbd/main.go commands"
       ]
     },
     {
@@ -1346,6 +1346,7 @@
         "cmd/abbd/diff.go",
         "cmd/abbd/draft.go",
         "cmd/abbd/evidence.go",
+        "cmd/abbd/extract.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
         "cmd/abbd/impact.go",
@@ -1356,7 +1357,6 @@
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
-        "cmd/abbd/overview.go",
         "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
@@ -1816,11 +1816,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so malformed or overreaching extraction output fails loudly instead of entering the state",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader's unit is identified by the code it cites.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go parseUnits"
@@ -2045,7 +2047,6 @@
         "internal/model/language_windows.go",
         "internal/model/layer.go",
         "internal/model/model.go",
-        "internal/model/overview.go",
         "internal/model/run.go",
         "internal/model/slot.go",
         "internal/model/table.go"
@@ -2149,7 +2150,6 @@
         "internal/screen",
         "internal/screen/busy.go",
         "internal/screen/card.go",
-        "internal/screen/chosen.go",
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
         "internal/screen/entries.go",
@@ -2158,6 +2158,7 @@
         "internal/screen/focus.go",
         "internal/screen/gate.go",
         "internal/screen/graph.go",
+        "internal/screen/hop.go",
         "internal/screen/hover.go",
         "internal/screen/hues.go",
         "internal/screen/ink.go",
@@ -2179,6 +2180,7 @@
         "internal/screen/screen.go",
         "internal/screen/site.go",
         "internal/screen/stack.go",
+        "internal/screen/stages.go",
         "internal/screen/standing.go",
         "internal/screen/table.go",
         "internal/screen/trace.go",
@@ -2364,7 +2366,6 @@
         "internal/store/figure.go",
         "internal/store/legacy.go",
         "internal/store/note.go",
-        "internal/store/overview.go",
         "internal/store/store.go",
         "internal/store/understanding.go"
       ],
@@ -2734,6 +2735,21 @@
         "N": 5,
         "Of": 8
       }
+    },
+    {
+      "ID": "MOD-0058",
+      "Kind": "MOD",
+      "Name": "internal/extract/frontend",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/extract/frontend",
+        "internal/extract/frontend/cargo.go",
+        "internal/extract/frontend/cmake.go",
+        "internal/extract/frontend/frontend.go"
+      ],
+      "Parent": "MOD-0017"
     }
   ],
   "edges": [
@@ -3156,6 +3172,14 @@
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
     },
     {
+      "From": "FEAT-0002",
+      "To": "IF-0030",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd extract\""
+    },
+    {
       "From": "FEAT-0003",
       "To": "FEAT-0002",
       "Kind": "depends_on",
@@ -3345,7 +3369,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
     },
     {
       "From": "FEAT-0012",
@@ -4027,6 +4051,13 @@
       "Via": "call",
       "Phrase": "long-section check",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0002",
@@ -5196,6 +5227,27 @@
       "Via": "call",
       "Phrase": "Unit, Kind, Module",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "DATA-0002",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "data"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0017",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0030",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     }
   ],
   "modules": [
@@ -5608,7 +5660,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 21,
+        "Uses": 22,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5785,7 +5837,8 @@
             "retract",
             "flow",
             "lint",
-            "brief"
+            "brief",
+            "extract"
           ]
         }
       ],
@@ -5836,7 +5889,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
           ]
         },
         {
@@ -5984,6 +6037,7 @@
         "Provides": 31,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6489,7 +6543,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -7208,27 +7262,67 @@
                 "Code": false
               },
               {
-                "Text": "abbd overview FILE",
+                "Text": "primary: true",
                 "Code": true
               },
               {
-                "Text": "(",
+                "Text": "는 stack에만 붙는 표시로, 그 stack의 layer가 저장소의 주 흐름 단계가 된다(",
                 "Code": false
               },
               {
-                "Text": "cmd/abbd/overview.go",
+                "Text": "cmd/abbd/figure.go",
                 "Code": true
               },
               {
-                "Text": ")은 같은 파트 검사(",
+                "Text": "). 명령은 flow나 table에 붙은 표시와, 이미 다른 stack이 표시된 상태의 두 번째 표시를 거부한다. ",
                 "Code": false
               },
               {
-                "Text": "checkParts",
+                "Text": "primary",
                 "Code": true
               },
               {
-                "Text": ")로 overview의 주 흐름 단계, 구역, 고른 선을 확인해 저장하고, status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 단계와 구역을 프로젝트 언어로 찍는다.",
+                "Text": "를 뺀 초안은 저장된 표시를 그대로 두고 그렇게 했다고 알리며, 사람이 말한 stack의 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "--source",
+                "Code": true
+              },
+              {
+                "Text": "를 단 ",
+                "Code": false
+              },
+              {
+                "Text": "primary: false",
+                "Code": true
+              },
+              {
+                "Text": "로만 지워진다. 병합으로 두 stack이 표시되면 status가 ",
+                "Code": false
+              },
+              {
+                "Text": "conflict:",
+                "Code": true
+              },
+              {
+                "Text": " 줄을 내고 실패하고, 손으로 flow나 table에 남긴 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "warning:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 이름만 댄다. 주 흐름 stack에는 breach를 세지 않으므로 stack 명령과 status는 그 stack의 거꾸로 쓰는 관계를 보고하지 않는다(",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/stack.go",
+                "Code": true
+              },
+              {
+                "Text": ").",
                 "Code": false
               }
             ]
@@ -9595,7 +9689,7 @@
         },
         {
           "ID": "IF-0030",
-          "Name": "abbd overview",
+          "Name": "abbd extract",
           "Notes": null,
           "Entries": {
             "ID": "IF-0030",
@@ -9645,7 +9739,7 @@
             "review",
             "brief",
             "scope",
-            "overview"
+            "extract"
           ]
         },
         {
@@ -12015,8 +12109,9 @@
       },
       "Standing": {
         "Provides": 1,
-        "Uses": 1,
+        "Uses": 2,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -12085,11 +12180,30 @@
             "N": 1,
             "Of": 2
           }
+        },
+        {
+          "ID": "MOD-0058",
+          "Name": "internal/extract/frontend",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/extract/frontend",
+            "internal/extract/frontend/cargo.go",
+            "internal/extract/frontend/cmake.go",
+            "internal/extract/frontend/frontend.go"
+          ],
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -13385,7 +13499,7 @@
               {
                 "Key": "units",
                 "Name": "units",
-                "Shape": "[]rawUnit",
+                "Shape": "[]DocUnit",
                 "Need": "필수"
               },
               {
@@ -13565,7 +13679,7 @@
               {
                 "Key": "relations",
                 "Name": "relations",
-                "Shape": "[]rawRelation",
+                "Shape": "[]DocRelation",
                 "Need": "선택"
               },
               {
@@ -19290,7 +19404,15 @@
                 "Code": true
               },
               {
-                "Text": ")는 stack의 띠로 unit을 한 layer에만 두고, ",
+                "Text": ")는 stack의 띠로 unit을 한 layer에만 두고, 그 종류만 ",
+                "Code": false
+              },
+              {
+                "Text": "FigureKind.Primary",
+                "Code": true
+              },
+              {
+                "Text": "를 켜서 stack 하나가 주 흐름으로 표시될 수 있게 한다. ",
                 "Code": false
               },
               {
@@ -19338,103 +19460,7 @@
                 "Code": true
               },
               {
-                "Text": "를 찾는다. ",
-                "Code": false
-              },
-              {
-                "Text": "Stage",
-                "Code": true
-              },
-              {
-                "Text": "와 ",
-                "Code": false
-              },
-              {
-                "Text": "Zone",
-                "Code": true
-              },
-              {
-                "Text": "(",
-                "Code": false
-              },
-              {
-                "Text": "overview.go",
-                "Code": true
-              },
-              {
-                "Text": ")은 overview의 주 흐름 단계와 구역으로, 같은 ",
-                "Code": false
-              },
-              {
-                "Text": "Holding",
-                "Code": true
-              },
-              {
-                "Text": " 모양(이름, unit, evidence)을 가지고 ",
-                "Code": false
-              },
-              {
-                "Text": "holdOnce",
-                "Code": true
-              },
-              {
-                "Text": "로 unit을 한 곳에만 두며, 이름은 phrase 규칙을 따르고 겹치지 않는다. 단계와 구역은 overview가 상자로 그리는 unit만 이름 짓는다. ",
-                "Code": false
-              },
-              {
-                "Text": "state.box",
-                "Code": true
-              },
-              {
-                "Text": "는 present parent가 없는 가장 바깥 unit, 곧 overview의 상자를 찾는다. ",
-                "Code": false
-              },
-              {
-                "Text": "holdOnce",
-                "Code": true
-              },
-              {
-                "Text": "와 ",
-                "Code": false
-              },
-              {
-                "Text": "Holders",
-                "Code": true
-              },
-              {
-                "Text": "는 unit을 이름 짓는 모든 파트에 쓰인다. ",
-                "Code": false
-              },
-              {
-                "Text": "Line",
-                "Code": true
-              },
-              {
-                "Text": "은 reader가 고른 선으로, 두 끝이 한 상자 안에 있으면 gap을 내고, ",
-                "Code": false
-              },
-              {
-                "Text": "Carries",
-                "Code": true
-              },
-              {
-                "Text": "가 ",
-                "Code": false
-              },
-              {
-                "Text": "From",
-                "Code": true
-              },
-              {
-                "Text": "에서 ",
-                "Code": false
-              },
-              {
-                "Text": "To",
-                "Code": true
-              },
-              {
-                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다.",
+                "Text": "를 찾는다.",
                 "Code": false
               }
             ]
@@ -21476,71 +21502,7 @@
                 "Code": true
               },
               {
-                "Text": "은 도구를 위해 단위 행, 살아 있는 모든 관계, 그림을 뺀 모듈 목록, 그림(figure)을 담는다. ",
-                "Code": false
-              },
-              {
-                "Text": "chosen.go",
-                "Code": true
-              },
-              {
-                "Text": "의 ",
-                "Code": false
-              },
-              {
-                "Text": "readOverview",
-                "Code": true
-              },
-              {
-                "Text": "는 저장된 overview를 ",
-                "Code": false
-              },
-              {
-                "Text": "graph.json",
-                "Code": true
-              },
-              {
-                "Text": "의 ",
-                "Code": false
-              },
-              {
-                "Text": "primary",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "zones",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "lines",
-                "Code": true
-              },
-              {
-                "Text": "와 단위 행의 ",
-                "Code": false
-              },
-              {
-                "Text": "Stage",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Zone",
-                "Code": true
-              },
-              {
-                "Text": "으로 옮기며, 아직 그리지는 않는다. 그래서 변경은 그것을 그리는 뷰의 페이지만 다시 쓰고, 한 모듈 안의 변경은 그 모듈의 페이지와 ",
+                "Text": "은 도구를 위해 단위 행, 살아 있는 모든 관계, 그림을 뺀 모듈 목록, 그림(figure)을 담는다. 그래서 변경은 그것을 그리는 뷰의 페이지만 다시 쓰고, 한 모듈 안의 변경은 그 모듈의 페이지와 ",
                 "Code": false
               },
               {
@@ -24011,6 +23973,180 @@
               },
               {
                 "Text": "은 각 행을 초점 둘레의 세로축 하나에 모아 놓는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "주 흐름",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "primary: true",
+                "Code": true
+              },
+              {
+                "Text": "로 표시된 stack은 주 흐름이고, 그 layer가 단계다(",
+                "Code": false
+              },
+              {
+                "Text": "stages.go",
+                "Code": true
+              },
+              {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "stagesOn",
+                "Code": true
+              },
+              {
+                "Text": "은 뷰가 그리는 상자마다 그 unit이나 안의 unit을 처음 이름 댄 단계를 주고, 두 단계 미만이 보이면 nil이라 그 뷰는 흐름이 없던 것처럼 놓인다. 개요는 최상위 상자에, 안쪽 뷰는 모듈의 자식 상자에 ",
+                "Code": false
+              },
+              {
+                "Text": "lnode.stage",
+                "Code": true
+              },
+              {
+                "Text": "를 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "arrange",
+                "Code": true
+              },
+              {
+                "Text": "만 모양을 정한다. ",
+                "Code": false
+              },
+              {
+                "Text": "flowOf",
+                "Code": true
+              },
+              {
+                "Text": "는 단계 상자들이 ",
+                "Code": false
+              },
+              {
+                "Text": "spineRoom",
+                "Code": true
+              },
+              {
+                "Text": "에 한 줄로 들어맞으면 가로(척추 한 행, 왼쪽에서 오른쪽), 아니면 단계마다 행 하나(세로)로 고른다. ",
+                "Code": false
+              },
+              {
+                "Text": "pinStages",
+                "Code": true
+              },
+              {
+                "Text": "가 이를 ",
+                "Code": false
+              },
+              {
+                "Text": "tier",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "step",
+                "Code": true
+              },
+              {
+                "Text": "으로 바꾸고, ",
+                "Code": false
+              },
+              {
+                "Text": "clearSpine",
+                "Code": true
+              },
+              {
+                "Text": "은 척추 행에서 다른 상자를 위(단계가 쓰지 않는 것)나 아래(단계가 쓰는 것)로 비키며, 척추 행은 감싸이지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "axis.flow",
+                "Code": true
+              },
+              {
+                "Text": "가 그 선택을 기록하고 ",
+                "Code": false
+              },
+              {
+                "Text": "Rank",
+                "Code": true
+              },
+              {
+                "Text": "는 단계 상자에 basis ",
+                "Code": false
+              },
+              {
+                "Text": "flow",
+                "Code": true
+              },
+              {
+                "Text": ", 단계 번호, 단계 수, 단계 이름을 준다. 단계가 직접 이름 댄 unit은 흐름을 놓지 않는 뷰, 곧 그것을 품은 상자의 안쪽에서도 같은 단계로 순위를 받는다(",
+                "Code": false
+              },
+              {
+                "Text": "PrimaryFlow.stageOf",
+                "Code": true
+              },
+              {
+                "Text": "). 단계 띠(zone)는 그려진 띠 수가 아니라 단계 번호를 달고, 초점 뷰는 흐름을 놓지 않고 전체 뷰의 왼쪽-오른쪽 순서를 seat로 이어받는다. graph.json의 ",
+                "Code": false
+              },
+              {
+                "Text": "primary",
+                "Code": true
+              },
+              {
+                "Text": "가 단계 목록을 싣는다. ",
+                "Code": false
+              },
+              {
+                "Text": "walks",
+                "Code": true
+              },
+              {
+                "Text": "는 주 흐름을 먼저 놓고, 흐름을 놓는 뷰의 리드는 다른 저장된 흐름보다 이것을 따르며 첫 단계 상자에서 시작한다. 번호는 리드 위 상자에서 다음 단계 상자로 가는 머리 하나짜리 선에만 붙으므로 모든 번호가 단계 순서로 읽힌다. 단계 순서를 거스르는 선이나 머리 둘인 선으로만 닿는 단계는 번호 없이 리드에 들고 리드는 거기서 이어간다. 척추에서 이웃한 두 단계 상자 사이 선은 버스를 타지 않고 마주 보는 옆변 사이 곧은 홉으로 그린다(",
+                "Code": false
+              },
+              {
+                "Text": "hop.go",
+                "Code": true
+              },
+              {
+                "Text": "). 같은 쌍의 선은 ",
+                "Code": false
+              },
+              {
+                "Text": "slotGap",
+                "Code": true
+              },
+              {
+                "Text": "만큼 떨어진 제 차선을 가지므로 반대 방향 선은 합쳐지지 않는다. 서로 쓰는 이웃 단계는 머리 둘인 선 하나 대신 방향마다 홉 하나를 받아, 단계 순서의 홉은 머리 하나를 갖고 반대 홉은 점선으로 거슬러 간다. 검사기의 ",
+                "Code": false
+              },
+              {
+                "Text": "stubs",
+                "Code": true
+              },
+              {
+                "Text": "는 점선 여부가 같은 선들만 한 stub으로 합치므로, 실선 stub에서 갈라지는 점선은 갈림으로 센다.",
                 "Code": false
               }
             ]
@@ -26886,7 +27022,7 @@
                 "Code": false
               },
               {
-                "Text": "model.Breaches",
+                "Text": "store.Breaches",
                 "Code": true
               },
               {
@@ -26898,7 +27034,15 @@
                 "Code": true
               },
               {
-                "Text": "으로 앉아 양 끝, 관계의 동사, 더 높은 층을 이름 댄다. 더 높은 층의 계약을 제공하는 낮은 단위는 칩을 보이지 않는다. 스택의 ",
+                "Text": "으로 앉아 양 끝, 관계의 동사, 더 높은 층을 이름 댄다. 더 높은 층의 계약을 제공하는 낮은 단위는 칩을 보이지 않는다. 주 흐름으로 표시된 스택은 위반이 없고 ",
+                "Code": false
+              },
+              {
+                "Text": "Primary",
+                "Code": true
+              },
+              {
+                "Text": "를 달아 페이지가 주 흐름이라 말한다. 스택의 ",
                 "Code": false
               },
               {
@@ -27480,7 +27624,31 @@
                 "Code": true
               },
               {
-                "Text": "로 묶고, 상자에서 상자로 곧게 내려가는 선은 뺀다. ",
+                "Text": "로 묶고, 상자에서 상자로 곧게 내려가는 선은 뺀다. 규칙 4는 상자의 옆변도 읽고(",
+                "Code": false
+              },
+              {
+                "Text": "sideOf",
+                "Code": true
+              },
+              {
+                "Text": "), 두 상자 변 사이의 곧은 두 점 구간을 제 묶음으로 치며, 한 변의 한 점에서 떠나는 같은 종류의 무리는 스텁 하나로 센다(",
+                "Code": false
+              },
+              {
+                "Text": "stubs",
+                "Code": true
+              },
+              {
+                "Text": "). O4(",
+                "Code": false
+              },
+              {
+                "Text": "flow_monotone",
+                "Code": true
+              },
+              {
+                "Text": ", 중대)는 이어진 두 단계가 축을 따라 차례로 서는지 본다. 가로면 같은 행에서 뒤 단계가 온전히 오른쪽에, 세로면 더 아래 행에 선다. P1, P2, O1, O2, O3, H1은 두 끝이 모두 단계 상자인 쌍을 단계 순서가 정한 것으로 보고 행으로 판단하지 않는다. ",
                 "Code": false
               },
               {
@@ -29335,43 +29503,51 @@
                 "Code": false
               },
               {
-                "Text": "internal/store/overview.go",
+                "Text": "Figure.Primary",
                 "Code": true
               },
               {
-                "Text": "는 프로젝트마다 하나인 ",
+                "Text": "는 frontmatter의 ",
                 "Code": false
               },
               {
-                "Text": ".abbd/overview.md",
+                "Text": "primary: true",
                 "Code": true
               },
               {
-                "Text": "를 같은 ",
+                "Text": "를 읽고 켜졌을 때만 쓰므로, 표시 없는 파일의 바이트는 그대로다. 초안이 이 키를 아예 적었는지는 ",
                 "Code": false
               },
               {
-                "Text": "Part",
+                "Text": "MarkSaid",
                 "Code": true
               },
               {
-                "Text": "와 stamp(",
+                "Text": "가 기억하므로, 키를 뺀 초안은 저장된 표시를 지우지 않는다. ",
                 "Code": false
               },
               {
-                "Text": "stampParts",
+                "Text": "Figures.Primary",
                 "Code": true
               },
               {
-                "Text": ", ",
+                "Text": "는 표시된 known stack이 정확히 하나일 때만 그것을 주고, ",
                 "Code": false
               },
               {
-                "Text": "readParts",
+                "Text": "Marked",
                 "Code": true
               },
               {
-                "Text": ")로 쓰고 읽으며, 주 흐름의 이름과 단계, 구역, 고른 선을 담고, 모르는 field가 있는 frontmatter는 거부한다.",
+                "Text": "는 표시될 수 있는 종류(stack)에서만 표시된 키를 나열한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Breaches",
+                "Code": true
+              },
+              {
+                "Text": "는 stack이 거꾸로 쓰는 관계를 주되, 주 흐름으로 표시된 stack에는 아무것도 주지 않는다. 뒤 단계가 앞 단계를 쓰는 것은 흐름이 도는 방식이기 때문이다.",
                 "Code": false
               }
             ]
@@ -33549,7 +33725,7 @@
         }
       ],
       "Steps": 13,
-      "Stale": 0,
+      "Stale": 1,
       "Lanes": [
         {
           "Unit": "MOD-0041",
@@ -33606,7 +33782,11 @@
               "Quotes": [
                 "cmd/abbd/main.go \"out, err := e.runScript(p.Extract)\"",
                 "cmd/abbd/main.go \"cmd := exec.Command(argv[0], argv[1:]...)\""
-              ]
+              ],
+              "Reasons": [
+                "cmd/abbd/main.go (the quote is gone, or no longer once in the file)"
+              ],
+              "Stale": true
             }
           ]
         },
@@ -34107,7 +34287,7 @@
         }
       ],
       "Rows": 5,
-      "Stale": 0,
+      "Stale": 1,
       "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
@@ -34204,7 +34384,11 @@
             "cmd/abbd/main.go \"return res, st.SaveState(state)\"",
             "cmd/abbd/main.go \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
             "cmd/abbd/main.go \"p, err := e.st.LoadProject()\""
-          ]
+          ],
+          "Reasons": [
+            "cmd/abbd/main.go (the lines around it changed)"
+          ],
+          "Stale": true
         },
         {
           "N": 2,

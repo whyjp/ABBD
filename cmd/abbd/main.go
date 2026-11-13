@@ -25,6 +25,12 @@ and renders the blueprint. It never judges, blocks, asks or records a decision.
 abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
+abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [--root DIR]
+                                     print the extraction JSON a bundled front-end reads from the
+                                     build system's own model: cargo (Cargo.toml) or cmake
+                                     (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
+                                     relative to the root, "." when left out; register it as
+                                     abbd setup -- abbd extract cargo, or extend its output
 abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
                                      which tells any assistant to ask the blueprint first
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
@@ -123,15 +129,14 @@ abbd table KEY FILE|- [--source REF] [--root DIR]
                                      do not bear out
 abbd table KEY [--root DIR]          print the stored table as a draft to edit and store again
 abbd overview FILE|- [--root DIR]
-                                     store the overview a person reads first: a primary flow, its
-                                     name and two to 8 stages, up to 8 zones and up to 20 chosen
-                                     lines; a stage or zone is a short name, the overview boxes it
-                                     holds and the code it cites, a unit in one stage and one zone
-                                     at most; a line joins units in two overview boxes, carries
-                                     a short word, draws stored relations in its direction
-                                     and cites code; each part is stamped with the lines around
-                                     its quotes, so it goes STALE when that code changes or the
-                                     state moves under it
+                                     store the overview's zones and chosen lines; its primary
+                                     flow is the stack marked primary: true; up to 8 zones and
+                                     up to 20 lines; a zone is a short name, the overview boxes it
+                                     holds and the code it cites, a unit in one zone at most; a
+                                     line joins units in two overview boxes, carries a short word,
+                                     draws stored relations in its direction and cites code; each
+                                     part is stamped with the lines around its quotes, so it goes
+                                     STALE when that code changes or the state moves under it
 abbd overview [--root DIR]           print the stored overview as a draft to edit and store again
 abbd explain QUERY [--history] [--root DIR]
                                      one unit at a glance: its contracts, neighbours, inside
@@ -357,6 +362,7 @@ var commands = map[string]command{
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
 	"overview":        {flags: []string{"root"}, pos: []int{0, 1}, writes: true, run: func(e env, pos []string) error { return e.overview(pos) }},
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
+	"extract":         {flags: []string{"root"}, pos: []int{1, 2}, run: func(e env, pos []string) error { return e.extractBundled(pos) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"brief":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.brief(pos[0]) }},
@@ -599,11 +605,19 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 
 func (e env) runScript(argv []string, env ...string) ([]byte, error) {
 	var out, errb bytes.Buffer
-	cmd := exec.Command(argv[0], argv[1:]...)
-	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
-	if len(env) > 0 {
-		cmd.Env = append(os.Environ(), env...)
+	name := argv[0]
+	// The script, and a registered abbd extract, run the abbd that syncs,
+	// never another one on the PATH whose front-ends read differently.
+	self, err := os.Executable()
+	if err != nil {
+		return nil, fmt.Errorf("find the running abbd: %w", err)
 	}
+	if name == "abbd" {
+		name = self
+	}
+	cmd := exec.Command(name, argv[1:]...)
+	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
+	cmd.Env = append(append(os.Environ(), "ABBD_BIN="+self), env...)
 	if err := cmd.Run(); err != nil {
 		return nil, fmt.Errorf("extraction script failed: %w\n%s", err, errb.String())
 	}

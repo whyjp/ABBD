@@ -27,7 +27,15 @@ import (
 // body. InputsHash covers every kind's directory, so storing a figure stales
 // the blueprint.
 type Figure[C model.Claim[C]] struct {
-	Question       string
+	Question string
+	// Primary marks the figure the repository's primary flow, its claims the
+	// flow's stages in order. Only a kind whose FigureKind.Primary is set
+	// holds it, and Figures.Primary reads it as one at most.
+	Primary bool
+	// MarkSaid says the frontmatter states primary at all, true or false.
+	// A draft that leaves the key out keeps the stored figure's mark, so
+	// only a draft that says false drops it.
+	MarkSaid       bool
 	Columns        []model.Column
 	Parts, Retired []Part[C]
 	Caption        string
@@ -126,7 +134,7 @@ func ParseFigureDraft[C model.Claim[C]](b []byte) (Figure[C], error) {
 	if err != nil {
 		return Figure[C]{}, fmt.Errorf("the draft's frontmatter: %w", err)
 	}
-	out := Figure[C]{Question: strings.TrimSpace(f.Question), Columns: f.Columns, Caption: CleanText(string(body))}
+	out := Figure[C]{Question: strings.TrimSpace(f.Question), Primary: f.Primary, MarkSaid: f.MarkSaid, Columns: f.Columns, Caption: CleanText(string(body))}
 	for _, p := range f.Parts {
 		out.Parts = append(out.Parts, Part[C]{Claim: p.Claim})
 	}
@@ -211,8 +219,8 @@ func writeFigure[C model.Claim[C]](s Store, f Figure[C]) error {
 }
 
 // encodeFigure writes a figure's frontmatter in the order a reader reads it:
-// the question, then for a stored figure its format, then the head of a kind
-// that has one, then for a stored figure its parts under the kind's own key
+// the question, then for a stored figure its format, then the primary mark
+// when it is set, then the head of a kind that has one, then for a stored figure its parts under the kind's own key
 // and its retired parts, and for a draft its claims alone.
 func encodeFigure[C model.Claim[C]](f Figure[C], stored bool) ([]byte, error) {
 	var m yaml.Node
@@ -235,6 +243,11 @@ func encodeFigure[C model.Claim[C]](f Figure[C], stored bool) ([]byte, error) {
 		}
 		m.Content = append(m.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: key}, &n)
 		return nil
+	}
+	if f.Primary {
+		if err := add("primary", true); err != nil {
+			return nil, err
+		}
 	}
 	if len(f.Columns) > 0 {
 		if err := add("columns", f.Columns); err != nil {
@@ -269,13 +282,14 @@ func decodeFigure[C model.Claim[C]](front []byte) (Figure[C], error) {
 	for _, field := range []struct {
 		key string
 		v   any
-	}{{"question", &f.Question}, {"columns", &f.Columns}, {model.KindOf[C]().Parts, &f.Parts}, {"retired", &f.Retired}} {
+	}{{"question", &f.Question}, {"primary", &f.Primary}, {"columns", &f.Columns}, {model.KindOf[C]().Parts, &f.Parts}, {"retired", &f.Retired}} {
 		if n, ok := m[field.key]; ok {
 			if err := n.Decode(field.v); err != nil {
 				return f, err
 			}
 		}
 	}
+	_, f.MarkSaid = m["primary"]
 	return f, nil
 }
 
@@ -290,6 +304,55 @@ type Figures struct {
 	Stacks []Stack
 	Tables []Table
 	Strays []Stray
+}
+
+// Primary is the stack marked the repository's primary flow. ok is true only
+// when exactly one known stack is marked, so a double mark lays out by
+// neither.
+func (fs Figures) Primary() (Stack, bool) {
+	var marked []Stack
+	for _, f := range fs.Stacks {
+		if f.Known && f.Primary {
+			marked = append(marked, f)
+		}
+	}
+	if len(marked) != 1 {
+		return Stack{}, false
+	}
+	return marked[0], true
+}
+
+// Marked are the keys of the known figures of figs marked the primary flow,
+// in key order. Only a kind that may be marked counts (FigureKind.Primary);
+// status names a mark on any other kind as one abbd reads past.
+func Marked[C model.Claim[C]](figs []Figure[C]) []model.FigureKey {
+	if !model.KindOf[C]().Primary {
+		return nil
+	}
+	var out []model.FigureKey
+	for _, f := range figs {
+		if f.Known && f.Primary {
+			out = append(out, f.Key)
+		}
+	}
+	return out
+}
+
+// Breaches are the relations that run up stack s (model.Breaches). The
+// stack marked the primary flow has none: its layers are stages read
+// upstream to downstream, and a later stage using an earlier one, as every
+// stage uses the config, is how a flow runs, not debt.
+func Breaches(s Stack, units []model.Unit) []model.Breach {
+	if s.Primary {
+		return nil
+	}
+	return model.Breaches(s.Claims(), units)
+}
+
+// LoadKind reads every figure of kind C in key order.
+func LoadKind[C model.Claim[C]](s Store) ([]Figure[C], error) {
+	figs, _, err := loadKind[C](s)
+	return figs, err
 }
 
 // LoadFigures reads every figure of every kind. It is the store's one list

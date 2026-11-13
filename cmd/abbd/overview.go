@@ -10,9 +10,11 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// overview stores the overview from a draft, or prints the stored one as a
-// draft when no FILE is given. Every check of a draft happens here, as it
-// does for a figure, so the store and the screen trust what they read.
+// overview stores the overview's zones and lines from a draft, or prints the
+// stored ones as a draft when no FILE is given. Every check of a draft
+// happens here, as it does for a figure, so the store and the screen trust
+// what they read. The primary flow is the stack marked primary, stored with
+// abbd stack.
 func (e env) overview(args []string) error {
 	if len(args) == 0 {
 		prev, err := e.st.LoadOverview()
@@ -34,7 +36,7 @@ func (e env) overview(args []string) error {
 		_, err = e.stdout.Write(b)
 		return err
 	}
-	text, err := e.readInput(args[0], "pass an overview draft: frontmatter with flow (its name and stages), zones and lines, and a caption")
+	text, err := e.readInput(args[0], "pass an overview draft: frontmatter with zones and lines, and a caption")
 	if err != nil {
 		return err
 	}
@@ -52,29 +54,22 @@ func (e env) overview(args []string) error {
 	if err := store.SaveOverview(e.st, o); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "stored the overview: primary flow %s in %d stages, %d zones, %d lines, each part stamped with the lines around the quotes it cites\n", o.Flow, len(o.Stages), len(o.Zones), len(o.Lines))
+	fmt.Fprintf(e.stdout, "stored the overview: %d zones, %d lines, each part stamped with the lines around the quotes it cites; its primary flow is the stack marked primary\n", len(o.Zones), len(o.Lines))
 	return nil
 }
 
-// checkOverview refuses a draft that is no overview true of the state: a
-// flow with no name or too few or too many stages, too many zones or lines,
-// a part that is not well formed, a quote the code does not hold once, a
-// part the state does not bear out, or parts the state does not bear out
-// taken together, such as a unit in two stages.
+// checkOverview refuses a draft that is no overview true of the state: too
+// many zones or lines, a part that is not well formed, a quote the code does
+// not hold once, a part the state does not bear out, or parts the state does
+// not bear out taken together, such as a unit in two zones.
 func checkOverview(e env, o *store.Overview, units []model.Unit) error {
-	if o.Flow == "" || strings.ContainsAny(o.Flow, "\r\n") {
-		return fmt.Errorf("the overview's flow has a name, on one line")
-	}
-	if err := partCount(len(o.Stages), model.Stage{}.Kind()); err != nil {
-		return err
-	}
 	if err := partCount(len(o.Zones), model.Zone{}.Kind()); err != nil {
 		return err
 	}
 	if err := partCount(len(o.Lines), model.Line{}.Kind()); err != nil {
 		return err
 	}
-	for _, err := range []error{checkParts(e, o.Stages, units), checkParts(e, o.Zones, units), checkParts(e, o.Lines, units)} {
+	for _, err := range []error{checkParts(e, o.Zones, units), checkParts(e, o.Lines, units)} {
 		if err != nil {
 			return err
 		}
@@ -89,12 +84,9 @@ func checkOverview(e env, o *store.Overview, units []model.Unit) error {
 	return nil
 }
 
-// partCount refuses too few or too many parts of one kind.
+// partCount refuses too many parts of one kind.
 func partCount[C any](n int, k model.FigureKind[C]) error {
-	switch {
-	case n < k.Min:
-		return fmt.Errorf("an overview has %d %s or more, and this one has %d", k.Min, k.Parts, n)
-	case n > k.Max:
+	if n > k.Max {
 		return fmt.Errorf("an overview has at most %d %s, and this one has %d; keep the ones a person reads first", k.Max, k.Parts, n)
 	}
 	return nil
@@ -149,10 +141,10 @@ type shownPart struct {
 
 func (p shownPart) String() string { return fmt.Sprintf("overview %s %d (%s)", p.kind, p.n, p.label) }
 
-// overviewParts are the overview's parts in the file's order: stages, zones,
-// then lines.
+// overviewParts are the overview's parts in the file's order: zones, then
+// lines.
 func overviewParts(o store.Overview) []shownPart {
-	return slices.Concat(partsShown(o.Stages), partsShown(o.Zones), partsShown(o.Lines))
+	return slices.Concat(partsShown(o.Zones), partsShown(o.Lines))
 }
 
 func partsShown[C model.Claim[C]](parts []store.Part[C]) []shownPart {
@@ -175,7 +167,7 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 		return ""
 	}
 	stale := overviewStale(o, units)
-	fmt.Fprintf(e.stdout, "overview: primary flow %s in %d stages, %d zones, %d lines, %d STALE\n", o.Flow, len(o.Stages), len(o.Zones), len(o.Lines), len(stale))
+	fmt.Fprintf(e.stdout, "overview: %d zones, %d lines, %d STALE\n", len(o.Zones), len(o.Lines), len(stale))
 	for _, l := range stale {
 		fmt.Fprintln(e.stdout, "stale:", l.text+"; "+l.fix())
 	}
@@ -192,20 +184,32 @@ var overviewWords = map[bool]struct{ stage, zone string }{
 	false: {"primary flow %s, stage %d of %d: %s", "zone: %s"},
 }
 
-// explainOverview prints the stage of the primary flow and the zone that
-// hold the unit, itself or through a unit that holds it.
+// explainOverview prints the stage of the primary flow, the stack marked
+// primary, and the zone of the overview that hold the unit, itself or
+// through a unit that holds it.
 func (e env) explainOverview(units []model.Unit, id model.ID) error {
-	o, err := e.st.LoadOverview()
-	if err != nil || !o.Known {
+	figs, err := e.st.LoadFigures()
+	if err != nil {
 		return err
+	}
+	o, err := e.st.LoadOverview()
+	if err != nil {
+		return err
+	}
+	p, flow := figs.Primary()
+	if !flow && !o.Known {
+		return nil
 	}
 	lang, err := e.lang()
 	if err != nil {
 		return err
 	}
 	words := overviewWords[strings.HasPrefix(string(lang)+"-", "ko-")]
-	if n, ok := model.Holders(store.ClaimsOf(o.Stages), units)[id]; ok {
-		fmt.Fprintf(e.stdout, words.stage+"\n", o.Flow, n, len(o.Stages), o.Stages[n-1].Claim.Name)
+	if flow {
+		layers := p.Claims()
+		if n, ok := model.Holders(layers, units)[id]; ok {
+			fmt.Fprintf(e.stdout, words.stage+"\n", p.Key, n, len(layers), layers[n-1].Name)
+		}
 	}
 	if n, ok := model.Holders(store.ClaimsOf(o.Zones), units)[id]; ok {
 		fmt.Fprintf(e.stdout, words.zone+"\n", o.Zones[n-1].Claim.Name)

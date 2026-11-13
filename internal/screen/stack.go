@@ -2,6 +2,7 @@ package screen
 
 import (
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // A stack answers what the layers of a part of the code are: bands from the
@@ -15,9 +16,12 @@ import (
 // StackView is one stack as the page draws it. Badge is the weakest origin
 // of its layers and Source the one every layer shares, if any. Stale counts
 // its STALE layers, Reasons say why its layers taken together are not true
-// of the state, and Breaches counts the relations that run up it.
+// of the state, and Breaches counts the relations that run up it. Primary
+// says it is marked the primary flow, its layers stages, which counts no
+// breach (store.Breaches).
 type StackView struct {
 	ID, Key, Question, Badge, Source string
+	Primary                          bool     `json:",omitempty"`
 	Caption                          []Block  `json:",omitempty"`
 	Reasons                          []string `json:",omitempty"`
 	Layers, Stale, Breaches          int
@@ -63,9 +67,9 @@ func (o *overview) stacks(in Input) []StackView {
 			continue
 		}
 		layers := f.Claims()
-		breaches := model.Breaches(layers, in.Units)
+		breaches := store.Breaches(f, in.Units)
 		v := StackView{ID: figureID[model.Layer](f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin()), Source: sharedSource(f), Caption: blocks(f.Caption),
-			Layers: len(f.Parts), Breaches: len(breaches), held: model.Holders(layers, in.Units)}
+			Primary: f.Primary, Layers: len(f.Parts), Breaches: len(breaches), held: model.Holders(layers, in.Units)}
 		for _, g := range f.Gaps(in.Units) {
 			v.Reasons = append(v.Reasons, g.Text)
 		}

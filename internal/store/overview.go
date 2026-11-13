@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -16,15 +15,14 @@ import (
 // OverviewFile is the one overview of a project, from the store's directory.
 const OverviewFile = "overview.md"
 
-// Overview is the summary a person reads first: the primary flow, named
-// Flow, in its stages, then the zones and the chosen lines. Each part keeps
+// Overview is the overview's own record: its zones and the lines a reader
+// chose. The primary flow it draws in stages is the stack marked primary
+// (Figures.Primary), not part of this record. Each part keeps
 // its own stamp, as a figure's does, so an edit near one part's quotes
 // stales that part alone. The caption is the file's body. File is where the
 // overview sits, "" when there is none. Known is false when the file is
 // there and is no overview, and Why says why.
 type Overview struct {
-	Flow    string
-	Stages  []Part[model.Stage]
 	Zones   []Part[model.Zone]
 	Lines   []Part[model.Line]
 	Caption string
@@ -33,19 +31,15 @@ type Overview struct {
 	Why     string
 }
 
-// overviewYAML is the overview's frontmatter, its parts as S, Z and L: the
+// overviewYAML is the overview's frontmatter, its parts as Z and L: the
 // claims alone in a draft, the stamped parts in the stored file.
-type overviewYAML[S, Z, L any] struct {
-	Flow struct {
-		Name   string `yaml:"name"`
-		Stages []S    `yaml:"stages"`
-	} `yaml:"flow"`
+type overviewYAML[Z, L any] struct {
 	Format int `yaml:"format,omitempty"`
 	Zones  []Z `yaml:"zones,omitempty"`
 	Lines  []L `yaml:"lines,omitempty"`
 }
 
-type storedOverview = overviewYAML[Part[model.Stage], Part[model.Zone], Part[model.Line]]
+type storedOverview = overviewYAML[Part[model.Zone], Part[model.Line]]
 
 // decodeOverview reads an overview's frontmatter, refusing a key it does not
 // know, so a misspelt field is no part silently dropped.
@@ -60,7 +54,7 @@ func decodeOverview(front []byte) (storedOverview, error) {
 }
 
 // ParseOverviewDraft reads the file a reader writes: the stored format, of
-// which it keeps the flow's name, the parts and the caption. abbd sets the
+// which it keeps the parts and the caption. abbd sets the
 // rest when it stores the overview.
 func ParseOverviewDraft(b []byte) (Overview, error) {
 	front, body, err := splitFrontmatter(b)
@@ -71,8 +65,7 @@ func ParseOverviewDraft(b []byte) (Overview, error) {
 	if err != nil {
 		return Overview{}, fmt.Errorf("the draft's frontmatter: %w", err)
 	}
-	out := Overview{Flow: strings.TrimSpace(o.Flow.Name), Caption: CleanText(string(body)), Known: true}
-	out.Stages = claimsOnly(o.Flow.Stages)
+	out := Overview{Caption: CleanText(string(body)), Known: true}
 	out.Zones = claimsOnly(o.Zones)
 	out.Lines = claimsOnly(o.Lines)
 	return out, nil
@@ -89,8 +82,7 @@ func claimsOnly[C model.Claim[C]](parts []Part[C]) []Part[C] {
 // OverviewDraft is the stored overview as a draft to edit, without what
 // abbd sets.
 func OverviewDraft(o Overview) ([]byte, error) {
-	var d overviewYAML[model.Stage, model.Zone, model.Line]
-	d.Flow.Name, d.Flow.Stages = o.Flow, ClaimsOf(o.Stages)
+	var d overviewYAML[model.Zone, model.Line]
 	d.Zones, d.Lines = ClaimsOf(o.Zones), ClaimsOf(o.Lines)
 	front, err := yaml.Marshal(d)
 	if err != nil {
@@ -104,9 +96,6 @@ func OverviewDraft(o Overview) ([]byte, error) {
 // no code. The same overview on the same code writes the same bytes.
 func SaveOverview(s Store, o Overview) error {
 	var err error
-	if o.Stages, err = stampParts(s, "flow", o.Stages); err != nil {
-		return err
-	}
 	if o.Zones, err = stampParts(s, "zones", o.Zones); err != nil {
 		return err
 	}
@@ -114,7 +103,7 @@ func SaveOverview(s Store, o Overview) error {
 		return err
 	}
 	var f storedOverview
-	f.Flow.Name, f.Flow.Stages, f.Format = o.Flow, plainQuotes(o.Stages), figureFormat
+	f.Format = figureFormat
 	f.Zones, f.Lines = plainQuotes(o.Zones), plainQuotes(o.Lines)
 	front, err := yaml.Marshal(f)
 	if err != nil {
@@ -145,15 +134,15 @@ func (s Store) LoadOverview() (Overview, error) {
 	if err != nil {
 		return Overview{File: file, Why: "has frontmatter abbd cannot read (" + err.Error() + ")"}, nil
 	}
-	o := Overview{Flow: f.Flow.Name, Stages: f.Flow.Stages, Zones: f.Zones, Lines: f.Lines, Caption: CleanText(string(body)), File: file, Known: true}
-	readParts(s, o.Stages)
+	o := Overview{Zones: f.Zones, Lines: f.Lines, Caption: CleanText(string(body)), File: file, Known: true}
 	readParts(s, o.Zones)
 	readParts(s, o.Lines)
 	return o, nil
 }
 
 // Gaps are what keep the overview's parts, taken together, from being true
-// of the state: a unit in two stages or two zones, or a line drawn twice.
+// of the state: a unit in two zones, two zones of one name, or a line drawn
+// twice.
 // Each gap's parts are numbered within its own kind, which Part names.
 func (o Overview) Gaps(units []model.Unit) []OverviewGap {
 	var out []OverviewGap
@@ -162,7 +151,6 @@ func (o Overview) Gaps(units []model.Unit) []OverviewGap {
 			out = append(out, OverviewGap{Part: part, Gap: g})
 		}
 	}
-	add("stage", model.Stage{}.Kind().Whole(nil, ClaimsOf(o.Stages), units))
 	add("zone", model.Zone{}.Kind().Whole(nil, ClaimsOf(o.Zones), units))
 	add("line", model.Line{}.Kind().Whole(nil, ClaimsOf(o.Lines), units))
 	return out

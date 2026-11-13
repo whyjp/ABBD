@@ -18,15 +18,15 @@ func boxes() []Unit {
 	}
 }
 
-// A stage or zone names the boxes the overview draws, and a line joins two
+// A zone names the boxes the overview draws, and a line joins two
 // of them, so neither runs inside one box.
 func TestAnOverviewPartNamesTheBoxesTheOverviewDraws(t *testing.T) {
 	for want, units := range map[string][]ID{
 		"MOD-0003 sits inside MOD-0001, which the overview draws as one box; name MOD-0001": {"MOD-0003"},
 		"": {"MOD-0001", "IF-0001"},
 	} {
-		h := Holding{Name: "a", Units: units, Evidence: []Evidence{{Path: "a/x.go", Quote: "x"}}}
-		got := strings.Join(h.Gaps(boxes()), "; ")
+		z := Zone{Name: "a", Units: units, Evidence: []Evidence{{Path: "a/x.go", Quote: "x"}}}
+		got := strings.Join(z.Gaps(boxes()), "; ")
 		if want == "" && strings.Contains(got, "sits inside") || want != "" && !strings.Contains(got, want) {
 			t.Errorf("%v: want %q, got %q", units, want, got)
 		}
@@ -44,16 +44,16 @@ func TestAnOverviewPartNamesTheBoxesTheOverviewDraws(t *testing.T) {
 	}
 }
 
-// Stage and zone names are labels on the drawing: each follows the phrase
-// rule, and no two stages share one.
-func TestStageNamesAreShortAndEachItsOwn(t *testing.T) {
+// Zone names are labels on the drawing: each follows the phrase rule, and
+// no two zones share one.
+func TestZoneNamesAreShortAndEachItsOwn(t *testing.T) {
 	ev := []Evidence{{Path: "a/x.go", Quote: "x"}}
-	if err := (Stage{Holding{Name: "one two three four five", Units: []ID{"MOD-0001"}, Evidence: ev}}).Validate(); err == nil || !strings.Contains(err.Error(), "at most 4 words") {
-		t.Errorf("a long stage name is refused: %v", err)
+	if err := (Zone{Name: "one two three four five", Units: []ID{"MOD-0001"}, Evidence: ev}).Validate(); err == nil || !strings.Contains(err.Error(), "at most 4 words") {
+		t.Errorf("a long zone name is refused: %v", err)
 	}
-	same := []Stage{{Holding{Name: "read", Units: []ID{"MOD-0001"}, Evidence: ev}}, {Holding{Name: "read", Units: []ID{"MOD-0002"}, Evidence: ev}}}
-	gaps := KindOf[Stage]().Whole(nil, same, boxes())
-	if len(gaps) != 1 || !strings.Contains(gaps[0].Text, "stages 1 and 2 are both named read") {
-		t.Errorf("two stages with one name are refused: %v", gaps)
+	same := []Zone{{Name: "read", Units: []ID{"MOD-0001"}, Evidence: ev}, {Name: "read", Units: []ID{"MOD-0002"}, Evidence: ev}}
+	gaps := KindOf[Zone]().Whole(nil, same, boxes())
+	if len(gaps) != 1 || !strings.Contains(gaps[0].Text, "zones 1 and 2 are both named read") {
+		t.Errorf("two zones with one name are refused: %v", gaps)
 	}
 }
