@@ -4942,14 +4942,6 @@
       "PhraseOrigin": "INFERRED"
     },
     {
-      "From": "MOD-0047",
-      "To": "MOD-0031",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
-    },
-    {
       "From": "MOD-0048",
       "To": "MOD-0049",
       "Kind": "depends_on",
@@ -5424,7 +5416,7 @@
         "Uses": 19,
         "Direct": 2,
         "StaleNotes": 0,
-        "Dead": 0
+        "Dead": 2
       },
       "Units": [
         {
@@ -15422,7 +15414,7 @@
         "Direct": 0,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 0
+        "Dead": 2
       },
       "Units": [
         {
@@ -19173,16 +19165,6 @@
           "Quotes": [
             "internal/topology/find.go \"var lineSuffix = regexp.MustCompile(`:\\\\d+(-\\\\d+)?$`)\""
           ]
-        },
-        {
-          "From": "internal/topology",
-          "To": "guess versus topology rule",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
-          ],
-          "Drifted": true
         },
         {
           "From": "internal/group",
@@ -28767,7 +28749,7 @@
         "Direct": 1,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 2
+        "Dead": 4
       },
       "Units": [
         {
@@ -30422,16 +30404,6 @@
           "Quotes": [
             "internal/topology/impact.go \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
           ]
-        },
-        {
-          "From": "internal/topology",
-          "To": "guess versus topology rule",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
-          ],
-          "Drifted": true
         },
         {
           "From": "boundary rule",
