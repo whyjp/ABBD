@@ -3,7 +3,9 @@ package frontend
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"maps"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"slices"
@@ -33,6 +35,9 @@ func run(t *testing.T, tool, fixture string) extract.Doc {
 	var outs [][]byte
 	for range 2 {
 		doc, err := Extract(root, cache, []Spec{spec})
+		if old := (oldCMake{}); errors.As(err, &old) {
+			t.Skip(err)
+		}
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -212,16 +217,23 @@ func TestACycleOfInterfaceLibrariesEnds(t *testing.T) {
 	}
 }
 
-func TestACodeModelOlderThanCMake42LinksEveryDependency(t *testing.T) {
-	tg := cmakeTarget{Dependencies: []cmakeTargetRef{{"core"}, {"gen"}}, LinkLibraries: []cmakeTargetRef{{"core"}}}
-	var cm cmakeCodemodel
-	cm.Version.Major, cm.Version.Minor = 2, 8
-	if got := links(cm, tg); len(got) != 2 {
-		t.Errorf("code model 2.8 links %v, want every dependency", got)
+func TestACMakeOlderThan42IsRefusedNamingTheVersionFound(t *testing.T) {
+	reply := t.TempDir()
+	index := `{"cmake":{"version":{"string":"4.1.2"}},"objects":[{"kind":"codemodel","jsonFile":"codemodel-v2-x.json"}]}`
+	for name, body := range map[string]string{"index-1.json": index, "codemodel-v2-x.json": `{"version":{"major":2,"minor":8}}`} {
+		if err := os.WriteFile(filepath.Join(reply, name), []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
 	}
-	cm.Version.Minor = 9
-	if got := links(cm, tg); len(got) != 1 || got[0].ID != "core" {
-		t.Errorf("code model 2.9 links %v, want only core", got)
+	var cm cmakeCodemodel
+	err := readCodemodel(reply, &cm)
+	if err == nil {
+		t.Fatal("code model 2.8 was read, want a refusal")
+	}
+	for _, want := range []string{"CMake 4.1.2", "4.2 or later", "cmake.org", "pip install cmake", "apt.kitware.com", "brew install cmake", "winget install Kitware.CMake", "supplement"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("refusal %q does not say %q", err, want)
+		}
 	}
 }
 

@@ -14,6 +14,11 @@ import (
 )
 
 type cmakeIndex struct {
+	CMake struct {
+		Version struct {
+			String string `json:"string"`
+		} `json:"version"`
+	} `json:"cmake"`
 	Objects []struct {
 		Kind     string `json:"kind"`
 		JSONFile string `json:"jsonFile"`
@@ -54,7 +59,6 @@ type cmakeTarget struct {
 		CompileGroupIndex *int   `json:"compileGroupIndex"`
 	} `json:"sources"`
 	CompileGroups          []struct{ Language string } `json:"compileGroups"`
-	Dependencies           []cmakeTargetRef            `json:"dependencies"`
 	LinkLibraries          []cmakeTargetRef            `json:"linkLibraries"`
 	InterfaceLinkLibraries []cmakeTargetRef            `json:"interfaceLinkLibraries"`
 	Backtrace              *int                        `json:"backtrace"`
@@ -164,7 +168,7 @@ func cmake(t tree) (extract.Doc, error) {
 		if f, ok := t.defined(tg); ok {
 			g.anchors = append(g.anchors, model.Anchor{Path: f, Symbol: tg.Name})
 		}
-		for _, d := range links(cm, tg) {
+		for _, d := range tg.LinkLibraries {
 			g.deps = append(g.deps, d.ID)
 		}
 		byID[tg.ID] = g
@@ -221,11 +225,13 @@ func throughInterfaces(ids []string, interfaces map[string][]cmakeTargetRef) []s
 	return out
 }
 
-// readCodemodel reads the codemodel the newest reply index names.
+// readCodemodel reads the codemodel the newest reply index names, and
+// refuses one older than 2.9, the first to list a target's direct links
+// apart from targets add_dependencies only builds first.
 func readCodemodel(reply string, cm *cmakeCodemodel) error {
 	idx, _ := filepath.Glob(filepath.Join(reply, "index-*.json"))
 	if len(idx) == 0 {
-		return fmt.Errorf("CMake wrote no file API reply under %s; it needs CMake 3.14 or later", reply)
+		return fmt.Errorf("CMake wrote no file API reply under %s; %w", reply, oldCMake{"older than 3.14"})
 	}
 	slices.Sort(idx)
 	var in cmakeIndex
@@ -233,11 +239,30 @@ func readCodemodel(reply string, cm *cmakeCodemodel) error {
 		return err
 	}
 	for _, o := range in.Objects {
-		if o.Kind == "codemodel" {
-			return readJSON(filepath.Join(reply, o.JSONFile), cm)
+		if o.Kind != "codemodel" {
+			continue
 		}
+		if err := readJSON(filepath.Join(reply, o.JSONFile), cm); err != nil {
+			return err
+		}
+		if cm.Version.Major == 2 && cm.Version.Minor < 9 {
+			return oldCMake{in.CMake.Version.String}
+		}
+		return nil
 	}
 	return fmt.Errorf("the CMake file API reply has no codemodel")
+}
+
+// oldCMake is the refusal of a CMake older than 4.2.
+type oldCMake struct{ found string }
+
+func (e oldCMake) Error() string {
+	return "found CMake " + e.found + ", but the cmake front-end needs CMake 4.2 or later: " +
+		"older CMake does not record which links a target makes directly, apart from the targets add_dependencies only builds first. " +
+		"Get CMake 4.2 or later and put it first on PATH: the official release from https://cmake.org/download/ on any OS, " +
+		"`pip install cmake` on any OS, the Kitware apt repository (https://apt.kitware.com) on Debian or Ubuntu, " +
+		"`brew install cmake` on macOS, or `winget install Kitware.CMake` on Windows. " +
+		"Or leave this front-end out and describe the modules in a supplement during setup."
 }
 
 // defined is the root-relative file whose command defined the target.
@@ -254,16 +279,6 @@ func (t tree) defined(tg cmakeTarget) (string, bool) {
 		p = filepath.Join(t.dir, p)
 	}
 	return t.rel(p)
-}
-
-// links are the targets a target links. Code model 2.9 (CMake 4.2) lists
-// them apart from targets that add_dependencies only builds first; an older
-// one lists both together, and each stays a link.
-func links(cm cmakeCodemodel, tg cmakeTarget) []cmakeTargetRef {
-	if cm.Version.Major > 2 || cm.Version.Minor >= 9 {
-		return tg.LinkLibraries
-	}
-	return tg.Dependencies
 }
 
 // moduleRefs names each module by its target, or a module of several
