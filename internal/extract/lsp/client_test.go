@@ -49,6 +49,9 @@ func fakeServer() {
 			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": map[string]any{"capabilities": map[string]any{}}})
 		case "initialized":
 			send(map[string]any{"jsonrpc": "2.0", "id": 900, "method": "workspace/configuration", "params": map[string]any{"items": []any{map[string]any{"section": "fake"}}}})
+			send(map[string]any{"jsonrpc": "2.0", "method": "$/progress", "params": map[string]any{"token": "load", "value": map[string]any{"kind": "begin", "title": "Loading"}}})
+			send(map[string]any{"jsonrpc": "2.0", "method": "$/progress", "params": map[string]any{"token": "load", "value": map[string]any{"kind": "end"}}})
+			time.Sleep(300 * time.Millisecond)
 			send(map[string]any{"jsonrpc": "2.0", "method": "$/progress", "params": map[string]any{"token": "idx", "value": map[string]any{"kind": "begin", "title": "Indexing"}}})
 			time.Sleep(200 * time.Millisecond)
 			send(map[string]any{"jsonrpc": "2.0", "method": "$/progress", "params": map[string]any{"token": "idx", "value": map[string]any{"kind": "end"}}})
@@ -82,7 +85,7 @@ func startFake(t *testing.T) *Client {
 	}
 	c, err := Start(context.Background(), Server{
 		Argv: []string{exe}, Env: []string{"FAKE_LSP=1"}, Root: t.TempDir(),
-		Settings: map[string]any{"fake": map[string]any{"depth": 3}}, Timeout: 10 * time.Second, Ready: 10 * time.Second,
+		Settings: map[string]any{"fake": map[string]any{"depth": 3}}, Timeout: 10 * time.Second, Ready: 10 * time.Second, Until: "Indexing",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -97,8 +100,8 @@ func TestClientWaitsForIndexingAndAsksAgainWhenTheServerDropsARequest(t *testing
 	if err := c.Wait(context.Background(), 50*time.Millisecond); err != nil {
 		t.Fatal(err)
 	}
-	if time.Since(start) < 200*time.Millisecond {
-		t.Errorf("Wait returned after %s, before indexing ended", time.Since(start))
+	if time.Since(start) < 500*time.Millisecond {
+		t.Errorf("Wait returned after %s, in the idle gap before indexing", time.Since(start))
 	}
 	var s []map[string]int
 	if err := c.Call(context.Background(), "workspace/settings", nil, &s); err != nil || len(s) != 1 || s[0]["depth"] != 3 {

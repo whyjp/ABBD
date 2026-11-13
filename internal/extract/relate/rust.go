@@ -286,7 +286,7 @@ func rustRead(t tree, o owners, ra string, c rustConfig, files []string) (rustRu
 	ctx := context.Background()
 	srv, err := lsp.Start(ctx, lsp.Server{
 		Argv: []string{ra}, Root: t.dir, Init: init, Settings: map[string]any{"rust-analyzer": init},
-		Timeout: 5 * time.Minute, Ready: 2 * time.Hour,
+		Timeout: 5 * time.Minute, Ready: 2 * time.Hour, Until: "Indexing",
 	})
 	if err != nil {
 		return rustRun{}, err

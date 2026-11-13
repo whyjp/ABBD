@@ -35,6 +35,10 @@ type Server struct {
 	Settings map[string]any
 	// Timeout bounds one request; Ready bounds the wait for indexing.
 	Timeout, Ready time.Duration
+	// Until is the title of the progress that ends the server's indexing,
+	// such as rust-analyzer's Indexing, for a server that goes idle between
+	// loading phases: Wait returns only after one has ended.
+	Until string
 }
 
 // Client is a running server.
@@ -52,8 +56,10 @@ type Client struct {
 	next    int64
 	pending map[int64]chan response
 	dead    error
-	// work holds the progress tokens begun and not yet ended.
-	work map[string]bool
+	// work holds the progress tokens begun and not yet ended, with their
+	// titles; indexed is whether a progress titled Until has ended.
+	work    map[string]string
+	indexed bool
 	// quiet is the server's own word that it is idle, for a server that
 	// says so; nil until it first does.
 	quiet   *bool
@@ -106,7 +112,7 @@ func Start(ctx context.Context, s Server) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{cmd: cmd, exited: make(chan struct{}), stdin: in, stderr: &tail{}, srv: s, pending: map[int64]chan response{}, work: map[string]bool{}, changed: make(chan struct{})}
+	c := &Client{cmd: cmd, exited: make(chan struct{}), stdin: in, stderr: &tail{}, srv: s, pending: map[int64]chan response{}, work: map[string]string{}, changed: make(chan struct{})}
 	cmd.Stderr = c.stderr
 	if err := cmd.Start(); err != nil {
 		return nil, err
@@ -346,7 +352,8 @@ func (c *Client) note(method string, params json.RawMessage) {
 		var p struct {
 			Token json.RawMessage `json:"token"`
 			Value struct {
-				Kind string `json:"kind"`
+				Kind  string `json:"kind"`
+				Title string `json:"title"`
 			} `json:"value"`
 		}
 		if json.Unmarshal(params, &p) != nil {
@@ -354,9 +361,12 @@ func (c *Client) note(method string, params json.RawMessage) {
 		}
 		switch p.Value.Kind {
 		case "begin":
-			c.work[string(p.Token)] = true
+			c.work[string(p.Token)] = p.Value.Title
 			c.stirred = true
 		case "end":
+			if t, ok := c.work[string(p.Token)]; ok && t == c.srv.Until {
+				c.indexed = true
+			}
 			delete(c.work, string(p.Token))
 		}
 	case "experimental/serverStatus":
@@ -381,9 +391,9 @@ func (c *Client) poke() {
 }
 
 // Wait blocks until the server has begun work and finished it: no progress
-// is open, and a server that reports its status says it is quiescent. The
-// state must hold for settle, since a server opens its next phase just
-// after closing one.
+// is open, the Until progress has ended, and a server that reports its
+// status says it is quiescent. The state must hold for settle, since a
+// server opens its next phase just after closing one.
 func (c *Client) Wait(ctx context.Context, settle time.Duration) error {
 	if c.srv.Ready > 0 {
 		var cancel context.CancelFunc
@@ -396,7 +406,7 @@ func (c *Client) Wait(ctx context.Context, settle time.Duration) error {
 			c.mu.Unlock()
 			return c.dead
 		}
-		idle := c.stirred && len(c.work) == 0 && (c.quiet == nil || *c.quiet)
+		idle := c.stirred && len(c.work) == 0 && (c.quiet == nil || *c.quiet) && (c.srv.Until == "" || c.indexed)
 		changed := c.changed
 		c.mu.Unlock()
 		var settled <-chan time.Time

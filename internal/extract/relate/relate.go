@@ -111,6 +111,7 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, [
 	o := index(doc.Units)
 	var unread []Unread
 	all := found{covered: map[string]bool{}, when: map[link]string{}}
+	partial := map[string]bool{}
 	for i, s := range specs {
 		if slices.Contains(specs[:i], s) {
 			continue
@@ -131,8 +132,13 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, [
 			slices.Sort(f.unread)
 			unread = append(unread, Unread{s.Name, r.unread, slices.Compact(f.unread)})
 		}
+		for _, p := range f.unread {
+			if u, ok := o.of(p); ok {
+				partial[u] = true
+			}
+		}
 	}
-	doc, err = merge(root, doc, all)
+	doc, err = merge(root, doc, all, partial)
 	return doc, unread, err
 }
 
@@ -142,15 +148,23 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, [
 func codeVia(v model.Via) bool { return v == "" || slices.Contains(vias, v) }
 
 // merge folds the facts into the extraction under the ownership rule Relate
-// states, one relation per link with the best via's quotes.
-func merge(root string, doc extract.Doc, f found) (extract.Doc, error) {
+// states, one relation per link with the best via's quotes. A unit that
+// holds code no configuration compiled was read only in part, so its
+// extraction's depends_on that the relater found no sign of stays: the
+// code left unread may be what it rests on.
+func merge(root string, doc extract.Doc, f found, partial map[string]bool) (extract.Doc, error) {
+	seen := map[link]bool{}
+	for _, x := range f.facts {
+		seen[x.link] = true
+	}
 	had := map[link]bool{}
 	var kept []extract.DocRelation
 	for _, r := range doc.Relations {
-		if r.Kind == model.DependsOn && codeVia(r.Via) && f.covered[r.From] && f.covered[r.To] {
+		l := link{r.From, r.To, r.Kind}
+		if r.Kind == model.DependsOn && codeVia(r.Via) && f.covered[r.From] && f.covered[r.To] && (seen[l] || !partial[r.From]) {
 			continue
 		}
-		had[link{r.From, r.To, r.Kind}] = true
+		had[l] = true
 		kept = append(kept, r)
 	}
 	sites := map[link]map[model.Via]map[site]bool{}

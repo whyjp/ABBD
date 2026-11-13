@@ -75,13 +75,15 @@ func lines(doc extract.Doc) []string {
 func TestRustRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 	ifc := extract.DocUnit{Ref: "if-speaker", Kind: model.Interface, Name: "Speaker", Anchors: []model.Anchor{{Path: "engine/src/lib.rs", Symbol: "Speaker"}}}
 	doc := extract.Doc{Units: append(rustUnits(), ifc), Relations: []extract.DocRelation{
-		{From: "mod-app", To: "mod-extra", Kind: model.DependsOn, Via: "import"},
 		{From: "mod-app", To: "mod-util", Kind: model.DependsOn, Via: "build-feature"},
+		{From: "mod-app", To: "mod-extra", Kind: model.DependsOn, Via: "import"},
+		{From: "mod-plugin", To: "mod-util", Kind: model.DependsOn, Via: "import"},
 	}}
 	out, unread := relateRust(t, doc)
 	got := lines(out)
 	want := []string{
 		"mod-app depends_on mod-engine via call [app/src/lib.rs:12:engine::run(&dog)]",
+		"mod-app depends_on mod-extra via import []",
 		"mod-app depends_on mod-fancy via call when all features [app/src/lib.rs:21:fancy::glow()]",
 		"mod-app depends_on mod-plugin via import [app/src/lib.rs:9:let dog = plugin::Dog;]",
 		"mod-app depends_on mod-shapes via import [app/src/lib.rs:1:use shapes::{Square, MAX}; app/src/lib.rs:10:let sq = Square { n: MAX };]",
@@ -98,6 +100,8 @@ func TestRustRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 	if len(unread) != 1 || unread[0].Relater != "rust" || !slices.Equal(unread[0].Paths, []string{"app/src/win.rs"}) {
 		t.Errorf("unread = %+v, want app/src/win.rs from rust", unread)
 	}
+	// app's unread cfg(windows) file may be where it uses extra, so the
+	// extraction's link stays; plugin was read whole, so its goes.
 	if _, err := os.Stat(rustFixture + "/target"); err == nil {
 		t.Error("the relater built the workspace into target/")
 	}
