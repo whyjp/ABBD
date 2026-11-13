@@ -6874,7 +6874,31 @@
                 "Code": true
               },
               {
-                "Text": "에 담긴다. 해석 오류는 사용법을 찍고 64로 끝난다. 쓰기 동사가 성공하면 ",
+                "Text": "에 담긴다. 해석 오류는 사용법을 찍고 64로 끝나지만, ",
+                "Code": false
+              },
+              {
+                "Text": "--help",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "-h",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "help",
+                "Code": true
+              },
+              {
+                "Text": "는 사용법을 찍고 0으로 끝난다. 쓰기 동사가 성공하면 ",
                 "Code": false
               },
               {
