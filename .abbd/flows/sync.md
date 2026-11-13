@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "583"
+          lines: "588"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "474"
+          lines: "540"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "478"
+          lines: "544"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "481"
+          lines: "547"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "618"
+          lines: "687"
           symbol: runScript
           quote: cmd := exec.Command(name, argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "121"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "485"
+          lines: "551"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -62,16 +62,16 @@ steps:
         - DATA-0006
       evidence:
         - path: internal/store/store.go
-          lines: "87"
+          lines: "89"
           quote: return nil, ErrOldFormat
         - path: internal/store/store.go
-          lines: "306"
+          lines: "311"
           quote: func (s Store) LoadCandidates() ([]identity.Candidate, error) {
         - path: internal/store/store.go
-          lines: "321"
+          lines: "326"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "548"
+          lines: "617"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "113"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "560"
+          lines: "629"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "322"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "569"
+          lines: "638"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,28 +115,29 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "579"
+          lines: "648"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
         cmd/abbd/main.go#quote-6baa56c0: 2fbf51b0c5fa2aae
         internal/gitx/gitx.go#quote-bf242a07: b58a57cef6252aa3
     - unit: MOD-0026
-      does: Reconcile(stored, renames, extraction, prior) → units with their IDs kept
+      does: Reconcile(stored, extraction) → each unit keeps its stored ID
+      note: 앵커가 같은 보충 단위보다 스크립트 단위가 먼저 제 ID를 받는다
       fails: refuses an extraction with no units while units are stored
       calls:
         - DATA-0003
       evidence:
         - path: internal/identity/identity.go
-          lines: "73"
+          lines: "76"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "573"
+          lines: "642"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
         cmd/abbd/main.go#quote-5664e499: 9d734f0de284ca33
-        internal/identity/identity.go#quote-215518d5: ffa9923d84229d05
+        internal/identity/identity.go#quote-215518d5: 35dd08372ee38eaa
     - unit: MOD-0013
       does: Apply(units, rev) → every quote live, drifted or dead
       note: a drifted quote dies at the first sync of a later revision, and only then does a crowded level fall back to directories
@@ -145,7 +146,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "583"
+          lines: "652"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -159,7 +160,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "584"
+          lines: "653"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -171,10 +172,10 @@ steps:
         - DATA-0004
       evidence:
         - path: internal/store/store.go
-          lines: "286"
+          lines: "291"
           quote: func (s Store) SaveUnits(units []model.Unit) error {
         - path: internal/store/store.go
-          lines: "311"
+          lines: "316"
           quote: func (s Store) SaveCandidates(cs []identity.Candidate) error {
       writer: reader
       code:
@@ -189,7 +190,7 @@ steps:
           lines: "541"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
-          lines: "396"
+          lines: "401"
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
@@ -202,16 +203,19 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "445"
+          lines: "511"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
+          symbol: publish
           quote: files, err := screen.Files(screen.Build(in))
         - path: cmd/abbd/screen.go
           lines: "31"
+          symbol: publish
           quote: if err := e.st.SaveBlueprint(files); err != nil {
         - path: cmd/abbd/screen.go
           lines: "34"
+          symbol: publish
           quote: in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)
       writer: reader
       code:
@@ -343,6 +347,19 @@ retired:
       code:
         cmd/abbd/main.go#quote-414b351c: 1890665b94e73ff6
         cmd/abbd/main.go#quote-c1c55757: 417fc75a7dfd695c
+    - unit: MOD-0026
+      does: Reconcile(stored, renames, extraction, prior) → units with their IDs kept
+      fails: refuses an extraction with no units while units are stored
+      evidence:
+        - path: internal/identity/identity.go
+          lines: "73"
+          quote: func Reconcile(stored []model.Unit
+        - path: cmd/abbd/main.go
+          lines: "573"
+          quote: the extraction reported no units; refusing to mark every unit absent
+      code:
+        cmd/abbd/main.go#quote-5664e499: 9d734f0de284ca33
+        internal/identity/identity.go#quote-215518d5: ffa9923d84229d05
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.
