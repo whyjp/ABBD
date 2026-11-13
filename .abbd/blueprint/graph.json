@@ -1313,6 +1313,18 @@
       ]
     },
     {
+      "ID": "IF-0030",
+      "Kind": "IF",
+      "Name": "abbd runtime",
+      "Signature": "abbd runtime pos{0}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/runtime.go runtime"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1348,6 +1360,7 @@
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
         "cmd/abbd/review.go",
+        "cmd/abbd/runtime.go",
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
         "cmd/abbd/stack.go",
@@ -2714,6 +2727,24 @@
         "N": 5,
         "Of": 8
       }
+    },
+    {
+      "ID": "MOD-0058",
+      "Kind": "MOD",
+      "Name": "internal/extract/runscan",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/extract/runscan",
+        "internal/extract/runscan/blank.go",
+        "internal/extract/runscan/candidates.go",
+        "internal/extract/runscan/catalog.go",
+        "internal/extract/runscan/record.go",
+        "internal/extract/runscan/scan.go",
+        "internal/extract/runscan/wrap.go"
+      ],
+      "Parent": "MOD-0017"
     }
   ],
   "edges": [
@@ -3134,6 +3165,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0030",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd runtime\""
     },
     {
       "From": "FEAT-0003",
@@ -3794,6 +3833,13 @@
     },
     {
       "From": "MOD-0001",
+      "To": "IF-0030",
+      "Kind": "provides",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
@@ -4000,6 +4046,13 @@
       "Via": "call",
       "Phrase": "long-section check",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0002",
@@ -5169,6 +5222,24 @@
       "Via": "call",
       "Phrase": "Unit, Kind, Module",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0022",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Phrase": "WorkingFiles",
+      "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0030",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Phrase": "model.Present",
+      "PhraseOrigin": "INFERRED"
     }
   ],
   "modules": [
@@ -5581,7 +5652,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 21,
+        "Uses": 22,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5758,7 +5829,8 @@
             "retract",
             "flow",
             "lint",
-            "brief"
+            "brief",
+            "runtime"
           ]
         }
       ],
@@ -5954,7 +6026,7 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 30,
+        "Provides": 31,
         "Uses": 13,
         "Direct": 12,
         "StaleNotes": 0,
@@ -6493,7 +6565,55 @@
                 "Code": true
               },
               {
-                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table이다. 읽기 동사는 explain, brief, path, impact, diff, review, evidence, status, lint다. ",
+                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table이다. 읽기 동사는 explain, brief, path, impact, diff, review, evidence, status, runtime, lint다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd runtime",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/runtime.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 ",
+                "Code": false
+              },
+              {
+                "Text": "internal/extract/runscan",
+                "Code": true
+              },
+              {
+                "Text": "이 찾은 spawn과 채널 후보 가운데 상태가 아직 인용하지 않은 것을 reader의 작업 목록으로 찍고, ",
+                "Code": false
+              },
+              {
+                "Text": "--records",
+                "Code": true
+              },
+              {
+                "Text": "는 각 레코드에 소유 모듈을 채워 JSON 줄로 찍는다. setup, sync, status는 ",
+                "Code": false
+              },
+              {
+                "Text": "runtime:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 그 수를 알리지만, 후보는 빚이 아니라 단서라서 ",
+                "Code": false
+              },
+              {
+                "Text": "--check",
+                "Code": true
+              },
+              {
+                "Text": "를 실패시키지 않는다. ",
                 "Code": false
               },
               {
@@ -9469,6 +9589,40 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0030",
+          "Name": "abbd runtime",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0030",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "records",
+                "Name": "--records",
+                "Shape": "bool",
+                "Need": ""
+              },
+              {
+                "Key": "verbose",
+                "Name": "--verbose",
+                "Shape": "bool",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -9499,7 +9653,8 @@
             "lint",
             "review",
             "brief",
-            "scope"
+            "scope",
+            "runtime"
           ]
         },
         {
@@ -11939,6 +12094,92 @@
             "N": 1,
             "Of": 2
           }
+        },
+        {
+          "ID": "MOD-0058",
+          "Name": "internal/extract/runscan",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/extract/runscan",
+            "internal/extract/runscan/blank.go",
+            "internal/extract/runscan/candidates.go",
+            "internal/extract/runscan/catalog.go",
+            "internal/extract/runscan/record.go",
+            "internal/extract/runscan/scan.go",
+            "internal/extract/runscan/wrap.go"
+          ],
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "internal/extract/runscan",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "internal/extract/runscan/scan.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): 코드가 스레드, 태스크, 풀, 런타임, 이벤트 루프를 시작하는 곳과 그 사이에 일을 넘기는 곳을 C·C++, Rust, Go의 카탈로그(",
+                  "Code": false
+                },
+                {
+                  "Text": "catalog.go",
+                  "Code": true
+                },
+                {
+                  "Text": ")로 찾는 추출기다. 주석과 문자열을 비우고 테스트 코드를 건너뛰며, 결과는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "syntactic",
+                  "Code": true
+                },
+                {
+                  "Text": " 확신도의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Record",
+                  "Code": true
+                },
+                {
+                  "Text": " 후보일 뿐 저장된 사실이 아니다. git이 알리는 파일을 ",
+                  "Code": false
+                },
+                {
+                  "Text": "gitx.WorkingFiles",
+                  "Code": true
+                },
+                {
+                  "Text": "로 읽으므로 이 하위 모듈만 ",
+                  "Code": false
+                },
+                {
+                  "Text": "internal/gitx",
+                  "Code": true
+                },
+                {
+                  "Text": "에 기댄다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
@@ -12011,7 +12252,11 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "이 패키지는 ",
+                "Text": "extract.go",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -13221,6 +13466,209 @@
               },
               {
                 "Text": "로 합치거나 link scope를 빼라고 말한다. scope는 조건이 아니기 때문이다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "실행 시점 스캔",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "internal/extract/runscan",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "internal/extract/runscan/scan.go",
+                "Code": true
+              },
+              {
+                "Text": "): 코드가 스레드, 태스크, 풀, 런타임, 이벤트 루프를 시작하는 곳과 그 사이에 일을 넘기는 곳을 C·C++, Rust, Go의 카탈로그(",
+                "Code": false
+              },
+              {
+                "Text": "catalog.go",
+                "Code": true
+              },
+              {
+                "Text": ")로 찾는 추출기다. 주석과 문자열을 비우고 테스트 코드를 건너뛰며, 결과는 ",
+                "Code": false
+              },
+              {
+                "Text": "syntactic",
+                "Code": true
+              },
+              {
+                "Text": " 확신도의 ",
+                "Code": false
+              },
+              {
+                "Text": "Record",
+                "Code": true
+              },
+              {
+                "Text": " 후보일 뿐 저장된 사실이 아니다. git이 알리는 파일을 ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.WorkingFiles",
+                "Code": true
+              },
+              {
+                "Text": "로 읽으므로 이 하위 모듈만 ",
+                "Code": false
+              },
+              {
+                "Text": "internal/gitx",
+                "Code": true
+              },
+              {
+                "Text": "에 기댄다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "wrapper 찾기",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "internal/extract/runscan/wrap.go",
+                "Code": true
+              },
+              {
+                "Text": "): 파일을 두 번 읽는다. 처음에는 자기 매개변수를 카탈로그 spawn 호출의 일거리로 넘기는 함수, 메서드, 함수 모양 매크로를 wrapper로, ",
+                "Code": false
+              },
+              {
+                "Text": "use X as Y",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "type Y = X",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "using Y = X",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "#define Y X",
+                "Code": true
+              },
+              {
+                "Text": "를 별칭으로 모은다. 다음에는 wrapper 호출과 별칭으로 쓴 카탈로그 호출도 spawn 자리로 찍는다. 한 단계만 따라가고, 이름 규칙은 쓰지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "후보 매핑",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "internal/extract/runscan/candidates.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Candidates",
+                "Code": true
+              },
+              {
+                "Text": "는 레코드를 가장 가까이 anchor한 모듈이나 feature에 붙여 ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "runs_on",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "provides",
+                "Code": true
+              },
+              {
+                "Text": " 후보로 만들고, 상태의 evidence가 그 자리를 인용하면 저장된 것으로 센다. ",
+                "Code": false
+              },
+              {
+                "Text": "Own",
+                "Code": true
+              },
+              {
+                "Text": "은 레코드의 ",
+                "Code": false
+              },
+              {
+                "Text": "module",
+                "Code": true
+              },
+              {
+                "Text": "을 같은 규칙으로 채운다.",
                 "Code": false
               }
             ]
