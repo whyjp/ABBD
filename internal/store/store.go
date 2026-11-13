@@ -450,8 +450,6 @@ const lintDebtHead = `# What the drawings owe the drawing criteria of docs/bluep
 # placement debt more than 2% past its ceiling.
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
-# prose names the texts not yet written in project.yaml's language; lint
-# fails on any other, and each leaves the list when it is written again.
 `
 
 func (s Store) SaveLintDebt(d LintDebt) error {
