@@ -622,10 +622,10 @@ func TestAWordIsDroppedOnlyBesideALineThatSaysIt(t *testing.T) {
 	}
 }
 
-// The green line from internal/screen into store staleness hashes on self's
-// MOD-0041 keeps its 호출 though the cyan line from the abbd CLI it touches
-// says 호출 beside it: the two wear different colours.
-func TestAWordStaysBesideALineOfAnotherColour(t *testing.T) {
+// The line from internal/screen into store staleness hashes on self's
+// MOD-0041 is a call and says nothing at rest: its solid ink says call
+// already, so 호출 stays in its tooltip.
+func TestAPlainViaWordStaysInTheTooltip(t *testing.T) {
 	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "MOD-0041 internal/store" {
@@ -635,8 +635,9 @@ func TestAWordStaysBesideALineOfAnotherColour(t *testing.T) {
 		if at < 0 {
 			t.Fatal("MOD-0041 draws no line M556 98 L710 98")
 		}
-		if l := v.d.Wires[at].Label; l == nil || l.S != "호출" {
-			t.Errorf("the line from internal/screen on MOD-0041 says %v, want 호출", l)
+		w := v.d.Wires[at]
+		if w.Label != nil || !strings.HasSuffix(w.Title, "\nvia 호출") {
+			t.Errorf("the line from internal/screen on MOD-0041 says %v with tooltip %q, want no word and via 호출 in its tooltip", w.Label, w.Title)
 		}
 		return
 	}

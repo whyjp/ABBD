@@ -10,10 +10,11 @@ import (
 )
 
 // unphrased names the overview lines whose relations carry no live phrase,
-// so the overview can say only a via word such as 호출 or 임포트 there. A
-// line is the unordered pair of boxes its drawn relations join: a unit
-// inside a module stands on the module's box, and a contract on the box of
-// the module that provides it, the first by ID when several do. A phrase labels a line
+// so the overview can say only a via word such as 데이터 there, and none
+// for a call or an import. A line is the unordered pair of boxes its drawn
+// relations join: a unit inside a module stands on the module's box, and a
+// contract on the box of the module that provides it, the first by ID when
+// several do. A phrase labels a line
 // only while its quote is live, and only when half the line's relations
 // carry it, so a line listed here may still say its via word after one
 // phrase is added.
