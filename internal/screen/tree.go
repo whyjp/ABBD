@@ -18,8 +18,9 @@ type tree struct {
 	// it, by its key.
 	vias    map[string]model.Via
 	phrases map[string]phrase
-	// whens are the conditions relations hold under, by key.
-	whens map[string]string
+	// whens are the conditions relations hold under, by key, each with the
+	// origin of a lower claim that gives it.
+	whens map[string]phrase
 }
 
 // phrase is a live note's words and the origin of whoever wrote them.
@@ -36,13 +37,16 @@ func livePhrase(u model.Unit, kind model.RelationKind, to model.ID) (model.Phras
 }
 
 func newTree(units []model.Unit) tree {
-	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}, phrases: map[string]phrase{}, whens: map[string]string{}}
+	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}, phrases: map[string]phrase{}, whens: map[string]phrase{}}
 	for _, u := range model.Present(units) {
 		t.units[u.ID] = u
 		for _, r := range u.Relations {
 			t.vias[key(u.ID, r.Kind, r.To)] = r.Via
-			if w := u.Condition(r.Kind, r.To); w != "" {
-				t.whens[key(u.ID, r.Kind, r.To)] = w
+			if w, o := u.Condition(r.Kind, r.To); w != "" {
+				if o == r.Origin {
+					o = ""
+				}
+				t.whens[key(u.ID, r.Kind, r.To)] = phrase{w, o}
 			}
 			if n, ok := livePhrase(u, r.Kind, r.To); ok {
 				t.phrases[key(u.ID, r.Kind, r.To)] = phrase{n.Text, n.Writer.Origin()}

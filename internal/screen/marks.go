@@ -523,8 +523,13 @@ func said(t tree, lines [][]string) []string {
 func conditions(t tree, lines [][]string, scope bool) []string {
 	us := units(lines)
 	n := carried(us, func(r string) string {
-		if w := t.whens[r]; model.Scope(w) == scope {
-			return w
+		w := t.whens[r]
+		switch {
+		case w.text == "" || model.Scope(w.text) != scope:
+		case w.origin != "":
+			return fmt.Sprintf("%s (%s)", w.text, labels[Badge(w.origin)])
+		default:
+			return w.text
 		}
 		return ""
 	})

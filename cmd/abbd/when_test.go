@@ -115,9 +115,11 @@ func TestTheSupplementGivesTheConditionOfAnEdgeTheScriptReads(t *testing.T) {
 	if strings.Contains(out, "conflict:") {
 		t.Errorf("a condition the script does not read is reported as a conflict:\n%s", out)
 	}
-	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when WIN32)")
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import; when WIN32, inferred)")
+	contains(t, p.blueprint(), "조건: WIN32 (판독)")
+	contains(t, p.read("blueprint/graph.json"), `"When": "WIN32"`, `"WhenOrigin": "INFERRED"`)
 	p.resync()
-	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when WIN32)")
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import; when WIN32, inferred)")
 
 	p.extract(topo(`,"when":"cfg(unix)"`))
 	out = p.setup(0, "synced: 2 unit(s)", "--supplement", sup, "--", exe)
@@ -130,5 +132,72 @@ func TestTheSupplementGivesTheConditionOfAnEdgeTheScriptReads(t *testing.T) {
 	if out := p.setup(0, "synced: 2 unit(s)", "--supplement", sup, "--", exe); strings.Contains(out, "conflict:") {
 		t.Errorf("a condition over a link scope is reported as a conflict:\n%s", out)
 	}
-	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, when WIN32)")
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import; when WIN32, inferred)")
+}
+
+// A sync that runs after the script starts reading another condition says
+// so, as setup does, and so does a link scope the supplement gives over
+// another the script reads: one link has one scope.
+func TestSyncReportsAConditionTheScriptNowReadsOtherwise(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.code("CMakeLists.txt", "if(WIN32)\n  target_link_libraries(ledger PUBLIC billing)\nendif()\n")
+	topo := func(when string) string {
+		return strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"import"`+when+`}]}`, 1)
+	}
+	sup := func(when string) string {
+		return p.file(t, "sup.json", `{"units":[],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"import","when":"`+when+`",
+ "evidence":[{"path":"CMakeLists.txt","lines":"1","quote":"if(WIN32)"}]}]}`)
+	}
+	p.extract(topo(""))
+	p.setup(0, "synced: 2 unit(s)", "--supplement", sup("WIN32"), "--", exe)
+	p.extract(topo(`,"when":"cfg(unix)"`))
+	contains(t, p.resync(), `conflict: MOD-0002.depends_on.MOD-0001: the supplement gives condition "WIN32", the script's "cfg(unix)" shows`)
+	contains(t, p.want(0, "", "status"), `conflict: MOD-0002.depends_on.MOD-0001: the supplement gives condition "WIN32"`)
+
+	p.extract(topo(`,"when":"PRIVATE"`))
+	out := p.setup(0, "synced: 2 unit(s)", "--supplement", sup("PUBLIC"), "--", exe)
+	contains(t, out, `conflict: supplement relation ledger -depends_on-> billing gives scope "PUBLIC", the script reads "PRIVATE"; the script's shows`)
+	if n := strings.Count(out, "conflict:"); n != 1 {
+		t.Errorf("setup reports the conflict %d times:\n%s", n, out)
+	}
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via import, scope PRIVATE)")
+}
+
+// The evidence of a condition the supplement gives on an edge the script
+// reads is listed and counted like any claim's: drifted, then dead, until a
+// reader retracts it. The condition never leaves the edge without a word.
+func TestAConditionsEvidenceIsListedAndCountedUntilRetracted(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.code("CMakeLists.txt", "if(WIN32)\n  target_link_libraries(ledger PRIVATE billing)\nendif()\n")
+	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"link"}]}`, 1))
+	sup := p.file(t, "sup.json", `{"units":[],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"link","when":"WIN32",
+ "evidence":[{"path":"CMakeLists.txt","lines":"1","quote":"if(WIN32)"}]}]}`)
+	p.setup(0, "synced: 2 unit(s)", "--supplement", sup, "--", exe)
+	contains(t, p.want(0, "", "evidence"), `live MOD-0002.depends_on.MOD-0001.when "WIN32": CMakeLists.txt`, "1 live, 0 drifted, 0 dead")
+
+	p.laterRevision()
+	p.code("CMakeLists.txt", "if(MSVC)\n  target_link_libraries(ledger PRIVATE billing)\nendif()\n")
+	contains(t, p.resync(), "evidence: 1 drifted, 0 dead; abbd evidence lists them")
+	contains(t, p.want(0, "", "evidence"), `MOD-0002.depends_on.MOD-0001.when "WIN32": CMakeLists.txt`, "0 live, 1 drifted, 0 dead")
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "when WIN32, inferred")
+
+	p.laterRevision()
+	contains(t, p.resync(), "evidence: 0 drifted, 1 dead; abbd evidence lists them")
+	contains(t, p.want(0, "", "evidence"), `dead MOD-0002.depends_on.MOD-0001.when "WIN32"`, "0 live, 0 drifted, 1 dead")
+	contains(t, p.want(0, "", "status"), "evidence: 0 drifted, 1 dead")
+	if out := p.want(0, "", "explain", "MOD-0002"); strings.Contains(out, "WIN32") {
+		t.Errorf("a dead condition still shows:\n%s", out)
+	}
+
+	p.want(0, "retracted MOD-0002.depends_on.MOD-0001.when", "retract", "MOD-0002.depends_on.MOD-0001.when", "--reason", "the if() is gone")
+	if out := p.resync(); strings.Contains(out, "evidence:") {
+		t.Errorf("a retracted condition is still counted:\n%s", out)
+	}
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0001 billing (extracted, via link)")
 }

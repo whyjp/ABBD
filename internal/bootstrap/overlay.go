@@ -159,8 +159,10 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			}
 			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence, When: r.When})
 		case r.When == "" || r.When == got.When:
-		case got.When != "" && !model.Scope(got.When):
-			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement relation %s -%s-> %s gives condition %q, the script reads %q; the script's shows", r.From, r.Kind, r.To, r.When, got.When))
+		case got.When != "" && (!model.Scope(got.When) || model.Scope(r.When)):
+			// Two link scopes conflict as two conditions do: one link has one.
+			what := map[bool]string{false: "condition", true: "scope"}[model.Scope(r.When) && model.Scope(got.When)]
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement relation %s -%s-> %s gives %s %q, the script reads %q; the script's shows", r.From, r.Kind, r.To, what, r.When, got.When))
 		default:
 			// The script reads the edge but not its condition, as with a
 			// CMake if() around a link, or only its link scope. The
