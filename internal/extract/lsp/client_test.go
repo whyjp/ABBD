@@ -24,7 +24,10 @@ func TestMain(m *testing.M) {
 }
 
 // fakeServer pulls its settings, reports indexing as a progress, drops the
-// first references request as content-modified, and dies on "crash".
+// first references request as content-modified, and dies on "crash". It
+// counts columns in FAKE_ENCODING, reports nothing with FAKE_QUIET, and
+// answers "last" with the last position it was asked at and "opened" with
+// the text of the last file opened.
 func fakeServer() {
 	r := bufio.NewReader(os.Stdin)
 	send := func(v any) {
@@ -32,7 +35,7 @@ func fakeServer() {
 		fmt.Printf("Content-Length: %d\r\n\r\n%s", len(b), b)
 	}
 	dropped := false
-	var settings json.RawMessage
+	var settings, last, opened json.RawMessage
 	for {
 		b, err := frame(r)
 		if err != nil {
@@ -42,12 +45,22 @@ func fakeServer() {
 			ID     json.RawMessage `json:"id"`
 			Method string          `json:"method"`
 			Result json.RawMessage `json:"result"`
+			Params struct {
+				TextDocument struct {
+					URI  string          `json:"uri"`
+					Text json.RawMessage `json:"text"`
+				} `json:"textDocument"`
+				Position json.RawMessage `json:"position"`
+			} `json:"params"`
 		}
 		json.Unmarshal(b, &m)
 		switch m.Method {
 		case "initialize":
-			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": map[string]any{"capabilities": map[string]any{}}})
+			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": map[string]any{"capabilities": map[string]any{"positionEncoding": os.Getenv("FAKE_ENCODING")}}})
 		case "initialized":
+			if os.Getenv("FAKE_QUIET") != "" {
+				continue
+			}
 			send(map[string]any{"jsonrpc": "2.0", "id": 900, "method": "workspace/configuration", "params": map[string]any{"items": []any{map[string]any{"section": "fake"}}}})
 			send(map[string]any{"jsonrpc": "2.0", "method": "$/progress", "params": map[string]any{"token": "load", "value": map[string]any{"kind": "begin", "title": "Loading"}}})
 			send(map[string]any{"jsonrpc": "2.0", "method": "$/progress", "params": map[string]any{"token": "load", "value": map[string]any{"kind": "end"}}})
@@ -63,7 +76,15 @@ func fakeServer() {
 				send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "error": map[string]any{"code": -32801, "message": "content modified"}})
 				continue
 			}
-			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": []any{map[string]any{"uri": "file:///x/a.rs", "range": map[string]any{}}}})
+			last = m.Params.Position
+			end := map[string]any{"line": 0, "character": 3}
+			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": []any{map[string]any{"uri": m.Params.TextDocument.URI, "range": map[string]any{"start": last, "end": end}}}})
+		case "textDocument/didOpen":
+			opened = m.Params.TextDocument.Text
+		case "last":
+			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": last})
+		case "opened":
+			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": opened})
 		case "workspace/settings":
 			send(map[string]any{"jsonrpc": "2.0", "id": m.ID, "result": settings})
 		case "crash":
@@ -77,16 +98,20 @@ func fakeServer() {
 	}
 }
 
-func startFake(t *testing.T) *Client {
+func startFake(t *testing.T, env ...string) *Client {
+	return startServer(t, Server{Env: env, Ready: 10 * time.Second, Until: "Indexing"})
+}
+
+func startServer(t *testing.T, s Server) *Client {
 	t.Helper()
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
 	}
-	c, err := Start(context.Background(), Server{
-		Argv: []string{exe}, Env: []string{"FAKE_LSP=1"}, Root: t.TempDir(),
-		Settings: map[string]any{"fake": map[string]any{"depth": 3}}, Timeout: 10 * time.Second, Ready: 10 * time.Second, Until: "Indexing",
-	})
+	s.Argv, s.Root, s.Timeout = []string{exe}, t.TempDir(), 10*time.Second
+	s.Env = append(s.Env, "FAKE_LSP=1")
+	s.Settings = map[string]any{"fake": map[string]any{"depth": 3}}
+	c, err := Start(context.Background(), s)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,6 +135,61 @@ func TestClientWaitsForIndexingAndAsksAgainWhenTheServerDropsARequest(t *testing
 	refs, err := c.References(context.Background(), "a.rs", Position{})
 	if err != nil || len(refs) != 1 {
 		t.Errorf("references = %v, %v; want one after asking again", refs, err)
+	}
+}
+
+func TestClientCountsBytesWhereTheServerCountsUTF16Units(t *testing.T) {
+	src := filepath.Join(t.TempDir(), "a.rs")
+	if err := os.WriteFile(src, []byte("é🎉 = f();"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, enc := range []string{"utf-16", "utf-8"} {
+		c := startFake(t, "FAKE_ENCODING="+enc)
+		refs, err := c.References(context.Background(), src, Position{Character: 9})
+		if err != nil || len(refs) != 1 {
+			t.Fatalf("%s: references = %v, %v", enc, refs, err)
+		}
+		var last Position
+		if err := c.Call(context.Background(), "last", nil, &last); err != nil {
+			t.Fatal(err)
+		}
+		sent, start, end := 6, 9, 6
+		if enc == "utf-8" {
+			sent, start, end = 9, 9, 3
+		}
+		if last.Character != sent || refs[0].Range.Start.Character != start || refs[0].Range.End.Character != end {
+			t.Errorf("%s: sent column %d, read %d to %d; want %d, then %d to %d", enc, last.Character, refs[0].Range.Start.Character, refs[0].Range.End.Character, sent, start, end)
+		}
+	}
+}
+
+func TestClientOpensAFileWithItsTextOnDisk(t *testing.T) {
+	src := filepath.Join(t.TempDir(), "a.rs")
+	if err := os.WriteFile(src, []byte("fn main() {}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	c := startFake(t)
+	if err := c.Open(src, "rust"); err != nil {
+		t.Fatal(err)
+	}
+	var text string
+	if err := c.Call(context.Background(), "opened", nil, &text); err != nil || text != "fn main() {}" {
+		t.Errorf("the server holds %q (%v), want the file's text", text, err)
+	}
+}
+
+func TestClientWaitsOutAServerThatReportsNoProgress(t *testing.T) {
+	c := startServer(t, Server{Env: []string{"FAKE_QUIET=1"}, Ready: 5 * time.Second, Quiet: 300 * time.Millisecond})
+	start := time.Now()
+	if err := c.Wait(context.Background(), 50*time.Millisecond); err != nil {
+		t.Fatal(err)
+	}
+	if d := time.Since(start); d < 250*time.Millisecond || d > 3*time.Second {
+		t.Errorf("Wait returned after %s, want just past the quiet period", d)
+	}
+	deaf := startServer(t, Server{Env: []string{"FAKE_QUIET=1"}, Ready: 500 * time.Millisecond})
+	if err := deaf.Wait(context.Background(), 50*time.Millisecond); err == nil {
+		t.Error("Wait returned for a silent server with no quiet period")
 	}
 }
 

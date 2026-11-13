@@ -18,6 +18,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf16"
 )
 
 // Server says how to run one language server and what to tell it.
@@ -39,6 +40,10 @@ type Server struct {
 	// such as rust-analyzer's Indexing, for a server that goes idle between
 	// loading phases: Wait returns only after one has ended.
 	Until string
+	// Quiet is how long after initialized a server that has sent no
+	// progress or status counts as ready, for a server that reports
+	// neither. Zero waits for one.
+	Quiet time.Duration
 }
 
 // Client is a running server.
@@ -65,6 +70,14 @@ type Client struct {
 	quiet   *bool
 	stirred bool
 	changed chan struct{}
+	started time.Time
+
+	// utf16 is whether the server counts columns in UTF-16 units, the
+	// protocol's default. The typed requests then convert every position
+	// they send or read, so callers always count bytes. lines caches the
+	// files read for that.
+	utf16 bool
+	lines sync.Map
 }
 
 type response struct {
@@ -129,6 +142,7 @@ func Start(ctx context.Context, s Server) (*Client, error) {
 			"references":     map[string]any{},
 			"implementation": map[string]any{"linkSupport": false},
 			"definition":     map[string]any{"linkSupport": false},
+			"diagnostic":     map[string]any{},
 		},
 		"workspace":    map[string]any{"configuration": true},
 		"general":      map[string]any{"positionEncodings": []string{"utf-8", "utf-16"}},
@@ -140,10 +154,17 @@ func Start(ctx context.Context, s Server) (*Client, error) {
 		"workspaceFolders":      []any{map[string]any{"uri": root, "name": "root"}},
 		"initializationOptions": s.Init,
 	}
-	if err := c.Call(ctx, "initialize", params, nil); err != nil {
+	var res struct {
+		Capabilities struct {
+			PositionEncoding string `json:"positionEncoding"`
+		} `json:"capabilities"`
+	}
+	if err := c.Call(ctx, "initialize", params, &res); err != nil {
 		c.Close()
 		return nil, err
 	}
+	c.utf16 = res.Capabilities.PositionEncoding != "utf-8"
+	c.started = time.Now()
 	if err := c.Notify("initialized", map[string]any{}); err != nil {
 		c.Close()
 		return nil, err
@@ -392,8 +413,9 @@ func (c *Client) poke() {
 
 // Wait blocks until the server has begun work and finished it: no progress
 // is open, the Until progress has ended, and a server that reports its
-// status says it is quiescent. The state must hold for settle, since a
-// server opens its next phase just after closing one.
+// status says it is quiescent. A server silent for Server.Quiet counts as
+// having begun and finished. The state must hold for settle, since a server
+// opens its next phase just after closing one.
 func (c *Client) Wait(ctx context.Context, settle time.Duration) error {
 	if c.srv.Ready > 0 {
 		var cancel context.CancelFunc
@@ -406,17 +428,22 @@ func (c *Client) Wait(ctx context.Context, settle time.Duration) error {
 			c.mu.Unlock()
 			return c.dead
 		}
-		idle := c.stirred && len(c.work) == 0 && (c.quiet == nil || *c.quiet) && (c.srv.Until == "" || c.indexed)
+		silent := c.srv.Quiet - time.Since(c.started)
+		begun := c.stirred || c.srv.Quiet > 0 && silent <= 0
+		idle := begun && len(c.work) == 0 && (c.quiet == nil || *c.quiet) && (c.srv.Until == "" || c.indexed)
 		changed := c.changed
 		c.mu.Unlock()
-		var settled <-chan time.Time
+		var settled, hushed <-chan time.Time
 		if idle {
 			settled = time.After(settle)
+		} else if !begun && c.srv.Quiet > 0 {
+			hushed = time.After(silent)
 		}
 		select {
 		case <-ctx.Done():
 			return fmt.Errorf("the language server did not finish indexing: %w", ctx.Err())
 		case <-changed:
+		case <-hushed:
 		case <-settled:
 			return nil
 		}
@@ -442,18 +469,54 @@ func (c *Client) Close() error {
 // Pid is the server process's id, for a caller that measures it.
 func (c *Client) Pid() int { return c.cmd.Process.Pid }
 
+// Open tells the server a file is open with its text on disk, for a server
+// that answers only about open files.
+func (c *Client) Open(abs, language string) error {
+	b, err := os.ReadFile(abs)
+	if err != nil {
+		return err
+	}
+	return c.Notify("textDocument/didOpen", map[string]any{"textDocument": map[string]any{
+		"uri": URI(abs), "languageId": language, "version": 1, "text": string(b),
+	}})
+}
+
 // DocumentSymbols are the declarations in a file, nested.
 func (c *Client) DocumentSymbols(ctx context.Context, abs string) ([]DocumentSymbol, error) {
 	var out []DocumentSymbol
 	err := c.Call(ctx, "textDocument/documentSymbol", map[string]any{"textDocument": doc(abs)}, &out)
+	uri := URI(abs)
+	var conv func(list []DocumentSymbol)
+	conv = func(list []DocumentSymbol) {
+		for i := range list {
+			list[i].Range = c.fromServer(uri, list[i].Range)
+			list[i].SelectionRange = c.fromServer(uri, list[i].SelectionRange)
+			conv(list[i].Children)
+		}
+	}
+	conv(out)
 	return out, err
+}
+
+// Diagnostics are what the server finds in a file when asked for them, by
+// textDocument/diagnostic.
+func (c *Client) Diagnostics(ctx context.Context, abs string) ([]Diagnostic, error) {
+	var out struct {
+		Items []Diagnostic `json:"items"`
+	}
+	err := c.Call(ctx, "textDocument/diagnostic", map[string]any{"textDocument": doc(abs)}, &out)
+	for i := range out.Items {
+		out.Items[i].Range = c.fromServer(URI(abs), out.Items[i].Range)
+	}
+	return out.Items, err
 }
 
 // References are the places that name the symbol at pos, its own
 // declaration left out.
 func (c *Client) References(ctx context.Context, abs string, pos Position) ([]Location, error) {
 	var out []Location
-	err := c.Call(ctx, "textDocument/references", map[string]any{"textDocument": doc(abs), "position": pos, "context": map[string]any{"includeDeclaration": false}}, &out)
+	err := c.Call(ctx, "textDocument/references", map[string]any{"textDocument": doc(abs), "position": c.toServer(URI(abs), pos), "context": map[string]any{"includeDeclaration": false}}, &out)
+	c.locate(out)
 	return out, err
 }
 
@@ -471,7 +534,7 @@ func (c *Client) Definitions(ctx context.Context, abs string, pos Position) ([]L
 // locations reads a result that is one Location, a list of them, or null.
 func (c *Client) locations(ctx context.Context, method, abs string, pos Position) ([]Location, error) {
 	var raw json.RawMessage
-	if err := c.Call(ctx, method, map[string]any{"textDocument": doc(abs), "position": pos}, &raw); err != nil {
+	if err := c.Call(ctx, method, map[string]any{"textDocument": doc(abs), "position": c.toServer(URI(abs), pos)}, &raw); err != nil {
 		return nil, err
 	}
 	raw = bytes.TrimSpace(raw)
@@ -479,13 +542,83 @@ func (c *Client) locations(ctx context.Context, method, abs string, pos Position
 		return nil, nil
 	}
 	if raw[0] == '{' {
-		var one Location
-		err := json.Unmarshal(raw, &one)
-		return []Location{one}, err
+		raw = append(append([]byte{'['}, raw...), ']')
 	}
 	var out []Location
 	err := json.Unmarshal(raw, &out)
+	c.locate(out)
 	return out, err
+}
+
+// locate turns the server's columns in each location into bytes.
+func (c *Client) locate(out []Location) {
+	for i := range out {
+		out[i].Range = c.fromServer(out[i].URI, out[i].Range)
+	}
+}
+
+func (c *Client) toServer(uri string, p Position) Position {
+	if l, ok := c.line(uri, p.Line); ok {
+		p.Character = utf16Column(l, p.Character)
+	}
+	return p
+}
+
+func (c *Client) fromServer(uri string, r Range) Range {
+	for _, p := range []*Position{&r.Start, &r.End} {
+		if l, ok := c.line(uri, p.Line); ok {
+			p.Character = byteColumn(l, p.Character)
+		}
+	}
+	return r
+}
+
+// line is a line of the file a URI names, for a UTF-16 server only. Each
+// file is read once; one that cannot be read keeps the server's columns.
+func (c *Client) line(uri string, n int) (string, bool) {
+	if !c.utf16 {
+		return "", false
+	}
+	v, ok := c.lines.Load(uri)
+	if !ok {
+		var lines []string
+		if abs, err := Path(uri); err == nil {
+			if b, err := os.ReadFile(abs); err == nil {
+				lines = strings.Split(string(b), "\n")
+			}
+		}
+		v, _ = c.lines.LoadOrStore(uri, lines)
+	}
+	lines := v.([]string)
+	if n < 0 || n >= len(lines) {
+		return "", false
+	}
+	return lines[n], true
+}
+
+// utf16Column counts the UTF-16 units before a byte column of a line.
+func utf16Column(line string, col int) int {
+	n := 0
+	for i, r := range line {
+		if i >= col {
+			break
+		}
+		n += utf16.RuneLen(r)
+	}
+	return n
+}
+
+// byteColumn is the byte column after the first units UTF-16 units of a
+// line.
+func byteColumn(line string, units int) int {
+	n := 0
+	for i, r := range line {
+		if n >= units {
+			return i
+		}
+		n += utf16.RuneLen(r)
+	}
+	return len(line)
 }
 
 func doc(abs string) map[string]any { return map[string]any{"uri": URI(abs)} }

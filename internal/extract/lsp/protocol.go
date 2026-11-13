@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-// Position is a zero-based line and column. The client asks for UTF-8, so
-// a server that agrees counts the column in bytes; one that does not counts
-// UTF-16 units, which match bytes on an ASCII line.
+// Position is a zero-based line and a column in bytes. The client asks the
+// server for UTF-8 columns, and the typed requests convert a UTF-16
+// server's columns both ways; Call passes positions through as they are.
 type Position struct {
 	Line      int `json:"line"`
 	Character int `json:"character"`
@@ -44,6 +44,23 @@ const (
 	KindStruct        SymbolKind = 23
 	KindTypeParameter SymbolKind = 26
 )
+
+// Diagnostic is one problem a server finds in a file, with the server's
+// code for its kind.
+type Diagnostic struct {
+	Range   Range  `json:"range"`
+	Code    Code   `json:"code"`
+	Message string `json:"message"`
+}
+
+// Code is a diagnostic code, which a server may send as a string or a
+// number.
+type Code string
+
+func (c *Code) UnmarshalJSON(b []byte) error {
+	*c = Code(strings.Trim(string(b), `"`))
+	return nil
+}
 
 // DocumentSymbol is one declaration in a file, with the ones nested in it.
 type DocumentSymbol struct {
