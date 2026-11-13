@@ -2096,6 +2096,7 @@
         "internal/screen/overview.go",
         "internal/screen/page.go",
         "internal/screen/primary.go",
+        "internal/screen/roadindex.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
         "internal/screen/site.go",
@@ -15342,7 +15343,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15464,7 +15464,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -19133,7 +19133,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20336,7 +20335,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -23357,7 +23357,63 @@
                 "Code": true
               },
               {
-                "Text": "), and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. Since those counts are the view's, each move is also judged route by route (",
+                "Text": "), and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. A view weighs hundreds of thousands of moves, so a move is never weighed by recounting the whole view: ",
+                "Code": false
+              },
+              {
+                "Text": "roadIndex",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "roadindex.go",
+                "Code": true
+              },
+              {
+                "Text": ") keeps what each line, point and group adds to ",
+                "Code": false
+              },
+              {
+                "Text": "roadCost",
+                "Code": true
+              },
+              {
+                "Text": ", and a move's ",
+                "Code": false
+              },
+              {
+                "Text": "change",
+                "Code": true
+              },
+              {
+                "Text": " recounts only the lines its routes leave or take and the lines across them, the points they turn at or pass, and their fork, place and comb groups, stopping at the first count that rules the move out (",
+                "Code": false
+              },
+              {
+                "Text": "costWithin",
+                "Code": true
+              },
+              {
+                "Text": "), and ",
+                "Code": false
+              },
+              {
+                "Text": "TestTheRoadIndexWeighsChangesAsAWholeRecount",
+                "Code": true
+              },
+              {
+                "Text": " holds every change it weighs on random views, tees that come and go included, to that whole recount; the two orders settle side by side, and ",
+                "Code": false
+              },
+              {
+                "Text": "TestAHundredBoxRoadDrawingBuildsQuickly",
+                "Code": true
+              },
+              {
+                "Text": " holds a 100-box road drawing to its allocations, about 30s where a whole recount took over half an hour. Since those counts are the view's, each move is also judged route by route (",
                 "Code": false
               },
               {
