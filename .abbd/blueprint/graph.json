@@ -12359,7 +12359,6 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -12451,7 +12450,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -13102,7 +13101,23 @@
                 "Code": true
               },
               {
-                "Text": "의 검사를 거친다.",
+                "Text": "의 검사를 거친다. ",
+                "Code": false
+              },
+              {
+                "Text": "cmake",
+                "Code": true
+              },
+              {
+                "Text": "는 무엇을 configure하기 전에 ",
+                "Code": false
+              },
+              {
+                "Text": "cmake -E capabilities",
+                "Code": true
+              },
+              {
+                "Text": "로 PATH의 CMake 버전을 묻고, 4.2보다 오래되면 거부하며, 그 버전을 빌드 트리의 이름에 넣는다.",
                 "Code": false
               }
             ]
