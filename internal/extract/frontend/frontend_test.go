@@ -205,6 +205,12 @@ func TestATargetLinkingAnInterfaceLibraryLinksWhatItLinks(t *testing.T) {
 	}
 }
 
+func TestACycleOfInterfaceLibrariesEnds(t *testing.T) {
+	interfaces := map[string][]cmakeTargetRef{"a": {{"b"}, {"core"}}, "b": {{"a"}}}
+	if got := throughInterfaces([]string{"a"}, interfaces); !slices.Equal(got, []string{"core"}) {
+		t.Errorf("through a and b got %v, want [core]", got)
+	}
+}
 
 func TestACodeModelOlderThanCMake331LinksEveryDependency(t *testing.T) {
 	tg := cmakeTarget{Dependencies: []cmakeTargetRef{{"core"}, {"gen"}}, LinkLibraries: []cmakeTargetRef{{"core"}}}

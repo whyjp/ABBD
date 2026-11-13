@@ -27,16 +27,19 @@ type cmakeCodemodel struct {
 	} `json:"version"`
 	Paths          struct{ Source string } `json:"paths"`
 	Configurations []struct {
-		Name    string `json:"name"`
-		Targets []struct {
-			ID       string `json:"id"`
-			JSONFile string `json:"jsonFile"`
-		} `json:"targets"`
+		Name            string            `json:"name"`
+		Targets         []cmakeTargetFile `json:"targets"`
+		AbstractTargets []cmakeTargetFile `json:"abstractTargets"`
 	} `json:"configurations"`
 }
 
 type cmakeTargetRef struct {
 	ID string `json:"id"`
+}
+
+type cmakeTargetFile struct {
+	ID       string `json:"id"`
+	JSONFile string `json:"jsonFile"`
 }
 
 type cmakeTarget struct {
@@ -50,11 +53,12 @@ type cmakeTarget struct {
 		IsGenerated       bool   `json:"isGenerated"`
 		CompileGroupIndex *int   `json:"compileGroupIndex"`
 	} `json:"sources"`
-	CompileGroups []struct{ Language string } `json:"compileGroups"`
-	Dependencies  []cmakeTargetRef            `json:"dependencies"`
-	LinkLibraries []cmakeTargetRef            `json:"linkLibraries"`
-	Backtrace     *int                        `json:"backtrace"`
-	Graph         struct {
+	CompileGroups          []struct{ Language string } `json:"compileGroups"`
+	Dependencies           []cmakeTargetRef            `json:"dependencies"`
+	LinkLibraries          []cmakeTargetRef            `json:"linkLibraries"`
+	InterfaceLinkLibraries []cmakeTargetRef            `json:"interfaceLinkLibraries"`
+	Backtrace              *int                        `json:"backtrace"`
+	Graph                  struct {
 		Nodes []struct {
 			File int `json:"file"`
 		} `json:"nodes"`
@@ -111,10 +115,17 @@ func cmake(t tree) (extract.Doc, error) {
 	var groups []*group
 	byID := map[string]*group{}
 	bySources := map[string]*group{}
-	for _, ref := range cm.Configurations[0].Targets {
+	// interfaces are the INTERFACE libraries' own links. Such a library
+	// builds nothing and is no module, so a target linking it links them.
+	interfaces := map[string][]cmakeTargetRef{}
+	conf := cm.Configurations[0]
+	for _, ref := range slices.Concat(conf.Targets, conf.AbstractTargets) {
 		var tg cmakeTarget
 		if err := readJSON(filepath.Join(reply, ref.JSONFile), &tg); err != nil {
 			return extract.Doc{}, err
+		}
+		if tg.Type == "INTERFACE_LIBRARY" {
+			interfaces[tg.ID] = tg.InterfaceLinkLibraries
 		}
 		a, ok := targetArtifacts[tg.Type]
 		if !ok || tg.IsGeneratorProvided || testDir(tg.Paths.Source) {
@@ -171,7 +182,7 @@ func cmake(t tree) (extract.Doc, error) {
 		slices.Sort(g.artifacts)
 		doc.Units = append(doc.Units, extract.DocUnit{Ref: refs[g], Kind: model.Module, Name: strings.TrimPrefix(refs[g], "cmake:"), Anchors: model.SortAnchors(g.anchors), Artifacts: slices.Compact(g.artifacts)})
 		seen := map[string]bool{}
-		for _, id := range g.deps {
+		for _, id := range throughInterfaces(g.deps, interfaces) {
 			to, ok := byID[id]
 			if !ok || to == g || seen[refs[to]] {
 				continue
@@ -181,6 +192,33 @@ func cmake(t tree) (extract.Doc, error) {
 		}
 	}
 	return doc, nil
+}
+
+// throughInterfaces replaces each INTERFACE library among ids with what it
+// links, at any depth, and visits each library once, so a cycle of them
+// ends.
+func throughInterfaces(ids []string, interfaces map[string][]cmakeTargetRef) []string {
+	var out []string
+	visited := map[string]bool{}
+	var walk func(id string)
+	walk = func(id string) {
+		next, ok := interfaces[id]
+		if !ok {
+			out = append(out, id)
+			return
+		}
+		if visited[id] {
+			return
+		}
+		visited[id] = true
+		for _, r := range next {
+			walk(r.ID)
+		}
+	}
+	for _, id := range ids {
+		walk(id)
+	}
+	return out
 }
 
 // readCodemodel reads the codemodel the newest reply index names.
