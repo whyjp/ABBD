@@ -7148,7 +7148,7 @@
                 "Code": true
               },
               {
-                "Text": "를 루트 기준으로 읽어 스크립트 출력 위에 접고, 증명 뒤에야 argv를 저장하며, setup으로 sync한다. 저장할 때 ",
+                "Text": "를 루트 기준으로 읽어 스크립트 출력 위에 접고, 묶음 module은 구성원이 둘 이상일 때만 받고, 증명 뒤에야 argv를 저장하며, setup으로 sync한다. 저장할 때 ",
                 "Code": false
               },
               {
@@ -11501,7 +11501,7 @@
                 "Code": true
               },
               {
-                "Text": "가 쓴 것이며 digest는 없다. signature와 parent는 비워 두어 뒤의 단계가 정하게 한다. 스크립트 unit과 anchor를 공유하면 error다. 단 두 경우는 허용한다. 그 unit이 이름 지은 parent이거나 그 parent의 조상이고 둘의 anchor가 다를 때다. 그리고 supplement가 그 스크립트 unit을 다시 적으며 이 의미 unit의 ref를 parent로 줄 때다(",
+                "Text": "가 쓴 것이며 digest는 없다. signature와 parent는 비워 두어 뒤의 단계가 정하게 한다. 스크립트 unit과 anchor를 공유하면 error다. 단 두 경우는 허용한다. 그 unit이 이름 지은 parent이거나 그 parent의 조상이고 둘의 anchor가 다를 때다. 그리고 스크립트 unit 둘 이상이 각자 처음 다시 적힌 것에서 이 의미 unit의 ref를 parent로 이름 지을 때다(",
                 "Code": false
               },
               {
@@ -11509,7 +11509,7 @@
                 "Code": true
               },
               {
-                "Text": "). 후자는 묶음 module로, 평평한 패키지의 파일 module들을 책임별로 묶으며 구성원의 코드를 인용한다.",
+                "Text": "). 뒤에 또 적힌 것은 버려지므로 세지 않고, 구성원이 하나뿐이면 이름만 바꾸는 것이라 거절한다. 후자는 묶음 module로, 평평한 패키지의 파일 module들을 책임별로 묶으며 구성원의 코드를 인용한다.",
                 "Code": false
               }
             ]
