@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -222,4 +223,48 @@ func TestAWriteKeepsThePreviousBlueprint(t *testing.T) {
 		t.Errorf("the compare view did not take the kept blueprint: %v", err)
 	}
 	p.want(0, "blueprint: CURRENT", "status")
+}
+
+// diff names, sentence by sentence, what the module texts now say
+// differently, in text, --json and on the compare page, and keeps to --unit.
+func TestDiffNamesTheWordsThatChanged(t *testing.T) {
+	t.Parallel()
+	p, _ := diffProject(t)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "work")
+	if out := p.want(0, "no topology change", "diff", "--base", "HEAD"); strings.Contains(out, "words") {
+		t.Fatalf("no words changed, yet diff lists some:\n%s", out)
+	}
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling charges cards. It retries once.\n"))
+	p.want(0, "words since", "diff", "--base", "HEAD")
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "text")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling charges cards. It retries three times.\n"))
+
+	out := p.want(0, "", "diff", "--base", "HEAD")
+	contains(t, out, "words since", "~ text MOD-0001 billing", `    - "It retries once."`, `    + "It retries three times."`)
+	if strings.Contains(out, "charges cards") {
+		t.Errorf("a sentence that stayed is listed:\n%s", out)
+	}
+	if only := p.want(0, "", "diff", "--base", "HEAD", "--unit", "MOD-0004"); strings.Contains(only, "words") {
+		t.Errorf("--unit MOD-0004 lists billing's words:\n%s", only)
+	}
+	contains(t, p.want(0, "", "diff", "--base", "HEAD", "--unit", "MOD-0001"), "words inside MOD-0001 since", "+ \"It retries three times.\"")
+
+	var d struct {
+		Words []struct {
+			Key, Kind, Unit, Change string
+			Lost, Gained            []string
+		}
+	}
+	if err := json.Unmarshal([]byte(p.want(0, "", "diff", "--base", "HEAD", "--json")), &d); err != nil {
+		t.Fatal(err)
+	}
+	if w := d.Words; len(w) != 1 || w[0].Key != "text MOD-0001" || w[0].Kind != "text" || w[0].Unit != "MOD-0001" || w[0].Change != "changed" ||
+		!slices.Equal(w[0].Lost, []string{"It retries once."}) || !slices.Equal(w[0].Gained, []string{"It retries three times."}) {
+		t.Errorf("--json words = %+v", d.Words)
+	}
+
+	p.want(0, "compare view:", "diff", "--base", "HEAD", "--unit", "MOD-0001", "--page")
+	contains(t, p.read("compare/index.html"), "바뀐 글 3줄", "It retries three times.")
 }

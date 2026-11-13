@@ -113,6 +113,7 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		func(t *Totals) { t.Doglegs++ },
 		func(t *Totals) { t.LabelRepeats++ },
 		func(t *Totals) { t.Labelled-- },
+		func(t *Totals) { t.AgainstAxisInk++ },
 	} {
 		risen := slices.Clone(views)
 		rise(&risen[at].Totals)
@@ -125,6 +126,17 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		}
 	}
 	risen := slices.Clone(views)
+	risen[at].Totals.AgainstAxis++
+	if fails, want := Gate(risen, debt, true), []string{
+		fmt.Sprintf("%s: against_axis %d, past its page bound %d", page, risen[at].Totals.AgainstAxis, debt.Pages[page]["against_axis"]),
+		fmt.Sprintf("against_axis %d, past its ceiling %d by more than 0", Sum(risen).AgainstAxis, debt.Ceilings["against_axis"]),
+	}; !slices.Equal(fails, want) {
+		t.Errorf("one more line against the axis on %s fails the gate with %q, want its page past its bound and the views past their ceiling: %q", page, fails, want)
+	}
+	if got := Record(risen, debt); !maps.Equal(got.Pages[page], debt.Pages[page]) || got.Ceilings["against_axis"] != debt.Ceilings["against_axis"] {
+		t.Errorf("recording a line against the axis on %s sets its bounds %v and ceiling %d, want them kept at %v and %d", page, got.Pages[page], got.Ceilings["against_axis"], debt.Pages[page], debt.Ceilings["against_axis"])
+	}
+	risen = slices.Clone(views)
 	risen[at].Totals.Criteria = maps.Clone(risen[at].Totals.Criteria)
 	risen[at].Totals.Criteria["J3"]++
 	if fails := Gate(risen, debt, true); !slices.Contains(fails, fmt.Sprintf("%s: false_joins %d, past its page bound %d", page, risen[at].Totals.Criteria["J3"], debt.Pages[page]["false_joins"])) {

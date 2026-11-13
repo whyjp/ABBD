@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -141,26 +142,18 @@ func (s Store) loadUnits() ([]model.Unit, map[model.ID]bool, error) {
 // UnitsAt reads the unit files as they were committed at rev. A revision
 // without .abbd/ has no units.
 func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
-	project := filepath.Dir(s.root)
 	var dirs []string
 	for _, d := range s.unitDirs() {
 		dirs = append(dirs, Dir+"/"+d)
 	}
-	files, err := gitx.Files(project, rev, dirs...)
+	files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return strings.HasSuffix(f, ".md") }, dirs...)
 	if err != nil {
 		return nil, err
 	}
 	var units []model.Unit
 	old := map[model.ID]bool{}
-	for _, f := range files {
-		if !strings.HasSuffix(f, ".md") {
-			continue
-		}
-		b, err := gitx.Show(project, rev, f)
-		if err != nil {
-			return nil, err
-		}
-		u, isOld, err := parseUnit(f, b)
+	for _, f := range slices.Sorted(maps.Keys(files)) {
+		u, isOld, err := parseUnit(f, files[f])
 		if err != nil {
 			return nil, fmt.Errorf("%s at %s: %w", f, rev, err)
 		}
@@ -177,22 +170,14 @@ func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
 // dir and opens a store there, so the state as it was can be drawn again.
 // No code is checked out beside it, so its texts read against none.
 func (s Store) CheckoutAt(rev, dir string) (Store, error) {
-	project := filepath.Dir(s.root)
 	if err := os.RemoveAll(dir); err != nil {
 		return Store{}, err
 	}
-	files, err := gitx.Files(project, rev, Dir)
+	files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return !strings.HasPrefix(f, Dir+"/blueprint/") }, Dir)
 	if err != nil {
 		return Store{}, err
 	}
-	for _, f := range files {
-		if strings.HasPrefix(f, Dir+"/blueprint/") {
-			continue
-		}
-		b, err := gitx.Show(project, rev, f)
-		if err != nil {
-			return Store{}, err
-		}
+	for f, b := range files {
 		if err := writeFile(filepath.Join(dir, filepath.FromSlash(f)), b); err != nil {
 			return Store{}, err
 		}
@@ -422,6 +407,19 @@ type LintDebt struct {
 	Views    map[string]map[string]int `yaml:"debt,omitempty"`
 	Pages    map[string]map[string]int `yaml:"pages,omitempty"`
 	Levels   map[string]string         `yaml:"levels,omitempty"`
+	// Prose is the stored prose that does not read in the project's
+	// language, carried until each text is written again.
+	Prose *ProseDebt `yaml:"prose,omitempty"`
+}
+
+// ProseDebt names the texts abbd lint lets stand in another language than
+// Language, and why. Owed maps the key lint reports each text under to a
+// digest of its words, so a text written again under that key is no longer
+// owed. It holds only while project.yaml names the same language.
+type ProseDebt struct {
+	Language model.Language    `yaml:"language"`
+	Reason   string            `yaml:"reason"`
+	Owed     map[string]string `yaml:"owed"`
 }
 
 // LoadLintDebt reads what the drawings owe. With no file they owe nothing
@@ -432,6 +430,9 @@ func (s Store) LoadLintDebt() (LintDebt, error) {
 }
 
 // lintDebtHead opens the lint debt file, which abbd lint --record writes.
+// The file holds what the drawings owe and, under prose, the stored texts
+// not yet in the project's language, which ProseDebt documents. The header
+// names the drawings alone, so every fixture's recorded file keeps it.
 const lintDebtHead = `# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
 # abbd lint fails on a hard breach past its view's debt, on a weighed sum
 # or a count of tees, excess turns or detours past its ceiling, and on a
@@ -559,6 +560,19 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// Language is the BCP-47 tag of the language a person reads the
+	// stored prose in, such as ko. Loading refuses a tag that is no
+	// BCP-47 tag. The zero Language leaves the choice to the OS.
+	Language model.Language `yaml:"language,omitempty"`
+}
+
+// Lang is the language readers write the prose in: the one project.yaml
+// sets, else the one the OS names for its user.
+func (p Project) Lang() model.Language {
+	if p.Language != "" {
+		return p.Language
+	}
+	return model.DefaultLanguage()
 }
 
 // Cut says whether the overview draws its primary links only.
