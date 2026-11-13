@@ -641,7 +641,7 @@ func measure(s sheet) Metrics {
 	straight := func(w stroke) bool {
 		return kindOf(w.class) == "mutual" || len(w.pts) == 2 && (w.pts[0].x == w.pts[1].x || w.pts[0].y == w.pts[1].y) && onBox(w.pts[0]) && onBox(w.pts[1])
 	}
-	leaving := map[string]map[int][]fpt{}
+	leaving := map[string]map[int][]edgeMeet{}
 	for _, w := range ws {
 		if straight(w) {
 			continue
@@ -662,9 +662,9 @@ func measure(s sheet) Metrics {
 			}
 			kk := fmt.Sprint(k, edge, kindOf(w.class))
 			if leaving[kk] == nil {
-				leaving[kk] = map[int][]fpt{}
+				leaving[kk] = map[int][]edgeMeet{}
 			}
-			leaving[kk][w.group] = append(leaving[kk][w.group], st)
+			leaving[kk][w.group] = append(leaving[kk][w.group], edgeMeet{st, dotsOf(w.class)})
 		}
 	}
 	for _, gs := range leaving {
@@ -691,7 +691,7 @@ func measure(s sheet) Metrics {
 		}
 		return dy > 2 || math.Abs(dy) <= 2 && dx >= 0
 	}
-	arrivals := map[string]map[int][]fpt{}
+	arrivals := map[string]map[int][]edgeMeet{}
 	for _, w := range ws {
 		a, b := w.pts[0], w.pts[len(w.pts)-1]
 		r, ok := on(b)
@@ -730,9 +730,9 @@ func measure(s sheet) Metrics {
 			k = fmt.Sprint(k, "straight", w.group)
 		}
 		if arrivals[k] == nil {
-			arrivals[k] = map[int][]fpt{}
+			arrivals[k] = map[int][]edgeMeet{}
 		}
-		arrivals[k][w.group] = append(arrivals[k][w.group], b)
+		arrivals[k][w.group] = append(arrivals[k][w.group], edgeMeet{b, dotsOf(w.class)})
 	}
 	// Rule 7 counts a drawn line by where it arrives: a bundle is one line
 	// however many pieces draw it, and a piece that ends on a trunk is part
@@ -891,11 +891,25 @@ func sideOf(r frect, p fpt) string {
 	return ""
 }
 
+// edgeMeet is where a line meets a box edge and how it is dotted there: back
+// for a line that climbs, plan for one that arises only in design.
+type edgeMeet struct {
+	p    fpt
+	dots string
+}
+
+// dotsOf is the marks of class that dot or dash a line.
+func dotsOf(class string) string {
+	f := strings.Fields(class)
+	return fmt.Sprint(slices.Contains(f, "back"), slices.Contains(f, "plan"))
+}
+
 // stubs is how many stubs the groups of lines gs, by the points where each
-// meets one box edge, draw there: groups that meet it at one point share
-// one stub, which a reader sees as one bundle, whatever ink each runs on
-// past it.
-func stubs(gs map[int][]fpt) int {
+// meets one box edge, draw there: groups that meet it at one point, dotted
+// alike, share one stub, which a reader sees as one bundle, whatever ink
+// each runs on past it. A dashed line that leaves a solid one's stub reads
+// as a split.
+func stubs(gs map[int][]edgeMeet) int {
 	ks := slices.Sorted(maps.Keys(gs))
 	of := map[int]int{}
 	var find func(g int) int
@@ -913,8 +927,8 @@ func stubs(gs map[int][]fpt) int {
 			if find(a) == find(b) {
 				continue
 			}
-			if slices.ContainsFunc(gs[a], func(p fpt) bool {
-				return slices.ContainsFunc(gs[b], func(q fpt) bool { return dist(p, q) < 1 })
+			if slices.ContainsFunc(gs[a], func(p edgeMeet) bool {
+				return slices.ContainsFunc(gs[b], func(q edgeMeet) bool { return p.dots == q.dots && dist(p.p, q.p) < 1 })
 			}) {
 				of[find(b)] = find(a)
 				n--

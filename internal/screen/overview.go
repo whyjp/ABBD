@@ -1071,10 +1071,17 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			bypasses[[2]model.ID{s.from, s.to}] = i
 		}
 	}
+	// Two stages that stand next to each other on a spine keep a hop each
+	// way (hops): the one that runs in stage order carries one head, as the
+	// numbered lead reads it, and the other runs back on a lane of its own.
+	staged := func(a, b model.ID) bool {
+		f := l.axis.flow
+		return f != nil && f.across && f.stage[string(a)] > 0 && f.stage[string(b)] > 0 && l.row[string(a)] == l.row[string(b)] && l.besides(string(a), string(b))
+	}
 	gone := map[int]bool{}
 	for i, s := range merged {
 		j, ok := bypasses[[2]model.ID{s.to, s.from}]
-		if s.kind != "bypass" || !ok || gone[i] || gone[j] {
+		if s.kind != "bypass" || !ok || gone[i] || gone[j] || staged(s.from, s.to) {
 			continue
 		}
 		keep, drop := i, j

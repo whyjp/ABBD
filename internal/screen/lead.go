@@ -191,11 +191,13 @@ type Hop struct {
 const leadMin = 2
 
 // flowWalk is a stored flow as a lead reads it: the unit of each step, in
-// order, and the word that names each step.
+// order, and the word that names each step. primary says it is the primary
+// flow's stages, whose lead numbers only lines that run in stage order.
 type flowWalk struct {
 	key, question string
 	units         []model.ID
 	words         []string
+	primary       bool
 }
 
 // walks are the stored flows as leads read them, the primary flow first:
@@ -204,7 +206,7 @@ type flowWalk struct {
 func walks(in Input) []flowWalk {
 	var out []flowWalk
 	if p, ok := in.Figures.Primary(); ok {
-		w := flowWalk{key: string(p.Key), question: p.Question}
+		w := flowWalk{key: string(p.Key), question: p.Question, primary: true}
 		for _, l := range p.Parts {
 			for _, u := range l.Claim.Units {
 				w.units = append(w.units, u)
@@ -243,6 +245,9 @@ type use struct {
 	from, to string
 	way      int
 	weight   int
+	// both says the line has a head at each end: the two boxes use each
+	// other.
+	both bool
 	// word names the stored step at to, on a lead that follows a flow, and
 	// step is that step's place in the flow, from 0.
 	word string
@@ -260,9 +265,9 @@ func (d *Drawing) uses() []use {
 			continue
 		}
 		w := len(slices.Compact(slices.Sorted(slices.Values(r.rels))))
-		out = append(out, use{from: r.ends[0], to: r.ends[1], way: k, weight: w})
+		out = append(out, use{from: r.ends[0], to: r.ends[1], way: k, weight: w, both: r.Both})
 		if r.Both {
-			out = append(out, use{from: r.ends[1], to: r.ends[0], way: k, weight: w})
+			out = append(out, use{from: r.ends[1], to: r.ends[0], way: k, weight: w, both: true})
 		}
 	}
 	return out
@@ -277,6 +282,11 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	var hops []use
 	var key, title string
 	var stay *Stay
+	// A view that lays the primary flow out numbers its stages, whatever
+	// stored flow would run further on it.
+	if d.axis.flow != nil && len(flows) > 0 && flows[0].primary && len(d.followed(t, flows[0], uses)) >= leadMin {
+		flows = flows[:1]
+	}
 	if len(flows) > 0 {
 		best := -1
 		for k, f := range flows {
@@ -299,6 +309,17 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 		entry = hops[0].from
 	} else {
 		entry = stay.Box
+	}
+	// The primary flow starts at its first stage the view shows, though
+	// no numbered hop leaves it.
+	if len(hops) > 0 && len(flows) > 0 && flows[0].primary && key == flows[0].key {
+		box := d.shown(t)
+		for _, u := range flows[0].units {
+			if b := box(u); b != "" {
+				entry = b
+				break
+			}
+		}
 	}
 	l := &Lead{Key: key, Title: title, Entry: entry, Stay: stay}
 	for _, b := range d.Boxes {
@@ -338,7 +359,10 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 // the box on the lead that ran a step most recently and uses it, or, when
 // no box on the lead uses it, by its own line to the box of the step
 // before, as an entry that calls the first step's box does. With neither,
-// or at a step the view does not show, the lead stops.
+// or at a step the view does not show, the lead stops. On the primary flow
+// a hop says the stage order, so only a line with one head, from a box on
+// the lead to the new one, is a hop: a new box that no such line reaches
+// joins the lead unnumbered, and the lead goes on from it.
 func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 	boxes := map[string]bool{}
 	for _, b := range d.Boxes {
@@ -378,6 +402,10 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 		j := -1
 		for k := len(on) - 1; k >= 0 && j < 0; k-- {
 			j = slices.IndexFunc(uses, func(x use) bool { return x.from == on[k] && x.to == b })
+		}
+		if f.primary && (j < 0 || uses[j].both) {
+			on = append(on, b)
+			continue
 		}
 		if j < 0 {
 			j = slices.IndexFunc(uses, func(x use) bool { return x.from == b && x.to == on[len(on)-1] })

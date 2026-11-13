@@ -14,10 +14,11 @@ import (
 // pins its units' boxes to its layers, from the top, and every other box
 // stands by the lines. On "flow" the box stands on the primary flow: N is
 // its stage, from 1, of the Of stages stored, and Stage names it, whether
-// the view lays the stages across one row or down its rows. Cycle says the
-// box shares a cycle of the lines the layout layered with another box of
-// the view: no order runs between them, so on "dependency" their rows are
-// the layout's choice.
+// the view lays the stages across one row, down its rows, or not at all,
+// as the inside that draws a stage's unit within the box that holds it.
+// Cycle says the box shares a cycle of the lines the layout layered with
+// another box of the view: no order runs between them, so on "dependency"
+// their rows are the layout's choice.
 type Rank struct {
 	Basis string
 	N     int `json:",omitempty"`
@@ -43,20 +44,38 @@ type axis struct {
 }
 
 // ranks are the Rank of each box d draws, by its unit's ID. A box on the
-// primary flow p ranks by its stage, and every other box of a view that
-// lays the flow out by its drawn row along the lines.
+// primary flow p ranks by its stage: on a view that lays the flow out, the
+// box the layout placed by a stage, and on any view, the box of a unit a
+// stage names itself, though it is drawn on the inside of the box that
+// holds it. Every other box of a view that lays the flow out ranks by its
+// drawn row along the lines.
 func ranks(d Drawing, p *PrimaryFlow) map[string]Rank {
+	out := rowRanks(d)
+	if p == nil {
+		return out
+	}
+	for id, rk := range out {
+		n := 0
+		if f := d.axis.flow; f != nil {
+			rk.Basis, n = byDependency, f.stage[id]
+		}
+		if n == 0 {
+			n = p.stageOf(id)
+		}
+		if n > 0 {
+			rk.Basis, rk.N, rk.Of, rk.Stage = byFlow, n, len(p.Stages), p.Stages[n-1].Name
+		}
+		out[id] = rk
+	}
+	return out
+}
+
+// rowRanks are the Rank of each box d draws by its drawn row.
+func rowRanks(d Drawing) map[string]Rank {
 	row, rows := drawnRows(d.Boxes)
 	out := map[string]Rank{}
 	for id, r := range row {
-		rk := Rank{Basis: d.axis.basis, N: r + 1, Of: rows, Cycle: d.axis.cycle[id]}
-		if f := d.axis.flow; f != nil && p != nil {
-			rk.Basis = byDependency
-			if n := f.stage[id]; n > 0 {
-				rk.Basis, rk.N, rk.Of, rk.Stage = byFlow, n, len(p.Stages), p.Stages[n-1].Name
-			}
-		}
-		out[id] = rk
+		out[id] = Rank{Basis: d.axis.basis, N: r + 1, Of: rows, Cycle: d.axis.cycle[id]}
 	}
 	return out
 }

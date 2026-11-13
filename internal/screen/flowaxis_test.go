@@ -190,3 +190,115 @@ func TestO4CountsStagesOutOfOrder(t *testing.T) {
 		t.Errorf("%+v; a view with no flow has no O4 breach", got)
 	}
 }
+
+// P1 and O3 leave to O4 only a pair whose boxes both stand by their stage:
+// a line between a staged box and one the lines placed is still judged by
+// the rows.
+func TestAPairWithOneStagedBoxIsStillJudgedByItsRows(t *testing.T) {
+	climb := func(stage map[string]int) *look {
+		l := lookAt(t, []string{"A 40 0 60 20", "B 40 80 60 20"}, ``, [][2]string{{"B", "A"}})
+		for id, n := range stage {
+			l.stage[l.at[id]] = n
+		}
+		return l
+	}
+	for _, c := range []struct {
+		stage map[string]int
+		want  int
+	}{{nil, 1}, {map[string]int{"A": 1}, 1}, {map[string]int{"B": 2}, 1}, {map[string]int{"A": 2, "B": 1}, 0}} {
+		l := climb(c.stage)
+		if got := len(l.usersAbove()); got != c.want {
+			t.Errorf("stages %v: %d P1 breaches, want %d", c.stage, got, c.want)
+		}
+		if got := len(l.climbsCloseCycles()); got != c.want {
+			t.Errorf("stages %v: %d O3 breaches, want %d", c.stage, got, c.want)
+		}
+	}
+}
+
+// A stage whose unit is drawn inside another box ranks that unit by its
+// stage on the inside that draws it, as the box that holds it ranks by the
+// stage on the view that lays the flow out.
+func TestAUnitAStageNamesRanksByItInsideItsHolder(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "core"),
+		inside("MOD-0002", "MOD-0001"),
+		inside("MOD-0003", "MOD-0001", rel("MOD-0002", model.DependsOn)),
+		inside("MOD-0004", "MOD-0001", rel("MOD-0003", model.DependsOn)),
+		inside("MOD-0006", "MOD-0004"),
+		inside("MOD-0007", "MOD-0004", rel("MOD-0006", model.DependsOn)),
+		called("MOD-0005", "cli", rel("MOD-0001", model.DependsOn)),
+	}
+	g := graphOf(t, Build(Input{Units: units, Figures: primaryStack(band("bridge", "MOD-0002"), band("manager", "MOD-0003"), band("ipc", "MOD-0006"))}))
+	on := map[string]map[string]Rank{}
+	for _, ins := range g.Modules {
+		on[ins.ID] = map[string]Rank{}
+		for _, u := range ins.Units {
+			if u.Rank != nil {
+				on[ins.ID][u.ID] = *u.Rank
+			}
+		}
+	}
+	if r := on["MOD-0001"]["MOD-0004"]; r.Basis != "flow" || r.N != 3 || r.Stage != "ipc" {
+		t.Errorf("the box that holds the ipc stage ranks by it on the inside that lays the flow out: %+v", r)
+	}
+	if r := on["MOD-0004"]["MOD-0006"]; r.Basis != "flow" || r.N != 3 || r.Of != 3 || r.Stage != "ipc" {
+		t.Errorf("the unit the ipc stage names ranks by it on its holder's inside: %+v", r)
+	}
+	if r := on["MOD-0004"]["MOD-0007"]; r.Basis == "flow" {
+		t.Errorf("a unit no stage names keeps its row rank: %+v", r)
+	}
+}
+
+// On a view that lays the primary flow out, the lead starts at the first
+// stage, and every numbered hop has one head and runs from an earlier stage
+// to a later one; the primary stack counts no breach though every stage
+// uses the config.
+func TestTheNumberedLeadReadsInStageOrder(t *testing.T) {
+	m := Build(Input{Units: pipeline(), Figures: pipelineStages()})
+	d := m.Overview
+	if d.Lead == nil || d.Lead.Key != "pipeline" || len(d.Lead.Hops) < leadMin {
+		t.Fatalf("the overview numbers the primary flow: %+v", d.Lead)
+	}
+	if d.Lead.Entry != "MOD-0001" {
+		t.Errorf("the lead starts at the first stage, config, not %s", d.Lead.Entry)
+	}
+	stage := d.axis.flow.stage
+	for _, h := range d.Lead.Hops {
+		r := d.Routes[h.way]
+		if r.Both || len(r.ends) != 2 || stage[r.ends[0]] >= stage[r.ends[1]] || r.src != r.ends[0] {
+			t.Errorf("hop %d runs %v, both %v: want one head from an earlier stage to a later one", h.N, r.ends, r.Both)
+		}
+	}
+	for _, s := range m.Stacks {
+		if s.Breaches != 0 || !s.Primary {
+			t.Errorf("the primary stack counts %d breaches, want none", s.Breaches)
+		}
+	}
+}
+
+// Down a flow too wide for one row, each stage's band keeps its stage's
+// number, as graph.json and the stack's page give it, though a stage
+// between draws no band.
+func TestAStageBandKeepsItsStageNumber(t *testing.T) {
+	id := func(i int) model.ID { return model.ID(fmt.Sprintf("MOD-%04d", i)) }
+	var units []model.Unit
+	for i := 1; i <= 8; i++ {
+		var rels []model.Relation
+		if i > 1 {
+			rels = deps(id(i - 1))
+		}
+		units = append(units, called(id(i), fmt.Sprintf("a stage box with a name long enough to fill it %d", i), rels...))
+	}
+	m := Build(Input{Units: units, Figures: primaryStack(band("read", id(1), id(2), id(3)), band("parse", id(4)), band("write", id(5), id(6), id(7), id(8)))})
+	if f := m.Overview.axis.flow; f == nil || f.across {
+		t.Fatalf("the flow is laid down: %+v", f)
+	}
+	var got []string
+	for _, z := range m.Overview.Zones {
+		got = append(got, z.Label())
+	}
+	if !slices.Contains(got, "1 · read") || !slices.Contains(got, "3 · write") {
+		t.Errorf("bands %q, want 1 · read and 3 · write", got)
+	}
+}

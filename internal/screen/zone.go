@@ -17,7 +17,8 @@ import (
 // groupings come from the state alone, never from the drawing. A stored
 // stack's layers come first, each around the most of its boxes that sit
 // together when that is two boxes or more, numbered from the top among the
-// bands drawn, so the numbers run without a gap. Without such a
+// bands drawn, so the numbers run without a gap. The primary flow's bands
+// keep their stage's number instead. Without such a
 // stack, boxes whose code sits in one directory share that directory's
 // band. Contracts
 // with systems outside, drawn as boxes because nothing in the repository
@@ -28,7 +29,8 @@ import (
 // and the boxes read as they would without it.
 
 // Zone is one band as the page draws it. N is a stored layer's place from
-// the top among the layers drawn, 0 for any other grouping. Hue is the
+// the top among the layers drawn, a stage's own number on the primary
+// flow, 0 for any other grouping. Hue is the
 // palette key its tint and title take: the colour most of its boxes wear.
 type Zone struct {
 	N          int
@@ -100,11 +102,14 @@ func layerings(in Input) []layering {
 	return out
 }
 
-// group is one grouping's boxes before it is drawn.
+// group is one grouping's boxes before it is drawn. stage says n is a
+// stage of the primary flow, which keeps its number however many bands
+// are drawn, as graph.json and the stack's page number it.
 type group struct {
 	n     int
 	title string
 	ids   []string
+	stage bool
 }
 
 // zone draws the bands of d.
@@ -127,7 +132,7 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	n := 0
 	for _, g := range groups {
 		if z, ok := d.band(g); ok {
-			if z.N > 0 {
+			if z.N > 0 && !g.stage {
 				n++
 				z.N = n
 			}
@@ -155,7 +160,7 @@ func (s layering) tiers(box func(model.ID) string) []group {
 	var out []group
 	seen := map[string]bool{}
 	for i, us := range s.units {
-		g := group{n: i + 1, title: s.names[i]}
+		g := group{n: i + 1, title: s.names[i], stage: s.primary}
 		for _, u := range us {
 			if b := box(u); b != "" && !seen[b] {
 				seen[b] = true

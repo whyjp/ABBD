@@ -1,6 +1,10 @@
 package screen
 
-import "github.com/whyjp/abbd/internal/model"
+import (
+	"slices"
+
+	"github.com/whyjp/abbd/internal/model"
+)
 
 // PrimaryFlow is the repository's primary flow as graph.json carries it:
 // the stack marked primary, its layers the stages in order. A unit whose
@@ -66,4 +70,15 @@ func (p *layering) record() *PrimaryFlow {
 		f.Stages = append(f.Stages, st)
 	}
 	return f
+}
+
+// stageOf is the first stage, from 1, that names unit id itself, 0 for
+// none.
+func (p *PrimaryFlow) stageOf(id string) int {
+	for _, st := range p.Stages {
+		if slices.Contains(st.Units, id) {
+			return st.N
+		}
+	}
+	return 0
 }
