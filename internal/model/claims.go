@@ -64,6 +64,7 @@ const (
 	ResponsibilityField Field = "responsibility"
 	SignatureField      Field = "signature"
 	ArtifactField       Field = "artifact"
+	RunField            Field = "run"
 	RelationField       Field = "relation"
 	ParentField         Field = "parent"
 	// PhraseField is a phrase note on an edge. The script and the group
@@ -81,6 +82,7 @@ var Precedence = map[Field][]Writer{
 	ResponsibilityField: {Human, Reader, Supplement},
 	SignatureField:      {Script, Reader, Supplement},
 	ArtifactField:       {Script, Reader, Supplement},
+	RunField:            {Human, Reader, Supplement},
 	RelationField:       {Script, Human, Reader, Supplement},
 	ParentField:         {Human, Group, Script, Reader, Supplement},
 	PhraseField:         {Human, Reader, Supplement},
@@ -282,7 +284,7 @@ func Resolve(units []Unit) {
 }
 
 func (u *Unit) resolve() {
-	for _, f := range []*Fact{&u.Name, u.Purpose, u.Responsibility, u.Signature, u.Artifact} {
+	for _, f := range []*Fact{&u.Name, u.Purpose, u.Responsibility, u.Signature, u.Artifact, u.Run} {
 		if f != nil {
 			f.Origin = f.Writer.Origin()
 		}

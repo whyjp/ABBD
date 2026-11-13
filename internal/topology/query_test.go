@@ -182,3 +182,18 @@ func TestPathWalksFromAModuleIntoAUnitInsideIt(t *testing.T) {
 		t.Fatalf("a recorded relation wins a tie with the nesting: %+v", joints(hops))
 	}
 }
+
+// Two modules on one thread only share it, as two consumers share a
+// contract, so the hop that joins them names the thread. A module that posts
+// to the thread hands work to what runs there, which is no joint.
+func TestPathMarksTwoModulesOnOneThreadAsSharingIt(t *testing.T) {
+	thread := model.Unit{ID: "EXEC-0001", Kind: model.Exec, Name: model.Said(model.Script, "graphics thread"), Anchors: []model.Anchor{{Path: "g"}}}
+	hops, ok := Path([]model.Unit{thread, user("MOD-0001", to("EXEC-0001", model.RunsOn, "")), user("MOD-0002", to("EXEC-0001", model.RunsOn, ""))}, "MOD-0001", "MOD-0002")
+	if want := []joint{{model.RunsOn, true, "", ""}, {model.RunsOn, false, "EXEC-0001", ""}}; !ok || !reflect.DeepEqual(joints(hops), want) {
+		t.Fatalf("got %+v, want the second hop marked as sharing EXEC-0001: %+v", joints(hops), want)
+	}
+	hops, ok = Path([]model.Unit{thread, user("MOD-0001", to("EXEC-0001", model.PostsTo, "")), user("MOD-0002", to("EXEC-0001", model.RunsOn, ""))}, "MOD-0001", "MOD-0002")
+	if want := []joint{{model.PostsTo, true, "", ""}, {model.RunsOn, false, "", ""}}; !ok || !reflect.DeepEqual(joints(hops), want) {
+		t.Fatalf("got %+v, want the hand-off unmarked: %+v", joints(hops), want)
+	}
+}
