@@ -247,7 +247,6 @@ prose:
         MOD-0009 phrase depends_on MOD-0030: 16e9ac1c
         MOD-0009 purpose: 343a3960
         MOD-0009 responsibility: 7003d37f
-        MOD-0009 text: 0ab6a0d6
         MOD-0010 purpose: 810c2f49
         MOD-0010 responsibility: b354f9e7
         MOD-0011 purpose: 8571c437
@@ -265,7 +264,6 @@ prose:
         MOD-0017 phrase depends_on MOD-0030: 38ce0682
         MOD-0017 purpose: 6c98bcdb
         MOD-0017 responsibility: 762a5cbe
-        MOD-0017 text: 2f92becd
         MOD-0018 purpose: 1fafb7cd
         MOD-0018 responsibility: 72d90212
         MOD-0019 purpose: 76cc2870
@@ -288,7 +286,6 @@ prose:
         MOD-0026 phrase depends_on MOD-0030: cc0de147
         MOD-0026 purpose: 6ec2798c
         MOD-0026 responsibility: 26a990e7
-        MOD-0026 text: 4a361bf8
         MOD-0027 phrase depends_on MOD-0024: af8c0cd1
         MOD-0027 purpose: "78944623"
         MOD-0027 responsibility: 06ea36d1
@@ -313,7 +310,6 @@ prose:
         MOD-0034 phrase depends_on MOD-0056: 5386d26f
         MOD-0034 purpose: ff9ce85e
         MOD-0034 responsibility: fe26e42a
-        MOD-0034 text: 54630fe9
         MOD-0035 purpose: 2509d173
         MOD-0035 responsibility: 7a0dc3cf
         MOD-0036 purpose: 27bc92db
@@ -354,7 +350,6 @@ prose:
         MOD-0047 phrase depends_on MOD-0030: afb7556b
         MOD-0047 purpose: f00fb234
         MOD-0047 responsibility: 7886f5a0
-        MOD-0047 text: 8ebdac1f
         MOD-0048 purpose: 3e8c409f
         MOD-0048 responsibility: 7e281fe8
         MOD-0049 purpose: fb4a823f
