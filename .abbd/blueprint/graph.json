@@ -15343,6 +15343,7 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15464,7 +15465,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -23875,7 +23876,7 @@
                 "Code": true
               },
               {
-                "Text": " takes the first), else the ",
+                "Text": " takes the first), else the word of the ",
                 "Code": false
               },
               {
@@ -23883,7 +23884,7 @@
                 "Code": true
               },
               {
-                "Text": " word they all share (호출, 데이터, ...), which also stands in when no first name fits ",
+                "Text": " they all share (데이터, 설정, ...), which also stands in when no first name fits ",
                 "Code": false
               },
               {
@@ -23899,7 +23900,39 @@
                 "Code": true
               },
               {
-                "Text": " tells the two apart). Where a phrase's word, or such a majority via word, already stands within ",
+                "Text": " tells the two apart). A plain via, call or import (",
+                "Code": false
+              },
+              {
+                "Text": "model.Via.Plain",
+                "Code": true
+              },
+              {
+                "Text": "), says no word at rest, since the line's solid or dotted ink already says it: ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": " adds ",
+                "Code": false
+              },
+              {
+                "Text": "via 호출",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "via 임포트",
+                "Code": true
+              },
+              {
+                "Text": " to the line's tooltip instead, and a bus whose lines share only a plain via keeps its ×N. Where a phrase's word, or such a majority via word, already stands within ",
                 "Code": false
               },
               {
