@@ -3,5 +3,6 @@ extract:
     - run
     - .abbd/extractor/extract.go
 name: ABBD
+language: ko
 overview_cut: true
 purpose: ABBD keeps a repository's architecture as a checked topology in .abbd/ and draws it as a blueprint, so a person can understand what an agent built and changed, and decide what to do about it. A deterministic script extracts the units and relations, readers add what code alone cannot show with quoted evidence, and every sync checks that evidence and marks what went stale.

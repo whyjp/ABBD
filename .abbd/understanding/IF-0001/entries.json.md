@@ -2,6 +2,7 @@
 unit: IF-0001
 slot: entries.json
 origin: INFERRED
+reader: pstack poteto-mode 0.15.36
 digest: d56d9f7b07d75819
 format: 3
 evidence:
@@ -16,4 +17,4 @@ code:
     cmd/abbd/words.go#quote-b0e0124e: afb8df8f6c45f674
 ---
 
-Prints the same categories as JSON, with the base revision and `words`: one entry per module text, slot note or flow step that came, went or changed since the base, with its key, kind, unit, change and every sentence it lost and gained, uncapped, for a tool rather than a reader.
+같은 범주를 기준 리비전과 함께 JSON으로 찍고, `words`도 담는다. `words`는 기준 이후 생기거나 사라지거나 바뀐 모듈 글, slot 노트, flow step마다 항목 하나이고, 각 항목은 키, 종류, 유닛, 변경, 그리고 잃은 문장과 얻은 문장을 개수 제한 없이 모두 담는다. 사람이 아니라 도구가 읽는 출력이다.
