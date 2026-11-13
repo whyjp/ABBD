@@ -500,14 +500,15 @@ func (e env) sync() error {
 }
 
 // attention prints what a reader or a human must look at after a write:
-// drifted and dead evidence, a human's parent the script moved under, and
+// drifted and dead evidence, a human's parent the script moved under, two
+// claims that give one edge different conditions, and
 // a module the extraction does not cover.
 func (e env) attention(units []model.Unit) {
 	n := evidenceCounts(units)
 	if n[model.Drifted]+n[model.Dead] > 0 {
 		fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead; abbd evidence lists them, abbd record evidence refreshes and abbd retract removes\n", n[model.Drifted], n[model.Dead])
 	}
-	for _, c := range model.ParentConflicts(units) {
+	for _, c := range append(model.ParentConflicts(units), model.ConditionConflicts(units)...) {
 		fmt.Fprintln(e.stdout, "conflict:", c)
 	}
 	for _, w := range uncovered(e.root, units) {
