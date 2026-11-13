@@ -55,10 +55,10 @@ lines:
       word: abbd setup 실행
       evidence:
         - path: plugins/abbd/skills/abbd-setup/SKILL.md
-          lines: "49"
+          lines: "62"
           quote: abbd setup --supplement .abbd/extractor/supplement.json
       code:
-        plugins/abbd/skills/abbd-setup/SKILL.md#quote-a36c3d8c: 9a637622fc262c71
+        plugins/abbd/skills/abbd-setup/SKILL.md#quote-a36c3d8c: f0e063e74b20c38a
     - from: FEAT-0002
       to: FEAT-0001
       word: abbd 스킬의 리더
@@ -82,7 +82,7 @@ lines:
       word: 스크립트 출력 Parse
       evidence:
         - path: cmd/abbd/main.go
-          lines: "490"
+          lines: "498"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       code:
         cmd/abbd/main.go#quote-2a172499: f449d858035def28
@@ -109,7 +109,7 @@ lines:
       word: 작업 트리 Snapshot
       evidence:
         - path: cmd/abbd/main.go
-          lines: "568"
+          lines: "576"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       code:
         cmd/abbd/main.go#quote-e3be779d: 1b1b4070e5cecefa
@@ -118,7 +118,7 @@ lines:
       word: 저장본과 추출 Reconcile
       evidence:
         - path: cmd/abbd/main.go
-          lines: "590"
+          lines: "598"
           quote: res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)
       code:
         cmd/abbd/main.go#quote-9f1933c8: 91cb400ac9ac34b5
@@ -127,7 +127,7 @@ lines:
       word: 단위 인용 Apply
       evidence:
         - path: cmd/abbd/main.go
-          lines: "591"
+          lines: "599"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       code:
         cmd/abbd/main.go#quote-46d5e4b3: f362c61d73a69f5d
@@ -136,7 +136,7 @@ lines:
       word: 단위 Fallback 배치
       evidence:
         - path: cmd/abbd/main.go
-          lines: "592"
+          lines: "600"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       code:
         cmd/abbd/main.go#quote-752e5b50: abe058985fc558c4
@@ -145,7 +145,7 @@ lines:
       word: SaveUnits 단위 파일
       evidence:
         - path: cmd/abbd/main.go
-          lines: "594"
+          lines: "602"
           quote: if err := st.SaveUnits(res.Units); err != nil {
       code:
         cmd/abbd/main.go#quote-e28fdf28: fc29a42387cb7d71
