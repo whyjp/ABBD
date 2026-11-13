@@ -2022,7 +2022,6 @@
         "Stale": true
       },
       "Anchors": [
-        "internal/model/model.go",
         "internal/model/model.go ends",
         "internal/model/model.go vias"
       ],
@@ -15762,7 +15761,6 @@
           "Sentence": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
           "Guess": true,
           "Anchors": [
-            "internal/model/model.go",
             "internal/model/model.go ends",
             "internal/model/model.go vias"
           ],
