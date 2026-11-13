@@ -79,6 +79,14 @@ type Totals struct {
 	PathsOver2  int `json:"paths_over2"`
 	TracedBends int `json:"traced_bends"`
 	Back        int `json:"back"`
+	// AgainstAxis is the lines that run against the axis the view reads
+	// by, and AgainstAxisInk their ink in px: the lines rule 13 draws back,
+	// each taken the way its relation is used, so a provides line climbing
+	// to its contract's chip on the frame top runs with the axis. A page
+	// the debt file names may not raise them, and the views together may
+	// not raise the lines past their ceiling (gate.go).
+	AgainstAxis    int `json:"against_axis"`
+	AgainstAxisInk int `json:"against_axis_ink"`
 	// Weighed is the crossings, one more for each excess turn and
 	// stepCrossings for each step: the staircases a reader sees, which
 	// choose ranks a view's drawings by, so the gate and choose weigh a
@@ -136,6 +144,7 @@ func Sum(views []ViewLint) Totals {
 		t.Steps, t.Jogs, t.Crossings, t.Tees = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings, t.Tees+o.Tees
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
 		t.Detours += o.Detours
+		t.AgainstAxis, t.AgainstAxisInk = t.AgainstAxis+o.AgainstAxis, t.AgainstAxisInk+o.AgainstAxisInk
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
@@ -333,6 +342,7 @@ func lintView(v view) (ViewLint, error) {
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + vl.Totals.ExcessTurns + stepCrossings*vl.Totals.Steps
 	vl.Totals.Height = v.d.Height
+	vl.Totals.AgainstAxis, vl.Totals.AgainstAxisInk = againstAxis(v.d)
 	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
@@ -888,6 +898,21 @@ func backWay(pts []fpt) bool {
 	a, b := pts[0], pts[len(pts)-1]
 	dy, dx := b.y-a.y, b.x-a.x
 	return !(dy > 2 || math.Abs(dy) <= 2 && dx >= 0)
+}
+
+// againstAxis counts the routes of d that run against the reading axis, and
+// sums their ink. A route is Back by backWay's rule taken the way its
+// relation is used: from a provides line's contract to its provider. A
+// mutual line leaves the upper of its two boxes, or the left one in a row
+// (overview.go, before), so it never runs back.
+func againstAxis(d Drawing) (n, ink int) {
+	for _, r := range d.ways {
+		if r.Back {
+			n++
+			ink += runLength(r.D)
+		}
+	}
+	return n, ink
 }
 
 // turnBack is one place a path runs back against the stretch two before:

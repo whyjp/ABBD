@@ -52,6 +52,8 @@ type Drawing struct {
 	Card *Card `json:",omitempty"`
 	// roads says its lines ride roads (confluence.go).
 	roads bool
+	// axis is what its layout ranked the rows by (rank.go).
+	axis axis
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for
@@ -1115,7 +1117,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads, axis: l.axis}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]

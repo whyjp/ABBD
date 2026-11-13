@@ -67,8 +67,10 @@ const (
 
 // Graph is graph.json: the blueprint's data, for tools that do not read the
 // page. It holds no value of the sync that rendered it, which the state
-// records, and no drawing, which the pages hold, so a change that moves
-// boxes or lines rewrites the pages that draw them and not this file.
+// records, and of the drawing, which the pages hold, only each box's Rank:
+// the order a reader reads it in. A change that moves boxes or lines
+// rewrites the pages that draw them, and this file only when a box changes
+// rows.
 type Graph struct {
 	Units []UnitRow `json:"units"`
 	Edges []Line    `json:"edges"`

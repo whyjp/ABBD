@@ -10,8 +10,8 @@ import (
 
 // The gate holds the drawings of a repository to what they owe, as its
 // .abbd/lint-debt.yaml records it. A view may keep the hard breaches it
-// owes and no more. Over every view, the weighed sum, the tees and the
-// excess turns may not pass their ceilings, and the placement debt may pass its ceiling by
+// owes and no more. Over every view, the weighed sum, the tees, the
+// excess turns and the lines against the axis may not pass their ceilings, and the placement debt may pass its ceiling by
 // placementRise of it, so a change that saves turns may move a few boxes.
 // Each page the debt file names, one a reader looks at, may not raise what
 // it records of the page's own totals.
@@ -38,6 +38,9 @@ var gated = []struct {
 	{"excess_turns", func(t Totals) int { return t.ExcessTurns }, func(int) int { return 0 }},
 	{"placement", func(t Totals) int { return t.Placement }, func(c int) int { return c / placementRise }},
 	{"detours", func(t Totals) int { return t.Detours }, func(int) int { return 0 }},
+	// lines against the axis may not rise over every view, those of pages
+	// the debt file does not name included.
+	{"against_axis", func(t Totals) int { return t.AgainstAxis }, func(int) int { return 0 }},
 	// overflow is how many views pass one screen (S).
 	{"overflow", func(t Totals) int { return t.Criteria["S"] }, func(int) int { return 0 }},
 }
@@ -75,6 +78,10 @@ var paged = []struct {
 	// coupling no relation makes. A page bound keeps a record from taking
 	// them on as debt.
 	{"false_joins", func(t Totals) int { return t.Criteria["J3"] }, false},
+	// lines against the axis are ones a reader follows backward, against
+	// the order the view is read in.
+	{"against_axis", func(t Totals) int { return t.AgainstAxis }, false},
+	{"against_axis_ink", func(t Totals) int { return t.AgainstAxisInk }, false},
 }
 
 // past says a page total got breaks its bound c.
