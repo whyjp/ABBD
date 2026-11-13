@@ -14,8 +14,10 @@ so a change to a lint criterion cannot move a case.
 
 It prints one row per case: case, source, view, measure, value, main's
 value, target and pass when the value is at or under the target, and exits 1 when a
-case fails. When go test writes no tables, as when the build fails, it
-stops with go's output before measuring anything. A case comes from a user
+case fails. A case whose view, page or line is not drawn fails with that
+reason in its result, and the other cases are still measured. When go test
+writes no tables, as when the build fails, it stops with go's output before
+measuring anything. A case comes from a user
 screenshot in D:/abbd-eval/exemplars (user-NN) or from the day's review
 (today); its view is a fixture view, by the name TestLintFixtures gives it,
 or every fixture view for a total.
@@ -52,6 +54,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 
 RG = "ripgrep overview"
+RG1 = "ripgrep overview focus MOD-0001 ripgrep"
+RG6 = "ripgrep overview focus MOD-0006 grep"
 R72 = "orca MOD-0072 desktop renderer UI"
 F73 = "orca MOD-0072 focus MOD-0073 renderer/app-shell"
 S98 = "orca MOD-0098 src/"
@@ -63,6 +67,11 @@ GITX = 'box "internal/gitx" (MOD-0022)'
 APP_SHELL = 'box "app-shell" (MOD-0073)'
 M81 = "orca MOD-0081 shared types and schemas"
 RPC = 'box "shared/rpc-contract" (MOD-0090)'
+
+
+class Unmeasured(Exception):
+    """A case's view, page or line is not there, so that case fails with this
+    reason and the others are still measured."""
 
 
 def read(path):
@@ -85,7 +94,7 @@ class Tables:
 
     def view(self, name):
         if name not in self.views:
-            sys.exit(f"no view {name!r} in the lint table")
+            raise Unmeasured(f"no view {name!r} in the lint table")
         return name
 
 
@@ -152,7 +161,10 @@ def steps(w):
 def on(fn, *names):
     """Sum fn over the view's lines that have every one of names at an end."""
     def m(t, view):
-        return sum(fn(w) for w in t.ways if w["view"] == t.view(view) and all(n in (w["from"], w["to"]) for n in names))
+        got = [w for w in t.ways if w["view"] == t.view(view) and all(n in (w["from"], w["to"]) for n in names)]
+        if names and not got:
+            raise Unmeasured(f"no traced line at {' and '.join(names)} on {view}")
+        return sum(fn(w) for w in got)
     return m
 
 
@@ -160,7 +172,7 @@ def ways(t, view, frm, to=None, kind=None):
     got = [w for w in t.ways if w["view"] == t.view(view) and w["from"] == frm
            and (to is None or w["to"] == to) and (kind is None or w["kind"] == kind)]
     if not got:
-        sys.exit(f"no traced line from {frm} to {to} on {view}")
+        raise Unmeasured(f"no traced line from {frm} to {to} on {view}")
     return got
 
 
@@ -182,6 +194,15 @@ def x_travel(frm, to, *more):
     def m(t, view):
         return round(sum(abs(b[0] - a[0]) for f in (frm, *more) for w in [ways(t, view, f, to)[0]["pts"]]
                          for a, b in zip(w, w[1:])))
+    return m
+
+
+def x_slack(frm, *tos):
+    """Pixels the lines from frm to each of tos run sideways past the x span
+    between their two ends."""
+    def m(t, view):
+        return round(sum(sum(abs(b[0] - a[0]) for a, b in zip(w, w[1:])) - abs(w[-1][0] - w[0][0])
+                         for to in tos for w in [ways(t, view, frm, to)[0]["pts"]]))
     return m
 
 
@@ -258,15 +279,35 @@ def along(s, t):
     return 0
 
 
+def listing(path):
+    if not os.path.isdir(path):
+        raise Unmeasured(f"no pages in {path}")
+    return sorted(os.listdir(path))
+
+
+def page_text(path):
+    try:
+        with open(path, encoding="utf8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise Unmeasured(f"no page {path}") from None
+
+
+def section(page, tag, path):
+    if tag not in page:
+        raise Unmeasured(f"no {tag} in {path}")
+    return page.index(tag)
+
+
 def doubled(fixture, unit):
     """Pairs of wires of one kind, not of one bundle (data-net), whose ink
     runs on one another, where neither names every line of the other, so
     the one drawn on top hides the other's lines from the pointer."""
     def m(t, view):
         t.view(view)
-        with open(os.path.join(t.pages, fixture, unit + ".html"), encoding="utf8") as f:
-            page = f.read()
-        at = page.index(f'id="m-{unit}"')
+        path = os.path.join(t.pages, fixture, unit + ".html")
+        page = page_text(path)
+        at = section(page, f'id="m-{unit}"', path)
         ws = []
         for kind, d, rest, title in WIRE.findall(page[at:page.index("</section>", at)]):
             net = re.search(r'data-net="(\d+)"', rest)
@@ -291,7 +332,7 @@ def page_map(t, view):
     key = (t.pages, fixture, sid)
     if key not in DRAWN:
         tag = f'id="{sid}"'
-        for name in sorted(os.listdir(os.path.join(t.pages, fixture))):
+        for name in listing(os.path.join(t.pages, fixture)):
             with open(os.path.join(t.pages, fixture, name), encoding="utf8") as f:
                 page = f.read()
             if tag in page:
@@ -299,7 +340,7 @@ def page_map(t, view):
                 DRAWN[key] = drawn(page[at:page.index("</svg>", at)])
                 break
         else:
-            sys.exit(f"no section {sid} for {view!r} in {t.pages}")
+            raise Unmeasured(f"no section {sid} for {view!r} in {t.pages}")
     return DRAWN[key]
 
 
@@ -499,6 +540,8 @@ def port_slack(frm=None, to=None):
     nearest free x over the other end's span (edge_slacks): px of the one
     line's start, or a count of ends over the view."""
     def m(t, view):
+        if frm:
+            ways(t, view, frm, to)
         n = 0
         for v in views_of(t, view):
             got = [w for w in t.ways if w["view"] == v]
@@ -532,9 +575,8 @@ def inked_titles(svg):
 
 
 def overview_svg(path):
-    with open(path, encoding="utf8") as f:
-        page = f.read()
-    at = page.index("<svg", page.index('id="overview"'))
+    page = page_text(path)
+    at = page.index("<svg", section(page, 'id="overview"', path))
     return page[at:page.index("</svg>", at)]
 
 
@@ -548,7 +590,7 @@ def titles_meet_ink(t, view):
     if view == SELF_STATE:
         page = os.path.join(t.out, "self-pages", "index.html")
         return inked_titles(overview_svg(page)) if os.path.exists(page) else None
-    return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in sorted(os.listdir(t.pages)))
+    return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in listing(t.pages))
 
 
 BESIDE = 10
@@ -690,7 +732,7 @@ def crossings(*names):
     with names, only crossings of a line from names[0] to one of the rest."""
     def m(t, view):
         got = [w for w in t.ways if w["view"] == t.view(view)]
-        mine = [w for w in got if w["from"] == names[0] and w["to"] in names[1:]] if names else got
+        mine = [w for to in names[1:] for w in ways(t, view, names[0], to)] if names else got
         return len({p for a in mine for b in got if b is not a and (a["from"], a["to"]) != (b["from"], b["to"])
                     for s in stretches(a) for q in stretches(b) for p in [crossing(s, q)] if p})
     return m
@@ -726,16 +768,19 @@ Q_SELF = "\"수평수직 병합이 덜 되어 복잡, 꺾임이 많음\""
 Case = namedtuple("Case", "id source view measure fn target note")
 
 CASES = [
-    Case("rg-regex-drop", "today; user-16, user-17", RG, "turns past 0 in one column, 2 in two, of grep -> grep-regex",
-         on(excess, GREP, REGEX), 0, "rows 67-70: the hairpin is gone, but grep-regex stands in grep's column and the line still turns twice"),
-    Case("rg-regex-hairpin", "today; user-16, user-17", RG, "turn-backs and doubled stretches of grep -> grep-regex",
-         on(lambda w: backs(w) + doubles(w), GREP, REGEX), 0, "guard: rows 69-70 took the ride past pcre2 cargo feature's drop and back"),
+    Case("rg-regex-drop", "today; user-16, user-17", RG6, "turns past 0 in one column, 2 in two, of grep -> grep-regex",
+         on(excess, GREP, REGEX), 0, "rows 67-70 of the overview: the hairpin is gone, but grep-regex stands in grep's column"
+         " and the line still turns twice; the density cut draws the line only in focus views since b95ffaf8"),
+    Case("rg-regex-hairpin", "today; user-16, user-17", RG6, "turn-backs and doubled stretches of grep -> grep-regex",
+         on(lambda w: backs(w) + doubles(w), GREP, REGEX), 0, "guard: rows 69-70 of the overview took the ride past"
+         " pcre2 cargo feature's drop and back; the density cut draws the line only in focus views since b95ffaf8"),
     Case("rg-doubled", "user-18", RG, "stretches of one line side by side within 12px for 24px",
          on(doubles), 0, "guard: two lanes of one line read as one doubled line"),
     Case("rg-matcher-out", "today", RG, "px grep -> grep-matcher runs past its ends' x span",
          past_ends(GREP, MATCHER), 0, "row 71: it passes at x=769 to reach 337 from 428"),
-    Case("rg-matcher-out-ripgrep", "today", RG, "px ripgrep -> grep-matcher runs past its ends' x span",
-         past_ends('box "ripgrep" (MOD-0001)', MATCHER), 0, "the same bus as grep's line, from 578"),
+    Case("rg-matcher-out-ripgrep", "today", RG1, "px ripgrep -> grep-matcher runs past its ends' x span",
+         past_ends('box "ripgrep" (MOD-0001)', MATCHER), 0,
+         "the same bus as grep's line, from 578, on the overview; its density cut draws the line only here since b95ffaf8"),
     Case("rg-matcher-back", "today", RG, "turn-backs of lines at grep-matcher",
          on(backs, MATCHER), 0, "grep-matcher's arrivals ride around a row and back"),
     Case("r72-straight", "today", R72, "lines between boxes in one column that turn",
@@ -808,14 +853,19 @@ CASES = [
     Case("ps-parallel", EYE, "pstack overview", PARALLEL, parallel_ink, 7 * 61,
          Q_PS + "; lines 12 and 21 run 24px on one track, 17 and 41 40px; target 7px a line, user-07's, over 61 lines (user-08: 0)"),
     Case("ps-bends", EYE, "pstack overview", BENDS, bends_per_line, 100, Q_PS + "; " + EXEMPLAR_BENDS),
-    Case("rg-left-turns", EYE, RG, "turns of ripgrep -> grep-searcher and grep-matcher",
+    Case("rg-left-turns", EYE, RG1, "turns of ripgrep -> grep-searcher and grep-matcher",
          turns_of(RIPGREP, SEARCHER, MATCHER), 4,
-         Q_RG_LEFT + "; each leaves at 578, joins grep's trunk at 428 between the rows and turns 4 times; round the left, 2 each"),
-    Case("rg-left-crossings", EYE, RG, "crossings of ripgrep -> grep-searcher and grep-matcher",
-         crossings(RIPGREP, SEARCHER, MATCHER), 0, Q_RG_LEFT + "; the trunk at 428 runs through the middle of the drawing"),
-    Case("rg-left-sideways", EYE, RG, "px ripgrep -> grep-searcher and grep-matcher run sideways",
-         lambda t, v: x_travel(RIPGREP, SEARCHER)(t, v) + x_travel(RIPGREP, MATCHER)(t, v), 505,
-         "guard: 505 is the x span between their ends; the way round the left must not add sideways for its fewer turns"),
+         Q_RG_LEFT + "; on the overview each left at 578, joined grep's trunk at 428 between the rows and turned 4 times;"
+         " 2 each; the density cut draws both lines only here since b95ffaf8"),
+    Case("rg-left-crossings", EYE, RG1, "crossings of ripgrep -> grep-searcher and grep-matcher",
+         crossings(RIPGREP, SEARCHER, MATCHER), 0, Q_RG_LEFT + "; the overview's trunk at 428 ran through the middle of the drawing"),
+    Case("rg-left-overview-turns", EYE, RG, "turns of ripgrep -> grep-searcher", turns_of(RIPGREP, SEARCHER), 2,
+         Q_RG_LEFT + "; guard on the overview the user looked at, which since b95ffaf8 draws only this of the two, straight down at 978"),
+    Case("rg-left-overview-crossings", EYE, RG, "crossings of ripgrep -> grep-searcher", crossings(RIPGREP, SEARCHER), 1,
+         Q_RG_LEFT + "; guard: today only ripgrep -> grep-printer's track at y=228 crosses it; the flagged route via 388 crossed 3"),
+    Case("rg-left-sideways", EYE, RG1, "px ripgrep -> grep-searcher and grep-matcher run sideways past the x span between their ends",
+         x_slack(RIPGREP, SEARCHER, MATCHER), 0,
+         "guard: on the overview the 505 they ran was their ends' x span; the way round must not add sideways for its fewer turns"),
     Case("rg-regex-steps", EYE, RG, "steps of grep-regex -> grep-matcher", on(steps, REGEX, MATCHER), 0,
          "\"grep-regex -> grep-matcher 로 가는 선의 계단이 불필요하게 발생\"; 483,340 down to 372, left to 448, down to 508, left to 376, down: 4 turns"),
     Case("s98-parallel", EYE, S98, PARALLEL, parallel_ink, 7 * 37,
@@ -866,7 +916,16 @@ def run(out, hover_on, root):
         subprocess.run([sys.executable, shoot, os.path.join(out, "shots"), *repos, "--pages", "all", "--hover-shots", "0"],
                        check=True, stdout=subprocess.DEVNULL)
     t = Tables(out, hover_on)
-    return [None if v is None else int(v) for v in (c.fn(t, c.view) for c in CASES)]
+    return [measure(c, t) for c in CASES]
+
+
+def measure(c, t):
+    """The case's value, None when it skips, or the reason it could not be measured."""
+    try:
+        v = c.fn(t, c.view)
+    except Unmeasured as e:
+        return str(e)
+    return None if v is None else int(v)
 
 
 def describe(root):
@@ -882,13 +941,15 @@ def main():
     base = args[args.index("--main") + 1] if "--main" in args else None
     values = run(out, hover_on, ROOT)
     mains = run(os.path.join(out, "main"), hover_on, base) if base else [None] * len(CASES)
-    results = ["skip" if v is None else "pass" if v <= c.target else "fail" for c, v in zip(CASES, values)]
-    show = lambda v: "" if v is None else str(v)
+    results = ["skip" if v is None else f"fail: {v}" if isinstance(v, str) else "pass" if v <= c.target else "fail"
+               for c, v in zip(CASES, values)]
+    show = lambda v: "" if v is None or isinstance(v, str) else str(v)
     print("case\tsource\tview\tmeasure\tvalue\tmain\ttarget\tresult")
     for c, v, m, r in zip(CASES, values, mains, results):
         print(f"{c.id}\t{c.source}\t{c.view}\t{c.measure}\t{show(v)}\t{show(m)}\t<= {c.target}\t{r}")
     skipped = results.count("skip")
-    print(f"\n{results.count('fail')} of {len(results) - skipped} measured cases fail" + (f", {skipped} skipped" if skipped else ""))
+    failed = sum(r.startswith("fail") for r in results)
+    print(f"\n{failed} of {len(results) - skipped} measured cases fail" + (f", {skipped} skipped" if skipped else ""))
     if record:
         path = os.path.join(HERE, "acceptance.tsv")
         old = {r["case"]: r for r in read(path)} if os.path.exists(path) else {}
@@ -897,10 +958,10 @@ def main():
             f.write("case\tsource\tview\tmeasure\trecorded\tcommit\tmain\tmain_commit\ttarget\tnote\n")
             for c, v, m in zip(CASES, values, mains):
                 was = old.get(c.id, {})
-                rec = [show(v), at] if v is not None else [was.get("recorded", ""), was.get("commit", "")]
-                mn = [show(m), main_at] if m is not None else [was.get("main", ""), was.get("main_commit", "")]
+                rec = [show(v), at] if show(v) else [was.get("recorded", ""), was.get("commit", "")]
+                mn = [show(m), main_at] if show(m) else [was.get("main", ""), was.get("main_commit", "")]
                 f.write("\t".join([c.id, c.source, c.view, c.measure, *rec, *mn, f"<= {c.target}", c.note]) + "\n")
-    sys.exit(1 if "fail" in results else 0)
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
