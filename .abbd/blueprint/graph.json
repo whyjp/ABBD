@@ -3236,7 +3236,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
     },
     {
       "From": "FEAT-0012",
@@ -5676,9 +5676,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
-          ],
-          "Drifted": true
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+          ]
         },
         {
           "From": "/abbd-setup build the deterministic extractor",
