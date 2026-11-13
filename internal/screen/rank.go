@@ -12,19 +12,25 @@ import (
 // drawn in, 1 at the top, of Of rows. On "dependency" the layout layers the
 // view's lines, each user above what it uses. On "stack" a stored stack
 // pins its units' boxes to its layers, from the top, and every other box
-// stands by the lines. Cycle says the box shares a cycle of the lines the
-// layout layered with another box of the view: no order runs between them,
-// so on "dependency" their rows are the layout's choice.
+// stands by the lines. On "flow" the box stands on the primary flow: N is
+// its stage, from 1, of the Of stages stored, and Stage names it, whether
+// the view lays the stages across one row, down its rows, or not at all,
+// as the inside that draws a stage's unit within the box that holds it.
+// Cycle says the box shares a cycle of the lines the layout layered with
+// another box of the view: no order runs between them, so on "dependency"
+// their rows are the layout's choice.
 type Rank struct {
 	Basis string
 	N     int `json:",omitempty"`
 	Of    int
-	Cycle bool `json:",omitempty"`
+	Stage string `json:",omitempty"`
+	Cycle bool   `json:",omitempty"`
 }
 
 const (
 	byDependency = "dependency"
 	byStack      = "stack"
+	byFlow       = "flow"
 )
 
 // axis is what a layout ranked its rows by: the basis and the places that
@@ -32,10 +38,40 @@ const (
 type axis struct {
 	basis string
 	cycle map[string]bool
+	// flow is how the view laid the primary flow out, nil when it shows
+	// fewer than two stages.
+	flow *flowAxis
 }
 
-// ranks are the Rank of each box d draws, by its unit's ID.
-func ranks(d Drawing) map[string]Rank {
+// ranks are the Rank of each box d draws, by its unit's ID. A box on the
+// primary flow p ranks by its stage: on a view that lays the flow out, the
+// box the layout placed by a stage, and on any view, the box of a unit a
+// stage names itself, though it is drawn on the inside of the box that
+// holds it. Every other box of a view that lays the flow out ranks by its
+// drawn row along the lines.
+func ranks(d Drawing, p *PrimaryFlow) map[string]Rank {
+	out := rowRanks(d)
+	if p == nil {
+		return out
+	}
+	for id, rk := range out {
+		n := 0
+		if f := d.axis.flow; f != nil {
+			rk.Basis, n = byDependency, f.stage[id]
+		}
+		if n == 0 {
+			n = p.stageOf(id)
+		}
+		if n > 0 {
+			rk.Basis, rk.N, rk.Of, rk.Stage = byFlow, n, len(p.Stages), p.Stages[n-1].Name
+		}
+		out[id] = rk
+	}
+	return out
+}
+
+// rowRanks are the Rank of each box d draws by its drawn row.
+func rowRanks(d Drawing) map[string]Rank {
 	row, rows := drawnRows(d.Boxes)
 	out := map[string]Rank{}
 	for id, r := range row {
