@@ -89,11 +89,18 @@ func (e env) lint(pos []string) error {
 		}
 		d := screen.Record(views, debt)
 		d.Levels = kept
+		var unowed []string
 		if t := in.Project.Language; t != "" {
-			d.Prose = proseDebt(foreignProse(in, t), t, debt.Prose)
+			found := foreignProse(in, t)
+			d.Prose = proseDebt(found, t, debt.Prose)
+			unowed, _ = proseGate(found, t, d.Prose)
 		}
 		if err := e.st.SaveLintDebt(d); err != nil {
 			return err
+		}
+		if n := len(unowed); n > 0 {
+			t := in.Project.Language
+			fmt.Fprintf(e.stdout, "lint: prose: %s not in %s left out of the debt, which only shrinks; lint fails until each is written in %s\n", plural(n, "text"), t, t)
 		}
 		for _, l := range levels {
 			if r, ok := kept[l.View]; ok {

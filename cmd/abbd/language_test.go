@@ -62,4 +62,34 @@ func TestLintFlagsProseNotInTheProjectLanguage(t *testing.T) {
 	if r, out := proseOf(t, p); !slices.Contains(r.Lowerable, "prose: MOD-0001 text reads as ko now; drop it from the debt") {
 		t.Fatalf("lint did not offer to drop a text written again in ko:\n%s", out)
 	}
+
+	p.want(0, "responsibility of MOD-0001", "understand", "MOD-0001", p.file(t, "ko.md", "## Overview\n\nbilling 모듈은 charges table에 금액을 기록한다.\n"), "--sentence", "billing writes the charges table.")
+	p.want(0, "lint: prose: 1 text not in ko left out of the debt", "lint", "--record")
+	debt := p.read("lint-debt.yaml")
+	if strings.Contains(debt, "MOD-0001 responsibility") || strings.Contains(debt, "MOD-0001 text") {
+		t.Fatalf("record must keep only owed texts still foreign, never take in one written since:\n%s", debt)
+	}
+	if r, out := proseOf(t, p); !slices.Contains(r.Failures, "prose: MOD-0001 responsibility does not read as ko; write it in ko, keeping identifiers, paths and quotes verbatim") {
+		t.Fatalf("an English text written after the first record must still fail after --record:\n%s", out)
+	}
+}
+
+func TestLintJudgesEveryTablePartAndColumn(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	ko := strings.NewReplacer(
+		"question: Which part of the charge path touches the charges table?", "question: charge 경로의 어느 부분이 charges table에 닿는가?",
+		"The ledger reads what billing writes.", "ledger는 billing이 쓴 것을 읽는다.",
+	).Replace(chargeTable)
+	p.table(0, "stored table charge", ko)
+	p.setLanguage("ko")
+	r, out := proseOf(t, p)
+	for _, k := range []string{"table charge columns", "table charge row 1", "table charge row 2"} {
+		if !slices.Contains(r.Prose, k) {
+			t.Errorf("lint must judge %s:\n%s", k, out)
+		}
+	}
+	if slices.Contains(r.Prose, "table charge") {
+		t.Errorf("lint failed a Korean question and caption:\n%s", out)
+	}
 }

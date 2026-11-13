@@ -37,9 +37,8 @@ func TestProjectLanguageIsAValidatedTag(t *testing.T) {
 	}
 
 	st, _ = projectWith(t, "name: x\n")
-	t.Setenv("LC_ALL", "ja_JP.UTF-8")
-	if p, err := st.LoadProject(); err != nil || p.Language != "" || p.Lang() != model.Language("ja-JP") {
-		t.Errorf("unset language: %q, Lang %q, %v; want none and the OS's ja-JP", p.Language, p.Lang(), err)
+	if p, err := st.LoadProject(); err != nil || p.Language != "" || p.Lang() != model.DefaultLanguage() {
+		t.Errorf("unset language: %q, Lang %q, %v; want none and the OS's %s", p.Language, p.Lang(), err, model.DefaultLanguage())
 	}
 
 	st, _ = projectWith(t, "language: korean\n")

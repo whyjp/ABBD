@@ -15,7 +15,7 @@ func TestParseLanguageCanonicalisesATagAndRefusesWhatIsNone(t *testing.T) {
 	}
 }
 
-func TestDefaultLanguageReadsTheLocaleThePOSIXEnvironmentRanksFirst(t *testing.T) {
+func TestDefaultLanguageRanksTheWindowsLocaleThenThePOSIXEnvironment(t *testing.T) {
 	for _, c := range []struct {
 		env    map[string]string
 		system string
@@ -25,12 +25,26 @@ func TestDefaultLanguageReadsTheLocaleThePOSIXEnvironmentRanksFirst(t *testing.T
 		{map[string]string{"LANG": "en_US.UTF-8", "LC_MESSAGES": "ja_JP", "LC_ALL": "de_DE@euro"}, "", "de-DE"},
 		{map[string]string{"LANG": "en_US.UTF-8", "LC_MESSAGES": "ja_JP"}, "", "ja-JP"},
 		{map[string]string{"LANG": "C.UTF-8"}, "ko-KR", "ko-KR"},
+		{map[string]string{"LANG": "en_US.UTF-8", "LC_ALL": "en_US.UTF-8"}, "ko-KR", "ko-KR"},
 		{map[string]string{"LC_ALL": "POSIX"}, "", FallbackLanguage},
 		{nil, "", FallbackLanguage},
 	} {
 		got := languageFrom(func(k string) string { return c.env[k] }, func() string { return c.system })
 		if got != c.want {
 			t.Errorf("env %v, system %q: %q, want %q", c.env, c.system, got, c.want)
+		}
+	}
+}
+
+func TestScriptIsNoneForALanguageNoMapLists(t *testing.T) {
+	for _, l := range []Language{"ka", "hy", "ta", "km"} {
+		if s := l.Script(); s != nil {
+			t.Errorf("%s has a script to judge by, want none", l)
+		}
+	}
+	for _, l := range []Language{"en", "de-DE", "ko", "zh-Hant", "sr-Latn"} {
+		if l.Script() == nil {
+			t.Errorf("%s has no script to judge by", l)
 		}
 	}
 }

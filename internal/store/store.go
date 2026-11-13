@@ -444,6 +444,9 @@ func (s Store) LoadLintDebt() (LintDebt, error) {
 }
 
 // lintDebtHead opens the lint debt file, which abbd lint --record writes.
+// The file holds what the drawings owe and, under prose, the stored texts
+// not yet in the project's language, which ProseDebt documents. The header
+// names the drawings alone, so every fixture's recorded file keeps it.
 const lintDebtHead = `# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
 # abbd lint fails on a hard breach past its view's debt, on a weighed sum
 # or a count of tees, excess turns or detours past its ceiling, and on a

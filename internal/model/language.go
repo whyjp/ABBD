@@ -44,19 +44,20 @@ func (l *Language) UnmarshalText(b []byte) error {
 	return err
 }
 
-// DefaultLanguage is the language the OS names for its user: LC_ALL, then
-// LC_MESSAGES, then LANG, as POSIX ranks them, then on Windows the user's
-// default locale, and FallbackLanguage when none names a language.
+// DefaultLanguage is the language the OS names for its user: on Windows the
+// user's default locale, which outranks the LANG a POSIX shell such as Git
+// for Windows exports; else LC_ALL, then LC_MESSAGES, then LANG, as POSIX
+// ranks them; and FallbackLanguage when none names a language.
 func DefaultLanguage() Language { return languageFrom(os.Getenv, osLocale) }
 
 func languageFrom(getenv func(string) string, system func() string) Language {
+	if l, err := ParseLanguage(system()); err == nil {
+		return l
+	}
 	for _, k := range []string{"LC_ALL", "LC_MESSAGES", "LANG"} {
 		if l, ok := posixLocale(getenv(k)); ok {
 			return l
 		}
-	}
-	if l, err := ParseLanguage(system()); err == nil {
-		return l
 	}
 	return FallbackLanguage
 }
@@ -74,7 +75,7 @@ func posixLocale(v string) (Language, bool) {
 }
 
 // The writing systems a language is written in, by language subtag and by
-// script subtag. A language neither lists is written in Latin.
+// script subtag. A language neither lists has no script to judge by.
 var (
 	hangul   = []*unicode.RangeTable{unicode.Hangul}
 	japanese = []*unicode.RangeTable{unicode.Hiragana, unicode.Katakana, unicode.Han}
@@ -90,6 +91,12 @@ var (
 		"ru": cyrillic, "uk": cyrillic, "be": cyrillic, "bg": cyrillic, "mk": cyrillic, "kk": cyrillic, "mn": cyrillic,
 		"el": {unicode.Greek}, "ar": arabic, "fa": arabic, "ur": arabic, "he": hebrew, "yi": hebrew,
 		"th": {unicode.Thai}, "hi": deva, "mr": deva, "ne": deva,
+		"en": latin, "de": latin, "fr": latin, "es": latin, "it": latin, "pt": latin, "nl": latin, "sv": latin,
+		"da": latin, "no": latin, "nb": latin, "nn": latin, "fi": latin, "is": latin, "pl": latin, "cs": latin,
+		"sk": latin, "sl": latin, "hr": latin, "bs": latin, "ro": latin, "hu": latin, "tr": latin, "et": latin,
+		"lv": latin, "lt": latin, "sq": latin, "ca": latin, "eu": latin, "gl": latin, "ga": latin, "cy": latin,
+		"mt": latin, "af": latin, "sw": latin, "id": latin, "ms": latin, "vi": latin, "tl": latin, "fil": latin,
+		"az": latin, "uz": latin, "eo": latin, "la": latin,
 	}
 	scriptOfSubtag = map[string][]*unicode.RangeTable{
 		"Hang": hangul, "Kore": hangul, "Jpan": japanese, "Hani": han, "Hans": han, "Hant": han,
@@ -98,7 +105,8 @@ var (
 )
 
 // Script is the letters the language is written in: those its script
-// subtag names, else those of its language subtag.
+// subtag names, else those of its language subtag, else none, and prose in
+// a language with none is not judged.
 func (l Language) Script() []*unicode.RangeTable {
 	parts := strings.Split(string(l), "-")
 	if len(parts) > 1 {
@@ -106,8 +114,5 @@ func (l Language) Script() []*unicode.RangeTable {
 			return s
 		}
 	}
-	if s, ok := scriptOfLanguage[parts[0]]; ok {
-		return s
-	}
-	return latin
+	return scriptOfLanguage[parts[0]]
 }
