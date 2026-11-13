@@ -758,8 +758,16 @@ var viaWords = map[Via]string{
 	"queue": "큐", "channel": "채널", "signal": "신호", "proxy": "프록시",
 }
 
+// plain are the vias whose word a line's style already says: a solid line
+// is a call and a dotted one a plan such as an import. The blueprint keeps
+// their word off a line at rest and in its tooltip only.
+var plain = map[Via]bool{"call": true, "import": true}
+
 // Word is the via in the blueprint's words, or "" for none.
 func (v Via) Word() string { return viaWords[v] }
+
+// Plain says the via's word tells a reader nothing the line's style does not.
+func (v Via) Plain() bool { return plain[v] }
 
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {

@@ -20,6 +20,7 @@ pages:
         density: 10
         doglegs: 6
         dots: 0
+        false_joins: 0
         label_repeats: 1
         labelled: 2
         parallel_ink: 0

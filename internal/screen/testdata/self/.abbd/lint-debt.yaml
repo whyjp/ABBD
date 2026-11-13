@@ -19,25 +19,25 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
-        counts: 1
+        counts: 2
         density: 28
         doglegs: 14
         dots: 3
         false_joins: 0
-        label_repeats: 6
-        labelled: 17
+        label_repeats: 0
+        labelled: 4
         parallel_ink: 0
     MOD-0041 internal/store:
         abreast: 0
         colour_switches: 8
         combs: 0
-        counts: 0
+        counts: 1
         density: 15
         doglegs: 8
         dots: 0
         false_joins: 0
-        label_repeats: 7
-        labelled: 11
+        label_repeats: 4
+        labelled: 7
         parallel_ink: 0
     overview:
         abreast: 0
@@ -49,5 +49,5 @@ pages:
         dots: 3
         false_joins: 0
         label_repeats: 0
-        labelled: 1
+        labelled: 0
         parallel_ink: 227
