@@ -83,6 +83,8 @@ type layout struct {
 	idle bool
 	// counted and roads are the tactic's flags.
 	counted, roads bool
+	// axis is what the rows were ranked by.
+	axis axis
 }
 
 const (
@@ -404,6 +406,10 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		delete(touched, frameTopNode)
 		delete(touched, frameBottomNode)
 	}
+	ax := axis{basis: byDependency, cycle: cyclic(out)}
+	if seat == nil && slices.ContainsFunc(nodes, func(nd lnode) bool { return nd.tier > 0 }) {
+		ax.basis = byStack
+	}
 	n := 0
 	for _, r := range rank {
 		n = max(n, r+1)
@@ -493,7 +499,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, axis: ax}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)

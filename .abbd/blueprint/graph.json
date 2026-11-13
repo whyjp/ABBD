@@ -16,7 +16,12 @@
       "Anchors": [
         ".claude-plugin/marketplace.json",
         "plugins/abbd/.claude-plugin/plugin.json"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 8,
+        "Of": 8
+      }
     },
     {
       "ID": "CFG-0002",
@@ -127,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -489,7 +494,13 @@
       "Anchors": [
         "plugins/abbd/skills/abbd",
         "plugins/abbd/skills/abbd/SKILL.md abbd"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 3,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "FEAT-0002",
@@ -509,7 +520,13 @@
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
         "plugins/abbd/skills/abbd-setup/SKILL.md abbd-setup"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 1,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "FEAT-0003",
@@ -1335,7 +1352,13 @@
         "cmd/abbd/table.go",
         "cmd/abbd/uncovered.go",
         "cmd/abbd/understand.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 2,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0002",
@@ -1532,7 +1555,12 @@
       "Anchors": [
         "internal/bootstrap",
         "internal/bootstrap/overlay.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0010",
@@ -1596,7 +1624,12 @@
       "Anchors": [
         "internal/evidence",
         "internal/evidence/evidence.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0014",
@@ -1685,7 +1718,12 @@
       "Anchors": [
         "internal/extract",
         "internal/extract/extract.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0018",
@@ -1795,7 +1833,12 @@
       "Anchors": [
         "internal/gitx",
         "internal/gitx/gitx.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0023",
@@ -1882,7 +1925,13 @@
       "Anchors": [
         "internal/identity",
         "internal/identity/identity.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0027",
@@ -1980,7 +2029,12 @@
         "internal/model/run.go",
         "internal/model/slot.go",
         "internal/model/table.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 7,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0031",
@@ -2098,6 +2152,7 @@
         "internal/screen/overview.go",
         "internal/screen/page.go",
         "internal/screen/primary.go",
+        "internal/screen/rank.go",
         "internal/screen/roadindex.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
@@ -2110,7 +2165,13 @@
         "internal/screen/weigh.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 3,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0035",
@@ -2284,7 +2345,13 @@
         "internal/store/note.go",
         "internal/store/store.go",
         "internal/store/understanding.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 4,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0042",
@@ -2427,7 +2494,12 @@
         "internal/topology/impact.go",
         "internal/topology/path.go",
         "internal/topology/query.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0048",
@@ -2571,7 +2643,12 @@
       "Anchors": [
         "internal/group",
         "internal/group/group.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0055",
@@ -2591,7 +2668,12 @@
       ],
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"pstack is an optional engine behind it.\""
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 4,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0056",
@@ -2603,7 +2685,12 @@
       "Anchors": [
         "internal/narrative",
         "internal/narrative/narrative.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0057",
@@ -2615,7 +2702,12 @@
       "Anchors": [
         "internal/owners",
         "internal/owners/owners.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     }
   ],
   "edges": [
@@ -5096,7 +5188,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0004",
@@ -5107,7 +5204,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0006",
@@ -5118,7 +5220,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0007",
@@ -5129,7 +5236,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0008",
@@ -5140,7 +5252,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0009",
@@ -5151,7 +5268,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0023",
@@ -5162,7 +5284,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         }
       ],
       "Understanding": null,
@@ -5454,7 +5581,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0012",
@@ -5465,7 +5597,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0013",
@@ -5476,7 +5613,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0014",
@@ -5487,7 +5629,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0016",
@@ -5498,7 +5645,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0017",
@@ -5509,7 +5661,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0025",
@@ -5520,7 +5677,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0026",
@@ -5554,6 +5716,11 @@
                 ]
               }
             ]
+          },
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
           }
         }
       ],
@@ -5775,7 +5942,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -5791,7 +5957,12 @@
             "cmd/abbd/install.go install",
             "cmd/abbd/install.go markers"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0002",
@@ -5806,7 +5977,12 @@
             "cmd/abbd/evidence.go checkEvidence",
             "cmd/abbd/evidence.go status"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0003",
@@ -5819,7 +5995,12 @@
             "cmd/abbd/main.go parseInterspersed",
             "cmd/abbd/main.go run"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0004",
@@ -5831,7 +6012,13 @@
             "cmd/abbd/main.go runScript",
             "cmd/abbd/main.go syncActual"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2,
+            "Cycle": true
+          }
         },
         {
           "ID": "MOD-0005",
@@ -6194,6 +6381,11 @@
                 ]
               }
             ]
+          },
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
           }
         },
         {
@@ -6208,7 +6400,12 @@
             "cmd/abbd/record.go statedFields",
             "cmd/abbd/understand.go understand"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0007",
@@ -6221,7 +6418,12 @@
             "cmd/abbd/screen.go publish",
             "cmd/abbd/screen.go screenInput"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0008",
@@ -6234,12 +6436,18 @@
             "cmd/abbd/setup.go readExtraction",
             "cmd/abbd/setup.go reseeded"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2,
+            "Cycle": true
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6262,7 +6470,31 @@
                 "Code": true
               },
               {
-                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact (a purpose, a responsibility, or an execution context's run, which ",
+                "Code": false
+              },
+              {
+                "Text": "model.ParseRun",
+                "Code": true
+              },
+              {
+                "Text": " checks), abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " counts execution contexts among the kinds, and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff",
+                "Code": true
+              },
+              {
+                "Text": " counts run-time relations added and removed. ",
                 "Code": false
               },
               {
@@ -6604,7 +6836,23 @@
                 "Code": true
               },
               {
-                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import.",
+                "Text": "), which say at rest at most a via word such as 데이터, and none for a call or an import. It also lists the plug-point contracts whose relations look recorded the wrong way round (",
+                "Code": false
+              },
+              {
+                "Text": "direction",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "topology.ReversedPlugPoints",
+                "Code": true
+              },
+              {
+                "Text": "): a contract of callback slots that one module provides and several consume via call. That line advises and never fails the gate.",
                 "Code": false
               }
             ]
@@ -6635,7 +6883,7 @@
                 "Code": true
               },
               {
-                "Text": "): resolve a unit by ID, name, file, symbol or phrase, listing near matches, then print explain, path and impact. Explain shows the module text CURRENT or STALE against its code digest; impact seeds every unit anchored at a file and groups by feature with ",
+                "Text": "): resolve a unit by ID, name, file, symbol or phrase, listing near matches, then print explain, path and impact. Path names two units that run on one execution context as only sharing it. Explain shows the module text CURRENT or STALE against its code digest; impact seeds every unit anchored at a file and groups by feature with ",
                 "Code": false
               },
               {
@@ -9637,7 +9885,6 @@
         "Provides": 1,
         "Uses": 0,
         "Direct": 3,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -9651,7 +9898,12 @@
           "Anchors": [
             "internal/bootstrap/overlay.go Overlay"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0011",
@@ -9663,12 +9915,17 @@
             "internal/bootstrap/overlay.go match",
             "internal/bootstrap/overlay.go overlap"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -10312,6 +10569,36 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Supplement run",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "overlay.go",
+                "Code": true
+              },
+              {
+                "Text": "): a supplement unit's ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": ", how an execution context dispatches its work and how many of it run, replaces a matched script unit's, written by the supplement. The script rarely reads a run, so the reader's word stands.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Supplement condition",
                 "Code": false,
                 "Bold": true
@@ -10470,7 +10757,12 @@
             "internal/evidence/evidence.go Apply",
             "internal/evidence/evidence.go all"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0015",
@@ -10482,7 +10774,12 @@
             "internal/evidence/evidence.go Check",
             "internal/evidence/evidence.go Slack"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0016",
@@ -10494,7 +10791,12 @@
             "internal/evidence/evidence.go file",
             "internal/evidence/evidence.go load"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
@@ -11426,7 +11728,6 @@
         "Provides": 1,
         "Uses": 1,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11441,7 +11742,12 @@
             "internal/extract/extract.go Parse",
             "internal/extract/extract.go parentCycle"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0019",
@@ -11452,7 +11758,12 @@
           "Anchors": [
             "internal/extract/extract.go inferred"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0020",
@@ -11463,7 +11774,12 @@
           "Anchors": [
             "internal/extract/extract.go normalizePath"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0021",
@@ -11474,12 +11790,17 @@
           "Anchors": [
             "internal/extract/extract.go parseUnits"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -12223,7 +12544,23 @@
                 "Code": true
               },
               {
-                "Text": " checks a phrase, which only a supplement may give and only with evidence, and the evidence is normalized. A phrase goes to ",
+                "Text": " checks a phrase, which only a supplement may give and only with evidence, and the evidence is normalized. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationKind.Quoted",
+                "Code": true
+              },
+              {
+                "Text": " refuses a ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " with fewer than two evidence items, since it quotes both the producer and the consumer. A phrase goes to ",
                 "Code": false
               },
               {
@@ -12623,6 +12960,68 @@
               },
               {
                 "Text": ", a kind ABBD does not know and a kind listed twice.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Run",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "extract.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": " on a unit, one script fact, says how an execution context dispatches its work and how many of it run, as ",
+                "Code": false
+              },
+              {
+                "Text": "SHAPE COUNT",
+                "Code": true
+              },
+              {
+                "Text": " such as ",
+                "Code": false
+              },
+              {
+                "Text": "tick 1",
+                "Code": true
+              },
+              {
+                "Text": ". Parse refuses it on anything but an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": " unit, and ",
+                "Code": false
+              },
+              {
+                "Text": "model.ParseRun",
+                "Code": true
+              },
+              {
+                "Text": " refuses a shape or a count it does not know.",
                 "Code": false
               }
             ]
@@ -13104,7 +13503,12 @@
           "Anchors": [
             "internal/gitx/gitx.go MergeBase"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0024",
@@ -13115,7 +13519,12 @@
           "Anchors": [
             "internal/gitx/gitx.go Renames"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0025",
@@ -13126,7 +13535,12 @@
           "Anchors": [
             "internal/gitx/gitx.go Snapshot"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
@@ -14453,7 +14867,6 @@
         "Provides": 4,
         "Uses": 2,
         "Direct": 3,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14467,7 +14880,12 @@
           "Anchors": [
             "internal/identity/identity.go Reconcile"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0028",
@@ -14478,7 +14896,12 @@
           "Anchors": [
             "internal/identity/identity.go heldByHuman"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0029",
@@ -14490,11 +14913,17 @@
             "internal/identity/identity.go merge",
             "internal/identity/identity.go setRelations"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "pstack poteto-mode 0.15.36",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -15460,7 +15889,15 @@
                 "Code": true
               },
               {
-                "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
+                "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it. A new unit takes it too, and an execution context's ",
+                "Code": false
+              },
+              {
+                "Text": "Run",
+                "Code": true
+              },
+              {
+                "Text": " is carried the same way, by writer.",
                 "Code": false
               }
             ]
@@ -15658,7 +16095,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15672,7 +16108,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0012",
@@ -15683,7 +16124,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0015",
@@ -15694,7 +16140,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0019",
@@ -15705,7 +16156,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0020",
@@ -15716,7 +16172,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "IF-0016",
@@ -15728,7 +16189,12 @@
             "internal/model/model.go FormatID",
             "internal/model/model.go idPattern"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "IF-0017",
@@ -15740,7 +16206,12 @@
             "internal/model/model.go ParseEvidence",
             "internal/model/model.go Validate"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0031",
@@ -15752,7 +16223,12 @@
             "internal/model/model.go Counts",
             "internal/model/model.go Semantic"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0032",
@@ -15764,7 +16240,12 @@
             "internal/model/model.go ends",
             "internal/model/model.go vias"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0033",
@@ -15776,12 +16257,17 @@
             "internal/model/model.go sourced",
             "internal/model/model.go validate"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -16503,7 +16989,7 @@
                 "Code": true
               },
               {
-                "Text": "), and ",
+                "Text": "), ",
                 "Code": false
               },
               {
@@ -16511,7 +16997,15 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ", an execution context such as a thread, a worker pool, an event loop, an async runtime or the tasks one spawn site starts. ",
                 "Code": false
               },
               {
@@ -17679,6 +18173,78 @@
                 "Code": false
               },
               {
+                "Text": "runs_on",
+                "Code": true
+              },
+              {
+                "Text": " runs from a module, a feature or an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": " to an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " from a module or an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": " to an ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "RunTime",
+                "Code": true
+              },
+              {
+                "Text": " names those two. A ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " quotes both the producer and the consumer, so ",
+                "Code": false
+              },
+              {
+                "Text": "Quoted",
+                "Code": true
+              },
+              {
+                "Text": " refuses one with fewer than two evidence items. ",
+                "Code": false
+              },
+              {
                 "Text": "Uses",
                 "Code": true
               },
@@ -17699,7 +18265,7 @@
                 "Code": true
               },
               {
-                "Text": ", which run from the unit that uses the other. ",
+                "Text": ", which run from the unit that uses the other. A run-time relation is no use, so it breaches no layer. ",
                 "Code": false
               },
               {
@@ -17787,7 +18353,7 @@
                 "Code": true
               },
               {
-                "Text": " for a library loaded by name or ",
+                "Text": " for a library loaded by name, ",
                 "Code": false
               },
               {
@@ -17795,7 +18361,39 @@
                 "Code": true
               },
               {
-                "Text": " for a process started, and a phrase that only restates its via, such as dlopen for load, is refused. ",
+                "Text": " for a process started, or ",
+                "Code": false
+              },
+              {
+                "Text": "queue",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "channel",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "signal",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "proxy",
+                "Code": true
+              },
+              {
+                "Text": " for work handed across, and a phrase that only restates its via, such as dlopen for load, is refused. ",
                 "Code": false
               },
               {
@@ -17912,7 +18510,7 @@
                 "Code": true
               },
               {
-                "Text": "): one table of the writers that may claim each field, highest first. Name and signature take script, reader, supplement. Purpose and responsibility take human, reader, supplement. A relation takes script, human, reader, supplement, and a parent takes human, group, script, reader, supplement. ",
+                "Text": "): one table of the writers that may claim each field, highest first. Name and signature take script, reader, supplement. Purpose and responsibility take human, reader, supplement, and so does an execution context's run. A relation takes script, human, reader, supplement, and a parent takes human, group, script, reader, supplement. ",
                 "Code": false
               },
               {
@@ -19183,6 +19781,140 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Run",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "run.go",
+                "Code": true
+              },
+              {
+                "Text": "): how an execution context dispatches its work and how many of it run, stored on the unit as one fact ",
+                "Code": false
+              },
+              {
+                "Text": "SHAPE COUNT",
+                "Code": true
+              },
+              {
+                "Text": ", such as ",
+                "Code": false
+              },
+              {
+                "Text": "tick 1",
+                "Code": true
+              },
+              {
+                "Text": ". The shape is ",
+                "Code": false
+              },
+              {
+                "Text": "tick",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "wait",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "ready",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "complete",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "steal",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "inline",
+                "Code": true
+              },
+              {
+                "Text": ", and the count ",
+                "Code": false
+              },
+              {
+                "Text": "1",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "N",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "pool",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "ParseRun",
+                "Code": true
+              },
+              {
+                "Text": " refuses anything else, and ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Validate",
+                "Code": true
+              },
+              {
+                "Text": " refuses a run on any kind but ",
+                "Code": false
+              },
+              {
+                "Text": "EXEC",
+                "Code": true
+              },
+              {
+                "Text": ".",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "When",
                 "Code": true
               },
@@ -19488,7 +20220,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -19502,7 +20233,12 @@
           "Anchors": [
             "internal/screen/page.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0035",
@@ -19627,7 +20363,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0036",
@@ -19760,7 +20501,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0037",
@@ -20012,7 +20758,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0038",
@@ -20097,7 +20848,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0039",
@@ -20368,7 +21124,111 @@
                   "Code": true
                 },
                 {
-                  "Text": "), and the extraction command the page footer names.",
+                  "Text": "), and the extraction command the page footer names. Of the drawings, ",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.json",
+                  "Code": true
+                },
+                {
+                  "Text": " holds only each drawn box's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rank",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "rank.go",
+                  "Code": true
+                },
+                {
+                  "Text": "), set last in ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": ": the basis the rows follow, ",
+                  "Code": false
+                },
+                {
+                  "Text": "stack",
+                  "Code": true
+                },
+                {
+                  "Text": " where a stored stack pinned them (",
+                  "Code": false
+                },
+                {
+                  "Text": "tier",
+                  "Code": true
+                },
+                {
+                  "Text": ") and ",
+                  "Code": false
+                },
+                {
+                  "Text": "dependency",
+                  "Code": true
+                },
+                {
+                  "Text": " elsewhere, the row the box is drawn in from the top of its view, the view's row count, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Cycle",
+                  "Code": true
+                },
+                {
+                  "Text": " when the box shares a cycle of the lines its layout layered with another box of the view, so an agent reads boxes in the order a person sees them. ",
+                  "Code": false
+                },
+                {
+                  "Text": "arrange",
+                  "Code": true
+                },
+                {
+                  "Text": " keeps that basis and the cycles (",
+                  "Code": false
+                },
+                {
+                  "Text": "cyclic",
+                  "Code": true
+                },
+                {
+                  "Text": ", Tarjan's ",
+                  "Code": false
+                },
+                {
+                  "Text": "components",
+                  "Code": true
+                },
+                {
+                  "Text": " over the very graph it ranked: on the overview the ",
+                  "Code": false
+                },
+                {
+                  "Text": "depends_on",
+                  "Code": true
+                },
+                {
+                  "Text": " lines and each contract's user to its provider, on an inside its inner lines) in ",
+                  "Code": false
+                },
+                {
+                  "Text": "layout.axis",
+                  "Code": true
+                },
+                {
+                  "Text": ", and the drawing carries it, so the ranks cannot drift from the layout.",
                   "Code": false
                 }
               ]
@@ -20507,7 +21367,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0040",
@@ -20687,12 +21552,17 @@
                 }
               ]
             }
-          ]
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -21400,7 +22270,111 @@
                 "Code": true
               },
               {
-                "Text": "), and the extraction command the page footer names.",
+                "Text": "), and the extraction command the page footer names. Of the drawings, ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": " holds only each drawn box's ",
+                "Code": false
+              },
+              {
+                "Text": "Rank",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "rank.go",
+                "Code": true
+              },
+              {
+                "Text": "), set last in ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": ": the basis the rows follow, ",
+                "Code": false
+              },
+              {
+                "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": " where a stored stack pinned them (",
+                "Code": false
+              },
+              {
+                "Text": "tier",
+                "Code": true
+              },
+              {
+                "Text": ") and ",
+                "Code": false
+              },
+              {
+                "Text": "dependency",
+                "Code": true
+              },
+              {
+                "Text": " elsewhere, the row the box is drawn in from the top of its view, the view's row count, and ",
+                "Code": false
+              },
+              {
+                "Text": "Cycle",
+                "Code": true
+              },
+              {
+                "Text": " when the box shares a cycle of the lines its layout layered with another box of the view, so an agent reads boxes in the order a person sees them. ",
+                "Code": false
+              },
+              {
+                "Text": "arrange",
+                "Code": true
+              },
+              {
+                "Text": " keeps that basis and the cycles (",
+                "Code": false
+              },
+              {
+                "Text": "cyclic",
+                "Code": true
+              },
+              {
+                "Text": ", Tarjan's ",
+                "Code": false
+              },
+              {
+                "Text": "components",
+                "Code": true
+              },
+              {
+                "Text": " over the very graph it ranked: on the overview the ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " lines and each contract's user to its provider, on an inside its inner lines) in ",
+                "Code": false
+              },
+              {
+                "Text": "layout.axis",
+                "Code": true
+              },
+              {
+                "Text": ", and the drawing carries it, so the ranks cannot drift from the layout.",
                 "Code": false
               }
             ]
@@ -26653,7 +27627,7 @@
                 "Code": true
               },
               {
-                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. The ",
+                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), the detours, and the lines against the axis over every view, pages the debt file does not name included, none of which may pass theirs. The ",
                 "Code": false
               },
               {
@@ -26669,7 +27643,39 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs and its label repeats may not rise, and its labelled routes may not fall (a floor, ",
+                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs, its label repeats and its lines against the reading axis and their ink (",
+                "Code": false
+              },
+              {
+                "Text": "against_axis",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "against_axis_ink",
+                "Code": true
+              },
+              {
+                "Text": ", counted by ",
+                "Code": false
+              },
+              {
+                "Text": "againstAxis",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "lint.go",
+                "Code": true
+              },
+              {
+                "Text": " as the routes rule 13 draws back, a provides line read from its contract to its provider; a mutual line leaves its upper box, so it never runs back) may not rise, and its labelled routes may not fall (a floor, ",
                 "Code": false
               },
               {
@@ -26709,7 +27715,7 @@
                 "Code": true
               },
               {
-                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals.",
+                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals, a line against the axis failing both its page bound and the ceiling.",
                 "Code": false
               }
             ]
@@ -27539,7 +28545,12 @@
             "internal/identity/identity.go Candidate",
             "internal/store/store.go LoadCandidates"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0007",
@@ -27551,7 +28562,12 @@
             "internal/store/store.go parseUnit",
             "internal/store/store.go renderUnit"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0018",
@@ -27562,7 +28578,12 @@
           "Anchors": [
             "internal/store/store.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0042",
@@ -27575,7 +28596,12 @@
             "internal/store/store.go InputsHash",
             "internal/store/store.go hashFiles"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0043",
@@ -27586,7 +28612,12 @@
           "Anchors": [
             "internal/store/store.go NextID"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0044",
@@ -27597,7 +28628,12 @@
           "Anchors": [
             "internal/store/store.go UnitsAt"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0045",
@@ -27608,7 +28644,12 @@
           "Anchors": [
             "internal/store/store.go writeFile"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0046",
@@ -27620,7 +28661,12 @@
             "internal/store/understanding.go",
             "internal/store/understanding.go ModuleDigest"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
@@ -29203,7 +30249,6 @@
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -29217,7 +30262,12 @@
           "Anchors": [
             "internal/topology/diff.go Diff"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0011",
@@ -29228,7 +30278,12 @@
           "Anchors": [
             "internal/topology/diff.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0013",
@@ -29239,7 +30294,12 @@
           "Anchors": [
             "internal/topology/query.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0021",
@@ -29250,7 +30310,12 @@
           "Anchors": [
             "internal/topology/diff.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0023",
@@ -29261,7 +30326,12 @@
           "Anchors": [
             "internal/topology/impact.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0048",
@@ -29272,7 +30342,12 @@
           "Anchors": [
             "internal/topology/diff.go Boundary"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0049",
@@ -29284,7 +30359,12 @@
             "internal/topology/diff.go Compare",
             "internal/topology/diff.go between"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0050",
@@ -29295,7 +30375,12 @@
           "Anchors": [
             "internal/topology/impact.go ImpactOf"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0051",
@@ -29306,7 +30391,12 @@
           "Anchors": [
             "internal/topology/impact.go Links"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0052",
@@ -29317,7 +30407,12 @@
           "Anchors": [
             "internal/topology/query.go Explain"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0053",
@@ -29329,12 +30424,17 @@
             "internal/topology/query.go Path",
             "internal/topology/query.go strength"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         }
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -30150,7 +31250,39 @@
                 "Code": true
               },
               {
-                "Text": " link from parent to child, each walked either way. Cost compares joints first, then hops, nesting hops and the weakest origin. A joint is two users of one unit meeting through it. ",
+                "Text": " link from parent to child, each walked either way. Cost compares joints first, then hops, nesting hops and the weakest origin. A joint is two users of one unit meeting through it, by a ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " or a ",
+                "Code": false
+              },
+              {
+                "Text": "consumes",
+                "Code": true
+              },
+              {
+                "Text": ", or two units that ",
+                "Code": false
+              },
+              {
+                "Text": "runs_on",
+                "Code": true
+              },
+              {
+                "Text": " one execution context, which share it as two consumers share a contract. A ",
+                "Code": false
+              },
+              {
+                "Text": "posts_to",
+                "Code": true
+              },
+              {
+                "Text": " hands work over and uses nothing. ",
                 "Code": false
               },
               {
@@ -30322,6 +31454,52 @@
               },
               {
                 "Text": ", which counts as EXTRACTED when empty.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "ReversedPlugPoints",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "Reversed",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "direction.go",
+                "Code": true
+              },
+              {
+                "Text": "): the plug-point contracts whose relations look recorded the wrong way round. A plug point is an ",
+                "Code": false
+              },
+              {
+                "Text": "IF",
+                "Code": true
+              },
+              {
+                "Text": " most of whose entries are shaped as callback slots, a C function pointer, a Rust fn pointer or a method that takes self. One with exactly one provider and two or more other units that consume it via call is listed, since the modules that implement a plug point provide it and the host that calls through it consumes it. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd lint",
+                "Code": true
+              },
+              {
+                "Text": " prints each as advice and never fails on it.",
                 "Code": false
               }
             ]
@@ -31133,7 +32311,12 @@
           "Anchors": [
             "internal/group/group.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         },
         {
           "ID": "DATA-0022",
@@ -31144,7 +32327,12 @@
           "Anchors": [
             "internal/group/group.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         }
       ],
       "Understanding": null,
@@ -31276,7 +32464,12 @@
             "plugins/abbd/skills/abbd/SKILL.md",
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         },
         {
           "ID": "FEAT-0020",
@@ -31288,7 +32481,12 @@
             "plugins/abbd/skills/abbd-setup/SKILL.md",
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         }
       ],
       "Understanding": null,
