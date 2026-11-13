@@ -298,7 +298,7 @@ svg [data-h="n"] { --c: var(--hn); }
 </header>
 
 <section id="units">
-  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">129개, ID 순</span></h2>
+  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">131개, ID 순</span></h2>
   <p class="muted" style="margin:0 0 6px">모든 단위와 그 코드의 앵커입니다. 페이지 안 찾기(Ctrl+F)로 ID, 이름, 파일 경로, 심볼을 찾습니다.</p>
   <table><tr id="u-CFG-0001"><td class="id key">CFG-0001</td><td><strong>plugin and marketplace manifest</strong> <span class="muted">설정</span>
     <div>Declares the abbd marketplace, points it at ./plugins/abbd, and names the plugin&#39;s version and its requirements (pstack 0.15.36 and the abbd CLI on PATH). <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div>
@@ -519,9 +519,12 @@ svg [data-h="n"] { --c: var(--hn); }
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd brief pos{1}</div></details></td></tr><tr id="u-IF-0029"><td class="id key">IF-0029</td><td><strong>abbd scope</strong> <span class="muted">인터페이스</span>
     
     <div class="key muted anchors">cmd/abbd/main.go commands · cmd/abbd/review.go scope</div>
-    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd scope pos{1}</div></details></td></tr><tr id="u-MOD-0001"><td class="id key">MOD-0001</td><td><a href="MOD-0001.html"><strong>abbd CLI</strong></a> <span class="muted">모듈</span>
+    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd scope pos{1}</div></details></td></tr><tr id="u-IF-0030"><td class="id key">IF-0030</td><td><strong>abbd runtime</strong> <span class="muted">인터페이스</span>
+    
+    <div class="key muted anchors">cmd/abbd/main.go commands · cmd/abbd/runtime.go runtime</div>
+    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd runtime pos{0}</div></details></td></tr><tr id="u-MOD-0001"><td class="id key">MOD-0001</td><td><a href="MOD-0001.html"><strong>abbd CLI</strong></a> <span class="muted">모듈</span>
     <div>Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div>
-    <div class="key muted anchors">cmd/abbd · cmd/abbd/binding.go · cmd/abbd/brief.go · cmd/abbd/diff.go · cmd/abbd/draft.go · cmd/abbd/evidence.go · cmd/abbd/figure.go · cmd/abbd/flow.go · cmd/abbd/impact.go · cmd/abbd/install.go · cmd/abbd/keyunits.go · cmd/abbd/lint.go · cmd/abbd/main.go · cmd/abbd/migrate.go · cmd/abbd/narrative.go · cmd/abbd/phrases.go · cmd/abbd/query.go · cmd/abbd/record.go · cmd/abbd/review.go · cmd/abbd/screen.go · cmd/abbd/setup.go · cmd/abbd/stack.go · cmd/abbd/table.go · cmd/abbd/uncovered.go · cmd/abbd/understand.go</div>
+    <div class="key muted anchors">cmd/abbd · cmd/abbd/binding.go · cmd/abbd/brief.go · cmd/abbd/diff.go · cmd/abbd/draft.go · cmd/abbd/evidence.go · cmd/abbd/figure.go · cmd/abbd/flow.go · cmd/abbd/impact.go · cmd/abbd/install.go · cmd/abbd/keyunits.go · cmd/abbd/lint.go · cmd/abbd/main.go · cmd/abbd/migrate.go · cmd/abbd/narrative.go · cmd/abbd/phrases.go · cmd/abbd/query.go · cmd/abbd/record.go · cmd/abbd/review.go · cmd/abbd/runtime.go · cmd/abbd/screen.go · cmd/abbd/setup.go · cmd/abbd/stack.go · cmd/abbd/table.go · cmd/abbd/uncovered.go · cmd/abbd/understand.go</div>
     </td></tr><tr id="u-MOD-0002"><td class="id key">MOD-0002</td><td><strong>review commands</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
     <div>Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div>
     <div class="key muted anchors">cmd/abbd/diff.go · cmd/abbd/diff.go diff · cmd/abbd/evidence.go · cmd/abbd/evidence.go checkEvidence · cmd/abbd/evidence.go status</div>
@@ -687,6 +690,9 @@ svg [data-h="n"] { --c: var(--hn); }
     </td></tr><tr id="u-MOD-0057"><td class="id key">MOD-0057</td><td><a href="MOD-0057.html"><strong>internal/owners</strong></a> <span class="muted">모듈</span>
     
     <div class="key muted anchors">internal/owners · internal/owners/owners.go</div>
+    </td></tr><tr id="u-MOD-0058"><td class="id key">MOD-0058</td><td><strong>internal/runscan</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
+    
+    <div class="key muted anchors">internal/runscan · internal/runscan/blank.go · internal/runscan/candidates.go · internal/runscan/catalog.go · internal/runscan/record.go · internal/runscan/scan.go</div>
     </td></tr></table>
 </section>
 <p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>
