@@ -4,3 +4,4 @@
 /bin/
 .claude/
 .playwright-mcp/
+__pycache__/
