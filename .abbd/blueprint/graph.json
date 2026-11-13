@@ -76,9 +76,9 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/extract/extract.go Parse",
-        "internal/extract/extract.go rawResult",
-        "internal/extract/extract.go rawUnit"
+        "internal/extract/extract.go Doc",
+        "internal/extract/extract.go DocUnit",
+        "internal/extract/extract.go Parse"
       ]
     },
     {
@@ -1294,6 +1294,18 @@
       ]
     },
     {
+      "ID": "IF-0030",
+      "Kind": "IF",
+      "Name": "abbd extract",
+      "Signature": "abbd extract pos{1,2}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/extract.go extractBundled",
+        "cmd/abbd/main.go commands"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1315,6 +1327,7 @@
         "cmd/abbd/diff.go",
         "cmd/abbd/draft.go",
         "cmd/abbd/evidence.go",
+        "cmd/abbd/extract.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
         "cmd/abbd/impact.go",
@@ -1761,11 +1774,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so malformed or overreaching extraction output fails loudly instead of entering the state",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader's unit is identified by the code it cites.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go parseUnits"
@@ -2611,6 +2626,21 @@
         "internal/owners",
         "internal/owners/owners.go"
       ]
+    },
+    {
+      "ID": "MOD-0058",
+      "Kind": "MOD",
+      "Name": "internal/extract/frontend",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/extract/frontend",
+        "internal/extract/frontend/cargo.go",
+        "internal/extract/frontend/cmake.go",
+        "internal/extract/frontend/frontend.go"
+      ],
+      "Parent": "MOD-0017"
     }
   ],
   "edges": [
@@ -3009,6 +3039,14 @@
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
     },
     {
+      "From": "FEAT-0002",
+      "To": "IF-0030",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd extract\""
+    },
+    {
       "From": "FEAT-0003",
       "To": "FEAT-0002",
       "Kind": "depends_on",
@@ -3198,7 +3236,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
     },
     {
       "From": "FEAT-0012",
@@ -3667,6 +3705,13 @@
     },
     {
       "From": "MOD-0001",
+      "To": "IF-0030",
+      "Kind": "provides",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
@@ -3873,6 +3918,13 @@
       "Via": "call",
       "Phrase": "long-section check",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0002",
@@ -5042,6 +5094,27 @@
       "Via": "call",
       "Phrase": "Unit, Kind, Module",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "DATA-0002",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "data"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0017",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0030",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     }
   ],
   "modules": [
@@ -5418,7 +5491,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 19,
+        "Uses": 20,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5553,7 +5626,8 @@
             "record evidence",
             "flow",
             "lint",
-            "brief"
+            "brief",
+            "extract"
           ]
         }
       ],
@@ -5604,7 +5678,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
           ]
         },
         {
@@ -5749,9 +5823,10 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 30,
+        "Provides": 31,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6215,7 +6290,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -9065,6 +9140,28 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0030",
+          "Name": "abbd extract",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0030",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -9095,7 +9192,8 @@
             "lint",
             "review",
             "brief",
-            "scope"
+            "scope",
+            "extract"
           ]
         },
         {
@@ -11304,8 +11402,9 @@
       },
       "Standing": {
         "Provides": 1,
-        "Uses": 1,
+        "Uses": 2,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11354,10 +11453,24 @@
             "internal/extract/extract.go parseUnits"
           ],
           "Understanding": null
+        },
+        {
+          "ID": "MOD-0058",
+          "Name": "internal/extract/frontend",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/extract/frontend",
+            "internal/extract/frontend/cargo.go",
+            "internal/extract/frontend/cmake.go",
+            "internal/extract/frontend/frontend.go"
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -12519,7 +12632,7 @@
               {
                 "Key": "units",
                 "Name": "units",
-                "Shape": "[]rawUnit",
+                "Shape": "[]DocUnit",
                 "Need": "필수"
               },
               {
@@ -12693,7 +12806,7 @@
               {
                 "Key": "relations",
                 "Name": "relations",
-                "Shape": "[]rawRelation",
+                "Shape": "[]DocRelation",
                 "Need": "선택"
               },
               {
@@ -31209,7 +31322,7 @@
         }
       ],
       "Steps": 13,
-      "Stale": 0,
+      "Stale": 1,
       "Lanes": [
         {
           "Unit": "MOD-0041",
@@ -31266,7 +31379,11 @@
               "Quotes": [
                 "cmd/abbd/main.go \"out, err := e.runScript(p.Extract)\"",
                 "cmd/abbd/main.go \"cmd := exec.Command(argv[0], argv[1:]...)\""
-              ]
+              ],
+              "Reasons": [
+                "cmd/abbd/main.go (the quote is gone, or no longer once in the file)"
+              ],
+              "Stale": true
             }
           ]
         },
@@ -31767,7 +31884,7 @@
         }
       ],
       "Rows": 5,
-      "Stale": 0,
+      "Stale": 1,
       "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
@@ -31864,7 +31981,11 @@
             "cmd/abbd/main.go \"return res, st.SaveState(state)\"",
             "cmd/abbd/main.go \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
             "cmd/abbd/main.go \"p, err := e.st.LoadProject()\""
-          ]
+          ],
+          "Reasons": [
+            "cmd/abbd/main.go (the lines around it changed)"
+          ],
+          "Stale": true
         },
         {
           "N": 2,
