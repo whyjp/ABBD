@@ -17,7 +17,7 @@ debt:
         R: 1
 pages:
     overview:
-        abreast: 0
+        abreast: 168 # 0 until #209 drew store->identity dotted beside the CLI road
         against_axis: 3
         against_axis_ink: 888
         colour_switches: 0
@@ -29,7 +29,7 @@ pages:
         false_joins: 0
         label_repeats: 0
         labelled: 12 # 13 until #236 joined an unphrased call to the extract-model line; see #252
-        parallel_ink: 511
+        parallel_ink: 948 # 511 until #209; see abreast
 prose:
     language: ko
     reason: written before project.yaml named ko; each text is written in ko when it is next read again, stale or touched
@@ -366,7 +366,6 @@ prose:
         MOD-0054 phrase depends_on MOD-0030: 8e8be360
         MOD-0055 responsibility: b0a5f86c
         flow sync: 39f936e0
-        flow sync step MOD-0004: 580c41e9
         flow sync step MOD-0007: cb1082aa
         flow sync step MOD-0013: e6c1d195
         flow sync step MOD-0017: 239d3934
@@ -390,7 +389,6 @@ prose:
         table cli-files: 7a7ca9fd
         table cli-files columns: 4f87fbe9
         table cli-files row MOD-0002: 1e148bc4
-        table cli-files row MOD-0004: 45ba4a13
         table cli-files row MOD-0005: 5a4dd08b
         table cli-files row MOD-0006: c2889a62
         table cli-files row MOD-0007: 7c88244a
