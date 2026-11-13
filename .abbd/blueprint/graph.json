@@ -5785,7 +5785,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6249,7 +6248,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6939,7 +6938,7 @@
                 "Code": true
               },
               {
-                "Text": "는 글의 산문 글자 중 그 언어 문자의 비율이 문턱 아래일 때 ",
+                "Text": "는 글의 산문 단어 중 그 언어 문자를 품은 단어의 비율이 문턱 아래일 때 ",
                 "Code": false
               },
               {
@@ -6955,7 +6954,47 @@
                 "Code": true
               },
               {
-                "Text": "는 agent가 쓴 사실과 문구, 모듈 글, 노트, 그림 문장 가운데 그 언어로 읽히지 않는 것을 모은다. lint는 블루프린트나 한 뷰의 그림을 부채 파일에 견준다. 모든 뷰를 볼 때는 설명 없는 상자와, 그린 관계에 살아 있는 문구가 없는 개요 줄(",
+                "Text": "는 agent가 쓴 사실과 문구, 모듈 글, 노트, 그림 문장 가운데 그 언어로 읽히지 않는 것을 모은다. 문구는 ",
+                "Code": false
+              },
+              {
+                "Text": "\u003cID\u003e phrase \u003ckind\u003e \u003cto\u003e",
+                "Code": true
+              },
+              {
+                "Text": "로 하나씩, 그림은 질문과 캡션 외에 agent가 쓴 part마다(",
+                "Code": false
+              },
+              {
+                "Text": "flow \u003cKEY\u003e step N",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "stack \u003cKEY\u003e layer N",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "table \u003cKEY\u003e row N",
+                "Code": true
+              },
+              {
+                "Text": ") 키를 받고, table은 열 이름도 ",
+                "Code": false
+              },
+              {
+                "Text": "table \u003cKEY\u003e columns",
+                "Code": true
+              },
+              {
+                "Text": "로 판정한다. 사람이 쓴 part는 건너뛴다. lint는 블루프린트나 한 뷰의 그림을 부채 파일에 견준다. 모든 뷰를 볼 때는 설명 없는 상자와, 그린 관계에 살아 있는 문구가 없는 개요 줄(",
                 "Code": false
               },
               {
@@ -7011,7 +7050,7 @@
                 "Code": true
               },
               {
-                "Text": "에 남긴다.",
+                "Text": "에 남긴다. 언어가 같으면 이전 부채와의 교집합만 남겨 부채는 줄기만 하고, 그 사이 새로 쓴 외국어 글은 부채에 들지 않은 채 몇 개인지 찍힌다. 처음 기록하거나 언어가 바뀔 때만 찾은 것을 모두 받는다.",
                 "Code": false
               }
             ]
@@ -15705,7 +15744,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15828,7 +15866,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -18339,7 +18377,23 @@
                 "Code": true
               },
               {
-                "Text": "는 ",
+                "Text": "는 먼저 OS 로캘을 읽는다. Git for Windows 같은 POSIX 셸이 한국어 Windows에서도 ",
+                "Code": false
+              },
+              {
+                "Text": "LANG=en_US.UTF-8",
+                "Code": true
+              },
+              {
+                "Text": "을 내보내므로 Windows 로캘이 ",
+                "Code": false
+              },
+              {
+                "Text": "LANG",
+                "Code": true
+              },
+              {
+                "Text": "보다 앞선다. 그다음 ",
                 "Code": false
               },
               {
@@ -18379,7 +18433,7 @@
                 "Code": true
               },
               {
-                "Text": "는 언어가 없다고 본다), 그다음 OS 로캘, 마지막으로 ",
+                "Text": "는 언어가 없다고 본다), 마지막으로 ",
                 "Code": false
               },
               {
@@ -18451,7 +18505,7 @@
                 "Code": true
               },
               {
-                "Text": "로 주며, 둘 다 모르면 Latin이다. 산문이 그 문자로 쓰였는지 재는 일은 이 패키지가 하지 않는다.",
+                "Text": "로 준다. Latin 언어도 언어 subtag 표에 이름으로 올라 있고, 두 표 모두 모르는 언어(ka, hy, ta 등)는 nil이라 그 언어의 산문은 판정하지 않는다. 산문이 그 문자로 쓰였는지 재는 일은 이 패키지가 하지 않는다.",
                 "Code": false
               }
             ]
@@ -26771,7 +26825,6 @@
         "Provides": 5,
         "Uses": 2,
         "Direct": 5,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -26872,7 +26925,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -27287,7 +27340,7 @@
                 "Code": true
               },
               {
-                "Text": "는 YAML 앞에 파일이 무엇을 담는지 밝히는 ",
+                "Text": "는 YAML 앞에 ",
                 "Code": false
               },
               {
@@ -27295,7 +27348,23 @@
                 "Code": true
               },
               {
-                "Text": " 주석을 붙인다.",
+                "Text": " 주석을 붙인다. 이 머리글은 그림의 부채만 설명하고 ",
+                "Code": false
+              },
+              {
+                "Text": "prose",
+                "Code": true
+              },
+              {
+                "Text": " 키는 ",
+                "Code": false
+              },
+              {
+                "Text": "ProseDebt",
+                "Code": true
+              },
+              {
+                "Text": "의 Go 문서가 설명하므로, 모든 fixture가 기록한 부채 파일의 머리글은 그대로다.",
                 "Code": false
               }
             ]
@@ -30644,14 +30713,13 @@
         "Provides": 0,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
       "Units": null,
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -31149,7 +31217,15 @@
                 "Code": true
               },
               {
-                "Text": "가 코드와 제목으로 읽은 줄, 인라인 코드, 큰따옴표와 꺾쇠 따옴표 안의 인용, 그리고 경로나 호출 기호, 숫자, 밑줄을 품거나 camelCase이거나 대문자 두 자 이상인 단어를 뺀다. ",
+                "Text": "가 코드와 제목으로 읽은 줄, 인라인 코드, 큰따옴표와 꺾쇠 따옴표 안의 인용, 그리고 경로나 호출 기호, 숫자, 밑줄을 품거나 camelCase이거나 대문자 두 자 이상인 단어를 뺀다. 숫자는 Latin 글자와 함께 있거나 글자 없이 홀로 있을 때만 코드로 보므로 ",
+                "Code": false
+              },
+              {
+                "Text": "3개",
+                "Code": true
+              },
+              {
+                "Text": " 같은 한국어 수량 표현은 산문에 남는다. ",
                 "Code": false
               },
               {
@@ -31157,7 +31233,7 @@
                 "Code": true
               },
               {
-                "Text": "는 남은 글자 중 주어진 문자 체계(",
+                "Text": "는 글자를 하나라도 가진 산문 단어 중 주어진 문자 체계(",
                 "Code": false
               },
               {
@@ -31173,7 +31249,15 @@
                 "Code": true
               },
               {
-                "Text": ")에 속한 비율과 글자 수를 돌려주고, 글자가 없으면 1이다. ",
+                "Text": ")의 글자를 하나라도 가진 단어의 비율과 단어 수를 돌려준다. 그래서 ",
+                "Code": false
+              },
+              {
+                "Text": "store는",
+                "Code": true
+              },
+              {
+                "Text": "처럼 조사가 붙은 영어 용어는 한국어 단어로 세고, 명사가 많은 짧은 한국어 줄도 통과한다. 단어가 없거나 문자 체계가 nil이면 1이다. ",
                 "Code": false
               },
               {
