@@ -15,29 +15,29 @@ columns:
 rows:
     - unit: MOD-0004
       cells:
-        module texts: 코드가 맞는 옛 형식 글은 다시 찍고, 나머지는 다시 읽으라고 이름을 댄다
-        project.yaml: 추출 argv, 곧 스크립트나 abbd extract를 읽어 돌린다
-        state.yaml: ID high-water mark를 읽고, 리비전과 fingerprint를 쓴다
-        unit files: 맞춘 추출로 모든 unit 파일을 다시 쓰고, 모듈의 문장은 그 코드로 찍는다
+        module texts: 코드가 맞는 옛 형식 글은 다시 찍고, 나머지는 다시 읽을 글로 이름 댄다
+        project.yaml: 추출 argv를 읽어 돌리며, 그 안의 abbd는 지금 도는 바이너리다
+        state.yaml: 지금까지 준 가장 큰 ID를 읽고, 리비전과 지문을 쓴다
+        unit files: 맞춘 추출로 unit 파일을 모두 다시 쓰고, 모듈 문장을 그 코드로 찍는다
       evidence:
         - path: cmd/abbd/main.go
-          lines: "575"
+          lines: "586"
           symbol: syncActual
           quote: if err := st.SaveUnits(res.Units); err != nil {
         - path: cmd/abbd/main.go
-          lines: "545"
+          lines: "556"
           symbol: syncActual
           quote: state, err := st.LoadState()
         - path: cmd/abbd/main.go
-          lines: "592"
+          lines: "603"
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
-          lines: "581"
+          lines: "592"
           symbol: syncActual
           quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
         - path: cmd/abbd/main.go
-          lines: "463"
+          lines: "474"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
@@ -74,11 +74,11 @@ rows:
         unit files: reads every unit to resolve and answer a query
       evidence:
         - path: cmd/abbd/query.go
-          lines: "273"
+          lines: "276"
           symbol: explainHow
           quote: texts, err := e.st.LoadUnderstandings()
         - path: cmd/abbd/query.go
-          lines: "283"
+          lines: "286"
           symbol: explainHow
           quote: if t.Digest != e.st.ModuleDigest(units, u.ID) {
       writer: reader
@@ -121,11 +121,11 @@ rows:
           symbol: unitsAt
           quote: return e.st.UnitsAt(base)
         - path: cmd/abbd/evidence.go
-          lines: "148"
+          lines: "157"
           symbol: status
           quote: 'case in.Synced.Fingerprint == "":'
         - path: cmd/abbd/evidence.go
-          lines: "151"
+          lines: "160"
           symbol: status
           quote: switch in.BlueprintFreshness() {
       writer: reader

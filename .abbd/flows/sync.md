@@ -12,10 +12,10 @@ steps:
           lines: "583"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "463"
+          lines: "474"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "467"
+          lines: "478"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -23,16 +23,16 @@ steps:
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
         internal/store/store.go#quote-ac7ade60: 384e6d146d0e2fc6
     - unit: MOD-0004
-      does: runScript(argv) → 스크립트의 stdout. 프로젝트 루트에서 돌리고, 맨 abbd는 sync하는 abbd로 띄운다
-      fails: 스크립트가 0이 아닌 코드로 끝나면 멈추고 그 stderr를 찍는다
+      does: runScript(argv) → 루트에서 돌린 스크립트의 stdout, argv의 abbd는 지금 도는 바이너리
+      fails: 스크립트가 0이 아닌 값으로 끝나면 멈추고 그 stderr를 찍는다
       calls:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "470"
+          lines: "481"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "607"
+          lines: "618"
           symbol: runScript
           quote: cmd := exec.Command(name, argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "121"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "474"
+          lines: "485"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -71,7 +71,7 @@ steps:
           lines: "321"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "537"
+          lines: "548"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "113"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "549"
+          lines: "560"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "322"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "558"
+          lines: "569"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "568"
+          lines: "579"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -131,7 +131,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "562"
+          lines: "573"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -145,7 +145,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "572"
+          lines: "583"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -159,7 +159,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "573"
+          lines: "584"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -202,7 +202,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "434"
+          lines: "445"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
