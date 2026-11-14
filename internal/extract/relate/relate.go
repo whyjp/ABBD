@@ -21,15 +21,17 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// relaters is the one list of bundled relaters. manifest is the file the
-// relater's directory must hold, and unread says why the code a relater
-// reports unread went unread.
+// relaters is the one list of bundled relaters. manifests are the files the
+// relater's directory must hold one of, and unread says why the code a
+// relater reports unread went unread.
 var relaters = map[string]struct {
-	manifest, unread string
-	run              func(t tree, o owners) (found, error)
+	manifests []string
+	unread    string
+	run       func(t tree, o owners) (found, error)
 }{
-	"go":   {"go.mod", "left out by build constraints (read as " + strings.Join(goEnv, ", ") + ")", golang},
-	"rust": {"Cargo.toml", "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared (test code is left out unlisted)", rust},
+	"go":   {[]string{"go.mod"}, "left out by build constraints (read as " + strings.Join(goEnv, ", ") + ")", golang},
+	"rust": {[]string{"Cargo.toml"}, "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared (test code is left out unlisted)", rust},
+	"c":    {cManifests, "compiled by no entry of the compile database (test code is left out unlisted)", clang},
 }
 
 // Names lists the bundled relaters.
@@ -51,10 +53,10 @@ func ParseSpec(s string) (frontend.Spec, error) { return frontend.SpecOf("relate
 const maxQuotes = 3
 
 // vias ranks what a code-level depends_on rests on, best first: a call is
-// what runs, an implementation is a plug point, a macro writes code into
-// the caller, and an import that is never called only shares a type or a
-// constant.
-var vias = []model.Via{"call", "trait", "macro", "import"}
+// what runs, a callback runs through a pointer the code took, an
+// implementation is a plug point, a macro writes code into the caller, and
+// an import that is never called only shares a type or a constant.
+var vias = []model.Via{"call", "callback", "trait", "macro", "import"}
 
 // link is one relation between two units, by ref.
 type link struct {
@@ -90,22 +92,39 @@ type found struct {
 	// unread are the root-relative source files under the units that no
 	// configuration the relater reads compiles.
 	unread []string
+	// gated are the read files with code the configuration leaves out,
+	// each as path (N lines).
+	gated []string
 }
 
-// Unread is the code one relater could not read, and why.
+// Unread is the code one relater could not read, and why. A gated entry
+// names files the relater read with code its build configuration leaves
+// out, each as path (N lines); the relations that code holds are missing.
 type Unread struct {
 	Relater, Why string
 	Paths        []string
+	Gated        bool
 }
 
 // Relate runs each relater over its directory under root and adds what it
-// finds to doc. A relater owns the depends_on relations between the units
+// finds to doc. cache holds what a relater keeps between runs, such as a
+// build tree or an index, outside root, and defs are the CMake cache
+// options a relater that configures CMake passes, as the cmake front-end
+// does. A relater owns the depends_on relations between the units
 // whose code it read, so it replaces the extraction's there. It never makes
 // a unit, and adds a provides or consumes only where the extraction has none,
 // since the extraction owns its contracts.
-func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, []Unread, error) {
+func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, []Unread, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
+		return doc, nil, err
+	}
+	// A language server reports paths with symlinks resolved, as macOS's
+	// /var under /private/var, so the root is read the same way.
+	if root, err = filepath.EvalSymlinks(root); err != nil {
+		return doc, nil, err
+	}
+	if cache, err = filepath.Abs(cache); err != nil {
 		return doc, nil, err
 	}
 	o := index(doc.Units)
@@ -118,10 +137,10 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, [
 		}
 		r := relaters[s.Name]
 		dir := filepath.Join(root, filepath.FromSlash(s.Dir))
-		if _, err := os.Stat(filepath.Join(dir, r.manifest)); err != nil {
-			return doc, nil, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, r.manifest)
+		if !slices.ContainsFunc(r.manifests, func(m string) bool { _, err := os.Stat(filepath.Join(dir, m)); return err == nil }) {
+			return doc, nil, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, strings.Join(r.manifests, " or "))
 		}
-		f, err := r.run(tree{root: root, dir: dir}, o)
+		f, err := r.run(tree{root: root, dir: dir, cache: cache, defs: defs}, o)
 		if err != nil {
 			return doc, nil, fmt.Errorf("%s: %w", s.Name, err)
 		}
@@ -130,7 +149,10 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, [
 		maps.Copy(all.when, f.when)
 		if len(f.unread) > 0 {
 			slices.Sort(f.unread)
-			unread = append(unread, Unread{s.Name, r.unread, slices.Compact(f.unread)})
+			unread = append(unread, Unread{Relater: s.Name, Why: r.unread, Paths: slices.Compact(f.unread)})
+		}
+		if len(f.gated) > 0 {
+			unread = append(unread, Unread{Relater: s.Name, Why: "the compile configuration leaves out by #if", Paths: f.gated, Gated: true})
 		}
 		for _, p := range f.unread {
 			if u, ok := o.of(p); ok {
@@ -144,8 +166,9 @@ func Relate(root string, doc extract.Doc, specs []frontend.Spec) (extract.Doc, [
 
 // codeVia is whether a depends_on's via is one the code alone shows, so a
 // relater that read both ends owns it. A config, spawn, data or callback
-// relation lives outside the Go code and is never replaced.
-func codeVia(v model.Via) bool { return v == "" || slices.Contains(vias, v) }
+// relation may live outside the code a relater reads, as a callback
+// registered by name does, and is never replaced.
+func codeVia(v model.Via) bool { return v == "" || v != "callback" && slices.Contains(vias, v) }
 
 // merge folds the facts into the extraction under the ownership rule Relate
 // states, one relation per link with the best via's quotes. A unit that
@@ -280,9 +303,12 @@ func (o owners) contract(path, symbol string) (string, bool) {
 	return r, ok
 }
 
-// tree is where a relater runs: the repository root and its own directory,
-// both absolute.
-type tree struct{ root, dir string }
+// tree is where a relater runs: the repository root, its own directory and
+// the cache, all absolute, and the CMake cache options.
+type tree struct {
+	root, dir, cache string
+	defs             []string
+}
 
 // rel gives an absolute path as the root-relative, forward-slash path an
 // anchor holds, and false for a path outside the root.

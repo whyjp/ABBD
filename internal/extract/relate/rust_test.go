@@ -49,7 +49,7 @@ func relateRust(t *testing.T, doc extract.Doc) (extract.Doc, []Unread) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, unread, err := Relate(rustFixture, doc, []frontend.Spec{s})
+	out, unread, err := Relate(rustFixture, t.TempDir(), nil, doc, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -170,11 +170,13 @@ func TestRustRefusesAWorkspaceThatSilencesInactiveCode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _, err = Relate(dir, extract.Doc{Units: rustUnits()}, []frontend.Spec{s})
+	_, _, err = Relate(dir, t.TempDir(), nil, extract.Doc{Units: rustUnits()}, []frontend.Spec{s})
 	if err == nil {
 		t.Fatal("relations came back from a workspace whose server reports no inactive code")
 	}
-	for _, want := range []string{"rust-analyzer", "lib.rs", "inactive"} {
+	// The files are read in parallel, so whichever false cfg is checked
+	// first, in app/src/lib.rs or app/src/gates.rs, is the one named.
+	for _, want := range []string{"rust-analyzer", "app/src/", "inactive"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("error %q does not name %q", err, want)
 		}

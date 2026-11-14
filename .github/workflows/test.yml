@@ -51,6 +51,17 @@ jobs:
           chmod +x rust-analyzer
           echo "$RUNNER_TEMP/rust-analyzer" >> "$GITHUB_PATH"
           rustup component add rust-src
+      # The c relater needs clangd; its tests skip without it.
+      # The pinned release 23.1.0 is the clangd the relater was measured with.
+      - name: Install clangd 23.1.0
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p "$RUNNER_TEMP/clangd"
+          cd "$RUNNER_TEMP/clangd"
+          curl -fsSLO https://github.com/clangd/clangd/releases/download/23.1.0/clangd-linux-23.1.0.zip
+          echo "e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd  clangd-linux-23.1.0.zip" | sha256sum -c
+          unzip -q clangd-linux-23.1.0.zip
+          echo "$RUNNER_TEMP/clangd/clangd_23.1.0/bin" >> "$GITHUB_PATH"
       - name: go test
         run: go test -timeout 20m ./...
       # The log stays outside the checkout: sync fingerprints every file in it.
@@ -66,6 +77,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           rust-analyzer --version
+          clangd --version
           log="$RUNNER_TEMP/relate.log"
           go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
           if grep -- '--- SKIP' "$log"; then exit 1; fi
