@@ -314,6 +314,13 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	fmt.Fprintln(w, "#")
 	fmt.Fprintln(w, "# A zone names boxes from this list. A line runs between two of these boxes; an")
 	fmt.Fprintln(w, "# end may also be a unit inside one, and the line is drawn from that unit's box.")
+	fmt.Fprintln(w, "#")
+	fmt.Fprintln(w, "# A line's word says what crosses or what the caller does with the other box: a verb")
+	fmt.Fprintln(w, "# or noun phrase in the project's language. An identifier may appear inside it but is")
+	fmt.Fprintln(w, "# not the word alone. The primary flow runs from where input enters the system to where")
+	fmt.Fprintln(w, "# output leaves, per-run stages only. Set-up wiring (registration, construction, CLI and")
+	fmt.Fprintln(w, "# test tooling) stays off the lines unless understanding needs it, and then its word says")
+	fmt.Fprintln(w, "# it happens at set-up.")
 	fmt.Fprintf(w, "#\n# The boxes the overview draws (%d), and the stage of the primary flow each stands at:\n", len(boxes))
 	for _, id := range boxes {
 		at := "-"
