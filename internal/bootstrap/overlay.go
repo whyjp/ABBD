@@ -44,8 +44,11 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			// A unit that names the module it shares with as its parent sits
 			// inside that module's anchors, so it stays a unit of its own as
 			// long as some anchor of the parent's tells the two apart.
-			if err == nil && !(sc.within(i, sc.parentOf(d, doc)) && !sameAnchors(sc.units[i].Anchors, d.Anchors)) {
-				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; name %q as its parent if it sits inside it, anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Key, out.Units[i].Name.Value)
+			// A grouping its members name as their parent quotes their code:
+			// the parent claims tell it apart from each member.
+			inside := sc.within(i, sc.parentOf(d, doc)) && !sameAnchors(sc.units[i].Anchors, d.Anchors)
+			if err == nil && !inside && !sc.groups(d, i, doc) {
+				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; name %q as its parent if it sits inside it, restate %q with this unit's ref as its parent if this unit groups it, anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Key, out.Units[i].Key, out.Units[i].Name.Value)
 			}
 			out.Units = append(out.Units, semantic(d, n))
 			i, err = len(out.Units)-1, nil
@@ -264,6 +267,33 @@ func (s script) parentOf(d extract.Unit, doc extract.Result) int {
 		return i
 	}
 	return -1
+}
+
+// groups reports whether the supplement places script unit i inside d with at
+// least one other script unit. A script unit counts as placed when the
+// restatement the overlay keeps for it, the first one, names d's key as its
+// parent; a later restatement is dropped and vouches for nothing. A grouping
+// of one member only renames that member.
+func (s script) groups(d extract.Unit, i int, doc extract.Result) bool {
+	if d.Key == "" || !d.Kind.Holds() {
+		return false
+	}
+	seen := map[int]bool{}
+	members := map[int]bool{}
+	for _, m := range doc.Units {
+		if len(m.Evidence) > 0 {
+			continue
+		}
+		j, err := s.match(m)
+		if err != nil || seen[j] {
+			continue
+		}
+		seen[j] = true
+		if m.Parent == d.Key {
+			members[j] = true
+		}
+	}
+	return members[i] && len(members) >= 2
 }
 
 func sameAnchors(a, b []model.Anchor) bool {

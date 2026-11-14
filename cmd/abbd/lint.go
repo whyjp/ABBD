@@ -33,6 +33,8 @@ type lintReport struct {
 	// Unphrased names the pairs of overview boxes whose lines carry no
 	// phrase, which say only a via word at rest.
 	Unphrased []string `json:"unphrased,omitempty"`
+	// Chosen says the overview record chose lines, so only those count.
+	Chosen bool `json:"unphrased_chosen,omitempty"`
 	// Undescribed names the drawn boxes that say only their kind, since
 	// their units record neither a purpose nor a responsibility.
 	Undescribed []model.ID `json:"undescribed,omitempty"`
@@ -125,7 +127,11 @@ func (e env) lint(pos []string) error {
 	}
 	if every {
 		r.Ceilings = debt.Ceilings
-		r.Unphrased = unphrased(in.Units, m.Overview)
+		var chosen []model.Line
+		for _, l := range in.Overview.Lines {
+			chosen = append(chosen, l.Claim)
+		}
+		r.Unphrased, r.Chosen = unphrased(in.Units, m.Overview, chosen), len(chosen) > 0
 		r.Undescribed = undescribed(in.Units)
 		// Only a language project.yaml names gates the prose, so the
 		// gate does not move with the machine lint runs on.
@@ -193,7 +199,11 @@ func printLint(e env, r lintReport) {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	if n := len(r.Unphrased); n > 0 {
-		fmt.Fprintf(e.stdout, "lint: phrases: %s between overview boxes with no live phrase on any relation, so each says only how it arises; give one relation of each a phrase, or more until half carry one:\n", plural(n, "line"))
+		where := "between overview boxes"
+		if r.Chosen {
+			where = "the overview record chose"
+		}
+		fmt.Fprintf(e.stdout, "lint: phrases: %s %s with no live phrase on any relation, so each says only how it arises; give one of the relations it names a phrase, or more until half carry one:\n", plural(n, "line"), where)
 		for _, p := range r.Unphrased[:min(n, 10)] {
 			fmt.Fprintf(e.stdout, "  %s\n", p)
 		}

@@ -80,9 +80,10 @@ func newQuoteFinder(e env, units []model.Unit) quoteFinder {
 
 // find returns a line of the candidate's from box that names a unit a
 // relation under it runs to, and that its file holds once, with what it
-// matched. It looks for a line that calls a name before any line that names
-// one, and tries the relations strongest first, each by the needles in
-// order. It finds none when no such line exists.
+// matched. It looks for a line that calls a name, then an import line that
+// names one, then any line of code that names one, and tries the relations
+// strongest first, each by the needles in order. It finds none when no such
+// line exists.
 func (q quoteFinder) find(c model.LineCandidate) (model.Evidence, string, bool) {
 	files, ok := q.files[c.From]
 	if !ok {
@@ -90,11 +91,11 @@ func (q quoteFinder) find(c model.LineCandidate) (model.Evidence, string, bool) 
 		files = quotable(slices.Sorted(slices.Values(files)))
 		q.files[c.From] = files
 	}
-	for _, call := range []bool{true, false} {
+	for _, u := range []use{useCall, useImport, useName} {
 		for _, end := range c.Ends {
 			for _, n := range needles(q.byID[end[0]], q.byID[end[1]]) {
 				for _, f := range files {
-					if ev, ok := q.line(f, n, call, []model.ID{c.From, c.To}); ok {
+					if ev, ok := q.line(f, n, u, []model.ID{c.From, c.To}); ok {
 						return ev, n.name, true
 					}
 				}
@@ -115,13 +116,22 @@ func quotable(files []string) []string {
 	return files
 }
 
-// line is the first line of file f that n names, that calls it when call is
-// set, that the file holds once and that lies in the code of ends, as abbd
-// overview FILE takes a line's quote. A comment and the definition of a
+// use is how a quoted line uses what it names, in the order find prefers.
+type use int
+
+const (
+	useCall use = iota
+	useImport
+	useName
+)
+
+// line is the first line of file f that n names, used as u says, that the
+// file holds once and that lies in the code of ends, as abbd overview FILE
+// takes a line's quote. A comment, a docstring and the definition of a
 // function are no use of what they name.
-func (q quoteFinder) line(f string, n needle, call bool, ends []model.ID) (model.Evidence, bool) {
+func (q quoteFinder) line(f string, n needle, u use, ends []model.ID) (model.Evidence, bool) {
 	re := n.word
-	if call {
+	if u == useCall {
 		re = n.call
 	}
 	if re == nil {
@@ -130,12 +140,12 @@ func (q quoteFinder) line(f string, n needle, call bool, ends []model.ID) (model
 	lines, ok := q.text[f]
 	if !ok {
 		b, _ := os.ReadFile(filepath.Join(q.e.root, filepath.FromSlash(f)))
-		lines = strings.Split(string(b), "\n")
+		lines = blankProse(strings.Split(string(b), "\n"))
 		q.text[f] = lines
 	}
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
-		if len(line) > 160 || !re.MatchString(line) || commentary.MatchString(line) || definition.MatchString(line) {
+		if len(line) > 160 || !re.MatchString(line) || commentary.MatchString(line) || definition.MatchString(line) || u == useImport && !importLine.MatchString(line) {
 			continue
 		}
 		ev := model.Evidence{Path: f, Lines: strconv.Itoa(i + 1), Quote: line}
@@ -146,12 +156,40 @@ func (q quoteFinder) line(f string, n needle, call bool, ends []model.ID) (model
 	return model.Evidence{}, false
 }
 
-// commentary is a line of a comment in most languages, and definition the
-// line that defines a function, which names a function without using it.
+// commentary is a line of a comment in most languages, definition the line
+// that defines a function, which names a function without using it, and
+// importLine a line that imports, includes or requires what it names.
 var (
+	importLine = regexp.MustCompile(`^(?:import|from\s+\S+\s+import|use|using|#\s*include|#import|require|extern\s+crate)\b|\b(?:require|import)\s*\(`)
 	commentary = regexp.MustCompile(`^(?://|/\*|\*|--|#(?:\s|$|[^a-z]|(?:todo|fixme|note|comment|xxx))|"""|;;)`)
 	definition = regexp.MustCompile(`^(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:func|fn|def|function)\b`)
 )
+
+// blankProse blanks the lines inside a block comment or a triple-quoted
+// string, such as a docstring, whose words name what the code does without
+// using it. The line that opens or closes one keeps its code.
+func blankProse(lines []string) []string {
+	out := slices.Clone(lines)
+	closer := ""
+	for i, l := range lines {
+		if closer != "" {
+			out[i] = ""
+			if strings.Contains(l, closer) {
+				closer = ""
+			}
+			continue
+		}
+		for _, d := range []string{`"""`, "'''"} {
+			if strings.Count(l, d)%2 == 1 {
+				closer = d
+			}
+		}
+		if j := strings.LastIndex(l, "/*"); closer == "" && j >= 0 && !strings.Contains(l[j:], "*/") {
+			closer = "*/"
+		}
+	}
+	return out
+}
 
 // needle is one way the code of a box spells a unit it runs to: word
 // matches a line that spells it and call a line that calls it, nil where
@@ -276,6 +314,13 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	fmt.Fprintln(w, "#")
 	fmt.Fprintln(w, "# A zone names boxes from this list. A line runs between two of these boxes; an")
 	fmt.Fprintln(w, "# end may also be a unit inside one, and the line is drawn from that unit's box.")
+	fmt.Fprintln(w, "#")
+	fmt.Fprintln(w, "# A line's word says what crosses or what the caller does with the other box: a verb")
+	fmt.Fprintln(w, "# or noun phrase in the project's language. An identifier may appear inside it but is")
+	fmt.Fprintln(w, "# not the word alone. The primary flow runs from where input enters the system to where")
+	fmt.Fprintln(w, "# output leaves, per-run stages only. Set-up wiring (registration, construction, CLI and")
+	fmt.Fprintln(w, "# test tooling) stays off the lines unless understanding needs it, and then its word says")
+	fmt.Fprintln(w, "# it happens at set-up.")
 	fmt.Fprintf(w, "#\n# The boxes the overview draws (%d), and the stage of the primary flow each stands at:\n", len(boxes))
 	for _, id := range boxes {
 		at := "-"

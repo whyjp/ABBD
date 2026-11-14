@@ -62,7 +62,7 @@
         }
       ],
       "purpose": "so ABBD knows what tree and revision the stored units were synced from and which ID numbers were ever used",
-      "responsibility": "Records the sync watermark: the revision first synced, the working-tree snapshot fingerprint, the inputs hash the blueprint was rendered from, and the per-kind high-water mark of minted IDs."
+      "responsibility": "sync 표시를 남긴다. 처음 sync한 리비전, 작업 트리 스냅숏 지문, 블루프린트를 그린 입력 해시, kind마다 매긴 ID의 최고 수위다."
     },
     {
       "ref": "data-understanding",
@@ -433,7 +433,7 @@
       "name": "blueprint publish",
       "parent": "mod-cmd-abbd",
       "purpose": "so the blueprint on disk always matches the state after a writing command",
-      "responsibility": "Owns loading the screen input with the current tree snapshot, writing every blueprint file in one SaveBlueprint call, which removes the pages no render holds, then recording in the state which inputs they were rendered from.",
+      "responsibility": "지금 트리 스냅숏과 함께 화면 입력을 읽고, SaveBlueprint 한 번으로 블루프린트 파일을 모두 쓰며 어느 렌더에도 없는 페이지를 지우고, 그 파일을 어느 입력에서 그렸는지 상태에 남긴다.",
       "evidence": [
         {
           "path": "cmd/abbd/screen.go",
@@ -979,7 +979,7 @@
       "name": "freshness verdicts",
       "parent": "mod-screen",
       "purpose": "tells the human whether what they read can be trusted",
-      "responsibility": "compares the working-tree snapshot with the synced fingerprint (state CURRENT, STALE or UNKNOWN) and the inputs hash the state says the blueprint was rendered from with the inputs hash now (blueprint freshness), and reads a merged state as STALE",
+      "responsibility": "작업 트리 스냅숏을 sync한 지문과 견주고(상태 CURRENT, STALE, UNKNOWN), 상태가 말하는 블루프린트의 입력 해시를 지금 입력 해시와 견주며(블루프린트 신선도), 병합된 상태는 STALE로 읽는다",
       "evidence": [
         {
           "path": "internal/screen/screen.go",
@@ -1078,8 +1078,8 @@
       "kind": "MOD",
       "name": "page template",
       "parent": "mod-screen",
-      "purpose": "turns the model into the pages a human opens",
-      "responsibility": "holds the embedded Korean HTML template, one named template per kind of page, its helper functions and the Korean labels for kinds and origin badges, and the stylesheet every page inlines, which styles each wire kind and port class the model emits",
+      "purpose": "모델을 사람이 여는 페이지로 바꾼다",
+      "responsibility": "내장된 한국어 HTML 템플릿(페이지 종류마다 이름 붙은 템플릿 하나), 그 도우미 함수, kind와 출처 배지의 한국어 이름, 그리고 모든 페이지가 품는 스타일시트를 가진다. 스타일시트는 모델이 내는 선 종류와 포트 클래스마다 모양을 준다",
       "evidence": [
         {
           "path": "internal/screen/page.go",
@@ -1144,7 +1144,7 @@
       "name": "store staleness hashes",
       "parent": "mod-store",
       "purpose": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-      "responsibility": "Hashes sorted file sets as relative path, length and bytes: InputsHash over every .abbd file except the blueprint and state.yaml, which the state records as the inputs the blueprint was rendered from.",
+      "responsibility": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
       "evidence": [
         {
           "path": "internal/store/store.go",
@@ -1476,7 +1476,7 @@
         }
       ],
       "purpose": "shows a human the architecture as it is, read-only over the store",
-      "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders the blueprint's pages (index.html, a page per module that holds units, a contract index and a unit index) and graph.json, which hold no value of the sync"
+      "responsibility": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다"
     },
     {
       "ref": "mod-store",
@@ -1916,8 +1916,8 @@
         },
         {
           "path": "cmd/abbd/setup.go",
-          "lines": "51",
-          "quote": "p.Extract = argv",
+          "lines": "52",
+          "quote": "p.Extract = portable(e.root, argv)",
           "symbol": "setup"
         }
       ]

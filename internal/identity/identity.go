@@ -66,6 +66,9 @@ type pair struct {
 	identical bool
 	overlap   int
 	symdiff   int
+	// foreign marks a script unit paired with a stored unit only the
+	// supplement reports, as a grouping that quotes its member's file.
+	foreign bool
 }
 
 // Reconcile is pure. renames maps old paths to new paths since the last sync.
@@ -131,7 +134,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 			ov := overlap(u.Anchors, in.Anchors)
 			same := ov > 0 && identical(u.Anchors, in.Anchors)
 			if ov >= 2 || same {
-				pairs = append(pairs, pair{i, j, same, ov, len(u.Anchors) + len(in.Anchors) - 2*ov})
+				pairs = append(pairs, pair{i, j, same, ov, len(u.Anchors) + len(in.Anchors) - 2*ov, u.SupplementRef != ""})
 			}
 		}
 	}
@@ -144,6 +147,8 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 			return p.overlap > q.overlap
 		case p.symdiff != q.symdiff:
 			return p.symdiff < q.symdiff
+		case p.foreign != q.foreign:
+			return !p.foreign
 		case p.st != q.st:
 			return p.st < q.st
 		default:

@@ -36,13 +36,22 @@ func TestUnphrasedNamesTheOverviewLinesWithNoLivePhrase(t *testing.T) {
 		// relations its drops above draw again.
 		{Rels: []string{"MOD-0001.consumes.IF-0001", "MOD-0002.depends_on.MOD-0003", "MOD-0002.depends_on.MOD-0006"}},
 	}}
-	got := unphrased(units, d)
+	got := unphrased(units, d, nil)
 	want := []string{
-		"MOD-0001 api - MOD-0003 ledger (2 relations)",
-		"MOD-0001 api - MOD-0007 orphan (1 relation)",
-		"MOD-0002 billing - MOD-0003 ledger (2 relations)",
+		"MOD-0001 api - MOD-0003 ledger (2 relations: MOD-0001.depends_on.MOD-0003, MOD-0003.depends_on.MOD-0001)",
+		"MOD-0001 api - MOD-0007 orphan (1 relation: MOD-0007.depends_on.MOD-0001)",
+		"MOD-0002 billing - MOD-0003 ledger (2 relations: MOD-0002.depends_on.MOD-0003, MOD-0002.depends_on.MOD-0006)",
 	}
 	if !slices.Equal(got, want) {
 		t.Errorf("unphrased =\n%q\nwant\n%q", got, want)
+	}
+
+	// With an overview record that chose lines, only those need a phrase. A
+	// chosen line may end on a unit inside a box, and names the box's line.
+	chosen := []model.Line{{From: "MOD-0006", To: "MOD-0002"}, {From: "MOD-0001", To: "MOD-0002"}}
+	got = unphrased(units, d, chosen)
+	want = want[2:]
+	if !slices.Equal(got, want) {
+		t.Errorf("unphrased with a record =\n%q\nwant\n%q", got, want)
 	}
 }

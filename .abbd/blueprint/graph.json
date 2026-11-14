@@ -157,7 +157,7 @@
         "Badge": "inferred"
       },
       "Responsibility": {
-        "Value": "Records the sync watermark: the revision first synced, the working-tree snapshot fingerprint, the hash of all unit files, and the per-kind high-water mark of minted IDs.",
+        "Value": "sync 표시를 남긴다. 처음 sync한 리비전, 작업 트리 스냅숏 지문, 블루프린트를 그린 입력 해시, kind마다 매긴 ID의 최고 수위다.",
         "Badge": "inferred"
       },
       "Anchors": [
@@ -1375,6 +1375,18 @@
       ]
     },
     {
+      "ID": "IF-0033",
+      "Kind": "IF",
+      "Name": "abbd version",
+      "Signature": "abbd version pos{0}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go version"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1445,9 +1457,7 @@
         "Stale": true
       },
       "Anchors": [
-        "cmd/abbd/diff.go",
         "cmd/abbd/diff.go diff",
-        "cmd/abbd/evidence.go",
         "cmd/abbd/evidence.go checkEvidence",
         "cmd/abbd/evidence.go status"
       ],
@@ -1567,11 +1577,10 @@
         "Badge": "inferred"
       },
       "Responsibility": {
-        "Value": "Owns loading the screen input with the current tree snapshot and writing index.html then graph.json, the watermark file last.",
+        "Value": "지금 트리 스냅숏과 함께 화면 입력을 읽고, SaveBlueprint 한 번으로 블루프린트 파일을 모두 쓰며 어느 렌더에도 없는 페이지를 지우고, 그 파일을 어느 입력에서 그렸는지 상태에 남긴다.",
         "Badge": "inferred"
       },
       "Anchors": [
-        "cmd/abbd/screen.go",
         "cmd/abbd/screen.go publish",
         "cmd/abbd/screen.go screenInput"
       ],
@@ -2028,11 +2037,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so an extracted unit inherits a stored ID only when the code evidently is the same unit, regardless of input order",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Pairs extracted and stored units of the same kind that share two or more anchors or an identical anchor set, assigning globally best match first (identical, then larger overlap, then smaller difference).",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity/identity.go Reconcile"
@@ -2216,9 +2227,8 @@
         "Stale": true
       },
       "Responsibility": {
-        "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/screen",
@@ -2288,7 +2298,6 @@
         "Stale": true
       },
       "Anchors": [
-        "internal/screen/inside.go",
         "internal/screen/inside.go inferred",
         "internal/screen/inside.go inside"
       ],
@@ -2338,7 +2347,6 @@
         "Stale": true
       },
       "Anchors": [
-        "internal/screen/overview.go",
         "internal/screen/overview.go draw",
         "internal/screen/overview.go planOverview",
         "internal/screen/overview.go top"
@@ -2354,18 +2362,15 @@
       "Name": "page template",
       "Signature": "",
       "Purpose": {
-        "Value": "turns the model into the one page a human opens",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "모델을 사람이 여는 페이지로 바꾼다",
+        "Badge": "inferred"
       },
       "Responsibility": {
-        "Value": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "내장된 한국어 HTML 템플릿(페이지 종류마다 이름 붙은 템플릿 하나), 그 도우미 함수, kind와 출처 배지의 한국어 이름, 그리고 모든 페이지가 품는 스타일시트를 가진다. 스타일시트는 모델이 내는 선 종류와 포트 클래스마다 모양을 준다",
+        "Badge": "inferred"
       },
       "Anchors": [
-        "internal/screen/page.go",
-        "internal/screen/page.go page",
+        "internal/screen/page.go site",
         "internal/screen/page.html"
       ],
       "Parent": "MOD-0034",
@@ -2385,9 +2390,8 @@
         "Stale": true
       },
       "Responsibility": {
-        "Value": "compares the working-tree snapshot with the synced fingerprint (state CURRENT, STALE or UNKNOWN) and the blueprint's stored watermark with the inputs hash now (blueprint freshness)",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "작업 트리 스냅숏을 sync한 지문과 견주고(상태 CURRENT, STALE, UNKNOWN), 상태가 말하는 블루프린트의 입력 해시를 지금 입력 해시와 견주며(블루프린트 신선도), 병합된 상태는 STALE로 읽는다",
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/screen/screen.go ActualFreshness",
@@ -2464,12 +2468,10 @@
         "Stale": true
       },
       "Responsibility": {
-        "Value": "Hashes sorted file sets as relative path, length and bytes: MDHash over unit files for state, InputsHash over every .abbd file except the blueprint for the blueprint watermark.",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
+        "Badge": "inferred"
       },
       "Anchors": [
-        "internal/store/store.go",
         "internal/store/store.go InputsHash",
         "internal/store/store.go hashFiles"
       ],
@@ -2518,7 +2520,6 @@
         "Stale": true
       },
       "Anchors": [
-        "internal/store/store.go",
         "internal/store/store.go UnitsAt"
       ],
       "Parent": "MOD-0041",
@@ -2564,7 +2565,6 @@
         "Stale": true
       },
       "Anchors": [
-        "internal/store/understanding.go",
         "internal/store/understanding.go ModuleDigest"
       ],
       "Parent": "MOD-0041",
@@ -3288,6 +3288,14 @@
     },
     {
       "From": "FEAT-0002",
+      "To": "IF-0023",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd forget\""
+    },
+    {
+      "From": "FEAT-0002",
       "To": "IF-0024",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
@@ -4008,6 +4016,13 @@
     {
       "From": "MOD-0001",
       "To": "IF-0032",
+      "Kind": "provides",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0033",
       "Kind": "provides",
       "Origin": "EXTRACTED",
       "Via": "call"
@@ -5872,7 +5887,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 25,
+        "Uses": 26,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -6048,6 +6063,7 @@
             "record evidence",
             "retract",
             "flow",
+            "forget",
             "stack",
             "lint",
             "brief",
@@ -6249,7 +6265,7 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 33,
+        "Provides": 34,
         "Uses": 13,
         "Direct": 12,
         "TextStale": true,
@@ -6282,9 +6298,7 @@
           "Sentence": "Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts.",
           "Guess": true,
           "Anchors": [
-            "cmd/abbd/diff.go",
             "cmd/abbd/diff.go diff",
-            "cmd/abbd/evidence.go",
             "cmd/abbd/evidence.go checkEvidence",
             "cmd/abbd/evidence.go status"
           ],
@@ -6722,10 +6736,9 @@
           "ID": "MOD-0007",
           "Name": "blueprint publish",
           "Kind": "모듈",
-          "Sentence": "Owns loading the screen input with the current tree snapshot and writing index.html then graph.json, the watermark file last.",
+          "Sentence": "지금 트리 스냅숏과 함께 화면 입력을 읽고, SaveBlueprint 한 번으로 블루프린트 파일을 모두 쓰며 어느 렌더에도 없는 페이지를 지우고, 그 파일을 어느 입력에서 그렸는지 상태에 남긴다.",
           "Guess": true,
           "Anchors": [
-            "cmd/abbd/screen.go",
             "cmd/abbd/screen.go publish",
             "cmd/abbd/screen.go screenInput"
           ],
@@ -7090,6 +7103,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "setup",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -7130,7 +7152,31 @@
                 "Code": true
               },
               {
-                "Text": "를 루트 기준으로 읽어 스크립트 출력 위에 접고, 증명 뒤에야 argv를 저장하며, setup으로 sync한다. ",
+                "Text": "를 루트 기준으로 읽어 스크립트 출력 위에 접고, 묶음 module은 구성원이 둘 이상일 때만 받고, 증명 뒤에야 argv를 저장하며, setup으로 sync한다. 저장할 때 ",
+                "Code": false
+              },
+              {
+                "Text": "portable",
+                "Code": true
+              },
+              {
+                "Text": "은 argv 머리나 ",
+                "Code": false
+              },
+              {
+                "Text": "--",
+                "Code": true
+              },
+              {
+                "Text": " 뒤에서 abbd 바이너리를 경로로 가리킨 낱말을 맨 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd",
+                "Code": true
+              },
+              {
+                "Text": "로 바꾼다. 그래서 project.yaml과 페이지 꼬리말에 로컬 경로가 남지 않는다. ",
                 "Code": false
               },
               {
@@ -7710,7 +7756,7 @@
                 "Code": true
               },
               {
-                "Text": " 첫 줄에 쓸 언어를 밝힌다. 그 아래에 fan-in 순 핵심 유닛(",
+                "Text": " 첫 줄에 쓸 언어를 밝힌다. 읽을 파일 목록에서 테스트와 테스트 데이터는 빼고 몇 개를 뺐는지만 적는다. 그 아래에 fan-in 순 핵심 유닛(",
                 "Code": false
               },
               {
@@ -7911,6 +7957,45 @@
             "Kind": "h",
             "Parts": [
               {
+                "Text": "남은 unit",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "forget",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/understand.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd forget ID",
+                "Code": true
+              },
+              {
+                "Text": "는 sync가 unmatched로 남긴 unit을, 상태의 다른 파일이 그 ID를 이름 짓지 않을 때만 지운다. 번호는 다시 쓰이지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
                 "Text": "언어와 lint",
                 "Code": false
               }
@@ -8021,7 +8106,39 @@
                 "Code": true
               },
               {
-                "Text": "처럼 순번을 붙인다). 그래서 part를 넣거나 빼도 다른 part의 키는 그대로다. 찾은 글마다 키와 함께 글의 짧은 digest를 남기고, table은 열 이름도 ",
+                "Text": "처럼 순번을 붙인다). 그래서 part를 넣거나 빼도 다른 part의 키는 그대로다. 개요는 캡션을 한 글로 판정하고, 구역 이름, 줄의 단어, 주 흐름의 단계 이름은 각각 ",
+                "Code": false
+              },
+              {
+                "Text": "overview zone \u003c이름\u003e",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "overview line \u003cFROM TO\u003e",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "overview stage \u003c이름\u003e",
+                "Code": true
+              },
+              {
+                "Text": " 키로 따로 판정하며, 이때 ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsAsWord",
+                "Code": true
+              },
+              {
+                "Text": "가 식별자만 있는 단어를 그 언어로 읽히지 않는 글로 본다. 찾은 글마다 키와 함께 글의 짧은 digest를 남기고, table은 열 이름도 ",
                 "Code": false
               },
               {
@@ -8037,7 +8154,7 @@
                 "Code": true
               },
               {
-                "Text": "로 묶음)을 나열하고, ",
+                "Text": "로 묶음)을 그 줄의 관계와 함께 나열하고(overview 기록이 고른 선이 있으면 그 선만), ",
                 "Code": false
               },
               {
@@ -8212,7 +8329,15 @@
                 "Code": true
               },
               {
-                "Text": " 같은 include 경로로 찾는다.",
+                "Text": " 같은 include 경로로 찾는다. 부르는 줄, import 줄, 이름만 적는 줄 순으로 찾고, 블록 주석과 docstring 안의 줄은 ",
+                "Code": false
+              },
+              {
+                "Text": "blankProse",
+                "Code": true
+              },
+              {
+                "Text": "가 비워 고르지 않는다.",
                 "Code": false
               }
             ]
@@ -8853,7 +8978,9 @@
                   ],
                   "Quotes": [
                     "internal/identity/identity.go \"// highWater holds the largest number ever minted per kind, so deleted IDs are never reused.\""
-                  ]
+                  ],
+                  "RereadBy": "pstack poteto-mode 0.15.36",
+                  "RereadOn": "2026-11-13"
                 }
               }
             ],
@@ -10481,7 +10608,8 @@
             "scope",
             "extract",
             "overview",
-            "relate"
+            "relate",
+            "version"
           ]
         },
         {
@@ -10785,7 +10913,7 @@
           "Via": "config",
           "Quotes": [
             "cmd/abbd/main.go \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
-            "cmd/abbd/setup.go \"p.Extract = argv\""
+            "cmd/abbd/setup.go \"p.Extract = portable(e.root, argv)\""
           ]
         },
         {
@@ -11409,7 +11537,15 @@
                 "Code": true
               },
               {
-                "Text": "가 쓴 것이며 digest는 없다. signature와 parent는 비워 두어 뒤의 단계가 정하게 한다. 스크립트 unit과 anchor를 공유하면 error다. 단 그 unit이 이름 지은 parent이거나 그 parent의 조상이고 둘의 anchor가 다르면 허용한다.",
+                "Text": "가 쓴 것이며 digest는 없다. signature와 parent는 비워 두어 뒤의 단계가 정하게 한다. 스크립트 unit과 anchor를 공유하면 error다. 단 두 경우는 허용한다. 그 unit이 이름 지은 parent이거나 그 parent의 조상이고 둘의 anchor가 다를 때다. 그리고 스크립트 unit 둘 이상이 각자 처음 다시 적힌 것에서 이 의미 unit의 ref를 parent로 이름 지을 때다(",
+                "Code": false
+              },
+              {
+                "Text": "groups",
+                "Code": true
+              },
+              {
+                "Text": "). 뒤에 또 적힌 것은 버려지므로 세지 않고, 구성원이 하나뿐이면 이름만 바꾸는 것이라 거절한다. 후자는 묶음 module로, 평평한 패키지의 파일 module들을 책임별로 묶으며 구성원의 코드를 인용한다.",
                 "Code": false
               }
             ]
@@ -16902,7 +17038,15 @@
                 "Code": true
               },
               {
-                "Text": "가 같은 첫 저장 unit을 넘겨받는다. 그 밖의 추출 unit은 아직 짝이 없는 같은 kind의 저장 unit과 anchor를 둘 이상 공유하거나 anchor 집합이 같을 때 짝이 될 수 있다. anchor가 하나인 unit은 집합이 같을 때만 맞는다. 짝의 순위는 같은 집합, 더 큰 겹침, 더 작은 대칭차, 저장 위치, 입력 위치 순이다.",
+                "Text": "가 같은 첫 저장 unit을 넘겨받는다. 그 밖의 추출 unit은 아직 짝이 없는 같은 kind의 저장 unit과 anchor를 둘 이상 공유하거나 anchor 집합이 같을 때 짝이 될 수 있다. anchor가 하나인 unit은 집합이 같을 때만 맞는다. 짝의 순위는 같은 집합, 더 큰 겹침, 더 작은 대칭차, supplement만 알린 저장 unit보다 그렇지 않은 저장 unit(",
+                "Code": false
+              },
+              {
+                "Text": "foreign",
+                "Code": true
+              },
+              {
+                "Text": "), 저장 위치, 입력 위치 순이다. 그래서 구성원 파일 하나를 인용한 묶음 module과 그 구성원이 anchor가 같아도, sync에서 스크립트 unit은 제 ID를 되찾는다.",
                 "Code": false
               }
             ]
@@ -17758,7 +17902,7 @@
             {
               "N": 8,
               "Unit": "internal/identity",
-              "Does": "Reconcile(stored, renames, extraction, prior) → units with their IDs kept"
+              "Does": "Reconcile(stored, extraction) → each unit keeps its stored ID"
             }
           ]
         }
@@ -21433,16 +21577,15 @@
         "Stale": true
       },
       "Responsibility": {
-        "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
-        "Badge": "inferred",
-        "Stale": true
+        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
         "StaleNotes": 0,
-        "Dead": 11
+        "Dead": 10
       },
       "Units": [
         {
@@ -21468,7 +21611,6 @@
           "Sentence": "draws a module's child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes",
           "Guess": true,
           "Anchors": [
-            "internal/screen/inside.go",
             "internal/screen/inside.go inferred",
             "internal/screen/inside.go inside"
           ],
@@ -21736,7 +21878,6 @@
           "Sentence": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
           "Guess": true,
           "Anchors": [
-            "internal/screen/overview.go",
             "internal/screen/overview.go draw",
             "internal/screen/overview.go planOverview",
             "internal/screen/overview.go top"
@@ -22076,11 +22217,10 @@
           "ID": "MOD-0038",
           "Name": "page template",
           "Kind": "모듈",
-          "Sentence": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
+          "Sentence": "내장된 한국어 HTML 템플릿(페이지 종류마다 이름 붙은 템플릿 하나), 그 도우미 함수, kind와 출처 배지의 한국어 이름, 그리고 모든 페이지가 품는 스타일시트를 가진다. 스타일시트는 모델이 내는 선 종류와 포트 클래스마다 모양을 준다",
           "Guess": true,
           "Anchors": [
-            "internal/screen/page.go",
-            "internal/screen/page.go page",
+            "internal/screen/page.go site",
             "internal/screen/page.html"
           ],
           "Understanding": null,
@@ -22166,7 +22306,7 @@
           "ID": "MOD-0039",
           "Name": "freshness verdicts",
           "Kind": "모듈",
-          "Sentence": "compares the working-tree snapshot with the synced fingerprint (state CURRENT, STALE or UNKNOWN) and the blueprint's stored watermark with the inputs hash now (blueprint freshness)",
+          "Sentence": "작업 트리 스냅숏을 sync한 지문과 견주고(상태 CURRENT, STALE, UNKNOWN), 상태가 말하는 블루프린트의 입력 해시를 지금 입력 해시와 견주며(블루프린트 신선도), 병합된 상태는 STALE로 읽는다",
           "Guess": true,
           "Anchors": [
             "internal/screen/screen.go ActualFreshness",
@@ -30268,7 +30408,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
+            "internal/screen/screen.go \"case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:\""
           ]
         },
         {
@@ -30349,7 +30489,7 @@
             "internal/screen/page.html \"svg path.bypass { stroke: var(--bypass)\"",
             "internal/screen/overview.go \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
             "internal/screen/screen.go \"return \\\"#m-\\\" + string(id)\"",
-            "internal/screen/page.html \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+            "internal/screen/page.html \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
           ]
         },
         {
@@ -30514,10 +30654,9 @@
           "ID": "MOD-0042",
           "Name": "store staleness hashes",
           "Kind": "모듈",
-          "Sentence": "Hashes sorted file sets as relative path, length and bytes: MDHash over unit files for state, InputsHash over every .abbd file except the blueprint for the blueprint watermark.",
+          "Sentence": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
           "Guess": true,
           "Anchors": [
-            "internal/store/store.go",
             "internal/store/store.go InputsHash",
             "internal/store/store.go hashFiles"
           ],
@@ -30551,7 +30690,6 @@
           "Sentence": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
           "Guess": true,
           "Anchors": [
-            "internal/store/store.go",
             "internal/store/store.go UnitsAt"
           ],
           "Understanding": null,
@@ -30584,7 +30722,6 @@
           "Sentence": "Fingerprints, CRLF-normalized and truncated to 16 hex, every file cited by the anchors and evidence of a present module and its child units, counting a missing file as missing.",
           "Guess": true,
           "Anchors": [
-            "internal/store/understanding.go",
             "internal/store/understanding.go ModuleDigest"
           ],
           "Understanding": null,
@@ -30774,6 +30911,60 @@
               },
               {
                 "Text": "로 계속 읽힌다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "removing a unit",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "RemoveUnit",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Naming",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd forget ID",
+                "Code": true
+              },
+              {
+                "Text": "가 추출이 더는 알리지 않는 unit을 지울 때 쓴다. ",
+                "Code": false
+              },
+              {
+                "Text": "Naming",
+                "Code": true
+              },
+              {
+                "Text": "은 blueprint, compare 사본, 병합 후보, lint debt, sync state를 빼고 상태의 파일 가운데 그 ID를 단어로 담은 것을 찾는다. 하나라도 있으면 명령이 거부하고, 없으면 ",
+                "Code": false
+              },
+              {
+                "Text": "RemoveUnit",
+                "Code": true
+              },
+              {
+                "Text": "이 unit 파일만 지운다. 번호는 최고 수위 표시에 남아 다시 쓰이지 않는다.",
                 "Code": false
               }
             ]
@@ -32284,7 +32475,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
+            "internal/screen/screen.go \"case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:\""
           ]
         },
         {
@@ -35488,7 +35679,15 @@
                 "Code": true
               },
               {
-                "Text": " 0.3 이상인지 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다.",
+                "Text": " 0.3 이상인지 본다. ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsAsWord",
+                "Code": true
+              },
+              {
+                "Text": "는 줄의 단어나 단계 이름처럼 홀로 서는 글에 같은 판정을 쓰되, 글자는 있는데 산문 단어가 하나도 없는 식별자만의 글은 읽히지 않는 것으로 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다.",
                 "Code": false
               }
             ]
@@ -35760,8 +35959,8 @@
             {
               "N": 8,
               "ID": "flow-sync.8",
-              "Does": "Reconcile(stored, renames, extraction, prior) → units with their IDs kept",
-              "Note": "",
+              "Does": "Reconcile(stored, extraction) → each unit keeps its stored ID",
+              "Note": "앵커가 같은 보충 단위보다 스크립트 단위가 먼저 제 ID를 받는다",
               "Fails": "refuses an extraction with no units while units are stored",
               "Badge": "",
               "Source": "",
@@ -36478,7 +36677,7 @@
         "call",
         "convention"
       ],
-      "relations": 30
+      "relations": 31
     },
     {
       "from": "FEAT-0002",

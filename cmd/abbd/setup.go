@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/bootstrap"
@@ -48,7 +49,7 @@ func (e env) setup() error {
 			return err
 		}
 	}
-	p.Extract = argv
+	p.Extract = portable(e.root, argv)
 	if err := e.st.SaveProject(p); err != nil {
 		return err
 	}
@@ -66,6 +67,39 @@ func (e env) setup() error {
 	fmt.Fprintf(e.stdout, "synced: %d unit(s), %d matched by the supplement\n", len(model.Present(units)), f.Matched)
 	e.attention(units)
 	return nil
+}
+
+// portable spells each command that runs this abbd binary, by whatever
+// path setup was given, as the bare abbd that runScript resolves to the
+// running binary, so project.yaml and the page footer hold no local path.
+// A command heads the argv or follows a "--", and a relative path is
+// relative to the root, where the script runs.
+func portable(root string, argv []string) []string {
+	out := slices.Clone(argv)
+	self, err := os.Executable()
+	for i, a := range out {
+		if i > 0 && out[i-1] != "--" || a == "abbd" {
+			continue
+		}
+		path := a
+		if !filepath.IsAbs(path) {
+			path = filepath.Join(root, path)
+		}
+		stem := strings.TrimSuffix(strings.ToLower(filepath.Base(a)), ".exe")
+		if stem == "abbd" || err == nil && sameFile(path, self) {
+			out[i] = "abbd"
+		}
+	}
+	return out
+}
+
+func sameFile(a, b string) bool {
+	fa, err := os.Stat(a)
+	if err != nil {
+		return false
+	}
+	fb, err := os.Stat(b)
+	return err == nil && os.SameFile(fa, fb)
 }
 
 // deterministic runs the script three times. A script whose output changes

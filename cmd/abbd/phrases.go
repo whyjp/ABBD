@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/screen"
@@ -17,8 +18,11 @@ import (
 // several do. A phrase labels a line
 // only while its quote is live, and only when half the line's relations
 // carry it, so a line listed here may still say its via word after one
-// phrase is added.
-func unphrased(units []model.Unit, d screen.Drawing) []string {
+// phrase is added. When the overview record chose lines, only those lines
+// need a phrase, since the record says which lines a reader follows. Each
+// line names its relations, the edges a phrase goes on: a relation to a
+// contract labels the line between the two modules too.
+func unphrased(units []model.Unit, d screen.Drawing, chosen []model.Line) []string {
 	byID := map[model.ID]model.Unit{}
 	provider := map[model.ID]model.ID{}
 	for _, u := range model.Present(units) {
@@ -51,7 +55,7 @@ func unphrased(units []model.Unit, d screen.Drawing) []string {
 	type pair struct{ from, to model.ID }
 	// A wire is a drawn path, which a trunk and its drops share, so the
 	// lines are the box pairs of the distinct relations drawn.
-	count, phrased := map[pair]int{}, map[pair]bool{}
+	edges, phrased := map[pair][]string{}, map[pair]bool{}
 	seen := map[string]bool{}
 	for _, w := range d.Wires {
 		for _, r := range w.Rels {
@@ -70,17 +74,29 @@ func unphrased(units []model.Unit, d screen.Drawing) []string {
 			if p.from > p.to {
 				p = pair{p.to, p.from}
 			}
-			count[p]++
+			edges[p] = append(edges[p], r)
 			if note, ok := byID[e.From].Note(e.Kind, e.To); ok && note.Text != "" && note.Status() == model.Live {
 				phrased[p] = true
 			}
 		}
 	}
 	for p := range phrased {
-		delete(count, p)
+		delete(edges, p)
+	}
+	if len(chosen) > 0 {
+		keep := map[pair]bool{}
+		for _, l := range chosen {
+			p := pair{box(l.From), box(l.To)}
+			keep[p], keep[pair{p.to, p.from}] = true, true
+		}
+		for p := range edges {
+			if !keep[p] {
+				delete(edges, p)
+			}
+		}
 	}
 	var pairs []pair
-	for p := range count {
+	for p := range edges {
 		pairs = append(pairs, p)
 	}
 	slices.SortFunc(pairs, func(a, b pair) int {
@@ -91,7 +107,13 @@ func unphrased(units []model.Unit, d screen.Drawing) []string {
 	})
 	var out []string
 	for _, p := range pairs {
-		out = append(out, fmt.Sprintf("%s %s - %s %s (%s)", p.from, byID[p.from].Name.Value, p.to, byID[p.to].Name.Value, plural(count[p], "relation")))
+		es := edges[p]
+		slices.Sort(es)
+		list := strings.Join(es[:min(len(es), 3)], ", ")
+		if len(es) > 3 {
+			list += fmt.Sprintf(" and %d more", len(es)-3)
+		}
+		out = append(out, fmt.Sprintf("%s %s - %s %s (%s: %s)", p.from, byID[p.from].Name.Value, p.to, byID[p.to].Name.Value, plural(len(es), "relation"), list))
 	}
 	return out
 }

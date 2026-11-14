@@ -289,3 +289,24 @@ func TestAnOverviewDraftWithoutFrontmatterSaysWhatADraftIs(t *testing.T) {
 	p := notesProject(t)
 	p.overview(1, "missing frontmatter: an overview draft is the whole file abbd overview prints", "zones: []\nlines: []\n")
 }
+
+// The draft's quote is a line of code that uses what it names: an import
+// line before any other line that names it, and never a docstring's words.
+func TestTheOverviewDraftQuotesCodeNotADocstring(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("app/main.py", "def run():\n    \"\"\"Run the app.\n\n    It keeps data in store.db for later.\n    \"\"\"\n    return store.db\n\nimport store.db\n")
+	p.code("store/db.py", "def put(x):\n    return x\n")
+	p.extract(`{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app"},{"path":"app/main.py"}]},
+ {"key":"store","kind":"MOD","name":"store","anchors":[{"path":"store"},{"path":"store/db.py"}]}
+],"relations":[
+ {"from":"app","to":"store","kind":"depends_on","via":"import"}
+]}`)
+	p.setup(0, "synced: 2 unit(s)", "--", exe)
+	draft := p.want(0, "", "overview")
+	contains(t, draft, `evidence: [{path: "app/main.py", lines: "8", quote: "import store.db"}]}`)
+	if strings.Contains(draft, "keeps data in") {
+		t.Fatalf("the draft quotes a docstring:\n%s", draft)
+	}
+}

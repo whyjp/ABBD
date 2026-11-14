@@ -37,3 +37,24 @@ func TestReadsInJudgesProseAndLeavesCodePathsAndQuotesOut(t *testing.T) {
 		t.Error("a language with no known script must not be judged")
 	}
 }
+
+func TestReadsAsWordFailsABareIdentifier(t *testing.T) {
+	ko := []*unicode.RangeTable{unicode.Hangul}
+	for text, want := range map[string]bool{
+		"EnvironBuilder":           false,
+		"FLASK_DEBUG":              false,
+		"SESSION_COOKIE_*":         false,
+		"Request, Response":        false,
+		"EnvironBuilder로 요청 환경 생성": true,
+		"JSON 직렬화":                 true,
+		"abbd sync 실행":             true,
+		"404":                      true,
+	} {
+		if got := ReadsAsWord(text, ko); got != want {
+			t.Errorf("ReadsAsWord(%q, Hangul) = %v, want %v", text, got, want)
+		}
+	}
+	if !ReadsAsWord("EnvironBuilder", nil) {
+		t.Error("with no script to judge by every word reads")
+	}
+}
