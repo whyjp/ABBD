@@ -123,3 +123,31 @@ func TestTheProseDebtOwesWordsNotSlots(t *testing.T) {
 	}
 	p.want(0, "", "lint")
 }
+
+// Each overview word is judged as its own key, so a bare identifier fails
+// the project-language check however many words around it read in ko, and
+// an identifier inside a phrase passes.
+func TestLintJudgesEachOverviewWordAlone(t *testing.T) {
+	p := notesProject(t)
+	p.setLanguage("ko")
+	p.stack(0, "marked stack charge the primary flow", strings.Replace(chargeStack, "layers:\n", "primary: true\nlayers:\n", 1))
+	bare := strings.Replace(chargeOverview, "word: 청구 금액", "word: EnvironBuilder", 1)
+	p.overview(0, "stored the overview", bare)
+	r, _ := proseOf(t, p)
+	for _, want := range []string{"overview line MOD-0002 MOD-0001", "overview stage books", "overview stage billing"} {
+		if !slices.Contains(r.Prose, want) {
+			t.Errorf("prose %v lacks %q", r.Prose, want)
+		}
+	}
+	for _, key := range []string{"overview zone 돈", "overview"} {
+		if slices.Contains(r.Prose, key) {
+			t.Errorf("prose %v holds %q, which reads in ko", r.Prose, key)
+		}
+	}
+	for _, word := range []string{"EnvironBuilder로 요청 환경 생성", "JSON 직렬화"} {
+		p.overview(0, "stored the overview", strings.Replace(chargeOverview, "word: 청구 금액", "word: "+word, 1))
+		if r, _ := proseOf(t, p); slices.Contains(r.Prose, "overview line MOD-0002 MOD-0001") {
+			t.Errorf("the word %q reads in ko but lint flags it: %v", word, r.Prose)
+		}
+	}
+}

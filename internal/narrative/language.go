@@ -42,6 +42,20 @@ func ReadsIn(text string, script []*unicode.RangeTable) bool {
 	return s >= Threshold
 }
 
+// ReadsAsWord is ReadsIn for a word that stands alone, such as a line's
+// word or a stage's name. Text with letters but no prose word, a bare
+// identifier like a type or a constant, names a thing in no language, so it
+// does not read in script.
+func ReadsAsWord(text string, script []*unicode.RangeTable) bool {
+	if len(script) == 0 {
+		return true
+	}
+	if _, n := Share(text, script); n == 0 {
+		return !strings.ContainsFunc(text, unicode.IsLetter)
+	}
+	return ReadsIn(text, script)
+}
+
 var (
 	inlineCode = regexp.MustCompile("`[^`]*`")
 	quotation  = regexp.MustCompile(`"[^"]*"|“[^”]*”|「[^」]*」|『[^』]*』|«[^»]*»`)

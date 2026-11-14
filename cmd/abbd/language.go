@@ -65,6 +65,12 @@ func foreignProse(in screen.Input, t model.Language) []foreign {
 			out = append(out, foreign{key, hex.EncodeToString(sum[:4])})
 		}
 	}
+	word := func(key, text string) {
+		if !narrative.ReadsAsWord(text, t.Script()) {
+			sum := sha256.Sum256([]byte(text))
+			out = append(out, foreign{key, hex.EncodeToString(sum[:4])})
+		}
+	}
 	check("project purpose", in.Project.Purpose)
 	for _, u := range model.Present(in.Units) {
 		if f := u.Purpose; agentWrote(f) {
@@ -94,16 +100,18 @@ func foreignProse(in screen.Input, t model.Language) []foreign {
 		figureProse(check, f, func(l model.Layer) []string { return []string{l.Role} })
 	}
 	if o := in.Overview; o.Known {
-		said := []string{o.Caption}
-		for _, p := range overviewParts(o) {
-			if p.kind != "line" {
-				said = append(said, p.label)
-			}
+		check("overview caption", o.Caption)
+		for _, z := range o.Zones {
+			word("overview zone "+z.Claim.Name, z.Claim.Name)
 		}
 		for _, l := range o.Lines {
-			said = append(said, l.Claim.Word)
+			word("overview line "+l.Claim.Label(), l.Claim.Word)
 		}
-		check("overview", said...)
+		if f, ok := in.Figures.Primary(); ok {
+			for _, p := range f.Parts {
+				word("overview stage "+p.Claim.Name, p.Claim.Name)
+			}
+		}
 	}
 	for _, f := range in.Figures.Tables {
 		var cols []string
