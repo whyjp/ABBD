@@ -88,7 +88,7 @@ func clangdPath() (string, error) {
 
 // cMinClangd is the oldest clangd major version the relater runs with: the
 // first to send textDocument/inactiveRegions.
-const cMinClangd = 20
+const cMinClangd = 17
 
 var clangdVersion = regexp.MustCompile(`clangd version (\d+)`)
 
