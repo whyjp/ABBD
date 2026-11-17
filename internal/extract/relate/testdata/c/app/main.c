@@ -15,3 +15,7 @@ int main(void) {
 #endif
 	return core_run(&s) + util_add(1, 2) + API_TWICE(orders[0](1, 2));
 }
+
+int dup_name(void);
+int dup_probe(void) { return dup_name(); }
+struct source_info zeroed = {0};

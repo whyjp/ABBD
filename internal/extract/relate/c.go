@@ -11,8 +11,10 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -37,6 +39,10 @@ var (
 	cSources = []string{".c", ".cc", ".cpp", ".cxx", ".c++", ".m", ".mm"}
 	cHeaders = []string{".h", ".hh", ".hpp", ".hxx", ".h++", ".inl", ".ipp", ".tcc"}
 )
+
+// cVendored are directory names that hold build output or code the project
+// does not own, which the relater does not walk.
+var cVendored = map[string]bool{"build": true, "third_party": true, "thirdparty": true, "vendor": true, "node_modules": true, "external": true}
 
 func cExt(p string, exts []string) bool { return slices.Contains(exts, strings.ToLower(path.Ext(p))) }
 
@@ -70,10 +76,30 @@ func clangdPath() (string, error) {
 		}
 		c = p
 	}
-	if out, err := exec.Command(c, "--version").CombinedOutput(); err != nil {
+	out, err := exec.Command(c, "--version").CombinedOutput()
+	if err != nil {
 		return "", fmt.Errorf("%s --version failed (%v: %s); %s", c, err, strings.TrimSpace(string(out)), cInstall)
 	}
+	if v, ok := clangdMajor(string(out)); ok && v < cMinClangd {
+		return "", fmt.Errorf("%s is clangd %d, older than %d, which first sends the inactiveRegions the relater reads; %s", c, v, cMinClangd, cInstall)
+	}
 	return c, nil
+}
+
+// cMinClangd is the oldest clangd major version the relater runs with: the
+// first to send textDocument/inactiveRegions.
+const cMinClangd = 20
+
+var clangdVersion = regexp.MustCompile(`clangd version (\d+)`)
+
+// clangdMajor reads the major version from `clangd --version`.
+func clangdMajor(out string) (int, bool) {
+	m := clangdVersion.FindStringSubmatch(out)
+	if m == nil {
+		return 0, false
+	}
+	v, err := strconv.Atoi(m[1])
+	return v, err == nil
 }
 
 // cEntry is one compile database entry: the file it compiles, absolute,
@@ -167,7 +193,7 @@ func cFiles(t tree, o owners) ([]string, error) {
 			return err
 		}
 		if d.IsDir() {
-			if p != t.root && strings.HasPrefix(d.Name(), ".") {
+			if p != t.root && (strings.HasPrefix(d.Name(), ".") || cVendored[strings.ToLower(d.Name())]) {
 				return filepath.SkipDir
 			}
 			return nil

@@ -127,6 +127,7 @@ func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend
 	if cache, err = filepath.Abs(cache); err != nil {
 		return doc, nil, err
 	}
+	cache = resolveExisting(cache)
 	o := index(doc.Units)
 	var unread []Unread
 	all := found{covered: map[string]bool{}, when: map[link]string{}}
@@ -342,4 +343,22 @@ func (q quoter) line(s site) (string, error) {
 		return "", nil
 	}
 	return strings.TrimSpace(ls[s.line-1]), nil
+}
+
+// resolveExisting resolves the symlinks of the nearest existing ancestor of
+// p and keeps the rest, so a directory not made yet is named the way the
+// resolved root names its neighbours.
+func resolveExisting(p string) string {
+	rest := ""
+	for q := p; ; {
+		if r, err := filepath.EvalSymlinks(q); err == nil {
+			return filepath.Join(r, rest)
+		}
+		up := filepath.Dir(q)
+		if up == q {
+			return p
+		}
+		rest = filepath.Join(filepath.Base(q), rest)
+		q = up
+	}
 }

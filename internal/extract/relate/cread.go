@@ -268,6 +268,27 @@ func (r *cReader) decls(ctx context.Context, read []string) ([]*cDecl, error) {
 		}
 		out = append(out, d)
 	}
+	// Two units that define a non-static function of one name share an id
+	// in the index, which lists the name once, so a call cannot be told
+	// apart; the name is left out.
+	defined := map[string]map[string]bool{}
+	for _, p := range read {
+		u, _ := r.of(p)
+		if cExt(p, cHeaders) {
+			continue
+		}
+		for _, s := range r.syms[p] {
+			if s.Kind == lsp.KindFunction && strings.HasSuffix(strings.TrimSpace(r.text(p, s.Range)), "}") && !r.static(p, s.SelectionRange.Start) {
+				if defined[s.Name] == nil {
+					defined[s.Name] = map[string]bool{}
+				}
+				defined[s.Name][u] = true
+			}
+		}
+	}
+	out = slices.DeleteFunc(out, func(d *cDecl) bool {
+		return d.use == cCalled && d.class == "" && len(defined[d.name]) > 1
+	})
 	for _, p := range read {
 		if cExt(p, cHeaders) {
 			out = append(out, r.macros(p)...)
@@ -454,15 +475,20 @@ func (r *cReader) uses(ctx context.Context, d *cDecl) ([]lsp.Location, error) {
 
 // cBase is the text before a class named as a base in a C++ class head,
 // as in class PosixEnv : public leveldb::Env.
-var cBase = regexp.MustCompile(`\b(?:class|struct)\s+[\w:<>, ]*?[:,]\s*(?:(?:public|protected|private|virtual)\s+)*(?:\w+::)*$`)
+var cBase = regexp.MustCompile(`\b(?:class|struct)\s+[\w:<>,\s]*?[:,]\s*(?:(?:public|protected|private|virtual)\s+)*(?:\w+::)*$`)
 
-// before is the text of pos's line before it.
+// before is the text before pos, on its line and the few above it.
 func (r *cReader) before(p string, pos lsp.Position) string {
 	ls := r.lines(p)
 	if pos.Line >= len(ls) {
 		return ""
 	}
-	return ls[pos.Line][:min(pos.Character, len(ls[pos.Line]))]
+	// A class head may span lines, so up to three before it come along.
+	head := ls[pos.Line][:min(pos.Character, len(ls[pos.Line]))]
+	for i := pos.Line - 1; i >= 0 && i >= pos.Line-3; i-- {
+		head = ls[i] + " " + head
+	}
+	return head
 }
 
 // method is the contract unit anchored at the class that declares the
@@ -599,8 +625,11 @@ func (r *cReader) table(ctx context.Context, d *cDecl, refs []lsp.Location) erro
 			return err
 		}
 		if isTable {
-			fills = append(fills, cPlace{u, site{path: p, line: line}})
-			members = append(members, ms...)
+			// An initializer naming no function, as {0} does, fills nothing.
+			if len(ms) > 0 {
+				fills = append(fills, cPlace{u, site{path: p, line: line}})
+				members = append(members, ms...)
+			}
 			continue
 		}
 		if d.slot.alias {
@@ -670,11 +699,29 @@ func (r *cReader) members(ctx context.Context, p string, pos lsp.Position) ([]cP
 	var out []cPlace
 	seen := map[string]bool{}
 	depth := 1
+	block := false
 	for line < len(ls) && depth > 0 {
+		if r.gatedAt(p, line) {
+			line, col = line+1, 0
+			continue
+		}
 		s := ls[line]
 		for col < len(s) && depth > 0 {
 			c := s[col]
+			if block {
+				if i := strings.Index(s[col:], "*/"); i >= 0 {
+					col += i + 2
+					block = false
+				} else {
+					col = len(s)
+				}
+				continue
+			}
 			switch {
+			case c == '/' && col+1 < len(s) && s[col+1] == '*':
+				block = true
+				col += 2
+				continue
 			case c == '{':
 				depth++
 			case c == '}':

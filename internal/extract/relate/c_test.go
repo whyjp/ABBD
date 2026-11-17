@@ -45,11 +45,16 @@ func needC(t *testing.T, cmake bool) {
 
 func relateC(t *testing.T, root, spec string, doc extract.Doc) (extract.Doc, []Unread) {
 	t.Helper()
+	return relateCIn(t, root, t.TempDir(), spec, doc)
+}
+
+func relateCIn(t *testing.T, root, cache, spec string, doc extract.Doc) (extract.Doc, []Unread) {
+	t.Helper()
 	s, err := ParseSpec(spec)
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, unread, err := Relate(root, t.TempDir(), nil, doc, []frontend.Spec{s})
+	out, unread, err := Relate(root, cache, nil, doc, []frontend.Spec{s})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -158,15 +163,55 @@ func TestCReadsAGivenCompileDatabase(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(root, "build", "compile_commands.json"), b, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	out, unread := relateC(t, root, "c=build", extract.Doc{Units: cUnits()})
+	before := tree0(t, root)
+	cache := t.TempDir()
+	out, unread := relateCIn(t, root, cache, "c=build", extract.Doc{Units: cUnits()})
 	if got := lines(out); !slices.Contains(got, "mod-plugin depends_on mod-util via call [plugin/plugin.c:10:return util_add(l.n, 1);]") {
 		t.Errorf("relations:\n%s", strings.Join(got, "\n"))
 	}
 	if len(unread) == 0 || !slices.Equal(unread[0].Paths, []string{"circle/circle.cpp", "extra/extra.c", "plugin/legacy.c", "viewer/viewer.cpp"}) {
 		t.Errorf("unread = %+v, want the four sources it has no entry for", unread)
 	}
-	if _, err := os.Stat(filepath.Join(root, "build", ".cache")); err == nil {
-		t.Error("clangd wrote its index into the repository")
+	if after := tree0(t, root); !slices.Equal(before, after) {
+		t.Errorf("the run changed the repository:\nbefore %v\nafter %v", before, after)
+	}
+	var first, second bytes.Buffer
+	if err := out.Encode(&first); err != nil {
+		t.Fatal(err)
+	}
+	again, _ := relateCIn(t, root, cache, "c=build", extract.Doc{Units: cUnits()})
+	if err := again.Encode(&second); err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(first.Bytes(), second.Bytes()) {
+		t.Errorf("a second run on the same cache differs:\n%s\n%s", first.String(), second.String())
+	}
+}
+
+// tree0 lists every file and directory under root.
+func tree0(t *testing.T, root string) []string {
+	t.Helper()
+	var out []string
+	err := filepath.WalkDir(root, func(p string, d os.DirEntry, err error) error {
+		if err == nil {
+			out = append(out, p)
+		}
+		return err
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return out
+}
+
+func TestCClangdVersionIsRead(t *testing.T) {
+	for in, want := range map[string]int{"clangd version 23.1.0 (https://github.com/llvm/llvm-project ea7d)": 23, "Ubuntu clangd version 18.1.3 (1ubuntu1)": 18} {
+		if v, ok := clangdMajor(in); !ok || v != want {
+			t.Errorf("clangdMajor(%q) = %d, %v, want %d", in, v, ok, want)
+		}
+	}
+	if _, ok := clangdMajor("something else"); ok {
+		t.Error("an unknown version text read as a version")
 	}
 }
 
