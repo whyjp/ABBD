@@ -347,6 +347,7 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	if len(zones) == 0 {
 		fmt.Fprintln(w, "#   none")
 	}
+	fmt.Fprintln(w, "# Write a zone under zones: as {name: TEXT, units: [MOD-ID, ...], evidence: [{path: P, lines: \"N\", quote: Q}]}.")
 	chosen := map[[2]model.ID]bool{}
 	for _, l := range store.ClaimsOf(o.Lines) {
 		chosen[[2]model.ID{l.From, l.To}] = true
