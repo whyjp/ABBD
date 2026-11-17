@@ -11,6 +11,10 @@ import (
 // overview draws its primary links and counts the rest on their boxes, and
 // each box's focus view (focus.go) still draws every line it has.
 //
+// When the stored overview record chose lines, those are the primary ones
+// and the record decides. A record whose overview is already sparse draws
+// every pair, with the record's words on the lines it chose.
+//
 // What is primary is decided once, by primary, from what the store already
 // says: the relations a stored flow's steps ride, the relations between a
 // stored stack's neighbouring layers, and the relations a reader or a human
@@ -97,13 +101,20 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 			add(pairOf(e.From, e.To), o.rels[e.String()])
 		}
 	}
+	if 10*len(ls) <= sparse*len(o.modules) {
+		if recorded == nil {
+			return nil
+		}
+		whole := map[pair]bool{}
+		for _, l := range ls {
+			whole[l] = true
+		}
+		return &cut{keep: whole, more: map[model.ID]int{}, said: said}
+	}
 	if recorded != nil {
 		c := counting(ls, recorded)
 		c.said = said
 		return c
-	}
-	if 10*len(ls) <= sparse*len(o.modules) {
-		return nil
 	}
 
 	keep := map[pair]bool{}

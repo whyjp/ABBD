@@ -639,6 +639,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			}
 		}
 	}
+	var hidden []ledge
 	o.unreached = map[model.ID][]model.ID{}
 	for _, c := range o.contracts {
 		if len(o.users[c]) == 0 {
@@ -658,6 +659,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 				return false
 			}
 			o.counted = append(o.counted, [2]string{string(k[0]), string(k[1])})
+			hidden = append(hidden, ledge{string(k[0]), string(k[1])})
 			for _, ct := range o.carry[k] {
 				o.countedRels = append(o.countedRels, o.between(k[0], ct)...)
 				o.countedRels = append(o.countedRels, o.between(k[1], ct)...)
@@ -669,11 +671,15 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 				return false
 			}
 			o.counted = append(o.counted, [2]string{string(e.From), string(e.To)})
+			hidden = append(hidden, ledge{string(e.From), string(e.To)})
 			o.countedRels = append(o.countedRels, o.rels[e.String()]...)
 			return true
 		})
 		o.more = c.more
 		o.said = c.said
+		if c.said == nil {
+			hidden = nil
+		}
 	}
 	var edges []ledge
 	for _, k := range o.pairs {
@@ -752,7 +758,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
 	}
-	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)
+	o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
 	return o
 }
