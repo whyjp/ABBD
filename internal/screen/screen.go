@@ -237,7 +237,7 @@ func Build(in Input) Model {
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
-	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+	draw := func(t tactic, read *cost) (Drawing, bool) {
 		p := planOverview(in.Units, "", nil, t, ls, fs, c)
 		if p.layout.idle {
 			return Drawing{}, false
@@ -245,10 +245,27 @@ func Build(in Input) Model {
 		d := p.draw(href)
 		*read = p.read
 		return d, true
-	}, func(d Drawing, read *cost) {
+	}
+	judge := func(d Drawing, read *cost) {
 		read.judge(d)
 		read.over = pastScreen(d, room)
-	})
+	}
+	m.Overview = choose(overviewTactics, draw, judge)
+	// An overview that lays the primary flow out and still breaks a hard
+	// rule is drawn again with its chains free to come back among their
+	// ends as well (tactic.reach), and keeps whichever reads best.
+	if _, ok := in.Figures.Primary(); ok {
+		var read cost
+		read.judge(m.Overview)
+		if read.hard > 0 {
+			ts := slices.Clone(overviewTactics)
+			for _, t := range overviewTactics {
+				t.reach = true
+				ts = append(ts, t)
+			}
+			m.Overview = choose(ts, draw, judge)
+		}
+	}
 	m.Focus = o.overviewFocus(in.Units, m.Overview, c.hides())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {

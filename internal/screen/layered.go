@@ -223,6 +223,11 @@ type tactic struct {
 	// so the count stands clear of the next line. choose and insideFocus
 	// try it on the drawing they keep.
 	counted bool
+	// reach moves a chain that place stood far past both its ends back
+	// among them (layered.reach). Only an overview that lays out the
+	// primary flow and still breaks a hard rule tries it: the stages hold
+	// their rows, and the sweeps can set a chain a long way round them.
+	reach bool
 	// roads lets lines that run side by side ride one road (confluence.go).
 	// choose and the focus views draw only the drawing they keep with it, so
 	// it moves no box: which drawing a view keeps is weighed on its own lines.
@@ -622,6 +627,50 @@ func (g *layered) shorten(x map[string]int) bool {
 		}
 	}
 	return swapped
+}
+
+// reach moves each chain between two boxes that place stood more than half
+// detourLimit past both its ends, so its line would run past rule 15 out of
+// its way, back among the items of every row it passes to where the span of
+// its ends meets, and reports whether it moved any, so the rows are placed
+// again. A crossing or two costs a reader less than a line run round the
+// drawing.
+func (g *layered) reach(x map[string]int) bool {
+	moved := false
+	box := func(id string) bool {
+		_, ok := x[id]
+		return ok && !isChip(id)
+	}
+	for c, ch := range g.chains {
+		if !box(ch.upper) || !box(ch.lower) {
+			continue
+		}
+		lo := min(x[ch.upper], x[ch.lower]) + 12
+		hi := max(x[ch.upper]+g.w[ch.upper], x[ch.lower]+g.w[ch.lower]) - 12
+		far := 0
+		for r := ch.top; r <= ch.bottom; r++ {
+			d := dummy(c, r)
+			at := x[d] + g.w[d]/2
+			far = max(far, at-hi, lo-at)
+		}
+		if 2*far <= detourLimit {
+			continue
+		}
+		for r := ch.top; r <= ch.bottom; r++ {
+			d := dummy(c, r)
+			t := clamp(x[d]+g.w[d]/2, lo, hi)
+			row := slices.DeleteFunc(slices.Clone(g.rows[r]), func(id string) bool { return id == d })
+			i := slices.IndexFunc(row, func(id string) bool { return x[id]+g.w[id]/2 > t })
+			if i < 0 {
+				i = len(row)
+			}
+			row = slices.Insert(row, i, d)
+			if !slices.Equal(row, g.rows[r]) {
+				g.rows[r], moved = row, true
+			}
+		}
+	}
+	return moved
 }
 
 // shed takes the shortest chains out of the rows, one at a time, while the
