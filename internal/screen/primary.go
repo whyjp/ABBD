@@ -42,6 +42,8 @@ func pairOf(a, b model.ID) pair {
 type cut struct {
 	keep map[pair]bool
 	more map[model.ID]int
+	// said are the words a stored overview record gave its chosen lines.
+	said map[pair]string
 }
 
 // hides says the cut leaves any pair undrawn.
@@ -49,7 +51,7 @@ func (c *cut) hides() bool { return c != nil && len(c.more) > 0 }
 
 // primary decides which of the planned overview's links it draws. marked
 // are the stored relations, by relation key, that must be drawn.
-func (o *overview) primary(marked map[string]bool, stacks []layering, flows []flowWalk) *cut {
+func (o *overview) primary(marked map[string]bool, stacks []layering, flows []flowWalk, recorded map[pair]bool, said map[pair]string) *cut {
 	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
 	rels := map[pair][]string{}
 	contract := map[pair]bool{}
@@ -94,6 +96,11 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 		if direct(e) && covered(e.From, e.To) {
 			add(pairOf(e.From, e.To), o.rels[e.String()])
 		}
+	}
+	if recorded != nil {
+		c := counting(ls, recorded)
+		c.said = said
+		return c
 	}
 	if 10*len(ls) <= sparse*len(o.modules) {
 		return nil
@@ -189,6 +196,11 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 			}
 		}
 	}
+	return counting(ls, keep)
+}
+
+// counting draws the pairs of keep and counts the rest of ls on their boxes.
+func counting(ls []pair, keep map[pair]bool) *cut {
 	c := &cut{keep: keep, more: map[model.ID]int{}}
 	for _, l := range ls {
 		if !keep[l] {
@@ -197,6 +209,30 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 		}
 	}
 	return c
+}
+
+// recordedPairs are the pairs of top-level boxes the stored overview's
+// chosen lines join. A line whose ends sit in one box, or in a unit that is
+// gone, joins none. It is nil when the record names no such pair, so the
+// heuristics above decide.
+func (o *overview) recordedPairs(lines []model.Line) (map[pair]bool, map[pair]string) {
+	keep := map[pair]bool{}
+	said := map[pair]string{}
+	for _, l := range lines {
+		a, okA := o.tree.within(l.From, "")
+		b, okB := o.tree.within(l.To, "")
+		if okA && okB && a != b {
+			p := pairOf(a, b)
+			keep[p] = true
+			if said[p] == "" {
+				said[p] = l.Word
+			}
+		}
+	}
+	if len(keep) == 0 {
+		return nil, nil
+	}
+	return keep, said
 }
 
 func distinct(rs []string) int { return len(slices.Compact(slices.Sorted(slices.Values(rs)))) }

@@ -231,8 +231,17 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
 	var c *cut
-	if in.Project.Cut() {
-		c = o.primary(in.Primary, ls, fs)
+	if in.Overview.Known && len(in.Overview.Lines) > 0 {
+		var lines []model.Line
+		for _, l := range in.Overview.Lines {
+			lines = append(lines, l.Claim)
+		}
+		if rec, said := o.recordedPairs(lines); rec != nil {
+			c = o.primary(in.Primary, ls, fs, rec, said)
+		}
+	}
+	if c == nil && in.Project.Cut() {
+		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))

@@ -32,6 +32,7 @@ type Drawing struct {
 	// relations those lines stand for.
 	Counted     [][2]string `json:"-"`
 	countedRels []string
+	said        map[pair]string
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
 	// Routes are each line's whole way, one per line the view requests.
@@ -490,6 +491,7 @@ type overview struct {
 	more        map[model.ID]int
 	counted     [][2]string
 	countedRels []string
+	said        map[pair]string
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -671,6 +673,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			return true
 		})
 		o.more = c.more
+		o.said = c.said
 	}
 	var edges []ledge
 	for _, k := range o.pairs {
@@ -1143,7 +1146,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads, axis: l.axis}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
