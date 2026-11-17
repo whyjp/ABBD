@@ -51,6 +51,8 @@ jobs:
           chmod +x rust-analyzer
           echo "$RUNNER_TEMP/rust-analyzer" >> "$GITHUB_PATH"
           rustup component add rust-src
+          rust-analyzer --version
+          cargo --version
       - name: go test
         run: go test -timeout 20m ./...
       # The log stays outside the checkout: sync fingerprints every file in it.
