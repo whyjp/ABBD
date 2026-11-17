@@ -19,8 +19,8 @@
       ],
       "Rank": {
         "Basis": "stack",
-        "N": 8,
-        "Of": 8
+        "N": 7,
+        "Of": 7
       }
     },
     {
@@ -505,8 +505,8 @@
       "Zone": "abbd 스킬",
       "Rank": {
         "Basis": "stack",
-        "N": 3,
-        "Of": 8,
+        "N": 2,
+        "Of": 7,
         "Cycle": true
       }
     },
@@ -533,7 +533,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 1,
-        "Of": 8,
+        "Of": 7,
         "Cycle": true
       }
     },
@@ -1437,7 +1437,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 2,
-        "Of": 8,
+        "Of": 7,
         "Cycle": true
       }
     },
@@ -1638,7 +1638,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 5,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -1710,7 +1710,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 6,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -1808,7 +1808,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 6,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -1930,7 +1930,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 6,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -2026,7 +2026,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 5,
-        "Of": 8,
+        "Of": 7,
         "Cycle": true
       }
     },
@@ -2139,7 +2139,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 7,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -2228,7 +2228,8 @@
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -2278,7 +2279,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 3,
-        "Of": 8,
+        "Of": 7,
         "Cycle": true
       }
     },
@@ -2453,8 +2454,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 4,
-        "Of": 8,
-        "Cycle": true
+        "Of": 7
       }
     },
     {
@@ -2602,7 +2602,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 5,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -2758,7 +2758,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 5,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -2782,8 +2782,8 @@
       ],
       "Rank": {
         "Basis": "stack",
-        "N": 4,
-        "Of": 8
+        "N": 3,
+        "Of": 7
       }
     },
     {
@@ -2802,7 +2802,7 @@
       "Rank": {
         "Basis": "stack",
         "N": 6,
-        "Of": 8
+        "Of": 7
       }
     },
     {
@@ -2819,8 +2819,8 @@
       "Zone": "읽는 쪽",
       "Rank": {
         "Basis": "stack",
-        "N": 5,
-        "Of": 8
+        "N": 4,
+        "Of": 7
       }
     },
     {
@@ -21571,12 +21571,14 @@
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 10
       },
@@ -23002,7 +23004,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
