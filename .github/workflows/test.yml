@@ -51,6 +51,8 @@ jobs:
           chmod +x rust-analyzer
           echo "$RUNNER_TEMP/rust-analyzer" >> "$GITHUB_PATH"
           rustup component add rust-src
+          "$RUNNER_TEMP/rust-analyzer/rust-analyzer" --version
+          cargo --version
       # The c relater needs clangd; its tests skip without it.
       # The pinned release 23.1.0 is the clangd the relater was measured with.
       - name: Install clangd 23.1.0
@@ -76,7 +78,7 @@ jobs:
       - name: The relater tests ran, none skipped
         if: runner.os == 'Linux'
         run: |
-          rust-analyzer --version
+          "$RUNNER_TEMP/rust-analyzer/rust-analyzer" --version
           clangd --version
           log="$RUNNER_TEMP/relate.log"
           go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
