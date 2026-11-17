@@ -51,7 +51,7 @@ jobs:
           chmod +x rust-analyzer
           echo "$RUNNER_TEMP/rust-analyzer" >> "$GITHUB_PATH"
           rustup component add rust-src
-          rust-analyzer --version
+          "$RUNNER_TEMP/rust-analyzer/rust-analyzer" --version
           cargo --version
       - name: go test
         run: go test -timeout 20m ./...
@@ -67,7 +67,7 @@ jobs:
       - name: The relater tests ran, none skipped
         if: runner.os == 'Linux'
         run: |
-          rust-analyzer --version
+          "$RUNNER_TEMP/rust-analyzer/rust-analyzer" --version
           log="$RUNNER_TEMP/relate.log"
           go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
           if grep -- '--- SKIP' "$log"; then exit 1; fi
