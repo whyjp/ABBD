@@ -117,7 +117,11 @@ func cCompiles(t tree) ([]cEntry, error) {
 		if !filepath.IsAbs(f) {
 			f = filepath.Join(filepath.FromSlash(dir), f)
 		}
-		out = append(out, cEntry{filepath.Clean(f), e})
+		f = filepath.Clean(f)
+		if r, err := filepath.EvalSymlinks(f); err == nil {
+			f = r
+		}
+		out = append(out, cEntry{f, e})
 	}
 	return out, nil
 }
