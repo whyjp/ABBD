@@ -73,9 +73,9 @@ func TestTSRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 		}
 		want := []string{
 			"mod-app consumes if-shape via import [app/main.ts:3:import type { Shape } from \"../shapes/shape\"; app/main.ts:6:const s: Shape = new Circle(2);]",
-			"mod-app depends_on mod-circle via call [app/main.ts:6:const s: Shape = new Circle(2); app/main.ts:7:export const total: number = add(LIMIT, s.area()) + twice(1);]",
+			"mod-app depends_on mod-circle via call [app/main.ts:6:const s: Shape = new Circle(2);]",
 			"mod-app depends_on mod-lib via call [app/main.ts:7:export const total: number = add(LIMIT, s.area()) + twice(1);]",
-			"mod-app depends_on mod-shapes via call [app/main.ts:7:export const total: number = add(LIMIT, s.area()) + twice(1);]",
+			"mod-app depends_on mod-shapes via import [app/main.ts:3:import type { Shape } from \"../shapes/shape\"; app/main.ts:6:const s: Shape = new Circle(2);]",
 			"mod-app depends_on mod-util via call [app/main.ts:7:export const total: number = add(LIMIT, s.area()) + twice(1);]",
 			"mod-circle depends_on mod-shapes via trait [circle/circle.ts:3:export class Circle extends Base implements Shape {]",
 			"mod-circle provides if-shape via trait [circle/circle.ts:3:export class Circle extends Base implements Shape {]",
@@ -105,7 +105,7 @@ func TestPythonRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 			continue
 		}
 		want := []string{
-			"mod-app depends_on mod-circle via call [app/main.py:5:s: shape.Shape = Circle(2) app/main.py:6:total = add(LIMIT, s.area())]",
+			"mod-app depends_on mod-circle via call [app/main.py:5:s: shape.Shape = Circle(2)]",
 			"mod-app depends_on mod-shapes via import [app/main.py:5:s: shape.Shape = Circle(2)]",
 			"mod-app depends_on mod-util via call [app/main.py:6:total = add(LIMIT, s.area())]",
 			"mod-circle depends_on mod-shapes via trait [circle/circle.py:4:class Circle(Shape):]",

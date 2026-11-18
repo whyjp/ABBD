@@ -156,8 +156,9 @@ func scripting(t tree, o owners, l scriptLang, argv []string, init any) (found, 
 
 func (r *scriptRead) abs(p string) string { return filepath.Join(r.root, filepath.FromSlash(p)) }
 
-// symbols lists the file's declarations: its top-level ones and the methods
-// of its classes and interfaces.
+// symbols lists the file's top-level declarations. A method is never asked:
+// the server matches a member name on a receiver whose type it cannot
+// resolve, so a common name such as toString or input names another unit.
 func (r *scriptRead) symbols(ctx context.Context, p string, out *[]scriptSymbol) error {
 	b, err := os.ReadFile(r.abs(p))
 	if err != nil {
@@ -172,27 +173,17 @@ func (r *scriptRead) symbols(ctx context.Context, p string, out *[]scriptSymbol)
 	defer r.mu.Unlock()
 	r.read[p] = true
 	r.src[p] = strings.Split(strings.ReplaceAll(string(b), "\r\n", "\n"), "\n")
-	var walk func(list []lsp.DocumentSymbol, top bool)
-	walk = func(list []lsp.DocumentSymbol, top bool) {
-		for _, s := range list {
-			r.decl[site3(p, s.SelectionRange.Start)] = true
-			if r.lang.skip(s.Name) || s.Kind == lsp.KindTypeParameter {
-				continue
-			}
-			if top || s.Kind == lsp.KindMethod {
-				*out = append(*out, scriptSymbol{p, s, unit})
-			}
-			if s.Kind == lsp.KindClass || s.Kind == lsp.KindInterface {
-				walk(s.Children, false)
-			}
+	for _, s := range syms {
+		r.decl[site3(p, s.SelectionRange.Start)] = true
+		if !r.lang.skip(s.Name) && s.Kind != lsp.KindTypeParameter {
+			*out = append(*out, scriptSymbol{p, s, unit})
 		}
 	}
-	walk(syms, true)
 	return nil
 }
 
 // uses adds a fact for every place another unit names s: a trait where it
-// extends or implements s, or declares the member that overrides it, a call
+// extends or implements s, a call
 // where it calls s, else an import.
 func (r *scriptRead) uses(ctx context.Context, s scriptSymbol) error {
 	refs, err := r.srv.References(ctx, r.abs(s.path), s.sym.SelectionRange.Start)
@@ -211,9 +202,6 @@ func (r *scriptRead) uses(ctx context.Context, s scriptSymbol) error {
 		declared := r.decl[site3(p, l.Range.Start)]
 		r.mu.Unlock()
 		u, owned := r.of(p)
-		// The server lists a method's overrides and an interface's members
-		// among its references; a class that implements is a trait of its
-		// own reference.
 		if !ok || !read || !owned || u == s.unit || declared || l.Range.Start.Line >= len(lines) {
 			continue
 		}
