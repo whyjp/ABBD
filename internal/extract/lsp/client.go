@@ -120,6 +120,7 @@ func transient(err error) bool {
 // Start runs the server and initializes it over the workspace root.
 func Start(ctx context.Context, s Server) (*Client, error) {
 	cmd := exec.Command(s.Argv[0], s.Argv[1:]...)
+	ownTree(cmd)
 	cmd.Dir = s.Root
 	cmd.Env = append(os.Environ(), s.Env...)
 	in, err := cmd.StdinPipe()
@@ -476,7 +477,7 @@ func (c *Client) Close() error {
 	select {
 	case <-c.exited:
 	case <-time.After(10 * time.Second):
-		c.cmd.Process.Kill()
+		killTree(c.cmd)
 		<-c.exited
 	}
 	return nil
