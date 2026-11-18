@@ -102,18 +102,17 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 		}
 	}
 	if recorded != nil {
-		// A recorded pair no relation joins draws nothing; a record left
-		// with none is no choice, and the overview draws as without it.
-		live := map[pair]bool{}
+		// A recorded pair no relation joins any more makes the record stale,
+		// and the overview draws as without it.
+		joined := map[pair]bool{}
 		for _, l := range ls {
-			if recorded[l] {
-				live[l] = true
+			joined[l] = true
+		}
+		for p := range recorded {
+			if !joined[p] {
+				return nil
 			}
 		}
-		if len(live) == 0 {
-			return nil
-		}
-		recorded = live
 	}
 	if 10*len(ls) <= sparse*len(o.modules) {
 		if recorded == nil {
@@ -237,15 +236,17 @@ func counting(ls []pair, keep map[pair]bool) *cut {
 }
 
 // recordedPairs are the pairs of top-level boxes the stored overview's
-// chosen lines join. A line whose ends sit in one box, or that names a unit
-// that is gone or none, joins none. It is nil when the record names no such pair, so the
+// chosen lines join. A line whose ends sit in one box joins none. A record
+// with a line that names a unit that is gone, or none, is stale: it is nil,
+// as is a record that names no pair, so the overview draws as without it
+// rather than thinned. It is nil when the record names no such pair, so the
 // heuristics above decide.
 func (o *overview) recordedPairs(lines []model.Line) (map[pair]bool, map[pair]string) {
 	keep := map[pair]bool{}
 	said := map[pair]string{}
 	for _, l := range lines {
 		if !o.tree.has(l.From) || !o.tree.has(l.To) {
-			continue
+			return nil, nil
 		}
 		a, okA := o.tree.within(l.From, "")
 		b, okB := o.tree.within(l.To, "")

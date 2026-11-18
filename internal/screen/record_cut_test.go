@@ -158,3 +158,91 @@ func TestARecordThatHidesNothingDrawsAsWithout(t *testing.T) {
 		}
 	}
 }
+
+// A project that turns the cut off draws every line, whatever its record
+// chose.
+func TestTurningTheCutOffDrawsEveryLineDespiteARecord(t *testing.T) {
+	t.Parallel()
+	units, err := store.Open(filepath.Join("testdata", "pstack")).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	plain := drawAll(t, "pstack").Overview
+	var rec store.Overview
+	rec.Known = true
+	for _, r := range plain.ways[:2] {
+		rec.Lines = append(rec.Lines, store.Part[model.Line]{Claim: model.Line{From: model.ID(r.ends[0]), To: model.ID(r.ends[1]), Word: "uses"}})
+	}
+	off := false
+	got := Build(Input{Units: units, Overview: rec, Project: store.Project{OverviewCut: &off}}).Overview
+	if len(got.ways) != len(plain.ways) {
+		t.Fatalf("with the cut off a record draws %d lines, without one %d", len(got.ways), len(plain.ways))
+	}
+	if cut := Build(Input{Units: units, Overview: rec}).Overview; len(cut.ways) >= len(plain.ways) {
+		t.Fatalf("with the cut unset the record draws %d lines of %d, hiding none", len(cut.ways), len(plain.ways))
+	}
+}
+
+// A record some of whose lines no longer resolve is stale as a whole: the
+// overview draws as without it rather than thinned to the lines left.
+func TestAPartlyStaleRecordDrawsAsWithout(t *testing.T) {
+	t.Parallel()
+	units, err := store.Open(filepath.Join("testdata", "pstack")).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	plain := drawAll(t, "pstack").Overview
+	r := plain.ways[0]
+	var rec store.Overview
+	rec.Known = true
+	for _, l := range []model.Line{
+		{From: model.ID(r.ends[0]), To: model.ID(r.ends[1]), Word: "uses"},
+		{From: "MOD-9999", To: model.ID(r.ends[1]), Word: "uses"},
+	} {
+		rec.Lines = append(rec.Lines, store.Part[model.Line]{Claim: l})
+	}
+	got := Build(Input{Units: units, Overview: rec}).Overview
+	if len(got.ways) != len(plain.ways) {
+		t.Fatalf("a partly stale record draws %d lines, without one %d", len(got.ways), len(plain.ways))
+	}
+}
+
+// A record changes which lines the overview draws, not how each box's own
+// focus view reads: every focus view draws as it does without the record.
+func TestARecordLeavesTheFocusViewsAsTheyAre(t *testing.T) {
+	t.Parallel()
+	units, err := store.Open(filepath.Join("testdata", "self")).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	on := true
+	project := store.Project{OverviewCut: &on}
+	plain := Build(Input{Units: units, Project: project})
+	if len(plain.Focus) == 0 {
+		t.Fatal("the fixture draws no focus view without a record")
+	}
+	var rec store.Overview
+	rec.Known = true
+	for _, r := range plain.Overview.ways[:3] {
+		rec.Lines = append(rec.Lines, store.Part[model.Line]{Claim: model.Line{From: model.ID(r.ends[0]), To: model.ID(r.ends[1]), Word: "uses"}})
+	}
+	got := Build(Input{Units: units, Overview: rec, Project: project})
+	if len(got.Overview.ways) >= len(plain.Overview.ways) {
+		t.Fatalf("the record hides nothing: %d lines of %d", len(got.Overview.ways), len(plain.Overview.ways))
+	}
+	want := map[string][]string{}
+	for _, f := range plain.Focus {
+		for _, r := range f.Drawing.ways {
+			want[f.Unit] = append(want[f.Unit], r.D)
+		}
+	}
+	for _, f := range got.Focus {
+		var ds []string
+		for _, r := range f.Drawing.ways {
+			ds = append(ds, r.D)
+		}
+		if !slices.Equal(ds, want[f.Unit]) {
+			t.Errorf("focus view of %s draws otherwise with the record", f.Unit)
+		}
+	}
+}
