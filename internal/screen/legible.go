@@ -105,6 +105,11 @@ type sheet struct {
 	// roads says the drawing's lines ride roads (confluence.go), as its
 	// svg's data-roads says.
 	roads bool
+	// strands are the strands a path starts with (Fan), each in the group
+	// of the path it gathers into, and fans how many paths start with them.
+	// They are no ink: the path they gather into is read from its stem.
+	strands []stroke
+	fans    int
 }
 
 // junction is a dot that marks a split or merge of one kind's ink.
@@ -153,6 +158,9 @@ func readSVG(src string) (sheet, error) {
 	// last is the group of the path read last, its whole data-net when it
 	// has one: a count follows its wire, and its wire is that path's net.
 	last := -1
+	// wire is the group of the path.w read last, and fanned the path whose
+	// strands were counted last.
+	wire, fanned := -1, -1
 	for {
 		tok, err := dec.Token()
 		if err != nil {
@@ -213,10 +221,26 @@ func readSVG(src string) (sheet, error) {
 					}
 					route = ""
 				}
+				if hasClass(t, "strand") {
+					parts, err := flatten(attr(t, "d"))
+					if err != nil {
+						return s, err
+					}
+					if len(parts) > 0 && wire >= 0 {
+						s.strands = append(s.strands, stroke{path: s.paths - 1, group: wire, class: attr(t, "class"), pts: parts[0]})
+						if fanned != s.paths-1 {
+							fanned = s.paths - 1
+							s.fans++
+						}
+					}
+				}
 				if hasClass(t, "w") {
 					parts, err := flatten(attr(t, "d"))
 					if err != nil {
 						return s, err
+					}
+					if stem := strings.Fields(attr(t, "data-stem")); len(stem) == 2 && len(parts) > 0 {
+						parts[0] = append([]fpt{{num(stem[0]), num(stem[1])}}, parts[0]...)
 					}
 					g := s.groups
 					if n := attr(t, "data-net"); n != "" {
@@ -229,7 +253,7 @@ func readSVG(src string) (sheet, error) {
 					} else {
 						s.groups++
 					}
-					last = g
+					last, wire = g, g
 					for _, p := range parts {
 						s.strokes = append(s.strokes, stroke{path: s.paths, group: g, class: attr(t, "class"), origin: attr(t, "data-origin"), pts: p})
 					}
@@ -777,6 +801,14 @@ func measureBy(s sheet, turns func(route int) bool) Metrics {
 		for _, mk := range s.markers {
 			if dist(mk, w.pts[0]) < 6 || dist(mk, w.pts[len(w.pts)-1]) < 6 {
 				marked[w.group] = true
+			}
+		}
+	}
+	// A line that leaves as a strand carries its mark where its strand does.
+	for _, st := range s.strands {
+		for _, mk := range s.markers {
+			if dist(mk, st.pts[0]) < 6 {
+				marked[st.group] = true
 			}
 		}
 	}
