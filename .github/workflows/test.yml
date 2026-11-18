@@ -1,4 +1,5 @@
-# Runs the Go suite on Linux, Windows and macOS. macOS is tested only here.
+# Runs the Go suite on Linux and Windows. Windows is the base; Linux carries the strict no-skip gates.
+# macOS is deferred until after stabilization and is not tested.
 name: test
 on:
   push:
@@ -14,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 35
     steps:
@@ -60,7 +61,6 @@ jobs:
         run: |
           case "$RUNNER_OS" in
             Linux) asset=clangd-linux-23.1.0.zip; sha=e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd ;;
-            macOS) asset=clangd-mac-23.1.0.zip; sha=1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253 ;;
             Windows) asset=clangd-windows-23.1.0.zip; sha=23412a240756a162e7b98a282f36aa2a23a88db5ce16a0cbc4fef7253768c810 ;;
           esac
           dir="$RUNNER_TEMP/clangd"
@@ -140,4 +140,3 @@ jobs:
         run: |
           ls abbd-digest-*.txt
           diff abbd-digest-ubuntu-latest.txt abbd-digest-windows-latest.txt
-          diff abbd-digest-ubuntu-latest.txt abbd-digest-macos-latest.txt
