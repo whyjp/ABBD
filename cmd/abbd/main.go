@@ -47,7 +47,16 @@ abbd relate RELATER[=DIR] [RELATER[=DIR]] [-DNAME=VALUE...] [--root DIR] [-- EXT
                                      to abbd extract; clangd from $ABBD_LSP_C or
                                      the PATH; tests left out; function-pointer tables become
                                      provides and consumes, or a callback from host to filler;
-                                     code #if leaves out is named on stderr); files no
+                                     code #if leaves out is named on stderr), ts (TypeScript and
+                                     JavaScript; tsconfig.json, jsconfig.json or package.json;
+                                     typescript-language-server from $ABBD_LSP_TS or the PATH
+                                     with TypeScript 5.x) or python (pyproject.toml, setup.py,
+                                     setup.cfg, pyrightconfig.json or requirements.txt;
+                                     pyright-langserver from $ABBD_LSP_PYTHON or the PATH);
+                                     ts and python leave out tests, dependencies, build output
+                                     and names starting with an underscore (python), and read a
+                                     reference as a call, a base or implemented type (trait) or
+                                     an import; files no
                                      configuration compiles are named on stderr; it replaces the
                                      depends_on between units whose code it read, and adds a
                                      provides or consumes only where the extraction has none;
