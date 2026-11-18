@@ -336,7 +336,8 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	// and some line rides a chain set astray (strays), it is drawn on roads
 	// again with such lines passing rows through their gaps (through),
 	// and that is kept where fewer lines run so far and no total the gate
-	// holds a view to reads worse: it moves no box, so it only reroutes.
+	// holds a view to reads worse. It keeps every box's row and order; only
+	// the gaps between rows grow or shrink with the tracks the lines take.
 	bt.roads = true
 	var c cost
 	v, ok := draw(bt, &c)
