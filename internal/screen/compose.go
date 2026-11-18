@@ -505,7 +505,7 @@ func (c *composer) lay(o *overview, t tactic) layout {
 		}
 		best := right + chainSep
 		for d := 0; d <= right+roomGap; d += 4 {
-			if free(ideal - d) && ideal-d >= padX {
+			if free(ideal-d) && ideal-d >= padX {
 				best = ideal - d
 				break
 			}
