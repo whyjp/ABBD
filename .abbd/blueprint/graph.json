@@ -6204,7 +6204,6 @@
         "Provides": 34,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6707,7 +6706,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7310,7 +7309,7 @@
                 "Code": false
               },
               {
-                "Text": "abbd relate go|rust[=DIR]",
+                "Text": "abbd relate go|rust|c[=DIR]",
                 "Code": true
               },
               {
@@ -7346,7 +7345,39 @@
                 "Code": true
               },
               {
-                "Text": "를 돌려주면, relater 이름과 읽지 못한 파일 수와 이유를 표준 오류에 한 줄로 밝히고 그 파일 경로를 줄마다 나열한다. 읽지 못한 파일은 go에서는 빌드 제약이 뺀 파일이고, rust에서는 어느 설정으로도 컴파일되지 않은 파일이다. 상태는 읽지도 쓰지도 않으므로, 등록하면 ",
+                "Text": "를 돌려주면, relater 이름과 읽지 못한 파일 수와 이유를 표준 오류에 한 줄로 밝히고 그 파일 경로를 줄마다 나열한다. 읽지 못한 파일은 go에서는 빌드 제약이 뺀 파일이고, rust에서는 어느 설정으로도 컴파일되지 않은 파일이며, c에서는 컴파일 데이터베이스가 컴파일하지 않는 소스다. c가 읽은 파일 가운데 ",
+                "Code": false
+              },
+              {
+                "Text": "#if",
+                "Code": true
+              },
+              {
+                "Text": "가 뺀 코드를 가진 것은 따로 경로와 줄 수로 밝히고, 그 코드 안 관계가 빠져 있다고 말한다. ",
+                "Code": false
+              },
+              {
+                "Text": "-DNAME=VALUE",
+                "Code": true
+              },
+              {
+                "Text": "는 abbd의 flag가 아니라 CMake 캐시 옵션이어서, ",
+                "Code": false
+              },
+              {
+                "Text": "abbd extract",
+                "Code": true
+              },
+              {
+                "Text": "처럼 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd relate",
+                "Code": true
+              },
+              {
+                "Text": "도 인자에서 떼어 relater에 넘긴다. 상태는 읽지도 쓰지도 않으므로, 등록하면 ",
                 "Code": false
               },
               {
@@ -7386,7 +7417,31 @@
                 "Code": true
               },
               {
-                "Text": "나 PATH의 rust-analyzer를 알린다.",
+                "Text": "나 PATH의 rust-analyzer를, c의 ",
+                "Code": false
+              },
+              {
+                "Text": "compile_commands.json",
+                "Code": true
+              },
+              {
+                "Text": "이나 ",
+                "Code": false
+              },
+              {
+                "Text": "CMakeLists.txt",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "$ABBD_LSP_C",
+                "Code": true
+              },
+              {
+                "Text": "나 PATH의 clangd를 알린다.",
                 "Code": false
               }
             ]
@@ -12923,7 +12978,6 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -13056,7 +13110,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -13942,7 +13996,7 @@
                 "Code": true
               },
               {
-                "Text": "와 ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -13950,7 +14004,15 @@
                 "Code": true
               },
               {
-                "Text": " 둘이다. ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "c",
+                "Code": true
+              },
+              {
+                "Text": " 셋이다. ",
                 "Code": false
               },
               {
@@ -13982,7 +14044,23 @@
                 "Code": true
               },
               {
-                "Text": ")가 있는지 보고, 읽은 사실(call, import, trait, macro)을 모은다. ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "compile_commands.json",
+                "Code": true
+              },
+              {
+                "Text": "이나 ",
+                "Code": false
+              },
+              {
+                "Text": "CMakeLists.txt",
+                "Code": true
+              },
+              {
+                "Text": ")가 있는지 보고, 읽은 사실(call, callback, import, trait, macro)을 모은다. 저장소 밖 캐시 디렉터리와 CMake 캐시 옵션도 relater에 넘긴다. ",
                 "Code": false
               },
               {
@@ -14038,7 +14116,15 @@
                 "Code": true
               },
               {
-                "Text": "(via가 비었거나 call, trait, macro, import)은 추출의 것을 대신하고, 설정이나 spawn 같은 그 밖의 relation은 건드리지 않는다. 다만 컴파일되지 않은 코드를 가진 unit은 일부만 읽은 것이므로, 그 unit에서 나가는 추출의 ",
+                "Text": "(via가 비었거나 call, trait, macro, import)은 추출의 것을 대신하고, 설정이나 spawn 같은 그 밖의 relation은 건드리지 않고, 이름으로 등록한 콜백은 코드만으로 보이지 않을 수 있으므로 via가 callback인 추출의 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": "도 남긴다. 다만 컴파일되지 않은 코드를 가진 unit은 일부만 읽은 것이므로, 그 unit에서 나가는 추출의 ",
                 "Code": false
               },
               {
@@ -14070,7 +14156,7 @@
                 "Code": true
               },
               {
-                "Text": "는 추출에 아직 없는 곳에만 더한다. 한 link는 가장 좋은 via(call, trait, macro, import 순서)의 relation 하나가 되고, 인용은 직접 호출을 먼저 최대 세 줄이다. ",
+                "Text": "는 추출에 아직 없는 곳에만 더한다. 한 link는 가장 좋은 via(call, callback, trait, macro, import 순서)의 relation 하나가 되고, 인용은 직접 호출을 먼저 최대 세 줄이다. ",
                 "Code": false
               },
               {
@@ -14127,6 +14213,77 @@
               },
               {
                 "Text": "는 Go의 타입과 그것이 바뀌어 담기는 interface의 짝이며, go의 trait 사실은 두 패키지가 import로 이어졌거나 이 짝이 있을 때만 나온다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "C relater",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "c relater",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (MOD-0060 internal/extract/relate): ",
+                "Code": false
+              },
+              {
+                "Text": "c",
+                "Code": true
+              },
+              {
+                "Text": "는 C와 C++ 코드를 clangd(",
+                "Code": false
+              },
+              {
+                "Text": "$ABBD_LSP_C",
+                "Code": true
+              },
+              {
+                "Text": "나 PATH)로 읽는다. 디렉터리의 ",
+                "Code": false
+              },
+              {
+                "Text": "compile_commands.json",
+                "Code": true
+              },
+              {
+                "Text": "을 그대로 쓰고, 없으면 CMake 프로젝트를 cmake front-end와 같은 빌드 트리에서 구성해 file API로 각 소스의 컴파일 명령을 다시 만든다(",
+                "Code": false
+              },
+              {
+                "Text": "frontend.CMakeCompiles",
+                "Code": true
+              },
+              {
+                "Text": "). 테스트가 아닌 소스마다 명령 하나를 캐시의 컴파일 데이터베이스에 쓰므로, clangd의 색인도 저장소가 아니라 캐시에 놓인다. 다른 unit이 이름 붙일 수 있는 선언마다 참조를 물어, 호출은 call, 값으로 쥔 함수는 callback, 매크로는 macro, 타입과 상수는 import로 삼는다. 함수 포인터 필드를 가진 구조체를 중괄호로 채운 표는 호스트가 그 표로 부르는 callback이나 provides와 consumes가 된다. 컴파일 데이터베이스가 컴파일하지 않는 소스는 읽지 못한 것으로 두고, 읽은 파일 중 ",
+                "Code": false
+              },
+              {
+                "Text": "#if",
+                "Code": true
+              },
+              {
+                "Text": "가 뺀 코드를 가진 것은 ",
+                "Code": false
+              },
+              {
+                "Text": "Unread",
+                "Code": true
+              },
+              {
+                "Text": "의 gated 묶음으로 경로와 줄 수를 돌려주어 그 코드 안 관계가 빠졌음을 밝힌다.",
                 "Code": false
               }
             ]
