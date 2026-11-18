@@ -171,7 +171,8 @@
 {{define "keys"}}<div class="legend keys">
 {{with .Lead}}<span><svg width="44" height="18"><g data-h="{{.Hue}}"><path d="M0 9 H34" style="stroke:var(--c);stroke-width:3.2"/><path d="M33 4 L43 9 L33 14 z" style="fill:var(--c)"/><circle cx="15" cy="9" r="8" style="fill:var(--c)"/><text x="15" y="12.7" text-anchor="middle" style="font-size:10.5px;font-weight:700;fill:var(--lead-ink)">1</text></g></svg>{{if .Primary}}주 흐름: stack {{.Key}}의 단계 순서 ({{.Title}}){{else if .Key}}주 흐름: 저장된 흐름 {{.Key}}의 단계 순서 ({{.Title}}){{else}}주 흐름 (추정): 아무 상자도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감{{end}}</span>{{end}}
 {{with .Filled}}<span><svg width="30" height="14"><rect data-h="{{.Hue}}" x="1" y="1" width="28" height="12" rx="3" style="fill:var(--c)"/></svg>채운 상자: {{if eq (role .) "허브"}}허브{{else}}진입점, 주 흐름이 시작하는 상자{{end}}</span>{{end}}
-{{if .Planned}}<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>{{end}}
+{{if .Planned}}<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>{{end}}{{if .Fanned}}
+<span><svg width="34" height="18"><path d="M12 1 C12 9 17 6 17 14 M22 1 C22 9 17 6 17 14 V18" style="fill:none;stroke:var(--hn);stroke-width:1.5;stroke-linecap:round"/></svg>가닥: 한 상자에서 한 줄기로 나가는 선마다 한 가닥이고, 가닥은 곧 그 줄기로 모입니다. 가닥 수가 선 수이고, 다섯 개부터는 네 가닥에 ×N을 붙입니다</span>{{end}}
 {{if .Zones}}<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="4" style="fill:color-mix(in srgb, var(--h0) 10%, transparent);stroke:color-mix(in srgb, var(--h0) 30%, transparent)"/></svg>옅은 띠: 프로젝트가 보여 주는 묶음</span>{{end}}
 </div>{{end}}
 {{define "legend"}}<div class="legend">{{if eq .Kind "overview"}}

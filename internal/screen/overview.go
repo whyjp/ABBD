@@ -55,6 +55,8 @@ type Drawing struct {
 	roads bool
 	// axis is what its layout ranked the rows by (rank.go).
 	axis axis
+	// fanned says some path starts as strands (fan.go).
+	fanned bool
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for
@@ -221,6 +223,9 @@ type Wire struct {
 	// owed is the count a bus gave up for the word wire by's label says
 	// for it, put back if that label is dropped later (unlabelKin).
 	owed *owed
+	// leave is, for each of rides on a road, the origin of the line that
+	// leaves the path's start, or "" for one that joins it further on.
+	leave []string
 	// Fan, where set, draws the start of the path as one strand per line
 	// that leaves there, gathering into the path a few px out. D keeps the
 	// whole path, which every measure reads.
@@ -1270,8 +1275,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 				titles[j] += ", " + labels[og]
 			}
 			if p.starts[j] == noStart {
+				w.leave = append(w.leave, "")
 				continue
 			}
+			w.leave = append(w.leave, og)
 			origins[og] = true
 			w.Origin = og
 			if og != Badge(model.Extracted) {

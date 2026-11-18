@@ -348,6 +348,7 @@ func Build(in Input) Model {
 		d.name()
 		d.card()
 	}
+	m.Overview.fan(in.Project.OverviewStrands)
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)

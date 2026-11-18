@@ -35,7 +35,7 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 	},
 	"tip": func(k string) string { return tips[k] },
 	"css": func(p page) template.CSS {
-		return template.CSS(pageCSS + hueCSS + hoverCSS(p.hoverSize()))
+		return template.CSS(pageCSS + hueCSS + hoverCSS(p.hoverSize()) + p.fanCSS())
 	},
 	"nameOf": func(m *Model, id string) string { return nameOf(*m, id) },
 	"label": func(k string) string {

@@ -565,6 +565,12 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// OverviewStrands draws, on the overview, the lines that leave one
+	// place on one trunk as strands spread along the box's edge that
+	// gather into the trunk: "fan" gathers them, "twist" gathers and then
+	// twists them. Empty draws the trunk alone, as before. It is a trial a
+	// person judges by eye, so it is off by default.
+	OverviewStrands string `yaml:"overview_strands,omitempty"`
 	// Language is the BCP-47 tag of the language a person reads the
 	// stored prose in, such as ko. Loading refuses a tag that is no
 	// BCP-47 tag. The zero Language leaves the choice to the OS.

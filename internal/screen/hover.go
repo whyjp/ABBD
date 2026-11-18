@@ -247,8 +247,7 @@ func hoverCSS(shapes, routes int) string {
 	}
 	var b strings.Builder
 	b.WriteString("@media (hover:hover){\n")
-	shape := `:is(.box,.port)[class*=" n"]`
-	pointed := fmt.Sprintf("svg:has(.route):has(%s:hover,:focus-visible>%s,.w:hover)", shape, shape)
+	pointed := pointedCSS()
 	fmt.Fprintf(&b, "%s :where(.w,.junction,.count,.lab,.origin,.hop,.badge){opacity:.1}\n", pointed)
 	fmt.Fprintf(&b, "%s :where(.box,.port[class*=\" n\"]){opacity:.3}\n", pointed)
 	for j := range shapes {
@@ -261,6 +260,13 @@ func hoverCSS(shapes, routes int) string {
 	}
 	b.WriteString("}\n")
 	return b.String()
+}
+
+// pointedCSS selects a drawing while a reader points at a shape or a
+// line in it.
+func pointedCSS() string {
+	shape := `:is(.box,.port)[class*=" n"]`
+	return fmt.Sprintf("svg:has(.route):has(%s:hover,:focus-visible>%s,.w:hover)", shape, shape)
 }
 
 // hoverSize is how many shapes and routes the page's drawings number, at
