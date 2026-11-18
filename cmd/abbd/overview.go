@@ -149,6 +149,7 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 		fmt.Fprintf(e.stdout, "warning: %s %s, so it is no overview and abbd reads past it; fix its frontmatter to clear this\n", o.File, o.Why)
 		return ""
 	}
+	e.warnOverviewLines(units, o)
 	stale := overviewStale(o, units)
 	fmt.Fprintf(e.stdout, "overview: %d zones, %d lines, %d STALE\n", len(o.Zones), len(o.Lines), len(stale))
 	for _, l := range stale {
@@ -158,6 +159,21 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 		return ""
 	}
 	return fmt.Sprintf("%d overview part(s) STALE, read the code each cites again and store it with abbd overview FILE", len(stale))
+}
+
+// warnOverviewLines warns of each line of the overview record that names no
+// unit of the state: such a record is stale, and the overview draws as
+// without it.
+func (e env) warnOverviewLines(units []model.Unit, o store.Overview) {
+	live := map[model.ID]bool{}
+	for _, u := range model.Present(units) {
+		live[u.ID] = true
+	}
+	for i, l := range o.Lines {
+		if !live[l.Claim.From] || !live[l.Claim.To] {
+			fmt.Fprintf(e.stdout, "warning: %s line %d, from %q to %q, names no unit of the state, so the overview draws as without its record; store the overview again with abbd overview FILE\n", o.File, i+1, l.Claim.From, l.Claim.To)
+		}
+	}
 }
 
 // overviewWords are the words explain prints for a unit's place in the

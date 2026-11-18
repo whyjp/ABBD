@@ -1625,16 +1625,27 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		return i
 	}
+	back := func(i int) bool {
+		p := &plans[i]
+		against := p.up
+		if p.same {
+			against = p.tx < p.fx
+		}
+		return against != (reqs[i].kind == "provides")
+	}
 	type span struct {
 		lo, hi      int
 		owner       int
 		tops, downs []int
+		// styles holds 1 where a line on it runs with the flow and 2
+		// where one runs against it, as back says.
+		styles int
 	}
 	spans := make([]map[int]*span, n+1)
 	owners := make([][]int, n+1)
 	// above[g] holds owner pairs whose first must lie above the second.
 	above := make([]map[[2]int]bool, n+1)
-	addSpan := func(g, o, a, b int, up, same, over bool) {
+	addSpan := func(g, o, i, a, b int, up, same, over bool) {
 		if spans[g] == nil {
 			spans[g] = map[int]*span{}
 			above[g] = map[[2]int]bool{}
@@ -1646,6 +1657,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			owners[g] = append(owners[g], o)
 		}
 		sp.lo, sp.hi = min(sp.lo, a, b), max(sp.hi, a, b)
+		sp.styles |= map[bool]int{false: 1, true: 2}[back(i)]
 		switch {
 		case over:
 			sp.downs = append(sp.downs, a, b)
@@ -1664,8 +1676,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			o := owner(i, j)
 			if p.via >= 0 && j == p.ride {
 				d := busOwner(p.dep)
-				addSpan(g, d, a, p.via, p.up, false, false)
-				addSpan(g, i, p.via, b, p.up, false, false)
+				addSpan(g, d, i, a, p.via, p.up, false, false)
+				addSpan(g, i, i, p.via, b, p.up, false, false)
 				if p.up {
 					above[g][[2]int{i, d}] = true
 				} else {
@@ -1678,11 +1690,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			if a == b && !p.same && o == i && p.arr < 0 {
 				continue
 			}
-			addSpan(g, o, a, b, p.up, p.same, p.over)
+			addSpan(g, o, i, a, b, p.up, p.same, p.over)
 		}
 		if p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == len(p.gaps)-1 {
 			g := p.gaps[p.ride]
-			addSpan(g, busOwner(p.arr), p.xs[p.ride], p.tx, p.up, false, false)
+			addSpan(g, busOwner(p.arr), i, p.xs[p.ride], p.tx, p.up, false, false)
 			d, a := busOwner(p.dep), busOwner(p.arr)
 			if p.up {
 				d, a = a, d
@@ -1743,11 +1755,17 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	}
 	tracks := make([]int, n+1)
 	for g := range spans {
-		// cost is how many crossings putting a above b makes between them.
+		// cost is how many crossings putting a above b makes between them,
+		// then, on an overview drawn from its record, whether that sets a
+		// line against the flow above one with it, which would part lines
+		// with the flow that could share a road (layout.recorded).
 		cost := func(a, b *span) int {
-			c := inside(a.downs, b) + inside(b.tops, a)
+			c := (inside(a.downs, b) + inside(b.tops, a)) << 8
+			if l.recorded && a.styles == 2 && b.styles == 1 && a.lo < b.hi && b.lo < a.hi {
+				c++
+			}
 			if above[g][[2]int{b.owner, a.owner}] {
-				c += 1 << 16
+				c += 1 << 24
 			}
 			return c
 		}
@@ -1770,9 +1788,17 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			left = slices.Delete(left, best, best+1)
 		}
 		meet := func(a, b int) bool { return order[a].lo <= order[b].hi+lane && order[b].lo <= order[a].hi+lane }
-		held := func(a, b int) bool { return cost(order[a], order[b]) > 0 || cost(order[b], order[a]) > 0 }
+		// On an overview drawn from its record, a line against the flow
+		// beside one with it, on the next track, reads as one line drawn
+		// twice, since the two never share ink: it keeps a track clear
+		// between them (layout.recorded).
+		clear := func(a, b int) bool {
+			sa, sb := order[a].styles, order[b].styles
+			return l.recorded && sa != sb && sa != 3 && sb != 3 && order[a].lo < order[b].hi && order[b].lo < order[a].hi
+		}
+		held := func(a, b int) bool { return cost(order[a], order[b]) >= 1<<8 || cost(order[b], order[a]) >= 1<<8 }
 		least := func(k int) int { return l.held[crossing(g, order[k].owner)] }
-		for k, t := range shelve(len(order), meet, held, least) {
+		for k, t := range shelve(len(order), meet, held, clear, least) {
 			track[[2]int{g, order[k].owner}] = t
 			took[crossing(g, order[k].owner)] = t
 			tracks[g] = max(tracks[g], t+1)
@@ -1878,14 +1904,6 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		return pt{p.tx, endY(reqs[i].to, sideOf(p, false))}
 	}
 
-	back := func(i int) bool {
-		p := &plans[i]
-		against := p.up
-		if p.same {
-			against = p.tx < p.fx
-		}
-		return against != (reqs[i].kind == "provides")
-	}
 	ways := make([][]pt, len(reqs))
 	for i := range reqs {
 		p := &plans[i]
@@ -2614,9 +2632,10 @@ func tracksHeight(t int, room [2]int) int {
 // crossing ranked before it that it meets and is held by, as when their
 // order crosses something either way, and clear of every other crossing it
 // meets. Two that cross nothing whichever lies above may stand in either
-// order, so a gap holds no more tracks than its crossings need. No crossing
-// takes a track above least.
-func shelve(m int, meet, held func(a, b int) bool, least func(k int) int) []int {
+// order, so a gap holds no more tracks than its crossings need. Two kept
+// apart stand a track or more clear of each other. No crossing takes a
+// track above least.
+func shelve(m int, meet, held, apart func(a, b int) bool, least func(k int) int) []int {
 	t := make([]int, m)
 	for s := range m {
 		t[s] = least(s)
@@ -2627,7 +2646,7 @@ func shelve(m int, meet, held func(a, b int) bool, least func(k int) int) []int 
 		}
 		taken := func() bool {
 			for q := range s {
-				if meet(q, s) && t[q] == t[s] {
+				if meet(q, s) && t[q] == t[s] || apart(q, s) && abs(t[q]-t[s]) == 1 {
 					return true
 				}
 			}

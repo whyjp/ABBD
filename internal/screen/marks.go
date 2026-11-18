@@ -614,6 +614,11 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
+		if len(w.ends) == 2 {
+			if s := d.said[pairOf(model.ID(w.ends[0]), model.ID(w.ends[1]))]; s != "" {
+				words[i], saids[i] = s, false
+			}
+		}
 		most[i] = !saids[i] && words[i] != "" && allVia(t, w.lines) == ""
 		if ps := said(t, w.lines); len(ps) > 0 {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")

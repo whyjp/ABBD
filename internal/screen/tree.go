@@ -114,11 +114,20 @@ func (t tree) subtree(id model.ID) []model.ID {
 	return out
 }
 
+// has says id names a unit of the tree.
+func (t tree) has(id model.ID) bool {
+	_, ok := t.units[id]
+	return ok
+}
+
 // within is the child of container that holds id, or id itself.
 func (t tree) within(id, container model.ID) (model.ID, bool) {
 	c := t.chain(id)
+	if len(c) == 0 {
+		return "", false
+	}
 	if container == "" {
-		return c[0], len(c) > 0
+		return c[0], true
 	}
 	for i, k := range c {
 		if k == container && i+1 < len(c) {

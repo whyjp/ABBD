@@ -1453,6 +1453,13 @@ func (l *look) climbsCloseCycles() []Breach {
 	for _, r := range l.boxRels {
 		next[r[0]] = append(next[r[0]], r[1])
 	}
+	for _, r := range l.v.d.Counted {
+		a, okA := l.at[r[0]]
+		b, okB := l.at[r[1]]
+		if okA && okB && l.isBox(a) && l.isBox(b) {
+			next[a] = append(next[a], b)
+		}
+	}
 	reaches := func(from, to int) bool {
 		seen := map[int]bool{from: true}
 		queue := []int{from}
