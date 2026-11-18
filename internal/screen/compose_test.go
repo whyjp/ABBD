@@ -32,8 +32,8 @@ var events = model.Zone{Name: "events", Units: []model.ID{"MOD-0003", "MOD-0004"
 
 // A record that shows the primary flow and a zone composes the overview:
 // the stages stand left to right in order, numbered on their boxes, the
-// zone stands as a band, the box no line reaches stands on the shared
-// base, and only a drawn line between neighbouring stages is bold.
+// zone stands as a band, the box no line reaches stands alone on the
+// bottom row, and only a drawn line between neighbouring stages is bold.
 func TestARecordWithAFlowAndAZoneComposesTheOverview(t *testing.T) {
 	in := Input{Units: pipeline(), Figures: pipelineStages(), Overview: pipelineRecord(events)}
 	d := Build(in).Overview
@@ -61,10 +61,14 @@ func TestARecordWithAFlowAndAZoneComposesTheOverview(t *testing.T) {
 	if _, ok := titles["events"]; !ok {
 		t.Errorf("the record's zone has no band; bands are %v", d.Zones)
 	}
-	base, ok := titles["공용 기반"]
 	f := bs["MOD-0007"]
-	if !ok || f.X < base.X || f.X+f.W > base.X+base.W || f.Y < base.Y {
-		t.Errorf("foundation, which every stage uses with no line drawn, is not on the shared base: %v", base)
+	for _, b := range bs {
+		if b.ID != f.ID && b.Y >= f.Y {
+			t.Errorf("foundation, which every stage uses with no line drawn, does not stand under %s on the bottom row", b.Name)
+		}
+	}
+	if _, ok := titles[baseTitle]; ok {
+		t.Error("a band marks the bottom row around one box")
 	}
 	if got := FlowGaps(in); len(got) != 3 {
 		t.Errorf("the flow's gaps are %q, want stages 1-2, 2-3 and 3-4", got)
@@ -85,7 +89,7 @@ func TestARecordWithoutTwoStagesDrawsAsBefore(t *testing.T) {
 	if FlowGaps(Input{Units: pipeline(), Figures: one, Overview: pipelineRecord(events)}) != nil {
 		t.Error("an overview that is not composed reports flow gaps")
 	}
-	if slices.ContainsFunc(with.Zones, func(z Zone) bool { return z.Title == "공용 기반" }) {
+	if slices.ContainsFunc(with.Zones, func(z Zone) bool { return z.Title == baseTitle }) {
 		t.Error("an overview that is not composed draws a shared base")
 	}
 }
