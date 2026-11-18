@@ -2796,7 +2796,9 @@
       "Anchors": [
         "internal/extract/lsp",
         "internal/extract/lsp/client.go",
-        "internal/extract/lsp/protocol.go"
+        "internal/extract/lsp/protocol.go",
+        "internal/extract/lsp/tree_unix.go",
+        "internal/extract/lsp/tree_windows.go"
       ],
       "Parent": "MOD-0017",
       "Zone": "읽는 쪽"
@@ -13086,7 +13088,9 @@
           "Anchors": [
             "internal/extract/lsp",
             "internal/extract/lsp/client.go",
-            "internal/extract/lsp/protocol.go"
+            "internal/extract/lsp/protocol.go",
+            "internal/extract/lsp/tree_unix.go",
+            "internal/extract/lsp/tree_windows.go"
           ],
           "Understanding": null,
           "Rank": {
