@@ -1157,20 +1157,35 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			}
 			return true
 		}
+		// On a view that keeps the ways apart (oneWay), a stub keeps off the
+		// stubs another box's edge already set in the same gap: two boxes
+		// stood in one column would otherwise run their lines into each
+		// other's on one track.
+		own := func(x int) bool {
+			if !l.oneWay {
+				return true
+			}
+			for _, y := range l.stubs[adj] {
+				if abs(x-y) < lane {
+					return false
+				}
+			}
+			return true
+		}
 		xs := make([]int, len(slots))
 		pinned := make([]bool, len(slots))
 		for s, sl := range slots {
 			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
 			x, ok := pin(sl)
-			if ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
+			if ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) && own(x) {
 				xs[s], pinned[s] = x, true
-			} else if x, over := stemOver(sl, xs[s]); !ok && over && (r.node == "" || apart(x)) {
+			} else if x, over := stemOver(sl, xs[s]); !ok && over && (r.node == "" || apart(x)) && own(x) {
 				xs[s], pinned[s] = x, true
 			} else if i := sl.is[0]; (!ok || !l.ring) && len(sl.is) == 1 && drops(i) {
 				// A line that drops straight stands as near its share of
 				// the edge as the span both its ends meet in lets it.
 				f, t := reqs[i].from, reqs[i].to
-				if x := clamp(xs[s], max(f.lo, t.lo), min(f.hi, t.hi)); r.node == "" || apart(x) {
+				if x := clamp(xs[s], max(f.lo, t.lo), min(f.hi, t.hi)); (r.node == "" || apart(x)) && own(x) {
 					xs[s], pinned[s] = x, true
 				}
 			}
@@ -1189,7 +1204,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			slots, pinned, xs = permute(slots, order), permute(pinned, order), permute(xs, order)
 		}
 		clear := func(s, x int) bool {
-			if r.node != "" && !apart(x) {
+			if r.node != "" && !apart(x) || !own(x) {
 				return false
 			}
 			for _, y := range l.reserved[adj] {
