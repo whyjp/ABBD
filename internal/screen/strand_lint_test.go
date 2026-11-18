@@ -61,6 +61,17 @@ func TestStrandsLintAsTheirPath(t *testing.T) {
 		if fans == 0 {
 			t.Fatalf("%s: no path to fan", name)
 		}
+		was, err := sheetOf(d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		now, err := sheetOf(v.d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(now.strokes, was.strokes) {
+			t.Errorf("%s: lint reads the fanned paths' ink otherwise", name)
+		}
 		got, err := lintView(v)
 		if err != nil {
 			t.Fatal(err)

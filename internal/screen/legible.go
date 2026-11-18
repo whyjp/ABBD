@@ -240,7 +240,7 @@ func readSVG(src string) (sheet, error) {
 						return s, err
 					}
 					if stem := strings.Fields(attr(t, "data-stem")); len(stem) == 2 && len(parts) > 0 {
-						parts[0] = append([]fpt{{num(stem[0]), num(stem[1])}}, parts[0]...)
+						parts[0] = unstem(fpt{num(stem[0]), num(stem[1])}, parts[0])
 					}
 					g := s.groups
 					if n := attr(t, "data-net"); n != "" {
@@ -300,6 +300,19 @@ func readSVG(src string) (sheet, error) {
 		}
 	}
 	return s, nil
+}
+
+// unstem is the path pts drawn from stem on: where stem lies straight back
+// along its first stretch, that stretch starts at stem, so the path reads
+// as one stretch there as it did before its strands cut it.
+func unstem(stem fpt, pts []fpt) []fpt {
+	if len(pts) >= 2 {
+		a, b := pts[0], pts[1]
+		if (stem.x == a.x && a.x == b.x || stem.y == a.y && a.y == b.y) && (a.x-stem.x)*(b.x-a.x) >= 0 && (a.y-stem.y)*(b.y-a.y) >= 0 {
+			return append([]fpt{stem}, pts[1:]...)
+		}
+	}
+	return append([]fpt{stem}, pts...)
 }
 
 // flatten turns a path made of M, L, H, V and C commands into polylines,
