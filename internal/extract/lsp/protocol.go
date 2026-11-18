@@ -30,6 +30,7 @@ type SymbolKind int
 
 const (
 	KindModule        SymbolKind = 2
+	KindNamespace     SymbolKind = 3
 	KindClass         SymbolKind = 5
 	KindMethod        SymbolKind = 6
 	KindField         SymbolKind = 8
@@ -70,6 +71,15 @@ type DocumentSymbol struct {
 	Range          Range            `json:"range"`
 	SelectionRange Range            `json:"selectionRange"`
 	Children       []DocumentSymbol `json:"children,omitempty"`
+}
+
+// SymbolInformation is one symbol of the workspace, where the server
+// locates it: its definition where it has one.
+type SymbolInformation struct {
+	Name          string     `json:"name"`
+	Kind          SymbolKind `json:"kind"`
+	ContainerName string     `json:"containerName,omitempty"`
+	Location      Location   `json:"location"`
 }
 
 // URI is the file URI of an absolute path, the same form on every OS:
