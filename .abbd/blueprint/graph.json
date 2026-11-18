@@ -515,11 +515,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
@@ -771,7 +773,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's subsystem walkthrough; ABBD uses it to read code and to write each module's text.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -791,7 +794,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's parallel fan-out; ABBD setup reads the code and asks for the grouping through it.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -1375,11 +1379,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd",
@@ -1477,11 +1483,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the state always rests on the deterministic extraction alone",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/main.go runScript",
@@ -1762,11 +1770,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract",
@@ -1810,11 +1820,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so no extraction can claim a purpose or responsibility as a code fact or as a human's word",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go inferred"
@@ -2167,11 +2179,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -2279,11 +2293,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "keeps the first level a picture of what the code and the human say, never of guesses",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/overview.go draw",
@@ -2694,7 +2710,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -4941,6 +4958,14 @@
       "Quote": "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
+      "From": "MOD-0037",
+      "To": "MOD-0036",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+    },
+    {
       "From": "MOD-0038",
       "To": "DATA-0005",
       "Kind": "provides",
@@ -5797,11 +5822,13 @@
       "Name": "/abbd-setup",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -6174,11 +6201,13 @@
       "Name": "abbd CLI",
       "Purpose": {
         "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 34,
@@ -12947,11 +12976,13 @@
       "Name": "internal/extract",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -21644,11 +21675,13 @@
       "Name": "internal/screen",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -21656,7 +21689,7 @@
         "Direct": 6,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 11
+        "Dead": 10
       },
       "Units": [
         {
@@ -21672,7 +21705,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -21801,7 +21834,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 2,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -21938,8 +21971,8 @@
           ],
           "Rank": {
             "Basis": "dependency",
-            "N": 3,
-            "Of": 3
+            "N": 4,
+            "Of": 4
           }
         },
         {
@@ -22281,7 +22314,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22370,7 +22403,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22881,7 +22914,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -23074,7 +23107,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         }
       ],
@@ -30627,6 +30660,15 @@
           ]
         },
         {
+          "From": "overview plan",
+          "To": "layered layout and routing",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+          ]
+        },
+        {
           "From": "page template",
           "To": "blueprint files",
           "Kind": "provides",
@@ -35199,7 +35241,8 @@
       "Name": "pstack (external)",
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
