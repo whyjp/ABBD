@@ -73,3 +73,14 @@ func TestAQuoteCutInsideAWordSaysSo(t *testing.T) {
 		t.Errorf("a quote cut at word boundaries is %q: %s", now.Status, now.Reason)
 	}
 }
+
+// A whole-word quote the file holds twice, neither near its lines, is
+// ambiguous and says so, not that it starts or ends inside a word.
+func TestAQuoteFoundTwiceAwayFromItsLinesSaysSo(t *testing.T) {
+	c := New(reviewTree(t, "package a\n\nfunc f() { g() }\n\n\n\n\n\n\n\n\nfunc h() { g() }\n"))
+	twice := model.Evidence{Path: "a.go", Lines: "20", Quote: "{ g() }"}
+	now, _ := c.Status(twice, "r1", false)
+	if now.Status != model.Dead || !strings.Contains(now.Reason, "more than once") {
+		t.Errorf("an ambiguous quote is %q with reason %q", now.Status, now.Reason)
+	}
+}

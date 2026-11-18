@@ -175,11 +175,17 @@ func (c *Checker) Around(e model.Evidence, n int) (string, bool) {
 
 // missing says why a script's quote is not found. A quote that starts or ends
 // inside a word of the file is cut mid-token, which the whole-word rule
-// refuses, so the reason says that instead of that the quote is absent.
+// refuses, and a whole-word quote found more than once with none near the
+// cited lines is ambiguous. Each says so, instead of that the quote is absent.
 func (c *Checker) missing(e model.Evidence) string {
 	if f := c.load(e.Path); f != nil {
-		if q := normalize(e.Quote); q != "" && strings.Contains(f.norm, q) {
-			return "the script's quote starts or ends inside a word of the file; cut it at a word boundary or take the whole line"
+		if q := normalize(e.Quote); q != "" {
+			if len(f.matches(q)) > 1 {
+				return "the script's quote is in the file more than once and none is near its lines; quote more of the line"
+			}
+			if strings.Contains(f.norm, q) {
+				return "the script's quote starts or ends inside a word of the file; cut it at a word boundary or take the whole line"
+			}
 		}
 	}
 	return "the script's quote is not in the file"
