@@ -4950,6 +4950,14 @@
       "Quote": "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
+      "From": "MOD-0037",
+      "To": "MOD-0036",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+    },
+    {
       "From": "MOD-0038",
       "To": "DATA-0005",
       "Kind": "provides",
@@ -21508,7 +21516,7 @@
         "Direct": 6,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 11
+        "Dead": 10
       },
       "Units": [
         {
@@ -21524,7 +21532,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -21653,7 +21661,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 2,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -21790,8 +21798,8 @@
           ],
           "Rank": {
             "Basis": "dependency",
-            "N": 3,
-            "Of": 3
+            "N": 4,
+            "Of": 4
           }
         },
         {
@@ -22133,7 +22141,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22222,7 +22230,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22733,7 +22741,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22926,7 +22934,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         }
       ],
@@ -30479,6 +30487,15 @@
           ]
         },
         {
+          "From": "overview plan",
+          "To": "layered layout and routing",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+          ]
+        },
+        {
           "From": "page template",
           "To": "blueprint files",
           "Kind": "provides",
@@ -36665,240 +36682,6 @@
         "MOD-0054",
         "MOD-0047"
       ]
-    }
-  ],
-  "lines": [
-    {
-      "from": "FEAT-0001",
-      "to": "MOD-0001",
-      "word": "abbd sync 실행",
-      "kinds": [
-        "consumes"
-      ],
-      "vias": [
-        "call",
-        "convention"
-      ],
-      "relations": 38
-    },
-    {
-      "from": "FEAT-0002",
-      "to": "MOD-0001",
-      "word": "abbd setup 실행",
-      "kinds": [
-        "consumes"
-      ],
-      "vias": [
-        "call",
-        "convention"
-      ],
-      "relations": 31
-    },
-    {
-      "from": "FEAT-0002",
-      "to": "FEAT-0001",
-      "word": "abbd 스킬의 리더",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 4
-    },
-    {
-      "from": "FEAT-0001",
-      "to": "MOD-0055",
-      "word": "pstack how 탐색",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 2
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0017",
-      "word": "스크립트 출력 Parse",
-      "kinds": [
-        "consumes",
-        "depends_on"
-      ],
-      "vias": [
-        "call",
-        "data"
-      ],
-      "relations": 6
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0009",
-      "word": "보충 doc Overlay",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 3
-    },
-    {
-      "from": "MOD-0009",
-      "to": "MOD-0017",
-      "word": "extract.Result 덧입힘",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "data",
-        "import"
-      ],
-      "relations": 2
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0022",
-      "word": "작업 트리 Snapshot",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 5
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0026",
-      "word": "저장본과 추출 Reconcile",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 3
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0013",
-      "word": "단위 인용 Apply",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 5
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0054",
-      "word": "단위 Fallback 배치",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 1
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0041",
-      "word": "SaveUnits 단위 파일",
-      "kinds": [
-        "consumes",
-        "depends_on"
-      ],
-      "vias": [
-        "call",
-        "config",
-        "data"
-      ],
-      "relations": 9
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0034",
-      "word": "청사진 Build",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 3
-    },
-    {
-      "from": "MOD-0034",
-      "to": "MOD-0041",
-      "word": "LoadUnits 단위 읽기",
-      "kinds": [
-        "consumes",
-        "depends_on"
-      ],
-      "vias": [
-        "call",
-        "config",
-        "convention",
-        "data"
-      ],
-      "relations": 12
-    },
-    {
-      "from": "MOD-0001",
-      "to": "MOD-0047",
-      "word": "topology.Explain 질의",
-      "kinds": [
-        "consumes",
-        "depends_on"
-      ],
-      "vias": [
-        "call",
-        "data"
-      ],
-      "relations": 6
-    },
-    {
-      "from": "MOD-0034",
-      "to": "MOD-0047",
-      "word": "EntryUses 항목 사용처",
-      "kinds": [
-        "consumes",
-        "depends_on"
-      ],
-      "vias": [
-        "call",
-        "data"
-      ],
-      "relations": 4
-    },
-    {
-      "from": "MOD-0034",
-      "to": "MOD-0057",
-      "word": "owners.Read 소유자",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 1
-    },
-    {
-      "from": "MOD-0034",
-      "to": "MOD-0056",
-      "word": "narrative.Lines 줄",
-      "kinds": [
-        "depends_on"
-      ],
-      "vias": [
-        "call"
-      ],
-      "relations": 1
     }
   ]
 }
