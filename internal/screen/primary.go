@@ -101,6 +101,20 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 			add(pairOf(e.From, e.To), o.rels[e.String()])
 		}
 	}
+	if recorded != nil {
+		// A recorded pair no relation joins draws nothing; a record left
+		// with none is no choice, and the overview draws as without it.
+		live := map[pair]bool{}
+		for _, l := range ls {
+			if recorded[l] {
+				live[l] = true
+			}
+		}
+		if len(live) == 0 {
+			return nil
+		}
+		recorded = live
+	}
 	if 10*len(ls) <= sparse*len(o.modules) {
 		if recorded == nil {
 			return nil
@@ -223,13 +237,16 @@ func counting(ls []pair, keep map[pair]bool) *cut {
 }
 
 // recordedPairs are the pairs of top-level boxes the stored overview's
-// chosen lines join. A line whose ends sit in one box, or in a unit that is
-// gone, joins none. It is nil when the record names no such pair, so the
+// chosen lines join. A line whose ends sit in one box, or that names a unit
+// that is gone or none, joins none. It is nil when the record names no such pair, so the
 // heuristics above decide.
 func (o *overview) recordedPairs(lines []model.Line) (map[pair]bool, map[pair]string) {
 	keep := map[pair]bool{}
 	said := map[pair]string{}
 	for _, l := range lines {
+		if !o.tree.has(l.From) || !o.tree.has(l.To) {
+			continue
+		}
 		a, okA := o.tree.within(l.From, "")
 		b, okB := o.tree.within(l.To, "")
 		if okA && okB && a != b {

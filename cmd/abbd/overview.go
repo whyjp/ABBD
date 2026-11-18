@@ -149,6 +149,15 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 		fmt.Fprintf(e.stdout, "warning: %s %s, so it is no overview and abbd reads past it; fix its frontmatter to clear this\n", o.File, o.Why)
 		return ""
 	}
+	live := map[model.ID]bool{}
+	for _, u := range units {
+		live[u.ID] = true
+	}
+	for i, l := range o.Lines {
+		if !live[l.Claim.From] || !live[l.Claim.To] {
+			fmt.Fprintf(e.stdout, "warning: %s line %d, from %q to %q, names no unit of the state, so the overview draws past it; store the overview again with abbd overview FILE\n", o.File, i+1, l.Claim.From, l.Claim.To)
+		}
+	}
 	stale := overviewStale(o, units)
 	fmt.Fprintf(e.stdout, "overview: %d zones, %d lines, %d STALE\n", len(o.Zones), len(o.Lines), len(stale))
 	for _, l := range stale {

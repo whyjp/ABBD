@@ -21,10 +21,13 @@ func TestARecordedOverviewKeepsBackLinesOffForwardOnes(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			// The record chooses every drawn pair but the last, so it
+			// hides one.
 			var rec store.Overview
 			rec.Known = true
-			for _, r := range drawAll(t, name).Overview.ways {
-				if len(r.ends) == 2 {
+			ways := drawAll(t, name).Overview.ways
+			for k, r := range ways {
+				if len(r.ends) == 2 && k < len(ways)-1 {
 					rec.Lines = append(rec.Lines, store.Part[model.Line]{Claim: model.Line{From: model.ID(r.ends[0]), To: model.ID(r.ends[1]), Word: "uses"}})
 				}
 			}
