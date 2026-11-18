@@ -477,16 +477,29 @@ func (r *cReader) uses(ctx context.Context, d *cDecl) ([]lsp.Location, error) {
 // as in class PosixEnv : public leveldb::Env.
 var cBase = regexp.MustCompile(`\b(?:class|struct)\s+[\w:<>,\s]*?[:,]\s*(?:(?:public|protected|private|virtual)\s+)*(?:\w+::)*$`)
 
-// before is the text before pos, on its line and the few above it.
+// before is the text before pos in a class head, on its line and the few
+// above it.
 func (r *cReader) before(p string, pos lsp.Position) string {
-	ls := r.lines(p)
+	return cHead(r.lines(p), pos)
+}
+
+// cHead is the text before pos that can belong to one class head. A class
+// head may span lines, so up to three before it come along, but the text
+// stops at the last ; { or } and a head holding ( is a parameter list.
+func cHead(ls []string, pos lsp.Position) string {
 	if pos.Line >= len(ls) {
 		return ""
 	}
-	// A class head may span lines, so up to three before it come along.
 	head := ls[pos.Line][:min(pos.Character, len(ls[pos.Line]))]
-	for i := pos.Line - 1; i >= 0 && i >= pos.Line-3; i-- {
-		head = ls[i] + " " + head
+	if i := strings.LastIndexAny(head, ";{}"); i >= 0 {
+		head = head[i+1:]
+	} else {
+		for i := pos.Line - 1; i >= 0 && i >= pos.Line-3 && !strings.ContainsAny(ls[i], ";{}("); i-- {
+			head = ls[i] + " " + head
+		}
+	}
+	if strings.Contains(head, "(") {
+		return ""
 	}
 	return head
 }
@@ -687,7 +700,6 @@ func (r *cReader) members(ctx context.Context, p string, pos lsp.Position) ([]cP
 	if m == nil {
 		return nil, false, nil
 	}
-	// Walk the initializer from its brace to the matching one.
 	line, col := pos.Line, pos.Character
 	for i := 0; i < m[1]; i++ {
 		if rest[i] == '\n' {
@@ -697,11 +709,37 @@ func (r *cReader) members(ctx context.Context, p string, pos lsp.Position) ([]cP
 		}
 	}
 	var out []cPlace
+	for _, id := range cInitNames(ls, line, col, func(l int) bool { return r.gatedAt(p, l) }) {
+		defs, err := r.srv.Definitions(ctx, r.abs(p), lsp.Position{Line: id.line, Character: id.col})
+		if err != nil {
+			return nil, true, err
+		}
+		for _, d := range defs {
+			if q, u, _, ok := r.place(d); ok && r.function(q, d.Range.Start) {
+				out = append(out, cPlace{u, site{path: p, line: id.line + 1}})
+			}
+		}
+	}
+	return out, true, nil
+}
+
+// cIdent is an identifier at a line and column, both zero-based.
+type cIdent struct {
+	name      string
+	line, col int
+}
+
+// cInitNames are the first spellings of each name in the brace initializer
+// that starts after the opening brace at line and col, up to the matching
+// brace. Comments, strings, member names after a dot and lines gated says
+// are inactive hold none.
+func cInitNames(ls []string, line, col int, gated func(line int) bool) []cIdent {
+	var out []cIdent
 	seen := map[string]bool{}
 	depth := 1
 	block := false
 	for line < len(ls) && depth > 0 {
-		if r.gatedAt(p, line) {
+		if gated(line) {
 			line, col = line+1, 0
 			continue
 		}
@@ -746,15 +784,7 @@ func (r *cReader) members(ctx context.Context, p string, pos lsp.Position) ([]cP
 				prev := strings.TrimRight(s[:col], " \t")
 				if !strings.HasSuffix(prev, ".") && !seen[name] && name != "NULL" && name != "nullptr" {
 					seen[name] = true
-					defs, err := r.srv.Definitions(ctx, r.abs(p), lsp.Position{Line: line, Character: col})
-					if err != nil {
-						return nil, true, err
-					}
-					for _, d := range defs {
-						if q, u, _, ok := r.place(d); ok && r.function(q, d.Range.Start) {
-							out = append(out, cPlace{u, site{path: p, line: line + 1}})
-						}
-					}
+					out = append(out, cIdent{name, line, col})
 				}
 				col = end
 				continue
@@ -763,7 +793,7 @@ func (r *cReader) members(ctx context.Context, p string, pos lsp.Position) ([]cP
 		}
 		line, col = line+1, 0
 	}
-	return out, true, nil
+	return out
 }
 
 // function is whether a function or method is declared at pos in p.
