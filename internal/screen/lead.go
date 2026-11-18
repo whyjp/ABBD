@@ -36,6 +36,9 @@ type Lead struct {
 	Primary bool `json:",omitempty"`
 	Hops    []Hop
 	Stay    *Stay `json:",omitempty"`
+	// OnBoxes says the numbers stand on the stages' boxes (compose.go), so
+	// they are drawn over the boxes and their chips, not under them.
+	OnBoxes bool `json:"-"`
 }
 
 // Stay numbers the steps a stored flow runs on one box of the overview

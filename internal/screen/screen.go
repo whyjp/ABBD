@@ -341,10 +341,10 @@ func Build(in Input) Model {
 	// dress has given each box its last line; step words keep off both.
 	for i, d := range leads {
 		if i == 0 && comp != nil {
+			comp.unclash(d)
 			comp.mark(d, o.flow.key, o.flow.question)
 			comp.bands(d)
-			d.pin()
-			d.card()
+			comp.legend(d)
 			continue
 		}
 		d.number()

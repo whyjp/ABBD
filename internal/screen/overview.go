@@ -55,6 +55,11 @@ type Drawing struct {
 	roads bool
 	// axis is what its layout ranked the rows by (rank.go).
 	axis axis
+	// reserved are places its labels keep off besides its marks, and
+	// first says which wires take their words before the rest, both for a
+	// composed overview only (compose.go).
+	reserved []box
+	first    func(Wire) bool
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for
@@ -454,15 +459,20 @@ func chipsWidth(labels []string) int { return chipRowWidth(shorten(labels)) }
 // quote every time; a dead one, whose quote is gone, is not. A module's
 // inside never moves a box.
 type overview struct {
-	tree      tree
-	units     map[model.ID]model.Unit
-	relations []model.Edge
-	modules   []model.ID
-	contracts []model.ID
-	providers map[model.ID][]model.ID
-	users     map[model.ID][]model.ID
-	layout    layout
-	names     map[model.ID][]string
+	// stageWords are the stage names a composed overview sets over its
+	// stages' boxes, by box, and first the wires that take words first
+	// (compose.go); both nil on every other overview.
+	stageWords map[string]string
+	first      func(Wire) bool
+	tree       tree
+	units      map[model.ID]model.Unit
+	relations  []model.Edge
+	modules    []model.ID
+	contracts  []model.ID
+	providers  map[model.ID][]model.ID
+	users      map[model.ID][]model.ID
+	layout     layout
+	names      map[model.ID][]string
 	// chipBands are how tall the rows of chips on each module's top and
 	// bottom are (chipBand).
 	chipBands map[model.ID][2]int
@@ -1269,6 +1279,11 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		d.Wires = append(d.Wires, w)
 	}
 	d.route(routed, reqs, func(i int) []string { return merged[i].rels })
+	for id, s := range o.stageWords {
+		r := l.pos[id]
+		d.reserved = append(d.reserved, box{r.X - stageR, r.Y - 17, stageR + stageGap + textWidth(s, wordPx) + 2, 17 + stageR})
+	}
+	d.first = o.first
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d

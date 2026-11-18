@@ -59,9 +59,17 @@ type composer struct {
 // lines and the bands' edges.
 const roomGap = 72
 
+// stageR is how large a stage's number stands on its box's corner, and
+// stageGap how far right of the corner its name starts.
+const stageR, stageGap = 9, 13
+
 // roomHead is the least gap between two rows: room for the band under one
 // row's room and the title over the next.
 const roomHead = 52
+
+// baseTitle says what the bottom row's marked boxes share, and no more:
+// the record names no such grouping.
+const baseTitle = "여러 곳이 쓰는 상자 · 선 생략"
 
 // baseUses is how many undrawn pairs mark a box with no line as the shared
 // base.
@@ -194,7 +202,7 @@ func compose(o *overview, ov store.Overview) *composer {
 	}
 	slices.SortStableFunc(base, func(a, b string) int { return o.more[model.ID(b)] - o.more[model.ID(a)] })
 	if len(base) > 0 {
-		c.rooms = append(c.rooms, room{title: "공용 기반", ids: base, cols: len(base), mark: true})
+		c.rooms = append(c.rooms, room{title: baseTitle, ids: base, cols: len(base), mark: true})
 	}
 	if len(rest) > 0 {
 		c.rooms = append(c.rooms, room{ids: rest, cols: len(rest), mark: true})
@@ -529,6 +537,25 @@ func (c *composer) lay(o *overview, t tactic) layout {
 // draw draws o, planned with the record's cut, composed.
 func (c *composer) draw(o *overview, href func(model.ID) string) Drawing {
 	o.layout = c.lay(o, tactic{roads: true})
+	o.stageWords = map[string]string{}
+	seen := map[int]bool{}
+	for _, id := range c.order {
+		if s := c.stage[id]; !seen[s] {
+			seen[s] = true
+			o.stageWords[id] = c.names[s-1]
+		}
+	}
+	// A line that leaves its room, or runs against the flow, takes its
+	// word before the lines inside one room: its word says the most.
+	room := map[string]int{}
+	for k, r := range c.rooms {
+		for _, id := range r.ids {
+			room[id] = k
+		}
+	}
+	o.first = func(w Wire) bool {
+		return w.Back || len(w.ends) == 2 && room[w.ends[0]] != room[w.ends[1]]
+	}
 	return o.draw(href)
 }
 
@@ -560,7 +587,7 @@ func (c *composer) mark(d *Drawing, key, question string) {
 			continue
 		}
 		seen[s] = true
-		h := Hop{N: s, X: b.X, Y: b.Y, R: 9, Word: c.names[s-1]}
+		h := Hop{N: s, X: b.X, Y: b.Y, R: stageR, Word: c.names[s-1], WX: b.X + stageGap, WY: b.Y - 5}
 		for _, u := range uses {
 			if c.stage[u.to] == s && c.stage[u.from] == s-1 && s > 1 {
 				r := d.ways[u.way]
@@ -573,25 +600,9 @@ func (c *composer) mark(d *Drawing, key, question string) {
 		}
 		hops = append(hops, h)
 	}
-	d.Lead.Hops, d.Lead.Stay = hops, nil
-	// A stage's name sits right of its number over the box, else over the
-	// box's right end, else under it, where it meets no ink.
-	var words []box
-	for i := range d.Lead.Hops {
-		h := &d.Lead.Hops[i]
-		b := boxes[c.order[slices.IndexFunc(c.order, func(id string) bool { return c.stage[id] == h.N })]]
-		w := textWidth(h.Word, wordPx)
-		for _, a := range []box{{h.X + 13, h.Y - 16, w, 13}, {b.X + b.W - w - 2, b.Y - 16, w, 13}, {b.X + 13, b.Y + b.H + 3, w, 13}} {
-			if d.wordClearOf(a, words, b.ID) {
-				h.WX, h.WY = a.x, a.y+11
-				words = append(words, a)
-				break
-			}
-		}
-		if h.WX == 0 {
-			h.WX, h.WY = h.X+13, h.Y-5
-		}
-	}
+	d.Lead.Hops, d.Lead.Stay, d.Lead.OnBoxes = hops, nil, true
+	// A stage's name always sits right of its number, over its box: the
+	// lines' words kept off that place (reserved).
 }
 
 // bands draws a band around each titled room, numbered by nothing: the
@@ -599,7 +610,8 @@ func (c *composer) mark(d *Drawing, key, question string) {
 func (c *composer) bands(d *Drawing) []string {
 	var lost []string
 	for _, r := range c.rooms {
-		if r.title == "" {
+		// A mark around one box says nothing its +N does not.
+		if r.title == "" || r.mark && len(r.ids) < 2 {
 			continue
 		}
 		if z, ok := d.band(group{title: r.title, ids: r.ids}); ok {
@@ -612,11 +624,27 @@ func (c *composer) bands(d *Drawing) []string {
 						lo = min(lo, b.Y)
 					}
 				}
+				// The title takes the foot's left corner, else its right,
+				// else the first place along it clear of ink, else stays
+				// where band set it.
 				hi := z.Y + z.H
-				z.Lines = nil
-				z.Y, z.H = lo-zoneHead, hi-lo+zoneHead+14
-				z.TX, z.TY = z.X+zoneSide+2, z.Y+z.H-6
-				d.Height = max(d.Height, z.Y+z.H+4)
+				under := z
+				under.Lines = nil
+				under.Y, under.H = lo-zoneHead, hi-lo+zoneHead+14
+				under.TY = under.Y + under.H - 6
+				w := zoneWidth(under.Label())
+				xs := []int{under.X + zoneSide + 2, under.X + under.W - zoneSide - 2 - w}
+				for x := under.X + zoneSide + 6; x < under.X+under.W-zoneSide-2-w; x += 4 {
+					xs = append(xs, x)
+				}
+				for _, x := range xs {
+					under.TX = x
+					if a := grow(under.titleArea(), inkGap); d.clearOfInk(a, nil) && d.crossed(a) == 0 {
+						z = under
+						d.Height = max(d.Height, z.Y+z.H+4)
+						break
+					}
+				}
 			}
 			d.Zones = append(d.Zones, z)
 		} else {
@@ -624,4 +652,44 @@ func (c *composer) bands(d *Drawing) []string {
 		}
 	}
 	return lost
+}
+
+// unclash drops a word the reader would read twice or not at all: a
+// road's shared phrase that stands so near another label that Hangul
+// glyphs, taller than labelH, touch, and the second of two labels that say
+// the same, the phrase first. The lines under a dropped word keep their
+// own words, and every word stays in its line's tooltip.
+func (c *composer) unclash(d *Drawing) {
+	drop := func(i, j int) bool {
+		l, o := d.Wires[i].Label, d.Wires[j].Label
+		if l == nil || o == nil || i == j {
+			return false
+		}
+		switch {
+		case l.S == o.S:
+			return l.Said && !o.Said || l.Said == o.Said && j < i
+		case l.Said:
+			return hit(grow(l.area(), 3), o.area())
+		}
+		return false
+	}
+	for i := range d.Wires {
+		for j := range d.Wires {
+			if drop(i, j) {
+				d.Wires[i].Label = nil
+				break
+			}
+		}
+	}
+}
+
+// legend sets the key where card finds room, and where the drawing has
+// none, on a strip added under it: a composed overview is short, and its
+// key is the only place its dashes and dots are said.
+func (c *composer) legend(d *Drawing) {
+	d.card()
+	if d.Card == nil {
+		d.Height += cardHead + 7*cardRow + cardPad + 2*padY
+		d.card()
+	}
 }

@@ -585,6 +585,7 @@ func (d *Drawing) marked(heads []box) []box {
 	for _, j := range d.Dots {
 		out = append(out, box{j.X - 3, j.Y - 3, 6, 6})
 	}
+	out = append(out, d.reserved...)
 	return append(out, heads...)
 }
 
@@ -711,7 +712,23 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		})
 	}
 	done := map[int]bool{}
-	for i := range d.Wires {
+	order := make([]int, len(d.Wires))
+	for i := range order {
+		order[i] = i
+	}
+	if d.first != nil {
+		slices.SortStableFunc(order, func(a, b int) int {
+			fa, fb := d.first(d.Wires[a]), d.first(d.Wires[b])
+			switch {
+			case fa && !fb:
+				return -1
+			case fb && !fa:
+				return 1
+			}
+			return 0
+		})
+	}
+	for _, i := range order {
 		s, n := words[i], d.Wires[i].Net
 		if s == "" || n != 0 && whole[n] && done[n] {
 			continue
