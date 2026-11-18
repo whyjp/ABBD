@@ -2195,6 +2195,7 @@
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
         "internal/screen/entries.go",
+        "internal/screen/fan.go",
         "internal/screen/figure.go",
         "internal/screen/flow.go",
         "internal/screen/focus.go",
@@ -2318,11 +2319,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "모델을 사람이 여는 페이지로 바꾼다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "내장된 한국어 HTML 템플릿(페이지 종류마다 이름 붙은 템플릿 하나), 그 도우미 함수, kind와 출처 배지의 한국어 이름, 그리고 모든 페이지가 품는 스타일시트를 가진다. 스타일시트는 모델이 내는 선 종류와 포트 클래스마다 모양을 준다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/page.go site",
@@ -2387,11 +2390,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store",
@@ -2416,11 +2421,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go InputsHash",
@@ -2460,11 +2467,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a diff can compare today's units with those committed at a base revision",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go UnitsAt"
@@ -31063,16 +31072,19 @@
       "Name": "internal/store",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 5,
         "Uses": 2,
         "Direct": 5,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -31211,7 +31223,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -32120,6 +32132,19 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "overview-strands",
+                "Name": "overview_strands",
+                "Shape": "string",
                 "Need": "선택",
                 "Users": [
                   {
