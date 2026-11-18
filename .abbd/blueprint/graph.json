@@ -31677,7 +31677,14 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
-                "Need": "선택"
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
               },
               {
                 "Key": "language",
@@ -31688,7 +31695,7 @@
             ],
             "Need": true,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": true,
             "Notes": false
           }
