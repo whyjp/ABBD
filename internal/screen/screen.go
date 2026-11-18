@@ -230,21 +230,7 @@ func Build(in Input) Model {
 	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
 	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
-	var c *cut
-	// A project that turned the cut off draws every line, record or not.
-	off := in.Project.OverviewCut != nil && !*in.Project.OverviewCut
-	if in.Overview.Known && len(in.Overview.Lines) > 0 && !off {
-		var lines []model.Line
-		for _, l := range in.Overview.Lines {
-			lines = append(lines, l.Claim)
-		}
-		if rec, said := o.recordedPairs(lines); rec != nil {
-			c = o.primary(in.Primary, ls, fs, rec, said)
-		}
-	}
-	if c == nil && in.Project.Cut() {
-		c = o.primary(in.Primary, ls, fs, nil, nil)
-	}
+	c := recordCut(in, o, ls, fs)
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
@@ -262,11 +248,23 @@ func Build(in Input) Model {
 			read.over = pastScreen(d, room)
 		})
 	}
-	m.Overview = overview(c)
+	// An overview drawn from a record that shows the primary flow and a
+	// zone is composed (compose.go); its focus views seat as without it.
+	var comp *composer
+	if c != nil && c.said != nil && composable(o, in.Overview) {
+		p := planOverview(in.Units, "", nil, tactic{}, ls, fs, c)
+		comp = compose(p, in.Overview)
+		m.Overview = comp.draw(p, href)
+	} else {
+		m.Overview = overview(c)
+	}
 	// The focus views seat their boxes where the overview without the
 	// record sets them, so a record changes which lines the overview draws
 	// and not how each box's own view reads.
 	seats := m.Overview
+	if comp != nil && !c.hides() {
+		seats = overview(c)
+	}
 	if c.hides() && c.said != nil {
 		var plain *cut
 		if in.Project.Cut() {
@@ -341,7 +339,14 @@ func Build(in Input) Model {
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.
-	for _, d := range leads {
+	for i, d := range leads {
+		if i == 0 && comp != nil {
+			comp.mark(d, o.flow.key, o.flow.question)
+			comp.bands(d)
+			d.pin()
+			d.card()
+			continue
+		}
 		d.number()
 		d.zone(o.tree, ls)
 		d.pin()
@@ -354,6 +359,28 @@ func Build(in Input) Model {
 	m.Primary = o.flow.record()
 	rank(&m)
 	return m
+}
+
+// recordCut is what the overview o draws of its links: the stored record's
+// lines where it has a current one, else the primary links where the
+// project cuts, else nil for every line.
+func recordCut(in Input, o *overview, ls []layering, fs []flowWalk) *cut {
+	// A project that turned the cut off draws every line, record or not.
+	off := in.Project.OverviewCut != nil && !*in.Project.OverviewCut
+	var c *cut
+	if in.Overview.Known && len(in.Overview.Lines) > 0 && !off {
+		var lines []model.Line
+		for _, l := range in.Overview.Lines {
+			lines = append(lines, l.Claim)
+		}
+		if rec, said := o.recordedPairs(lines); rec != nil {
+			c = o.primary(in.Primary, ls, fs, rec, said)
+		}
+	}
+	if c == nil && in.Project.Cut() {
+		c = o.primary(in.Primary, ls, fs, nil, nil)
+	}
+	return c
 }
 
 // rank gives each unit the overview draws its Rank there, and each unit a

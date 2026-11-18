@@ -1430,11 +1430,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a PR and its reviewer see what changed and whether the record still holds, without writing",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/diff.go diff",
@@ -2184,6 +2186,7 @@
         "internal/screen/busy.go",
         "internal/screen/card.go",
         "internal/screen/chosen.go",
+        "internal/screen/compose.go",
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
         "internal/screen/entries.go",
@@ -4946,14 +4949,6 @@
       "Phrase": "relation origins",
       "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
-    },
-    {
-      "From": "MOD-0037",
-      "To": "MOD-0036",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
     },
     {
       "From": "MOD-0038",
@@ -21674,7 +21669,7 @@
         "Direct": 6,
         "TextStale": true,
         "StaleNotes": 0,
-        "Dead": 10
+        "Dead": 11
       },
       "Units": [
         {
@@ -21690,7 +21685,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 4
+            "Of": 3
           }
         },
         {
@@ -21819,7 +21814,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 2,
-            "Of": 4
+            "Of": 3
           }
         },
         {
@@ -21956,8 +21951,8 @@
           ],
           "Rank": {
             "Basis": "dependency",
-            "N": 4,
-            "Of": 4
+            "N": 3,
+            "Of": 3
           }
         },
         {
@@ -22299,7 +22294,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 4
+            "Of": 3
           }
         },
         {
@@ -22388,7 +22383,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 4
+            "Of": 3
           }
         },
         {
@@ -22899,7 +22894,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 4
+            "Of": 3
           }
         },
         {
@@ -23092,7 +23087,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 4
+            "Of": 3
           }
         }
       ],
@@ -30643,16 +30638,6 @@
             "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
             "internal/screen/overview.go \"return Badge(model.Extracted)\""
           ]
-        },
-        {
-          "From": "overview plan",
-          "To": "layered layout and routing",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
-          ],
-          "Drifted": true
         },
         {
           "From": "page template",

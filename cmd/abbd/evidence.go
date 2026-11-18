@@ -239,6 +239,9 @@ func (e env) statusLines() error {
 	if b := e.statusOverview(in.Units, in.Overview); b != "" {
 		behind = append(behind, b)
 	}
+	for _, g := range screen.FlowGaps(in) {
+		fmt.Fprintf(e.stdout, "omission: the overview record draws no line from primary flow %s, so the overview draws no flow line there; record one with its evidence, or leave it where the code has no such relation\n", g)
+	}
 	e.statusBreaches(in.Units, fs.Stacks)
 	e.statusCells(in.Units, fs.Tables)
 	if len(texts) > 0 {
