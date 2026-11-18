@@ -100,6 +100,9 @@ type found struct {
 	// notes are lines about how the code was read, and lacks are the headers
 	// the compiler could not find, each as name (N files).
 	notes, lacks []string
+	// capped are the sources past the relater's limit of cap sources.
+	capped []string
+	cap    int
 }
 
 // Unread is the code one relater could not read, and why. A gated entry
@@ -160,6 +163,9 @@ func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend
 			slices.Sort(f.unread)
 			unread = append(unread, Unread{Relater: s.Name, Why: r.unread, Paths: slices.Compact(f.unread)})
 		}
+		if len(f.capped) > 0 {
+			unread = append(unread, Unread{Relater: s.Name, Lead: fmt.Sprintf("%d sources are past the limit of %d the relater reads, the first by path (ABBD_C_MAX_SOURCES changes it, 0 lifts it), so they are unread and the relations in them are missing", len(f.capped), f.cap), Paths: f.capped})
+		}
 		for _, n := range f.notes {
 			unread = append(unread, Unread{Relater: s.Name, Lead: n})
 		}
@@ -169,7 +175,7 @@ func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend
 		if len(f.gated) > 0 {
 			unread = append(unread, Unread{Relater: s.Name, Why: "the compile configuration leaves out by #if", Paths: f.gated, Gated: true})
 		}
-		for _, p := range f.unread {
+		for _, p := range slices.Concat(f.unread, f.capped) {
 			if u, ok := o.of(p); ok {
 				partial[u] = true
 			}

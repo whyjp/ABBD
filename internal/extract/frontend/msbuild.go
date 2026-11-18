@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"unicode/utf16"
 
@@ -57,10 +58,12 @@ type xnode struct {
 	kids []*xnode
 }
 
-func parseXML(b []byte) (*xnode, error) {
+// decodeText returns a file's text as UTF-8 without its byte order mark,
+// reading a UTF-16 file by its mark.
+func decodeText(b []byte) []byte {
 	switch {
 	case bytes.HasPrefix(b, []byte{0xEF, 0xBB, 0xBF}):
-		b = b[3:]
+		return b[3:]
 	case bytes.HasPrefix(b, []byte{0xFF, 0xFE}), bytes.HasPrefix(b, []byte{0xFE, 0xFF}):
 		le := b[0] == 0xFF
 		var u []uint16
@@ -71,9 +74,13 @@ func parseXML(b []byte) (*xnode, error) {
 				u = append(u, uint16(b[i])<<8|uint16(b[i+1]))
 			}
 		}
-		b = []byte(string(utf16.Decode(u)))
+		return []byte(string(utf16.Decode(u)))
 	}
-	d := xml.NewDecoder(bytes.NewReader(b))
+	return b
+}
+
+func parseXML(b []byte) (*xnode, error) {
+	d := xml.NewDecoder(bytes.NewReader(decodeText(b)))
 	d.CharsetReader = func(_ string, in io.Reader) (io.Reader, error) { return in, nil }
 	var root *xnode
 	var stack []*xnode
@@ -199,12 +206,12 @@ func (m *msbuilder) list(dir string) []string {
 
 // resolve finds a path under the root, matching each name without regard to
 // case, as Windows does, and says whether it exists. A path outside the root
-// exists only if it is there as spelled.
+// is never looked at, since what lies there depends on the machine, and does
+// not exist.
 func (m *msbuilder) resolve(p string) (string, bool) {
 	p = path.Clean(p)
 	if !m.inside(p) {
-		_, err := os.Stat(filepath.FromSlash(p))
-		return p, err == nil
+		return p, false
 	}
 	cur := m.root
 	for _, seg := range strings.Split(strings.TrimPrefix(strings.TrimPrefix(p, m.root), "/"), "/") {
@@ -268,8 +275,8 @@ func (m *msbuilder) projectPaths(sln string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		for _, l := range strings.Split(string(b), "\n") {
-			if g := slnProject.FindStringSubmatch(strings.TrimSpace(strings.TrimPrefix(l, "FEFF"))); g != nil {
+		for _, l := range strings.Split(string(decodeText(b)), "\n") {
+			if g := slnProject.FindStringSubmatch(strings.TrimSpace(l)); g != nil {
 				raw = append(raw, g[1])
 			}
 		}
@@ -282,6 +289,8 @@ func (m *msbuilder) projectPaths(sln string) ([]string, error) {
 			m.note("msbuild: %s names %s, which is no C++ project and is not read", m.rel(sln), strings.ReplaceAll(r, `\`, "/"))
 		case !strings.EqualFold(path.Ext(r), ".vcxproj"):
 			// A solution folder, which has no file.
+		case !m.inside(p):
+			m.note("msbuild: %s names %s, which lies outside the repository and is not read", m.rel(sln), strings.ReplaceAll(r, `\`, "/"))
 		case !ok:
 			m.note("msbuild: %s names %s, which does not exist here", m.rel(sln), strings.ReplaceAll(r, `\`, "/"))
 		default:
@@ -294,9 +303,14 @@ func (m *msbuilder) projectPaths(sln string) ([]string, error) {
 
 // load reads a project and, for every configuration it declares, evaluates
 // it. A project that cannot be read is noted and left out.
-func (m *msbuilder) load(file, solutionDir string) *msProject {
+func (m *msbuilder) load(file, solution string) *msProject {
 	if p, ok := m.projects[file]; ok {
 		return p
+	}
+	if !m.inside(file) {
+		m.note("msbuild: %s lies outside the repository and is not read", file)
+		m.projects[file] = nil
+		return nil
 	}
 	doc, err := m.xml(file)
 	if err != nil {
@@ -329,14 +343,22 @@ func (m *msbuilder) load(file, solutionDir string) *msProject {
 			"configuration": conf, "platform": plat, "projectname": p.name, "projectdir": p.dir + "/", "projectpath": file,
 			"projectfilename": path.Base(file), "projectext": path.Ext(file), "msbuildprojectdirectory": p.dir,
 			"msbuildprojectname": p.name, "msbuildprojectfile": path.Base(file), "msbuildthisfiledirectory": p.dir + "/",
+			"platformname": plat, "configurationname": conf,
 		} {
 			e.props[k] = v
 		}
-		if solutionDir != "" {
-			e.props["solutiondir"] = solutionDir + "/"
+		if solution != "" {
+			for k, v := range map[string]string{
+				"solutiondir": path.Dir(solution) + "/", "solutionpath": solution, "solutionfilename": path.Base(solution),
+				"solutionext": path.Ext(solution), "solutionname": strings.TrimSuffix(path.Base(solution), path.Ext(solution)),
+			} {
+				e.props[k] = v
+			}
 		}
+		e.decided = map[*xnode]bool{}
 		for e.pass = 1; e.pass <= 2; e.pass++ {
-			e.walk(doc, file, 0)
+			e.imported = map[string]bool{file: true}
+			e.walk(doc, file)
 		}
 		out := e.out
 		out.ctype = strings.ToLower(strings.TrimSpace(e.props["configurationtype"]))
@@ -384,6 +406,10 @@ type evalCtx struct {
 	defs  map[string]map[string]string
 	out   *msConfig
 	pass  int
+	// decided holds each Import's Condition as pass 1 found it, and imported
+	// the files followed so far in this pass.
+	decided  map[*xnode]bool
+	imported map[string]bool
 }
 
 func (e *evalCtx) unresolved(names []string, where string) {
@@ -477,7 +503,8 @@ func (e *evalCtx) condition(s string) (bool, error) {
 		pos++
 		return str(t), nil
 	}
-	primary := func() (bool, error) {
+	var primary func() (bool, error)
+	primary = func() (bool, error) {
 		switch peek() {
 		case "(":
 			pos++
@@ -492,7 +519,7 @@ func (e *evalCtx) condition(s string) (bool, error) {
 			return v, nil
 		case "!":
 			pos++
-			v, err := or()
+			v, err := primary()
 			return !v, err
 		case "exists", "hastrailingslash":
 			fn := peek()
@@ -512,7 +539,12 @@ func (e *evalCtx) condition(s string) (bool, error) {
 			if fn == "hastrailingslash" {
 				return strings.HasSuffix(arg, `\`) || strings.HasSuffix(arg, "/"), nil
 			}
-			_, ok := e.m.resolve(join(e.p.dir, arg))
+			p := join(e.p.dir, arg)
+			if !e.m.inside(p) {
+				e.m.note("msbuild: %s: Exists(%s) names a path outside the repository, which depends on the machine, and is taken as false", e.m.rel(e.p.file), slash(arg))
+				return false, nil
+			}
+			_, ok := e.m.resolve(p)
 			return ok, nil
 		}
 		l, err := operand()
@@ -535,6 +567,11 @@ func (e *evalCtx) condition(s string) (bool, error) {
 			return false, err
 		}
 		c := strings.Compare(strings.ToLower(l), strings.ToLower(r))
+		if lf, lerr := strconv.ParseFloat(l, 64); lerr == nil {
+			if rf, rerr := strconv.ParseFloat(r, 64); rerr == nil {
+				c = cmp.Compare(lf, rf)
+			}
+		}
 		switch op {
 		case "==":
 			return c == 0, nil
@@ -577,19 +614,28 @@ func (e *evalCtx) condition(s string) (bool, error) {
 }
 
 // walk follows a project or property sheet in order.
-func (e *evalCtx) walk(n *xnode, file string, depth int) {
+func (e *evalCtx) walk(n *xnode, file string) {
 	here := e.props["msbuildthisfiledirectory"]
 	e.props["msbuildthisfiledirectory"] = path.Dir(file) + "/"
 	defer func() { e.props["msbuildthisfiledirectory"] = here }()
 	for _, c := range n.kids {
-		if cond, ok := c.attr["condition"]; ok && !e.test(cond, "this file") {
+		// Pass 1 reads only what sets properties and imports; the rest waits for
+		// the final properties.
+		switch c.name {
+		case "propertygroup", "import", "importgroup":
+			if e.pass == 2 && c.name == "propertygroup" {
+				continue
+			}
+		default:
+			if e.pass == 1 {
+				continue
+			}
+		}
+		if !e.holds(c) {
 			continue
 		}
 		switch c.name {
 		case "propertygroup":
-			if e.pass != 1 {
-				continue
-			}
 			for _, pr := range c.kids {
 				if cond, ok := pr.attr["condition"]; ok && !e.test(cond, "this file") {
 					continue
@@ -599,53 +645,74 @@ func (e *evalCtx) walk(n *xnode, file string, depth int) {
 				e.props[pr.name] = v
 			}
 		case "import":
-			e.imp(c, file, depth)
+			e.imp(c, file)
 		case "importgroup":
 			for _, i := range c.kids {
-				if cond, ok := i.attr["condition"]; ok && !e.test(cond, "this file") {
-					continue
-				}
-				if i.name == "import" {
-					e.imp(i, file, depth)
+				if i.name == "import" && e.holds(i) {
+					e.imp(i, file)
 				}
 			}
 		case "itemdefinitiongroup":
-			if e.pass == 2 {
-				e.definitions(c)
-			}
+			e.definitions(c)
 		case "itemgroup":
-			if e.pass == 2 {
-				e.items(c)
-			}
+			e.items(c)
 		case "target":
-			if e.pass == 2 && adds(c) {
+			if adds(c) {
 				e.m.note("msbuild: %s: the Target %s in %s adds sources or headers when it runs, which is not evaluated, so they are left out", e.m.rel(e.p.file), slash(c.attr["name"]), e.m.rel(file))
 			}
 		}
 	}
 }
 
-func (e *evalCtx) imp(c *xnode, file string, depth int) {
+// holds is whether an element's Condition is true. An Import and an
+// ImportGroup are decided once, in pass 1, with the properties as they stand
+// there, and pass 2 replays that, since the files it follows set the
+// properties the Condition read.
+func (e *evalCtx) holds(c *xnode) bool {
+	cond, ok := c.attr["condition"]
+	if !ok {
+		return true
+	}
+	if c.name != "import" && c.name != "importgroup" {
+		return e.test(cond, "this file")
+	}
+	if e.pass == 1 {
+		e.decided[c] = e.test(cond, "this file")
+	}
+	return e.decided[c]
+}
+
+func (e *evalCtx) imp(c *xnode, file string) {
 	target, miss := e.expand(c.attr["project"])
 	if len(miss) > 0 {
 		e.unresolved(miss, "an Import")
 		return
 	}
-	if strings.ContainsAny(target, "*?") || depth >= 12 {
+	if strings.ContainsAny(target, "*?") {
 		e.m.note("msbuild: %s: the Import %s is not followed", e.m.rel(e.p.file), slash(c.attr["project"]))
 		return
 	}
-	p, ok := e.m.resolve(join(path.Dir(file), target))
+	jp := join(path.Dir(file), target)
+	if !e.m.inside(jp) {
+		e.m.note("msbuild: %s: the Import %s lies outside the repository, which depends on the machine, and is not followed", e.m.rel(e.p.file), slash(c.attr["project"]))
+		return
+	}
+	p, ok := e.m.resolve(jp)
 	if !ok {
 		e.m.note("msbuild: %s: the Import %s does not exist here and is left out", e.m.rel(e.p.file), strings.ReplaceAll(target, `\`, "/"))
 		return
 	}
+	// A file imported twice is read once, as MSBuild does, so a loop ends.
+	if e.imported[p] {
+		return
+	}
+	e.imported[p] = true
 	n, err := e.m.xml(p)
 	if err != nil {
 		e.m.note("msbuild: %s: the Import %s is unreadable (%v) and left out", e.m.rel(e.p.file), e.m.rel(p), err)
 		return
 	}
-	e.walk(n, p, depth+1)
+	e.walk(n, p)
 }
 
 // definitions reads an ItemDefinitionGroup, each metadata name appended to
@@ -696,7 +763,8 @@ func (e *evalCtx) dirs(v string) []string {
 			e.m.note("msbuild: %s: the include directory %s names the environment variable %s, which depends on the machine, and is left out", e.m.rel(e.p.file), slash(d), envVar.FindString(d))
 			continue
 		}
-		p, ok := e.m.resolve(join(e.p.dir, d))
+		p := join(e.p.dir, d)
+		_, ok := e.m.resolve(p)
 		switch {
 		case !e.m.inside(p):
 			e.m.note("msbuild: %s: the include directory %s is outside the repository", e.m.rel(e.p.file), slash(d))
@@ -717,6 +785,21 @@ func (e *evalCtx) items(g *xnode) {
 		if it.name != "clcompile" && it.name != "clinclude" && it.name != "projectreference" {
 			continue
 		}
+		if rm := it.attr["remove"]; rm != "" && it.name != "projectreference" {
+			gone := map[string]bool{}
+			for _, f := range e.matches(rm) {
+				gone[f] = true
+			}
+			keep := func(l []string) []string {
+				return slices.DeleteFunc(l, func(f string) bool { return gone[f] })
+			}
+			e.out.sources, e.out.headers = keep(e.out.sources), keep(e.out.headers)
+			continue
+		}
+		skip := map[string]bool{}
+		for _, f := range e.matches(it.attr["exclude"]) {
+			skip[f] = true
+		}
 		inc, miss := e.expand(it.attr["include"])
 		e.unresolved(miss, "an "+it.name+" item")
 		excluded := false
@@ -730,12 +813,7 @@ func (e *evalCtx) items(g *xnode) {
 			}
 		}
 		for _, f := range e.list(inc) {
-			var found []string
-			if strings.ContainsAny(f, "*?") {
-				found = e.m.glob(join(e.p.dir, f))
-			} else if p, ok := e.m.resolve(join(e.p.dir, f)); ok {
-				found = []string{p}
-			}
+			found := slices.DeleteFunc(e.match(f), func(p string) bool { return skip[p] })
 			if len(found) == 0 {
 				e.m.note("msbuild: %s: the %s %s matches no file here", e.m.rel(e.p.file), it.name, strings.ReplaceAll(f, `\`, "/"))
 			}
@@ -821,7 +899,7 @@ func (m *msbuilder) readTargets(file string) ([]*msProject, string, error) {
 			return nil, "", err
 		}
 		for _, p := range ps {
-			if l := m.load(p, path.Dir(file)); l != nil {
+			if l := m.load(p, file); l != nil {
 				out = append(out, l)
 			}
 		}
@@ -1066,9 +1144,9 @@ func MSBuildCompiles(root, file string) ([]Compile, []string, error) {
 			}
 			seen[s] = true
 			args := append([]string{"cl.exe"}, flags...)
-			std := map[string]string{"stdcpp14": "/std:c++14", "stdcpp17": "/std:c++17", "stdcpp20": "/std:c++20", "stdcpplatest": "/std:c++latest"}[cc.std]
+			std := map[string]string{"stdcpp14": "/std:c++14", "stdcpp17": "/std:c++17", "stdcpp20": "/std:c++20", "stdcpp23": "/std:c++23preview", "stdcpplatest": "/std:c++latest"}[cc.std]
 			if strings.EqualFold(path.Ext(s), ".c") {
-				std = map[string]string{"stdc11": "/std:c11", "stdc17": "/std:c17"}[cc.stdC]
+				std = map[string]string{"stdc11": "/std:c11", "stdc17": "/std:c17", "stdclatest": "/std:clatest"}[cc.stdC]
 			}
 			if std != "" {
 				args = append(args, std)
@@ -1220,4 +1298,26 @@ func (m *msbuilder) noteShared(files map[string]map[string]bool) {
 		eg = append(eg, fmt.Sprintf("%s (%d projects)", m.rel(f), len(files[f])))
 	}
 	m.note("msbuild: files listed by several projects, which each compile their own copy, anchor no module, so no relation to them is drawn (%d, such as %s)", len(shared), strings.Join(eg, ", "))
+}
+
+// match finds the files one item spec names: a path, or a pattern with * and ?.
+func (e *evalCtx) match(f string) []string {
+	p := join(e.p.dir, f)
+	if strings.ContainsAny(f, "*?") {
+		return e.m.glob(p)
+	}
+	if r, ok := e.m.resolve(p); ok {
+		return []string{r}
+	}
+	return nil
+}
+
+// matches finds the files a ;-separated list of item specs names.
+func (e *evalCtx) matches(v string) []string {
+	v, _ = e.expand(v)
+	var out []string
+	for _, f := range e.list(v) {
+		out = append(out, e.match(f)...)
+	}
+	return out
 }

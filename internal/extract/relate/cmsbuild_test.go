@@ -52,3 +52,24 @@ func TestCMSBuildFileThatIsNoProjectFails(t *testing.T) {
 		t.Fatalf("err = %v", err)
 	}
 }
+
+func TestCMSBuildSourcesPastTheLimitAreNamedUnreadOnce(t *testing.T) {
+	needC(t, false)
+	t.Setenv("ABBD_C_MAX_SOURCES", "2")
+	doc := extract.Doc{Units: []extract.DocUnit{mod("msbuild:app", "app"), mod("msbuild:core", "Core"), mod("msbuild:plugin", "plugin")}}
+	_, unread := relateC(t, cMSBuildFixture, "c=app.sln", doc)
+	seen := map[string]bool{}
+	var capped []string
+	for _, u := range unread {
+		if seen[u.Lead] {
+			t.Errorf("the line is printed twice: %s", u.Lead)
+		}
+		seen[u.Lead] = true
+		if strings.Contains(u.Lead, "past the limit of 2") {
+			capped = u.Paths
+		}
+	}
+	if len(capped) != 3 {
+		t.Fatalf("past the limit: %v", capped)
+	}
+}

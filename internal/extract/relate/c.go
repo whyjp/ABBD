@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
+	"maps"
 	"os"
 	"os/exec"
 	"path"
@@ -169,9 +171,9 @@ func cCompiles(t tree) ([]cEntry, []string, error) {
 // beside the database, so it lands in the cache too, never in the
 // repository. It returns the database's directory and the root-relative
 // sources it compiles.
-func cDatabase(t tree, o owners, entries []cEntry) (string, map[string]bool, error) {
+func cDatabase(t tree, o owners, entries []cEntry, max int) (string, map[string]bool, []string, error) {
 	compiled := map[string]bool{}
-	var keep []map[string]any
+	raws := map[string]map[string]any{}
 	for _, e := range entries {
 		r, ok := t.rel(e.file)
 		if !ok || compiled[r] || cTest(r) || !cExt(r, cSources) && !cExt(r, cHeaders) {
@@ -181,19 +183,68 @@ func cDatabase(t tree, o owners, entries []cEntry) (string, map[string]bool, err
 			continue
 		}
 		compiled[r] = true
-		keep = append(keep, e.raw)
+		raws[r] = e.raw
+	}
+	// Past max sources, the ones that sort last by path are left out, so the
+	// same entries are read on every machine.
+	var capped []string
+	if max > 0 {
+		var srcs []string
+		for r := range raws {
+			if cExt(r, cSources) {
+				srcs = append(srcs, r)
+			}
+		}
+		slices.Sort(srcs)
+		if len(srcs) > max {
+			capped = srcs[max:]
+			for _, r := range capped {
+				delete(raws, r)
+				delete(compiled, r)
+			}
+		}
+	}
+	var keep []map[string]any
+	for _, r := range slices.Sorted(maps.Keys(raws)) {
+		keep = append(keep, raws[r])
 	}
 	h := sha256.Sum256([]byte(strings.ToLower(filepath.ToSlash(t.root + "\n" + t.dir))))
 	dir := filepath.Join(t.cache, "clangd", hex.EncodeToString(h[:6]))
 	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 	b, err := json.MarshalIndent(keep, "", " ")
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
-	return dir, compiled, os.WriteFile(filepath.Join(dir, "compile_commands.json"), b, 0o644)
+	return dir, compiled, capped, os.WriteFile(filepath.Join(dir, "compile_commands.json"), b, 0o644)
 }
+
+// cMSBuildMaxSources is how many sources the relater reads of a Visual Studio
+// solution when ABBD_C_MAX_SOURCES says nothing. Each source opens a
+// translation unit that includes the Windows SDK and the MSVC library, so a
+// solution of hundreds of them takes minutes and gigabytes.
+const cMSBuildMaxSources = 150
+
+// cMaxSources is the most sources the relater reads: ABBD_C_MAX_SOURCES, 0
+// for no limit, else the limit for the kind of database, none for a CMake
+// project or a compile_commands.json.
+func cMaxSources(t tree) (int, error) {
+	if v := os.Getenv("ABBD_C_MAX_SOURCES"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 0 {
+			return 0, fmt.Errorf("ABBD_C_MAX_SOURCES is %q, but it must be a number of sources, 0 for no limit", v)
+		}
+		return n, nil
+	}
+	if frontend.IsMSBuildPath(t.dir) {
+		return cMSBuildMaxSources, nil
+	}
+	return 0, nil
+}
+
+// statusOut is where the relater says, before clangd starts, what it will do.
+var statusOut io.Writer = os.Stderr
 
 // cFiles are the C and C++ files a unit holds, root-relative and sorted,
 // tests left out.
@@ -240,7 +291,11 @@ func clang(t tree, o owners) (found, error) {
 	if err != nil {
 		return found{}, err
 	}
-	db, compiled, err := cDatabase(t, o, entries)
+	limit, err := cMaxSources(t)
+	if err != nil {
+		return found{}, err
+	}
+	db, compiled, capped, err := cDatabase(t, o, entries, limit)
 	if err != nil {
 		return found{}, err
 	}
@@ -251,6 +306,10 @@ func clang(t tree, o owners) (found, error) {
 	f := found{covered: map[string]bool{}, when: map[link]string{}, notes: notes}
 	var read []string
 	for _, p := range files {
+		if slices.Contains(capped, p) {
+			f.capped = append(f.capped, p)
+			continue
+		}
 		if !compiled[p] && !cExt(p, cHeaders) {
 			f.unread = append(f.unread, p)
 			continue
@@ -262,6 +321,12 @@ func clang(t tree, o owners) (found, error) {
 	if len(compiled) == 0 {
 		return found{}, fmt.Errorf("the compile database compiles no source a unit holds (%d entries)", len(entries))
 	}
+	f.cap = limit
+	warn := ""
+	if len(compiled) > 100 {
+		warn = "; a project this size can take minutes and gigabytes of memory, and ABBD_C_MAX_SOURCES=N reads only the first N sources by path"
+	}
+	fmt.Fprintf(statusOut, "relate: c: reading %d sources and %d headers with clangd%s\n", len(compiled), len(read)-len(compiled), warn)
 	r := &cReader{tree: t, owners: o, read: map[string]bool{}, src: map[string][]string{}, starts: map[string][]int{}, classes: map[string][]string{}, syms: map[string][]lsp.DocumentSymbol{}, gated: map[string][]lsp.Range{}, lack: map[string][]string{}}
 	for _, p := range read {
 		r.read[p] = true
@@ -269,9 +334,9 @@ func clang(t tree, o owners) (found, error) {
 	r.order = read
 	ctx := context.Background()
 	r.srv, err = lsp.Start(ctx, lsp.Server{
-		Argv: []string{bin, "--compile-commands-dir=" + db, "--background-index", "--enable-config=false",
+		Argv: append([]string{bin, "--compile-commands-dir=" + db, "--background-index", "--enable-config=false",
 			"--limit-references=0", "--limit-results=0", "--header-insertion=never", "--clang-tidy=false", "--log=error",
-			fmt.Sprintf("-j=%d", max(2, runtime.NumCPU()))},
+			fmt.Sprintf("-j=%d", max(2, runtime.NumCPU()))}, strings.Fields(os.Getenv("ABBD_CLANGD_ARGS"))...),
 		Root: t.root, Timeout: 5 * time.Minute, Ready: 2 * time.Hour, Quiet: 20 * time.Second,
 		TextDocument: map[string]any{"inactiveRegionsCapabilities": map[string]any{"inactiveRegions": true}},
 		Note:         r.note,
