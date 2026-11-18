@@ -16,7 +16,12 @@
       "Anchors": [
         ".claude-plugin/marketplace.json",
         "plugins/abbd/.claude-plugin/plugin.json"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 8,
+        "Of": 8
+      }
     },
     {
       "ID": "CFG-0002",
@@ -220,6 +225,7 @@
         "internal/topology/diff.go Diff"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"Signatures []Signature `json:\\\"contract_signatures_changed\\\"`\""
       ]
@@ -256,6 +262,7 @@
         "internal/topology/diff.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
@@ -292,6 +299,7 @@
         "internal/topology/query.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
       ]
@@ -346,6 +354,7 @@
         "internal/group/group.go"
       ],
       "Parent": "MOD-0054",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"return path.Dir(u.Anchors[0].Path)\""
       ]
@@ -418,6 +427,7 @@
         "internal/topology/diff.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
       ]
@@ -436,6 +446,7 @@
         "internal/group/group.go"
       ],
       "Parent": "MOD-0054",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
@@ -454,6 +465,7 @@
         "internal/topology/impact.go"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
@@ -487,7 +499,14 @@
       "Anchors": [
         "plugins/abbd/skills/abbd",
         "plugins/abbd/skills/abbd/SKILL.md abbd"
-      ]
+      ],
+      "Zone": "abbd 스킬",
+      "Rank": {
+        "Basis": "stack",
+        "N": 3,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "FEAT-0002",
@@ -505,7 +524,14 @@
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
         "plugins/abbd/skills/abbd-setup/SKILL.md abbd-setup"
-      ]
+      ],
+      "Zone": "abbd 스킬",
+      "Rank": {
+        "Basis": "stack",
+        "N": 1,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "FEAT-0003",
@@ -521,6 +547,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by whether its evidence still holds\""
       ]
@@ -539,6 +566,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Open `.abbd/blueprint/index.html` for the modules the request touches\"",
         "plugins/abbd/skills/abbd/SKILL.md \"Ask the topology before grepping the code.\""
@@ -558,6 +586,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Record each coupling or unit a reader found that the state lacks\""
       ]
@@ -576,6 +605,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"When the human states a purpose, a responsibility or a coupling in the conversation\""
       ]
@@ -594,6 +624,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Put the topology difference in the reply and in the PR description\""
       ]
@@ -612,6 +643,7 @@
         "plugins/abbd/skills/abbd/SKILL.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"for a CI job that labels the PR\""
       ]
@@ -630,6 +662,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"List unit candidates from the layout, entry points, manifests and schemas.\""
       ]
@@ -648,6 +681,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
       ]
@@ -666,6 +700,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
       ]
@@ -684,6 +719,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`not deterministic`: the script printed different output across three runs\""
       ]
@@ -702,6 +738,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the readers described the code\""
       ]
@@ -720,6 +757,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"## Extraction format\"",
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes`, `provides`, `runs_on`\""
@@ -778,6 +816,7 @@
         "plugins/abbd/skills/abbd/references/reader.md"
       ],
       "Parent": "FEAT-0001",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"ABBD reads code with this reader.\""
       ]
@@ -796,6 +835,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
       ]
@@ -814,6 +854,7 @@
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
       "Parent": "FEAT-0002",
+      "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 8), and only when a human is in the conversation.\""
       ]
@@ -1372,7 +1413,13 @@
         "cmd/abbd/uncovered.go",
         "cmd/abbd/understand.go",
         "cmd/abbd/words.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 2,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0002",
@@ -1558,7 +1605,13 @@
       "Anchors": [
         "internal/bootstrap",
         "internal/bootstrap/overlay.go"
-      ]
+      ],
+      "Zone": "토폴로지 규칙",
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0010",
@@ -1577,6 +1630,7 @@
         "internal/bootstrap/overlay.go Overlay"
       ],
       "Parent": "MOD-0009",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"u.Purpose = supplemented(d.Purpose)\""
       ]
@@ -1599,6 +1653,7 @@
         "internal/bootstrap/overlay.go overlap"
       ],
       "Parent": "MOD-0009",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"its anchors match more than one %s equally\"",
         "internal/bootstrap/overlay.go \"keys[x.Key()] = true\""
@@ -1620,7 +1675,13 @@
       "Anchors": [
         "internal/evidence",
         "internal/evidence/evidence.go"
-      ]
+      ],
+      "Zone": "읽는 쪽",
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0014",
@@ -1640,6 +1701,7 @@
         "internal/evidence/evidence.go all"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"v.SetAbsent(model.EvidenceDead)\"",
         "internal/evidence/evidence.go \"e.Status, e.Since = model.Drifted, rev\""
@@ -1663,6 +1725,7 @@
         "internal/evidence/evidence.go Slack"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"const Slack = 3\"",
         "internal/evidence/evidence.go \"// A quote ending in a word must end where the code's word ends, so\""
@@ -1686,6 +1749,7 @@
         "internal/evidence/evidence.go load"
       ],
       "Parent": "MOD-0013",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/evidence/evidence.go \"// norm is the file with all whitespace removed, so formatting never kills\"",
         "internal/evidence/evidence.go \"bytes.ReplaceAll(b, []byte(\\\"\\\\r\\\\n\\\"), []byte(\\\"\\\\n\\\"))\""
@@ -1707,7 +1771,13 @@
       "Anchors": [
         "internal/extract",
         "internal/extract/extract.go"
-      ]
+      ],
+      "Zone": "읽는 쪽",
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0018",
@@ -1727,6 +1797,7 @@
         "internal/extract/extract.go parentCycle"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"parent %q is not the key of another module\"",
         "internal/extract/extract.go \"func parentCycle(units []Unit, key string) bool {\""
@@ -1749,6 +1820,7 @@
         "internal/extract/extract.go inferred"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
       ]
@@ -1770,6 +1842,7 @@
         "internal/extract/extract.go normalizePath"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
         "internal/extract/extract.go \"leaves the project root\""
@@ -1792,6 +1865,7 @@
         "internal/extract/extract.go parseUnits"
       ],
       "Parent": "MOD-0017",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"dec.DisallowUnknownFields()\"",
         "internal/extract/extract.go \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
@@ -1813,7 +1887,13 @@
       "Anchors": [
         "internal/gitx",
         "internal/gitx/gitx.go"
-      ]
+      ],
+      "Zone": "읽는 쪽",
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0023",
@@ -1832,6 +1912,7 @@
         "internal/gitx/gitx.go MergeBase"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
@@ -1853,6 +1934,7 @@
         "internal/gitx/gitx.go Renames"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
         "internal/gitx/gitx.go \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
@@ -1875,6 +1957,7 @@
         "internal/gitx/gitx.go Snapshot"
       ],
       "Parent": "MOD-0022",
+      "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
         "internal/gitx/gitx.go \"\\\":(exclude)\\\"+exclude\""
@@ -1896,7 +1979,14 @@
       "Anchors": [
         "internal/identity",
         "internal/identity/identity.go"
-      ]
+      ],
+      "Zone": "토폴로지 규칙",
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0027",
@@ -1915,6 +2005,7 @@
         "internal/identity/identity.go Reconcile"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"if ov \u003e= 2 || same {\"",
         "internal/identity/identity.go \"case p.identical != q.identical:\""
@@ -1937,6 +2028,7 @@
         "internal/identity/identity.go heldByHuman"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"func heldByHuman(units []model.Unit) map[model.ID]bool {\""
       ]
@@ -1959,6 +2051,7 @@
         "internal/identity/identity.go setRelations"
       ],
       "Parent": "MOD-0026",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/identity/identity.go \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
         "internal/identity/identity.go \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
@@ -1992,7 +2085,12 @@
         "internal/model/run.go",
         "internal/model/slot.go",
         "internal/model/table.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 7,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0031",
@@ -2119,7 +2217,13 @@
         "internal/screen/weigh.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 3,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0035",
@@ -2281,7 +2385,13 @@
         "internal/store/overview.go",
         "internal/store/store.go",
         "internal/store/understanding.go"
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 4,
+        "Of": 8,
+        "Cycle": true
+      }
     },
     {
       "ID": "MOD-0042",
@@ -2414,7 +2524,13 @@
         "internal/topology/impact.go",
         "internal/topology/path.go",
         "internal/topology/query.go"
-      ]
+      ],
+      "Zone": "토폴로지 규칙",
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0048",
@@ -2433,6 +2549,7 @@
         "internal/topology/diff.go Boundary"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func (d Diff) Boundary() bool {\""
       ]
@@ -2455,6 +2572,7 @@
         "internal/topology/diff.go between"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func Compare(base, now []model.Unit) Diff {\"",
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
@@ -2477,6 +2595,7 @@
         "internal/topology/impact.go ImpactOf"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
       ]
@@ -2498,6 +2617,7 @@
         "internal/topology/impact.go Links"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func Links(units []model.Unit) []Link {\""
       ]
@@ -2519,6 +2639,7 @@
         "internal/topology/query.go Explain"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"func Explain(units []model.Unit, id model.ID) Explanation {\""
       ]
@@ -2541,6 +2662,7 @@
         "internal/topology/query.go strength"
       ],
       "Parent": "MOD-0047",
+      "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {\"",
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
@@ -2556,7 +2678,13 @@
       "Anchors": [
         "internal/group",
         "internal/group/group.go"
-      ]
+      ],
+      "Zone": "토폴로지 규칙",
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0055",
@@ -2575,7 +2703,12 @@
       ],
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"pstack is an optional engine behind it.\""
-      ]
+      ],
+      "Rank": {
+        "Basis": "stack",
+        "N": 4,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0056",
@@ -2588,7 +2721,13 @@
         "internal/narrative",
         "internal/narrative/language.go",
         "internal/narrative/narrative.go"
-      ]
+      ],
+      "Zone": "읽는 쪽",
+      "Rank": {
+        "Basis": "stack",
+        "N": 6,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0057",
@@ -2600,7 +2739,13 @@
       "Anchors": [
         "internal/owners",
         "internal/owners/owners.go"
-      ]
+      ],
+      "Zone": "읽는 쪽",
+      "Rank": {
+        "Basis": "stack",
+        "N": 5,
+        "Of": 8
+      }
     },
     {
       "ID": "MOD-0058",
@@ -2614,9 +2759,11 @@
         "internal/extract/frontend/cargo.go",
         "internal/extract/frontend/cmake.go",
         "internal/extract/frontend/cmakecompile.go",
-        "internal/extract/frontend/frontend.go"
+        "internal/extract/frontend/frontend.go",
+        "internal/extract/frontend/msbuild.go"
       ],
-      "Parent": "MOD-0017"
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     },
     {
       "ID": "MOD-0060",
@@ -2637,7 +2784,8 @@
         "internal/extract/relate/script.go",
         "internal/extract/relate/ts.go"
       ],
-      "Parent": "MOD-0017"
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     },
     {
       "ID": "MOD-0061",
@@ -2653,7 +2801,8 @@
         "internal/extract/lsp/tree_unix.go",
         "internal/extract/lsp/tree_windows.go"
       ],
-      "Parent": "MOD-0017"
+      "Parent": "MOD-0017",
+      "Zone": "읽는 쪽"
     }
   ],
   "edges": [
@@ -5261,6 +5410,21 @@
     {
       "ID": "FEAT-0001",
       "Name": "/abbd",
+      "Purpose": {
+        "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 24,
+        "Direct": 2,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "FEAT-0003",
@@ -5271,7 +5435,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0004",
@@ -5282,7 +5451,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0006",
@@ -5293,7 +5467,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0007",
@@ -5304,7 +5483,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0008",
@@ -5315,7 +5499,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0009",
@@ -5326,7 +5515,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "FEAT-0023",
@@ -5337,7 +5531,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         }
       ],
       "Understanding": null,
@@ -5604,6 +5803,21 @@
     {
       "ID": "FEAT-0002",
       "Name": "/abbd-setup",
+      "Purpose": {
+        "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 26,
+        "Direct": 2,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "FEAT-0011",
@@ -5614,7 +5828,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0012",
@@ -5625,7 +5844,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0013",
@@ -5636,7 +5860,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0014",
@@ -5647,7 +5876,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0016",
@@ -5658,7 +5892,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0017",
@@ -5669,7 +5908,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0025",
@@ -5680,7 +5924,12 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "FEAT-0026",
@@ -5692,6 +5941,7 @@
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
           "Understanding": {
+            "Reader": "pstack poteto-mode 0.15.36",
             "Stale": false,
             "Blocks": [
               {
@@ -5713,6 +5963,11 @@
                 ]
               }
             ]
+          },
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
           }
         }
       ],
@@ -5925,6 +6180,22 @@
     {
       "ID": "MOD-0001",
       "Name": "abbd CLI",
+      "Purpose": {
+        "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 34,
+        "Uses": 13,
+        "Direct": 12,
+        "TextStale": true,
+        "StaleNotes": 0,
+        "Dead": 4
+      },
       "Units": [
         {
           "ID": "DATA-0001",
@@ -5937,7 +6208,12 @@
             "cmd/abbd/install.go install",
             "cmd/abbd/install.go markers"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0002",
@@ -5950,7 +6226,12 @@
             "cmd/abbd/evidence.go checkEvidence",
             "cmd/abbd/evidence.go status"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0003",
@@ -5963,7 +6244,12 @@
             "cmd/abbd/main.go parseInterspersed",
             "cmd/abbd/main.go run"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0004",
@@ -5975,7 +6261,13 @@
             "cmd/abbd/main.go runScript",
             "cmd/abbd/main.go syncActual"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2,
+            "Cycle": true
+          }
         },
         {
           "ID": "MOD-0005",
@@ -6338,6 +6630,11 @@
                 ]
               }
             ]
+          },
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
           }
         },
         {
@@ -6352,7 +6649,12 @@
             "cmd/abbd/record.go statedFields",
             "cmd/abbd/understand.go understand"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0007",
@@ -6364,7 +6666,12 @@
             "cmd/abbd/screen.go publish",
             "cmd/abbd/screen.go screenInput"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0008",
@@ -6377,10 +6684,17 @@
             "cmd/abbd/setup.go readExtraction",
             "cmd/abbd/setup.go reseeded"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2,
+            "Cycle": true
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": true,
         "Blocks": [
           {
@@ -8653,7 +8967,8 @@
             "Need": true,
             "Providers": true,
             "Users": true,
-            "Data": true
+            "Data": true,
+            "Notes": true
           }
         },
         {
@@ -8746,7 +9061,8 @@
             "Need": true,
             "Providers": true,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         },
         {
@@ -8980,7 +9296,8 @@
             "Need": true,
             "Providers": true,
             "Users": true,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         },
         {
@@ -9034,6 +9351,7 @@
                   "Ref": "IF-0001.entries.json",
                   "Title": "항목",
                   "Key": "json",
+                  "Reader": "pstack poteto-mode 0.15.36",
                   "Stale": false,
                   "Blocks": [
                     {
@@ -9133,7 +9451,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": true
           }
         },
         {
@@ -9154,7 +9473,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9192,6 +9512,7 @@
                   "Ref": "IF-0003.entries.check",
                   "Title": "항목",
                   "Key": "check",
+                  "Reader": "pstack poteto-mode 0.15.36",
                   "Stale": false,
                   "Blocks": [
                     {
@@ -9228,7 +9549,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": true
           }
         },
         {
@@ -9282,7 +9604,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": true
           }
         },
         {
@@ -9303,7 +9626,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9330,7 +9654,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9357,7 +9682,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9378,7 +9704,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9435,7 +9762,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9523,7 +9851,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9576,7 +9905,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9610,7 +9940,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9699,7 +10030,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9739,7 +10071,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9766,7 +10099,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9805,7 +10139,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9857,7 +10192,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9884,7 +10220,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9905,7 +10242,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9932,7 +10270,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9959,7 +10298,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10042,7 +10382,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10088,7 +10429,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10109,7 +10451,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10143,7 +10486,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10164,7 +10508,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10185,7 +10530,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -10206,7 +10552,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         }
       ],
@@ -10692,8 +11039,16 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            2,
-            13
+            {
+              "N": 2,
+              "Unit": "sync pipeline",
+              "Does": "runScript(argv) → 루트에서 돌린 스크립트의 stdout, argv의 abbd는 지금 도는 바이너리"
+            },
+            {
+              "N": 13,
+              "Unit": "blueprint publish",
+              "Does": "publish() → every page and graph.json, after a command writes, or saves part of what it then refuses"
+            }
           ]
         }
       ],
@@ -10723,6 +11078,21 @@
     {
       "ID": "MOD-0009",
       "Name": "internal/bootstrap",
+      "Purpose": {
+        "Value": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 1,
+        "Uses": 0,
+        "Direct": 3,
+        "StaleNotes": 0,
+        "Dead": 2
+      },
       "Units": [
         {
           "ID": "MOD-0010",
@@ -10733,7 +11103,12 @@
           "Anchors": [
             "internal/bootstrap/overlay.go Overlay"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0011",
@@ -10745,10 +11120,16 @@
             "internal/bootstrap/overlay.go match",
             "internal/bootstrap/overlay.go overlap"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -11589,6 +11970,21 @@
     {
       "ID": "MOD-0013",
       "Name": "internal/evidence",
+      "Purpose": {
+        "Value": "so a reader's unit or coupling lives exactly as long as the code it quoted, decided the same way every time for the same tree",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 2,
+        "Uses": 1,
+        "Direct": 1,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "MOD-0014",
@@ -11600,7 +11996,12 @@
             "internal/evidence/evidence.go Apply",
             "internal/evidence/evidence.go all"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0015",
@@ -11612,7 +12013,12 @@
             "internal/evidence/evidence.go Check",
             "internal/evidence/evidence.go Slack"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0016",
@@ -11624,7 +12030,12 @@
             "internal/evidence/evidence.go file",
             "internal/evidence/evidence.go load"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
@@ -12521,7 +12932,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            9
+            {
+              "N": 9,
+              "Unit": "internal/evidence",
+              "Does": "Apply(units, rev) → every quote live, drifted or dead"
+            }
           ]
         }
       ],
@@ -12538,6 +12953,22 @@
     {
       "ID": "MOD-0017",
       "Name": "internal/extract",
+      "Purpose": {
+        "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 1,
+        "Uses": 2,
+        "Direct": 2,
+        "TextStale": true,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "MOD-0018",
@@ -12549,7 +12980,12 @@
             "internal/extract/extract.go Parse",
             "internal/extract/extract.go parentCycle"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0019",
@@ -12560,7 +12996,12 @@
           "Anchors": [
             "internal/extract/extract.go inferred"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0020",
@@ -12571,7 +13012,12 @@
           "Anchors": [
             "internal/extract/extract.go normalizePath"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0021",
@@ -12582,7 +13028,12 @@
           "Anchors": [
             "internal/extract/extract.go parseUnits"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0058",
@@ -12595,9 +13046,15 @@
             "internal/extract/frontend/cargo.go",
             "internal/extract/frontend/cmake.go",
             "internal/extract/frontend/cmakecompile.go",
-            "internal/extract/frontend/frontend.go"
+            "internal/extract/frontend/frontend.go",
+            "internal/extract/frontend/msbuild.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0060",
@@ -12617,7 +13074,12 @@
             "internal/extract/relate/script.go",
             "internal/extract/relate/ts.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0061",
@@ -12632,10 +13094,16 @@
             "internal/extract/lsp/tree_unix.go",
             "internal/extract/lsp/tree_windows.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": true,
         "Blocks": [
           {
@@ -14754,7 +15222,8 @@
             "Need": true,
             "Providers": false,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         }
       ],
@@ -14831,7 +15300,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            3
+            {
+              "N": 3,
+              "Unit": "internal/extract",
+              "Does": "Parse(stdout) → extract.Result, the units by ref with anchors and relations"
+            }
           ]
         }
       ],
@@ -14848,6 +15321,21 @@
     {
       "ID": "MOD-0022",
       "Name": "internal/gitx",
+      "Purpose": {
+        "Value": "so ABBD can ask git the few facts it needs without touching the user's index or history",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 1,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "MOD-0023",
@@ -14858,7 +15346,12 @@
           "Anchors": [
             "internal/gitx/gitx.go MergeBase"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0024",
@@ -14869,7 +15362,12 @@
           "Anchors": [
             "internal/gitx/gitx.go Renames"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0025",
@@ -14880,10 +15378,16 @@
           "Anchors": [
             "internal/gitx/gitx.go Snapshot"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -16216,9 +16720,21 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            5,
-            6,
-            7
+            {
+              "N": 5,
+              "Unit": "internal/gitx",
+              "Does": "Snapshot(root, .abbd) → the working tree's fingerprint"
+            },
+            {
+              "N": 6,
+              "Unit": "internal/gitx",
+              "Does": "Renames(last fingerprint, tree) → files moved since the last sync"
+            },
+            {
+              "N": 7,
+              "Unit": "internal/gitx",
+              "Does": "Head() → the revision, taken only when the tree changed"
+            }
           ]
         }
       ],
@@ -16235,6 +16751,21 @@
     {
       "ID": "MOD-0026",
       "Name": "internal/identity",
+      "Purpose": {
+        "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 4,
+        "Uses": 2,
+        "Direct": 3,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "MOD-0027",
@@ -16245,7 +16776,12 @@
           "Anchors": [
             "internal/identity/identity.go Reconcile"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0028",
@@ -16256,7 +16792,12 @@
           "Anchors": [
             "internal/identity/identity.go heldByHuman"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 2
+          }
         },
         {
           "ID": "MOD-0029",
@@ -16268,10 +16809,16 @@
             "internal/identity/identity.go merge",
             "internal/identity/identity.go setRelations"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 2
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -17433,7 +17980,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            8
+            {
+              "N": 8,
+              "Unit": "internal/identity",
+              "Does": "Reconcile(stored, extraction) → each unit keeps its stored ID"
+            }
           ]
         }
       ],
@@ -17450,6 +18001,21 @@
     {
       "ID": "MOD-0030",
       "Name": "internal/model",
+      "Purpose": {
+        "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 2,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "DATA-0010",
@@ -17460,7 +18026,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0012",
@@ -17471,7 +18042,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0015",
@@ -17482,7 +18058,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0019",
@@ -17493,7 +18074,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0020",
@@ -17504,7 +18090,12 @@
           "Anchors": [
             "internal/model/model.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "IF-0016",
@@ -17516,7 +18107,12 @@
             "internal/model/model.go FormatID",
             "internal/model/model.go idPattern"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "IF-0017",
@@ -17528,7 +18124,12 @@
             "internal/model/model.go ParseEvidence",
             "internal/model/model.go Validate"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0031",
@@ -17540,7 +18141,12 @@
             "internal/model/model.go Counts",
             "internal/model/model.go Semantic"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0032",
@@ -17552,7 +18158,12 @@
             "internal/model/model.go ends",
             "internal/model/model.go vias"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0033",
@@ -17564,10 +18175,16 @@
             "internal/model/model.go sourced",
             "internal/model/model.go validate"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -21033,6 +21650,21 @@
     {
       "ID": "MOD-0034",
       "Name": "internal/screen",
+      "Purpose": {
+        "Value": "shows a human the architecture as it is, read-only over the store",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 1,
+        "Uses": 12,
+        "Direct": 6,
+        "StaleNotes": 0,
+        "Dead": 10
+      },
       "Units": [
         {
           "ID": "DATA-0014",
@@ -21043,7 +21675,12 @@
           "Anchors": [
             "internal/screen/page.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0035",
@@ -21055,7 +21692,124 @@
             "internal/screen/inside.go inferred",
             "internal/screen/inside.go inside"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Inside",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "inside.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "(*overview).inside",
+                  "Code": true
+                },
+                {
+                  "Text": "가 개요의 1320픽셀 예산 안에서, 좁은 전술이면 920 안에서 세우는 뷰 하나다. 그 틀은 모듈의 계약과, 계약 없이 만난 바깥 단위를 위한 점선 ",
+                  "Code": false
+                },
+                {
+                  "Text": "← name",
+                  "Code": true
+                },
+                {
+                  "Text": " 또는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "→ name",
+                  "Code": true
+                },
+                {
+                  "Text": " 포트를 나른다. 바깥 단위에서 내부 단위로 드는 선은 위로 들어온다. 붐비는 변은 가장 덜 매인 포트를 다른 변에 넘기고, 틀은 예산 너머로 자라지 않는다. 또한 문장 하나씩을 가진 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Units",
+                  "Code": true
+                },
+                {
+                  "Text": ", 틀에서 빼 두고 셋 이상이 함께 가진 첫 낱말로 묶은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Unwired",
+                  "Code": true
+                },
+                {
+                  "Text": " 계약, 모듈이나 직속 자식에 한쪽 끝이 있는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Inferred",
+                  "Code": true
+                },
+                {
+                  "Text": " 결합, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Up",
+                  "Code": true
+                },
+                {
+                  "Text": "과 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Trail",
+                  "Code": true
+                },
+                {
+                  "Text": ", 그리고 그 뷰가 위한 모듈의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Understanding",
+                  "Code": true
+                },
+                {
+                  "Text": "을 담는다. 모든 최상위 모듈과 다른 것을 품은 모든 단위는 뷰를 가지므로, 단위를 품은 중첩 모듈은 자기 내부 뷰 아래에 설명문을 보인다. 아무것도 품지 않은 모듈은 뷰가 없고, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": "는 그 설명문을 부모 뷰의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "InsideUnit",
+                  "Code": true
+                },
+                {
+                  "Text": "에 두며, 페이지는 그것을 그 단위 항목 아래에 접어 둔다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0036",
@@ -21068,7 +21822,132 @@
             "internal/screen/layout.go route",
             "internal/screen/layout.go textWidth"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "arrange",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "layered",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "layout.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "layered.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): 층 배치다. 거꾸로 가는 간선이 적게 남도록 노드를 정렬하고(Eades, Lin, Smyth), 그 간선 없이 순위를 매기며, 각 노드를 그것이 쓰는 것 위에 둔다. 아무도 쓰지 않는 노드는 그것이 쓰는 가장 높은 것 바로 위에 앉고, 선이 없는 노드는 맨 아래 층에 모인다. 개요에서 상자가 둘 이상인 층이 둘 있는 저장된 스택(",
+                  "Code": false
+                },
+                {
+                  "Text": "stackOf",
+                  "Code": true
+                },
+                {
+                  "Text": ")은 이름을 댄 상자의 순위를 대신 ",
+                  "Code": false
+                },
+                {
+                  "Text": "tier",
+                  "Code": true
+                },
+                {
+                  "Text": "로 매긴다. 각 층의 상자는 스택의 순서대로 자기만의 행 하나를 차지하고, 그 사이의 선은 그 행 안에서 달린다. 다른 모든 노드는 그것을 쓰는 것 아래에, 아무도 쓰지 않으면 그것이 쓰는 것 바로 위에 앉는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "huddle",
+                  "Code": true
+                },
+                {
+                  "Text": "은 매 정렬 뒤에 한 층의 상자들을 행 안에서 붙여 두므로, 각 층의 띠에는 다른 상자가 없다. 한 층 안에서는 저장된 흐름이 지나는 상자들이 단계 순서대로 자리를 잡으므로(",
+                  "Code": false
+                },
+                {
+                  "Text": "lnode.step",
+                  "Code": true
+                },
+                {
+                  "Text": ") 주 흐름이 행마다 한 방향으로 읽힌다. 저장된 스택이 있는 그림만 이렇게 옮겨진다. 한 행 넘게 떨어진 장소 쌍마다 더미의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "chain",
+                  "Code": true
+                },
+                {
+                  "Text": "이 생긴다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "order",
+                  "Code": true
+                },
+                {
+                  "Text": "는 체인을 포함한 모든 행을 하나의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "tactic",
+                  "Code": true
+                },
+                {
+                  "Text": "으로 정렬한 뒤, 아무 데도 이어지지 않은 상자를 행 맨 끝에 둔다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": "는 단위의 뷰마다 모든 전술로 배치하고, ",
+                  "Code": false
+                },
+                {
+                  "Text": "choose",
+                  "Code": true
+                },
+                {
+                  "Text": "는 뒤 전술의 그림을 그 ",
+                  "Code": false
+                },
+                {
+                  "Text": "cost",
+                  "Code": true
+                },
+                {
+                  "Text": "가 지금까지의 최선(처음에는 첫 전술의 것)을 이길 때만 남긴다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0037",
@@ -21081,7 +21960,336 @@
             "internal/screen/overview.go planOverview",
             "internal/screen/overview.go top"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "overview",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "overview.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "planOverview",
+                  "Code": true
+                },
+                {
+                  "Text": "가 세우고 내부 뷰가 다시 쓰는 계획이다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "top",
+                  "Code": true
+                },
+                {
+                  "Text": "은 최상위 단위와 그 사이의 살아 있는 관계를, 그려진 간선마다 그것이 대표하는 저장된 관계와 출처와 함께 나열한다. 최상위 계약마다 ",
+                  "Code": false
+                },
+                {
+                  "Text": "providers",
+                  "Code": true
+                },
+                {
+                  "Text": "와 ",
+                  "Code": false
+                },
+                {
+                  "Text": "users",
+                  "Code": true
+                },
+                {
+                  "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Drawing",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Box",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Port",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Wire",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "overview.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): 좌표가 정해진 SVG 그림 하나다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Box",
+                  "Code": true
+                },
+                {
+                  "Text": "는 최상위 모듈이나 기능, 내부 단위, 또는 떠 있는 계약이다. 그 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Href",
+                  "Code": true
+                },
+                {
+                  "Text": "는 청사진에 있는 뷰를 열고, 뷰가 없으면 비어 있다. 개요에서 ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipFor",
+                  "Code": true
+                },
+                {
+                  "Text": "는 그려진 선이 나르는 계약 묶음마다 칩 하나를 만들고, 계약 하나의 이름이나 줄바꿈 없는 공백으로 이은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "계약 N개",
+                  "Code": true
+                },
+                {
+                  "Text": "를 라벨로 단다. 그래서 ",
+                  "Code": false
+                },
+                {
+                  "Text": "shorten",
+                  "Code": true
+                },
+                {
+                  "Text": "이 그 낱말을 지킨다. 칩이 ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipWrap",
+                  "Code": true
+                },
+                {
+                  "Text": "보다 많이 필요한 모듈은 넓어지는 대신 칩을 많아야 두 줄로 감싸고, 마지막 줄은 들어가지 않는 것을 \"+N\" ",
+                  "Code": false
+                },
+                {
+                  "Text": "Port",
+                  "Code": true
+                },
+                {
+                  "Text": " 하나로 접는다. 이어서 ",
+                  "Code": false
+                },
+                {
+                  "Text": "settle",
+                  "Code": true
+                },
+                {
+                  "Text": "이 접히지 않은 한 줄짜리 칩들을 선이 지나는 x 위로 옮긴다. 칩 너비는 많아야 ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipMax",
+                  "Code": true
+                },
+                {
+                  "Text": "다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipLines",
+                  "Code": true
+                },
+                {
+                  "Text": "는 더 긴 라벨을 구분자 뒤나 공백 앞에서 끊어 여러 줄로 감싸므로 라벨이 잘리거나 변을 벗어나지 않으며, 한 줄의 모든 칩은 그 줄의 높이를 따르고 ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipBand",
+                  "Code": true
+                },
+                {
+                  "Text": "가 상자나 틀 변마다 이를 더한다. 내부 뷰의 틀에서는 한 지점에 놓인 두 포트가 칩 하나를 함께 쓰고, 그 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Keys",
+                  "Code": true
+                },
+                {
+                  "Text": "가 대표하는 포트를 모두 적는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Drawing.Relations",
+                  "Code": true
+                },
+                {
+                  "Text": "는 뷰가 경로를 잡기 전에 요청한 장소 쌍을 나열하며, 검사기는 잉크를 이것에 맞춘다. 선의 잉크는 스텁, 타는 버스, 그 내림 같은 조각으로 그려지므로, ",
+                  "Code": false
+                },
+                {
+                  "Text": "route",
+                  "Code": true
+                },
+                {
+                  "Text": "는 요청마다 전체 길을 따르는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Route",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "routing.ways",
+                  "Code": true
+                },
+                {
+                  "Text": ")도 준다. 이것은 잉크 위에 보이지 않게, 출발지의 색으로 그려지고 포인터를 받지 않으며, 화살촉은 경로 자기 색으로 칠한 머리의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "\u003cuse\u003e",
+                  "Code": true
+                },
+                {
+                  "Text": "다.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "산출물 줄",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "dress.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "overview.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "role",
+                  "Code": true
+                },
+                {
+                  "Text": "은 상자의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Artifact",
+                  "Code": true
+                },
+                {
+                  "Text": "를 마지막 줄에서 허브나 진입점 부분 앞에 점으로 이어 두고, 상자의 제목은 그것을 괄호 안에 말한다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "boxTag",
+                  "Code": true
+                },
+                {
+                  "Text": "가 개요와 내부 뷰 모두에서 그 값을 정한다. 실행 맥락이 해석되는 실행 방식을 기록하면 그 방식을 대문자 모양과 개수로, 이를테면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "TICK · 1",
+                  "Code": true
+                },
+                {
+                  "Text": "로 적고, 아니면 모듈의 빌드 산출물을 적는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "TestAnExecutionContextSaysHowItRuns",
+                  "Code": true
+                },
+                {
+                  "Text": "가 이를 지킨다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "link",
+                  "Code": true
+                },
+                {
+                  "Text": "는 다른 빌드 시점 via들과 함께 점선으로 그린다. 큐, 채널, 시그널, 프록시를 거쳐 일을 넘기는 선은 실행 시점의 선이라 실선으로 남고, ",
+                  "Code": false
+                },
+                {
+                  "Text": "TestAHandoffViaIsDrawnAsARunTimeLine",
+                  "Code": true
+                },
+                {
+                  "Text": "이 이를 지킨다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0038",
@@ -21093,7 +22301,84 @@
             "internal/screen/page.go site",
             "internal/screen/page.html"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "색인",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "site.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "page.html",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "contractRows",
+                  "Code": true
+                },
+                {
+                  "Text": "는 모든 계약을 종류별로 IF, EVT, DATA, CFG 순으로, 종류 안에서는 이름순으로 나열하고, 각각 책임을, 없으면 목적을 적는다. 모듈의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Inside",
+                  "Code": true
+                },
+                {
+                  "Text": "는 그 단위의 목적과 책임을 나르며, 페이지는 이를 제목 아래 왜 있는가와 맡은 것으로 적고, 개요 상자의 툴팁은 책임을, 없으면 목적을 더한다. 각 행은 계약이 들어 있는 모듈을 주인으로, 그리고 살아 있는 관계로 제공하고 쓰는 단위들을 이름 댄다. 각각은 단위의 페이지가 있으면 그 페이지로, 없으면 단위 색인의 행 ",
+                  "Code": false
+                },
+                {
+                  "Text": "u-\u003cID\u003e",
+                  "Code": true
+                },
+                {
+                  "Text": "로 가는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Ref",
+                  "Code": true
+                },
+                {
+                  "Text": "다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "units.html",
+                  "Code": true
+                },
+                {
+                  "Text": "은 모든 단위를 ID순으로 종류, 부모, 책임이나 목적, 앵커, 그리고 접어 둔 시그니처와 인용과 함께 나열하므로, 브라우저의 찾기가 어떤 ID, 이름, 경로, 심볼에도 닿는다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0039",
@@ -21105,7 +22390,506 @@
             "internal/screen/screen.go ActualFreshness",
             "internal/screen/screen.go BlueprintFreshness"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Input",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "screen.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "Input",
+                  "Code": true
+                },
+                {
+                  "Text": "은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": "가 읽는 것으로, 각 모듈의 설명문과 지금의 코드 다이제스트, 그리고 ",
+                  "Code": false
+                },
+                {
+                  "Text": "internal/owners",
+                  "Code": true
+                },
+                {
+                  "Text": "가 CODEOWNERS에서 단위마다 읽는 담당자(",
+                  "Code": false
+                },
+                {
+                  "Text": "OwnersOf",
+                  "Code": true
+                },
+                {
+                  "Text": ")를 담으며, 모듈 페이지는 이를 담당으로 적는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model.Name",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "Purpose",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "Parts",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "parts",
+                  "Code": true
+                },
+                {
+                  "Text": ": 최상위 모듈, 이어서 모든 기능, 저마다 한 줄 설명)가 개요를 열고 모든 페이지의 제목이 된다. 리더의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Coupling",
+                  "Code": true
+                },
+                {
+                  "Text": "은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "FromID",
+                  "Code": true
+                },
+                {
+                  "Text": "와 ",
+                  "Code": false
+                },
+                {
+                  "Text": "ToID",
+                  "Code": true
+                },
+                {
+                  "Text": ", 그리고 그 결합이 왜 있는지 적은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "relations",
+                  "Code": true
+                },
+                {
+                  "Text": " 노트(",
+                  "Code": false
+                },
+                {
+                  "Text": "relationNote",
+                  "Code": true
+                },
+                {
+                  "Text": ")를 나른다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model.Decisions",
+                  "Code": true
+                },
+                {
+                  "Text": "는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "decisions.html",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "DecisionsFile",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "decisionspage",
+                  "Code": true
+                },
+                {
+                  "Text": " 템플릿)에 실을 모든 결정 노트를 저마다 노트에 링크해 나열한다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": "는 git 스냅숏인 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Tree",
+                  "Code": true
+                },
+                {
+                  "Text": "를 호출자가 채우도록 비워 둔다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model",
+                  "Code": true
+                },
+                {
+                  "Text": "은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": "가 끌어내는 것이다. 단위 목록, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Overview",
+                  "Code": true
+                },
+                {
+                  "Text": ", 두 계약 사이의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Links",
+                  "Code": true
+                },
+                {
+                  "Text": "를 글로 나열한 것, 뷰마다 하나씩의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Inside",
+                  "Code": true
+                },
+                {
+                  "Text": ", 개요의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Focus",
+                  "Code": true
+                },
+                {
+                  "Text": " 뷰들, ",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.json",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.go",
+                  "Code": true
+                },
+                {
+                  "Text": ")에 실을 살아 있는 모든 관계인 ",
+                  "Code": false
+                },
+                {
+                  "Text": "[]Line",
+                  "Code": true
+                },
+                {
+                  "Text": ", 그리고 페이지 바닥글이 적는 추출 명령을 담는다. 그림 가운데 ",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.json",
+                  "Code": true
+                },
+                {
+                  "Text": "은 그린 상자마다 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rank",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "rank.go",
+                  "Code": true
+                },
+                {
+                  "Text": ")만 담고, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": "가 마지막에 정한다. 행이 따르는 기준(저장된 stack이 행을 고정한 곳은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "stack",
+                  "Code": true
+                },
+                {
+                  "Text": ", 그 밖은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "dependency",
+                  "Code": true
+                },
+                {
+                  "Text": "), 뷰 위에서부터 센 상자의 행, 뷰의 행 수, 그리고 layout이 층을 나눈 선의 순환을 뷰의 다른 상자와 함께 가지면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Cycle",
+                  "Code": true
+                },
+                {
+                  "Text": "이다. 그래서 에이전트는 사람이 보는 순서로 상자를 읽는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "arrange",
+                  "Code": true
+                },
+                {
+                  "Text": "는 그 기준과 순환(",
+                  "Code": false
+                },
+                {
+                  "Text": "cyclic",
+                  "Code": true
+                },
+                {
+                  "Text": ", 층을 나눈 바로 그 그래프 위의 Tarjan ",
+                  "Code": false
+                },
+                {
+                  "Text": "components",
+                  "Code": true
+                },
+                {
+                  "Text": ": 개요에서는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "depends_on",
+                  "Code": true
+                },
+                {
+                  "Text": " 선과 계약 사용자에서 그 provider로 가는 선, 내부 뷰에서는 내부 선)을 ",
+                  "Code": false
+                },
+                {
+                  "Text": "layout.axis",
+                  "Code": true
+                },
+                {
+                  "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "신선도",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "screen.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "ActualFreshness",
+                  "Code": true
+                },
+                {
+                  "Text": "는 작업 트리 스냅숏을 sync한 지문과 비교한다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "BlueprintFreshness",
+                  "Code": true
+                },
+                {
+                  "Text": "는 상태의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Blueprint",
+                  "Code": true
+                },
+                {
+                  "Text": ", 곧 청사진을 그린 입력의 해시를 지금의 입력 해시와 비교한다. 또 상태의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rendered",
+                  "Code": true
+                },
+                {
+                  "Text": "를 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": "가 읽는, 지금 거기 있는 파일들의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.BlueprintHash",
+                  "Code": true
+                },
+                {
+                  "Text": "인 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Input.Rendered",
+                  "Code": true
+                },
+                {
+                  "Text": "와 비교하므로, 빠지거나 더해지거나 고쳐지거나 예전 렌더에서 남은 페이지는, 모듈 자기 페이지도 포함해 STALE로 읽힌다. 커밋된 페이지가 없는 체크아웃처럼 거기 파일이 없으면, 입력이 여전히 맞는 동안 청사진은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "NOT DRAWN",
+                  "Code": true
+                },
+                {
+                  "Text": "(",
+                  "Code": false
+                },
+                {
+                  "Text": "Undrawn",
+                  "Code": true
+                },
+                {
+                  "Text": ")으로, 상태가 무엇을 그렸는지 말하지 않으면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "UNKNOWN",
+                  "Code": true
+                },
+                {
+                  "Text": "으로 읽힌다. 어느 쪽이든 한 편이 없으면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "UNKNOWN",
+                  "Code": true
+                },
+                {
+                  "Text": "이고, 상태가 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Merged",
+                  "Code": true
+                },
+                {
+                  "Text": "이면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "STALE",
+                  "Code": true
+                },
+                {
+                  "Text": "이다. 병합된 상태의 값은 병합된 트리와도 그 입력과도 맞지 않기 때문이다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model",
+                  "Code": true
+                },
+                {
+                  "Text": "은 신선도 판정도 sync의 값도 담지 않으므로, 렌더는 데이터와 함께만 바뀐다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0040",
@@ -21117,10 +22901,192 @@
             "internal/screen/words.go blocks",
             "internal/screen/words.go spans"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Understanding",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "words.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): 제목, 목록 항목, 문단, 파이프 표, 울타리 친 코드의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Block",
+                  "Code": true
+                },
+                {
+                  "Text": "들과, 평문, ",
+                  "Code": false
+                },
+                {
+                  "Text": "code",
+                  "Code": true
+                },
+                {
+                  "Text": ", 굵은 글의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Span",
+                  "Code": true
+                },
+                {
+                  "Text": "들로 자른 설명문이다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "blocks",
+                  "Code": true
+                },
+                {
+                  "Text": "는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "narrative.Lines",
+                  "Code": true
+                },
+                {
+                  "Text": "로 글을 읽으므로, 페이지는 가독성 보고가 세는 제목에서 글을 나누고, 울타리 안의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "#",
+                  "Code": true
+                },
+                {
+                  "Text": "이나 ",
+                  "Code": false
+                },
+                {
+                  "Text": "|",
+                  "Code": true
+                },
+                {
+                  "Text": " 줄은 코드로 남는다. 울타리 친 덩어리는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "pre",
+                  "Code": true
+                },
+                {
+                  "Text": " 종류의 블록 하나가 되고, 그 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": "는 줄을 쓰인 그대로 담는다. 표의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rows",
+                  "Code": true
+                },
+                {
+                  "Text": "는 머리줄로 시작하고, 구분선을 빼며, 칸 안의 이스케이프된 ",
+                  "Code": false
+                },
+                {
+                  "Text": "\\|",
+                  "Code": true
+                },
+                {
+                  "Text": "를 지킨다. 저장된 다이제스트가 ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.ModuleDigest",
+                  "Code": true
+                },
+                {
+                  "Text": "와 다르면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Stale",
+                  "Code": true
+                },
+                {
+                  "Text": "로 표시된다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.ModuleDigest",
+                  "Code": true
+                },
+                {
+                  "Text": "는 모듈과 그 아래 어느 깊이에 있든 모든 단위의 파일, 그리고 그것들이 다른 파일에서 인용한 문구 주변 줄을 해시한다. 템플릿은 이를 리더의 설명으로 표시하는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "howhead",
+                  "Code": true
+                },
+                {
+                  "Text": "와, 두 곳 모두의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "howtext",
+                  "Code": true
+                },
+                {
+                  "Text": "로 그리며, ",
+                  "Code": false
+                },
+                {
+                  "Text": "howtext",
+                  "Code": true
+                },
+                {
+                  "Text": "는 노트도 쓰는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "blocks",
+                  "Code": true
+                },
+                {
+                  "Text": " 템플릿으로 블록을 그린다. 글을 이스케이프하고 그 마크업을 믿지 않는다. 설명문이 없는 모듈은 그렇다고 말하며 설명문을 저장하는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd understand",
+                  "Code": true
+                },
+                {
+                  "Text": " 명령을 적는 한 줄을 받고, 책임 줄이 없는 단위는 아무것도 보이지 않는다.",
+                  "Code": false
+                }
+              ]
+            }
+          ],
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -28799,6 +30765,21 @@
     {
       "ID": "MOD-0041",
       "Name": "internal/store",
+      "Purpose": {
+        "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 5,
+        "Uses": 2,
+        "Direct": 5,
+        "StaleNotes": 0,
+        "Dead": 1
+      },
       "Units": [
         {
           "ID": "DATA-0003",
@@ -28810,7 +30791,12 @@
             "internal/identity/identity.go Candidate",
             "internal/store/store.go LoadCandidates"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0007",
@@ -28822,7 +30808,12 @@
             "internal/store/store.go parseUnit",
             "internal/store/store.go renderUnit"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "DATA-0018",
@@ -28833,7 +30824,12 @@
           "Anchors": [
             "internal/store/store.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0042",
@@ -28845,7 +30841,12 @@
             "internal/store/store.go InputsHash",
             "internal/store/store.go hashFiles"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0043",
@@ -28856,7 +30857,12 @@
           "Anchors": [
             "internal/store/store.go NextID"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0044",
@@ -28867,7 +30873,12 @@
           "Anchors": [
             "internal/store/store.go UnitsAt"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0045",
@@ -28878,7 +30889,12 @@
           "Anchors": [
             "internal/store/store.go writeFile"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 3
+          }
         },
         {
           "ID": "MOD-0046",
@@ -28889,10 +30905,16 @@
           "Anchors": [
             "internal/store/understanding.go ModuleDigest"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 3
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -29814,7 +31836,8 @@
             "Need": true,
             "Providers": false,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         },
         {
@@ -30543,7 +32566,8 @@
             "Need": true,
             "Providers": false,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         }
       ],
@@ -30735,10 +32759,26 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            1,
-            4,
-            11,
-            12
+            {
+              "N": 1,
+              "Unit": "internal/store",
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice"
+            },
+            {
+              "N": 4,
+              "Unit": "internal/store",
+              "Does": "Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state"
+            },
+            {
+              "N": 11,
+              "Unit": "internal/store",
+              "Does": "SaveUnits(), SaveCandidates() → the unit files and candidates.yaml"
+            },
+            {
+              "N": 12,
+              "Unit": "internal/store",
+              "Does": "UpgradeUnderstandings(), then SaveState() writes revision and fingerprint"
+            }
           ]
         }
       ],
@@ -30755,6 +32795,21 @@
     {
       "ID": "MOD-0047",
       "Name": "internal/topology",
+      "Purpose": {
+        "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 4,
+        "Direct": 1,
+        "StaleNotes": 0,
+        "Dead": 2
+      },
       "Units": [
         {
           "ID": "DATA-0009",
@@ -30765,7 +32820,12 @@
           "Anchors": [
             "internal/topology/diff.go Diff"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 4,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0011",
@@ -30776,7 +32836,12 @@
           "Anchors": [
             "internal/topology/diff.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0013",
@@ -30787,7 +32852,12 @@
           "Anchors": [
             "internal/topology/query.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0021",
@@ -30798,7 +32868,12 @@
           "Anchors": [
             "internal/topology/diff.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "DATA-0023",
@@ -30809,7 +32884,12 @@
           "Anchors": [
             "internal/topology/impact.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0048",
@@ -30820,7 +32900,12 @@
           "Anchors": [
             "internal/topology/diff.go Boundary"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0049",
@@ -30832,7 +32917,12 @@
             "internal/topology/diff.go Compare",
             "internal/topology/diff.go between"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 3,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0050",
@@ -30843,7 +32933,12 @@
           "Anchors": [
             "internal/topology/impact.go ImpactOf"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0051",
@@ -30854,7 +32949,12 @@
           "Anchors": [
             "internal/topology/impact.go Links"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 2,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0052",
@@ -30865,7 +32965,12 @@
           "Anchors": [
             "internal/topology/query.go Explain"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         },
         {
           "ID": "MOD-0053",
@@ -30877,10 +32982,16 @@
             "internal/topology/query.go Path",
             "internal/topology/query.go strength"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 4
+          }
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -32949,6 +35060,13 @@
     {
       "ID": "MOD-0054",
       "Name": "internal/group",
+      "Standing": {
+        "Provides": 2,
+        "Uses": 1,
+        "Direct": 1,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "DATA-0017",
@@ -32959,7 +35077,12 @@
           "Anchors": [
             "internal/group/group.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         },
         {
           "ID": "DATA-0022",
@@ -32970,7 +35093,12 @@
           "Anchors": [
             "internal/group/group.go"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         }
       ],
       "Understanding": null,
@@ -33057,7 +35185,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            10
+            {
+              "N": 10,
+              "Unit": "internal/group",
+              "Does": "Fallback(units) → a crowded level placed in the directories its code lives in"
+            }
           ]
         }
       ],
@@ -33074,6 +35206,17 @@
     {
       "ID": "MOD-0055",
       "Name": "pstack (external)",
+      "Responsibility": {
+        "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
+        "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "FEAT-0018",
@@ -33086,7 +35229,12 @@
             "plugins/abbd/skills/abbd/SKILL.md",
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         },
         {
           "ID": "FEAT-0020",
@@ -33098,7 +35246,12 @@
             "plugins/abbd/skills/abbd-setup/SKILL.md",
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Rank": {
+            "Basis": "dependency",
+            "N": 1,
+            "Of": 1
+          }
         }
       ],
       "Understanding": null,
@@ -33140,8 +35293,16 @@
     {
       "ID": "MOD-0056",
       "Name": "internal/narrative",
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": null,
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -33739,6 +35900,13 @@
     {
       "ID": "MOD-0057",
       "Name": "internal/owners",
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": null,
       "Understanding": null,
       "Unwired": null,
@@ -34632,6 +36800,268 @@
           ]
         }
       ]
+    }
+  ],
+  "zones": [
+    {
+      "name": "abbd 스킬",
+      "units": [
+        "FEAT-0001",
+        "FEAT-0002"
+      ]
+    },
+    {
+      "name": "읽는 쪽",
+      "units": [
+        "MOD-0017",
+        "MOD-0013",
+        "MOD-0022",
+        "MOD-0056",
+        "MOD-0057"
+      ]
+    },
+    {
+      "name": "토폴로지 규칙",
+      "units": [
+        "MOD-0026",
+        "MOD-0009",
+        "MOD-0054",
+        "MOD-0047"
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0001",
+      "word": "abbd sync 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 38
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "MOD-0001",
+      "word": "abbd setup 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 31
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "FEAT-0001",
+      "word": "abbd 스킬의 리더",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0055",
+      "word": "pstack how 탐색",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0017",
+      "word": "스크립트 출력 Parse",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0009",
+      "word": "보충 doc Overlay",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0009",
+      "to": "MOD-0017",
+      "word": "extract.Result 덧입힘",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "data",
+        "import"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0022",
+      "word": "작업 트리 Snapshot",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0026",
+      "word": "저장본과 추출 Reconcile",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0013",
+      "word": "단위 인용 Apply",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0054",
+      "word": "단위 Fallback 배치",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0041",
+      "word": "SaveUnits 단위 파일",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "data"
+      ],
+      "relations": 9
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0034",
+      "word": "청사진 Build",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0041",
+      "word": "LoadUnits 단위 읽기",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "convention",
+        "data"
+      ],
+      "relations": 12
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0047",
+      "word": "topology.Explain 질의",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0047",
+      "word": "EntryUses 항목 사용처",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0057",
+      "word": "owners.Read 소유자",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0056",
+      "word": "narrative.Lines 줄",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
     }
   ]
 }
