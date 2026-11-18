@@ -3,6 +3,7 @@ package evidence
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -50,5 +51,25 @@ func TestApplyMovesLinesToWhereTheQuoteIs(t *testing.T) {
 	}
 	if got := out.Relations[0].Evidence[0].Lines; got != "6" {
 		t.Errorf("Apply kept Lines %q though the quote is at 6; the next 1-line drift kills it", got)
+	}
+}
+
+// A quote cut in the middle of a word is dead, and its reason says so, so the
+// reader knows to cut at a word boundary instead of looking for a missing line.
+func TestAQuoteCutInsideAWordSaysSo(t *testing.T) {
+	c := New(reviewTree(t, "package a\n\nfunc ChargeCustomer(amount int) {}\n"))
+	cut := model.Evidence{Path: "a.go", Lines: "3", Quote: "func ChargeCust"}
+	now, _ := c.Status(cut, "r1", false)
+	if now.Status != model.Dead || !strings.Contains(now.Reason, "inside a word") {
+		t.Errorf("a quote cut inside a word is %q with reason %q", now.Status, now.Reason)
+	}
+	gone := model.Evidence{Path: "a.go", Lines: "3", Quote: "func Refund("}
+	now, _ = c.Status(gone, "r1", false)
+	if now.Status != model.Dead || now.Reason != "the script's quote is not in the file" {
+		t.Errorf("an absent quote is %q with reason %q", now.Status, now.Reason)
+	}
+	whole := model.Evidence{Path: "a.go", Lines: "3", Quote: "ChargeCustomer(amount int)"}
+	if now, _ = c.Status(whole, "r1", false); now.Status != model.Live {
+		t.Errorf("a quote cut at word boundaries is %q: %s", now.Status, now.Reason)
 	}
 }

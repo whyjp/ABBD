@@ -173,6 +173,18 @@ func (c *Checker) Around(e model.Evidence, n int) (string, bool) {
 	return strings.Join(f.raw[from-1:to], "\n"), true
 }
 
+// missing says why a script's quote is not found. A quote that starts or ends
+// inside a word of the file is cut mid-token, which the whole-word rule
+// refuses, so the reason says that instead of that the quote is absent.
+func (c *Checker) missing(e model.Evidence) string {
+	if f := c.load(e.Path); f != nil {
+		if q := normalize(e.Quote); q != "" && strings.Contains(f.norm, q) {
+			return "the script's quote starts or ends inside a word of the file; cut it at a word boundary or take the whole line"
+		}
+	}
+	return "the script's quote is not in the file"
+}
+
 // Status checks one item and returns it with its new status. rev is the
 // revision of the sync; "" checks without moving anything toward dead.
 // drifts is false for the script's evidence, which the script restates on
@@ -191,7 +203,7 @@ func (c *Checker) Status(e model.Evidence, rev string, drifts bool) (model.Evide
 	case r.Gone:
 		e.Status, e.Since, e.Reason = model.Dead, "", fmt.Sprintf("%s is gone", e.Path)
 	case !drifts:
-		e.Status, e.Since, e.Reason = model.Dead, "", "the script's quote is not in the file"
+		e.Status, e.Since, e.Reason = model.Dead, "", c.missing(e)
 	case e.Status == model.Drifted && e.Since != "" && rev != "" && e.Since != rev:
 		e.Status, e.Reason = model.Dead, fmt.Sprintf("drifted since %s and not refreshed", short(e.Since))
 		e.Since = ""

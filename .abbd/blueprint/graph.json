@@ -515,11 +515,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
@@ -751,7 +753,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Defines the JSON contract shared by swarm workers, the extractor script and the supplement: unit kinds, relation kinds, via values, evidence and parent rules.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -771,7 +774,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's subsystem walkthrough; ABBD uses it to read code and to write each module's text.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -791,7 +795,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's parallel fan-out; ABBD setup reads the code and asks for the grouping through it.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -1670,11 +1675,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader's unit or coupling lives exactly as long as the code it quoted, decided the same way every time for the same tree",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/evidence",
@@ -1694,11 +1701,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader's finding disappears when its code does, and edits above a quote never add up to a false removal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Marks a present semantic unit absent and a semantic relation dead when none of its evidence is live, leaves evidence-less items alone, and rewrites each live item's lines and the relation digest to the current location.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/evidence/evidence.go Apply",
@@ -2702,7 +2711,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -5812,11 +5822,13 @@
       "Name": "/abbd-setup",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -7784,7 +7796,7 @@
                 "Code": true
               },
               {
-                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글은 거부한다. 긴 섹션, 역사 문구, 이름 없는 유닛, 다른 유닛의 경로를 보고한다. brief는 reader가 채울 뼈대를 찍고 ",
+                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글은 거부한다. 긴 섹션, 역사 문구, 이름도 ID도 대지 않은 안쪽 유닛, 다른 유닛의 경로를 보고한다. brief는 reader가 채울 뼈대를 찍고 ",
                 "Code": false
               },
               {
@@ -12083,11 +12095,13 @@
       "Name": "internal/evidence",
       "Purpose": {
         "Value": "so a reader's unit or coupling lives exactly as long as the code it quoted, decided the same way every time for the same tree",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 2,
@@ -12150,6 +12164,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -12169,7 +12184,7 @@
                 "Code": true
               },
               {
-                "Text": " decides, deterministically, whether the working tree still holds the code a reader cited. The extraction script cannot see some facts, such as a coupling through a convention or a unit nothing in the code declares. A pstack reader adds such a fact through the setup supplement or ",
+                "Text": "는 리더가 인용한 코드를 작업 트리가 지금도 담고 있는지 결정적으로 가린다. 추출 스크립트가 못 보는 사실이 있다. 관례로 이어지는 결합이나 코드가 선언하지 않는 unit이 그렇다. pstack 리더는 setup 보충이나 ",
                 "Code": false
               },
               {
@@ -12177,7 +12192,7 @@
                 "Code": true
               },
               {
-                "Text": ", with a ",
+                "Text": "로 그런 사실을 더하고, 경로와 선택적 줄 범위와 원문 그대로의 인용을 이름 댄 ",
                 "Code": false
               },
               {
@@ -12185,7 +12200,7 @@
                 "Code": true
               },
               {
-                "Text": " that names a path, an optional line range and a verbatim quote. This package only finds that text again and gives the item a status: live, drifted or dead. It never judges whether the coupling is real and never writes a file. The same tree always gets the same answer.",
+                "Text": "를 붙인다. 이 패키지는 그 글을 다시 찾아 항목에 live, drifted, dead 중 하나의 상태를 줄 뿐이다. 결합이 참인지는 판단하지 않고 파일도 쓰지 않는다. 같은 트리는 늘 같은 답을 얻는다.",
                 "Code": false
               }
             ]
@@ -12194,7 +12209,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "The package is one file, evidence.go",
+                "Text": "패키지는 evidence.go 한 파일이다",
                 "Code": false
               }
             ]
@@ -12203,7 +12218,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The package is one file, ",
+                "Text": "패키지는 ",
                 "Code": false
               },
               {
@@ -12211,7 +12226,7 @@
                 "Code": true
               },
               {
-                "Text": ", and it imports only ",
+                "Text": " 한 파일이고 ",
                 "Code": false
               },
               {
@@ -12219,7 +12234,7 @@
                 "Code": true
               },
               {
-                "Text": ". An item's scope is the file it names, and a quote never follows into another file. ",
+                "Text": "만 가져온다. 항목의 범위는 그것이 이름 댄 파일이며, 인용은 다른 파일로 따라가지 않는다. ",
                 "Code": false
               },
               {
@@ -12227,7 +12242,7 @@
                 "Code": true
               },
               {
-                "Text": " tests one item. It takes the occurrence nearest the cited lines within ",
+                "Text": "는 항목 하나를 검사한다. ",
                 "Code": false
               },
               {
@@ -12235,7 +12250,7 @@
                 "Code": true
               },
               {
-                "Text": ", so two places of one quote cited a line or two apart each keep their own, and otherwise the quote's only occurrence anywhere in the file. A quote found twice with neither near the cited lines is not found. ",
+                "Text": " 안에서 인용한 줄에 가장 가까운 등장을 고르므로, 한두 줄 떨어져 인용한 같은 인용의 두 자리는 저마다 자기 자리를 지킨다. 그런 등장이 없으면 파일에서 인용의 유일한 등장을 고른다. 인용이 두 번 나오는데 인용한 줄 가까이에 없으면 찾지 못한 것이다. ",
                 "Code": false
               },
               {
@@ -12243,7 +12258,7 @@
                 "Code": true
               },
               {
-                "Text": " turns that answer into the item's next status. ",
+                "Text": "는 그 답을 항목의 다음 상태로 바꾼다. ",
                 "Code": false
               },
               {
@@ -12251,7 +12266,7 @@
                 "Code": true
               },
               {
-                "Text": " checks every item of every present unit: a semantic unit's own evidence, and the evidence of every parent claim, every relation claim, shown or hidden, and every phrase note. A present semantic unit whose evidence is all dead goes absent with the reason ",
+                "Text": "는 현재 모든 unit의 모든 항목을 검사한다. 의미 unit 자신의 근거, 그리고 모든 parent 주장, 보이든 숨겨졌든 모든 relation 주장, 모든 구절 노트의 근거다. 근거가 모두 dead인 현재 의미 unit은 이유 ",
                 "Code": false
               },
               {
@@ -12259,7 +12274,7 @@
                 "Code": true
               },
               {
-                "Text": ". Each relation claim with evidence gets a fresh ",
+                "Text": "로 사라진다. 근거가 있는 relation 주장은 새 ",
                 "Code": false
               },
               {
@@ -12267,7 +12282,7 @@
                 "Code": true
               },
               {
-                "Text": ", and each live item that names lines moves them to where the quote is now, so edits above it never add up to a false removal. ",
+                "Text": "를 얻고, 줄을 이름 댄 live 항목은 줄을 인용이 지금 있는 곳으로 옮기므로 위쪽의 편집이 쌓여 거짓 제거가 되는 일이 없다. ",
                 "Code": false
               },
               {
@@ -12275,7 +12290,7 @@
                 "Code": true
               },
               {
-                "Text": " ends with ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12283,15 +12298,7 @@
                 "Code": true
               },
               {
-                "Text": ", so a dead claim stops showing and the next claim shows. ",
-                "Code": false
-              },
-              {
-                "Text": "syncActual",
-                "Code": true
-              },
-              {
-                "Text": " in ",
+                "Text": "로 끝나므로 dead인 주장은 보이지 않고 다음 주장이 보인다. ",
                 "Code": false
               },
               {
@@ -12299,15 +12306,15 @@
                 "Code": true
               },
               {
-                "Text": " runs ",
+                "Text": "의 ",
                 "Code": false
               },
               {
-                "Text": "Apply",
+                "Text": "syncActual",
                 "Code": true
               },
               {
-                "Text": " at the sync revision right after ",
+                "Text": "은 ",
                 "Code": false
               },
               {
@@ -12315,15 +12322,15 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " 바로 뒤에 sync 리비전으로 ",
                 "Code": false
               },
               {
-                "Text": "save",
+                "Text": "Apply",
                 "Code": true
               },
               {
-                "Text": " in ",
+                "Text": "를 돈다. ",
                 "Code": false
               },
               {
@@ -12331,7 +12338,15 @@
                 "Code": true
               },
               {
-                "Text": " runs it with no revision on the one unit that ",
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "save",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12355,7 +12370,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -12363,7 +12378,7 @@
                 "Code": true
               },
               {
-                "Text": " changes. ",
+                "Text": "가 바꾼 unit 하나에 리비전 없이 돈다. ",
                 "Code": false
               },
               {
@@ -12371,7 +12386,7 @@
                 "Code": true
               },
               {
-                "Text": " calls ",
+                "Text": "는 리비전 없이 ",
                 "Code": false
               },
               {
@@ -12379,7 +12394,7 @@
                 "Code": true
               },
               {
-                "Text": " with no revision to print each item of the claims that show. ",
+                "Text": "를 불러 보이는 주장의 항목마다 찍는다. ",
                 "Code": false
               },
               {
@@ -12387,7 +12402,7 @@
                 "Code": true
               },
               {
-                "Text": " calls ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12395,7 +12410,7 @@
                 "Code": true
               },
               {
-                "Text": " to refuse a quote its file does not hold now, and ",
+                "Text": "로 파일이 지금 담지 않은 인용을 거부하고, ",
                 "Code": false
               },
               {
@@ -12403,7 +12418,7 @@
                 "Code": true
               },
               {
-                "Text": " calls it to mark every item but the script's that is not live as dead. ",
+                "Text": "는 스크립트의 것이 아니면서 live가 아닌 항목을 dead로 표시한다. ",
                 "Code": false
               },
               {
@@ -12411,7 +12426,7 @@
                 "Code": true
               },
               {
-                "Text": " calls ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12419,7 +12434,7 @@
                 "Code": true
               },
               {
-                "Text": " to hash the lines near each quote of a file a module only quotes. ",
+                "Text": "로 모듈이 인용만 하는 파일의 각 인용 곁 줄을 해시한다. ",
                 "Code": false
               },
               {
@@ -12427,7 +12442,7 @@
                 "Code": true
               },
               {
-                "Text": " calls ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12435,7 +12450,7 @@
                 "Code": true
               },
               {
-                "Text": " to refuse a note's quote its file holds more than once, and ",
+                "Text": "로 파일이 한 번보다 많이 담는 노트의 인용을 거부하고, ",
                 "Code": false
               },
               {
@@ -12443,7 +12458,7 @@
                 "Code": true
               },
               {
-                "Text": " calls it to mark a note's place missing once its quote is no longer unique.",
+                "Text": "는 인용이 더는 유일하지 않을 때 노트의 자리를 없는 것으로 표시한다.",
                 "Code": false
               }
             ]
@@ -12474,7 +12489,7 @@
                 "Code": true
               },
               {
-                "Text": "): a project root and a cache of each file loaded, with nil for a file that is missing. ",
+                "Text": "): 프로젝트 루트와 읽은 파일마다의 캐시이며, 없는 파일은 nil이다. ",
                 "Code": false
               },
               {
@@ -12482,7 +12497,7 @@
                 "Code": true
               },
               {
-                "Text": " makes one per command, so it is a snapshot of the tree.",
+                "Text": "가 명령마다 하나를 만들므로 트리의 스냅숏이다.",
                 "Code": false
               }
             ]
@@ -12491,7 +12506,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Normalized file",
+                "Text": "정규화한 파일",
                 "Code": false,
                 "Bold": true
               },
@@ -12504,7 +12519,7 @@
                 "Code": true
               },
               {
-                "Text": "): the raw lines, plus ",
+                "Text": "): 원래 줄과 ",
                 "Code": false
               },
               {
@@ -12512,7 +12527,7 @@
                 "Code": true
               },
               {
-                "Text": " (the text with all whitespace removed), ",
+                "Text": "(모든 공백을 없앤 글), ",
                 "Code": false
               },
               {
@@ -12520,7 +12535,7 @@
                 "Code": true
               },
               {
-                "Text": " (the line of each byte of ",
+                "Text": "(",
                 "Code": false
               },
               {
@@ -12528,7 +12543,7 @@
                 "Code": true
               },
               {
-                "Text": ") and ",
+                "Text": " 바이트마다의 줄), ",
                 "Code": false
               },
               {
@@ -12536,7 +12551,7 @@
                 "Code": true
               },
               {
-                "Text": " (whether whitespace stood before that byte). Reformatting never kills a quote.",
+                "Text": "(그 바이트 앞에 공백이 있었는지)이다. 서식을 바꿔도 인용은 죽지 않는다.",
                 "Code": false
               }
             ]
@@ -12545,7 +12560,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Word boundary",
+                "Text": "낱말 경계",
                 "Code": false,
                 "Bold": true
               },
@@ -12558,7 +12573,7 @@
                 "Code": true
               },
               {
-                "Text": "): a quote that ends in a word character must end where the code's word ends, and the same holds at its start. So ",
+                "Text": "): 낱말 글자로 끝나는 인용은 코드의 낱말이 끝나는 곳에서 끝나야 하고, 시작도 같다. 그래서 ",
                 "Code": false
               },
               {
@@ -12566,7 +12581,7 @@
                 "Code": true
               },
               {
-                "Text": " does not live on in ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12574,7 +12589,7 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": "에서 살아남지 않는다.",
                 "Code": false
               }
             ]
@@ -12596,7 +12611,7 @@
                 "Code": true
               },
               {
-                "Text": "): 3 lines of tolerance around the cited range. Among the occurrences within it, the one nearest the range wins, and the earlier one on a tie. A quote with no ",
+                "Text": "): 인용한 범위 둘레의 허용 3줄이다. 그 안의 등장 가운데 범위에 가장 가까운 것이 이기고, 동률이면 앞의 것이다. ",
                 "Code": false
               },
               {
@@ -12604,7 +12619,7 @@
                 "Code": true
               },
               {
-                "Text": " is unbounded and takes its first occurrence in the file.",
+                "Text": "가 없는 인용은 경계가 없어 파일의 첫 등장을 쓴다.",
                 "Code": false
               }
             ]
@@ -12642,7 +12657,7 @@
                 "Code": true
               },
               {
-                "Text": " (the file does not exist), ",
+                "Text": "(파일이 없음), ",
                 "Code": false
               },
               {
@@ -12650,7 +12665,7 @@
                 "Code": true
               },
               {
-                "Text": " (where the quote was found, such as ",
+                "Text": "(인용을 찾은 곳, 예를 들어 ",
                 "Code": false
               },
               {
@@ -12658,7 +12673,7 @@
                 "Code": true
               },
               {
-                "Text": ") and ",
+                "Text": "), ",
                 "Code": false
               },
               {
@@ -12666,7 +12681,7 @@
                 "Code": true
               },
               {
-                "Text": " (the first 8 bytes of a SHA-256 of the matched raw lines, in hex).",
+                "Text": "(맞은 원래 줄의 SHA-256 앞 8바이트를 16진수로)다.",
                 "Code": false
               }
             ]
@@ -12675,7 +12690,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Status rules",
+                "Text": "상태 규칙",
                 "Code": false,
                 "Bold": true
               },
@@ -12688,7 +12703,7 @@
                 "Code": true
               },
               {
-                "Text": "): a found quote makes the item live and clears ",
+                "Text": "): 찾은 인용은 항목을 live로 만들고 ",
                 "Code": false
               },
               {
@@ -12696,7 +12711,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": "와 ",
                 "Code": false
               },
               {
@@ -12704,7 +12719,7 @@
                 "Code": true
               },
               {
-                "Text": ". A missing file makes it dead with the reason ",
+                "Text": "을 지운다. 파일이 없으면 이유 ",
                 "Code": false
               },
               {
@@ -12712,7 +12727,7 @@
                 "Code": true
               },
               {
-                "Text": ". A file without the quote makes it drifted, with ",
+                "Text": "으로 dead다. 파일에 인용이 없으면 ",
                 "Code": false
               },
               {
@@ -12720,7 +12735,7 @@
                 "Code": true
               },
               {
-                "Text": " set to the sync's revision. A sync at a later revision that still finds it drifted makes it dead with the reason ",
+                "Text": "를 sync의 리비전으로 두고 drifted다. 더 나중 리비전의 sync가 여전히 drifted로 찾으면 이유 ",
                 "Code": false
               },
               {
@@ -12728,7 +12743,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": "로 dead다. ",
                 "Code": false
               },
               {
@@ -12736,7 +12751,7 @@
                 "Code": true
               },
               {
-                "Text": " returns a dead item unchecked, so dead is terminal. With no revision, a drifted item stays drifted.",
+                "Text": "는 dead 항목을 검사하지 않고 돌려주므로 dead는 끝 상태다. 리비전이 없으면 drifted 항목은 drifted로 남는다.",
                 "Code": false
               }
             ]
@@ -12745,7 +12760,7 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "Script evidence",
+                "Text": "스크립트 근거",
                 "Code": false
               }
             ]
@@ -12754,7 +12769,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Script evidence",
+                "Text": "스크립트 근거",
                 "Code": false,
                 "Bold": true
               },
@@ -12767,7 +12782,7 @@
                 "Code": true
               },
               {
-                "Text": "): the script restates its quotes on every sync, so its items never drift. ",
+                "Text": "): 스크립트는 sync마다 인용을 다시 말하므로 그 항목은 drifted가 되지 않는다. ",
                 "Code": false
               },
               {
@@ -12775,7 +12790,7 @@
                 "Code": true
               },
               {
-                "Text": " checks them with ",
+                "Text": "는 ",
                 "Code": false
               },
               {
@@ -12783,7 +12798,15 @@
                 "Code": true
               },
               {
-                "Text": " false. A quote the file does not hold makes such an item dead, and a dead one is checked again.",
+                "Text": "를 거짓으로 두고 검사한다. 파일에 없는 인용은 그 항목을 dead로 만들고, dead는 다시 검사한다. 인용이 파일의 한 낱말 안에서 시작하거나 끝나면 낱말 경계 규칙이 거부하므로, ",
+                "Code": false
+              },
+              {
+                "Text": "missing",
+                "Code": true
+              },
+              {
+                "Text": "은 이유에 \"인용이 낱말 안에서 시작하거나 끝난다\"고 밝히고 낱말 경계에서 자르거나 줄 전체를 가져오라고 알려, 인용이 파일에 없는 경우와 구별한다.",
                 "Code": false
               }
             ]
@@ -12792,7 +12815,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Claim status",
+                "Text": "주장 상태",
                 "Code": false,
                 "Bold": true
               },
@@ -12821,7 +12844,7 @@
                 "Code": true
               },
               {
-                "Text": " checks a claim's items in order. ",
+                "Text": "은 주장의 항목을 차례로 검사한다. ",
                 "Code": false
               },
               {
@@ -12829,7 +12852,7 @@
                 "Code": true
               },
               {
-                "Text": " makes the claim live while any item is live, else drifted while any is drifted, else dead. A relation's digest joins its live items' digests with commas, so a diff sees an edit to quoted lines even while the quote survives.",
+                "Text": "는 항목 하나라도 live면 주장을 live로, 아니면 하나라도 drifted면 drifted로, 아니면 dead로 만든다. relation의 digest는 live 항목들의 digest를 쉼표로 이어, 인용은 살아 있어도 인용한 줄의 편집을 diff가 보게 한다.",
                 "Code": false
               }
             ]
@@ -12838,7 +12861,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Semantic",
+                "Text": "의미",
                 "Code": false,
                 "Bold": true
               },
@@ -12851,7 +12874,7 @@
                 "Code": true
               },
               {
-                "Text": "): a unit is semantic when its name's writer is INFERRED, the supplement's or a reader's. A relation is semantic when it carries evidence, whatever its writer.",
+                "Text": "): 이름의 writer가 INFERRED, 곧 보충이나 리더의 것이면 unit은 의미 unit이다. 근거를 가진 relation은 writer가 무엇이든 의미 relation이다.",
                 "Code": false
               }
             ]
@@ -12873,7 +12896,7 @@
                 "Code": true
               },
               {
-                "Text": "): the raw lines that hold a quote now, found as ",
+                "Text": "): ",
                 "Code": false
               },
               {
@@ -12881,7 +12904,7 @@
                 "Code": true
               },
               {
-                "Text": " finds it, with ",
+                "Text": "가 찾는 방식으로 찾은, 지금 인용을 담은 원래 줄과 양쪽 ",
                 "Code": false
               },
               {
@@ -12889,7 +12912,7 @@
                 "Code": true
               },
               {
-                "Text": " lines on each side, clamped to the file. It returns false when ",
+                "Text": "줄이며 파일 안으로 자른다. ",
                 "Code": false
               },
               {
@@ -12897,7 +12920,7 @@
                 "Code": true
               },
               {
-                "Text": " would not find the quote.",
+                "Text": "가 인용을 찾지 못하면 거짓을 돌려준다.",
                 "Code": false
               }
             ]
@@ -12919,7 +12942,7 @@
                 "Code": true
               },
               {
-                "Text": "): how many places the quote's file holds it now, whatever lines the item names, matched as ",
+                "Text": "): 항목이 어느 줄을 이름 대든, ",
                 "Code": false
               },
               {
@@ -12927,7 +12950,7 @@
                 "Code": true
               },
               {
-                "Text": " matches. It is 0 for a missing file or an empty quote.",
+                "Text": "가 맞추는 방식으로 파일이 지금 인용을 담은 자리의 수다. 파일이 없거나 인용이 비면 0이다.",
                 "Code": false
               }
             ]
@@ -35493,7 +35516,8 @@
       "Name": "pstack (external)",
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,

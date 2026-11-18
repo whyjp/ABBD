@@ -59,6 +59,10 @@ func TestUnderstandReportsUnnamedInsideUnitsAndOtherUnitsFiles(t *testing.T) {
 	if strings.Contains(out, "unmentioned:") || strings.Contains(out, "names:") {
 		t.Errorf("understand reported a text that names its units and no other code:\n%s", out)
 	}
+	out = p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling charges cards, and `DATA-0001` holds what it charges.\n"), "--reader", "abbd reader")
+	if strings.Contains(out, "unmentioned:") {
+		t.Errorf("understand did not count a unit ID as naming the unit:\n%s", out)
+	}
 	if !strings.Contains(p.read("understanding/MOD-0001.md"), "reader: abbd reader\n") {
 		t.Errorf("--reader was not stored trimmed:\n%s", p.read("understanding/MOD-0001.md"))
 	}
