@@ -227,6 +227,11 @@ type tactic struct {
 	// choose and the focus views draw only the drawing they keep with it, so
 	// it moves no box: which drawing a view keeps is weighed on its own lines.
 	roads bool
+	// through sets a line off its chain where the chain passes a row more
+	// than detourOffer off its way (chainsOf), so a line that skips rows
+	// passes a full row in its gaps rather than round the row's end. choose
+	// tries it on the drawing it keeps on roads.
+	through bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
