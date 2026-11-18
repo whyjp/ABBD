@@ -2613,6 +2613,7 @@
         "internal/extract/frontend",
         "internal/extract/frontend/cargo.go",
         "internal/extract/frontend/cmake.go",
+        "internal/extract/frontend/cmakecompile.go",
         "internal/extract/frontend/frontend.go"
       ],
       "Parent": "MOD-0017"
@@ -2626,6 +2627,8 @@
       "Responsibility": null,
       "Anchors": [
         "internal/extract/relate",
+        "internal/extract/relate/c.go",
+        "internal/extract/relate/cread.go",
         "internal/extract/relate/golang.go",
         "internal/extract/relate/relate.go",
         "internal/extract/relate/rust.go",
@@ -12530,6 +12533,7 @@
             "internal/extract/frontend",
             "internal/extract/frontend/cargo.go",
             "internal/extract/frontend/cmake.go",
+            "internal/extract/frontend/cmakecompile.go",
             "internal/extract/frontend/frontend.go"
           ],
           "Understanding": null
@@ -12542,6 +12546,8 @@
           "Guess": false,
           "Anchors": [
             "internal/extract/relate",
+            "internal/extract/relate/c.go",
+            "internal/extract/relate/cread.go",
             "internal/extract/relate/golang.go",
             "internal/extract/relate/relate.go",
             "internal/extract/relate/rust.go",
