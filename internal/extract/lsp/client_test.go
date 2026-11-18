@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -16,7 +18,15 @@ import (
 // TestMain lets the test binary stand in for a language server, so the
 // client is tested over a real pipe and process.
 func TestMain(m *testing.M) {
-	if os.Getenv("FAKE_LSP") != "" {
+	switch os.Getenv("FAKE_LSP") {
+	case "":
+	case "launcher":
+		launcher()
+		return
+	case "sleeper":
+		time.Sleep(time.Minute)
+		return
+	default:
 		fakeServer()
 		return
 	}
@@ -216,4 +226,54 @@ func TestURIRoundTripsAnAbsolutePath(t *testing.T) {
 			t.Errorf("an escaped drive letter reads as %q, %v", p, err)
 		}
 	}
+}
+
+// launcher stands in for a .cmd shim: it starts the real server as a child,
+// writes the child's pid to FAKE_PIDFILE and waits for it.
+func launcher() {
+	exe, _ := os.Executable()
+	child := exec.Command(exe)
+	child.Env = append(os.Environ(), "FAKE_LSP=sleeper")
+	if err := child.Start(); err != nil {
+		os.Exit(1)
+	}
+	os.WriteFile(os.Getenv("FAKE_PIDFILE"), []byte(strconv.Itoa(child.Process.Pid)), 0o644)
+	child.Wait()
+}
+
+func TestKillTreeStopsWhatTheServerStarted(t *testing.T) {
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	pidfile := filepath.Join(t.TempDir(), "pid")
+	cmd := exec.Command(exe)
+	cmd.Env = append(os.Environ(), "FAKE_LSP=launcher", "FAKE_PIDFILE="+pidfile)
+	ownTree(cmd)
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	var child *os.Process
+	for range 100 {
+		if b, err := os.ReadFile(pidfile); err == nil {
+			if pid, err := strconv.Atoi(string(b)); err == nil && pid > 0 {
+				child, _ = os.FindProcess(pid)
+				break
+			}
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	if child == nil {
+		t.Fatal("the launcher never started its child")
+	}
+	t.Cleanup(func() { child.Kill() })
+	killTree(cmd)
+	cmd.Wait()
+	for range 100 {
+		if !alive(child) {
+			return
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	t.Error("the server's child outlived killTree")
 }
