@@ -87,6 +87,9 @@ type layout struct {
 	idle bool
 	// counted, roads and through are the tactic's flags.
 	counted, roads, through bool
+	// recorded says the drawing is an overview its stored record cut, so
+	// lines against the flow keep a track clear of lines with it (lay).
+	recorded bool
 	// axis is what the rows were ranked by.
 	axis axis
 }

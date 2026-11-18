@@ -760,6 +760,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 	}
 	o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
+	o.layout.recorded = o.said != nil
 	return o
 }
 
