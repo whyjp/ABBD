@@ -342,24 +342,37 @@ func (l *layout) chainsOf(reqs []wireReq) []int {
 	// A frame's chips are set out after the layout, each over the
 	// mean of its lines, so a line to a chip may find its chain far off
 	// the way between its ends; it passes the rows on its own instead.
+	// With through, so does a line between two boxes whose chain the
+	// layout set down past a full row's end (tactic.through).
 	for i, r := range reqs {
-		c := chainOf[i]
-		if c < 0 {
-			continue
-		}
-		if r.from.node != "" && r.to.node != "" {
-			continue
-		}
-		a, b := (r.from.lo+r.from.hi)/2, (r.to.lo+r.to.hi)/2
-		for row := min(r.from.row, r.to.row) + 1; row < max(r.from.row, r.to.row); row++ {
-			x := l.pass[[2]int{c, row}]
-			if abs(x-a)+abs(x-b)-abs(a-b) > detourOffer {
-				chainOf[i] = -1
-				break
-			}
+		if c := chainOf[i]; c >= 0 && (r.from.node == "" || r.to.node == "" || l.through) && l.astray(c, r) {
+			chainOf[i] = -1
 		}
 	}
 	return chainOf
+}
+
+// astray says chain c passes some row between r's ends more than
+// detourOffer off the way between them.
+func (l *layout) astray(c int, r wireReq) bool {
+	a, b := (r.from.lo+r.from.hi)/2, (r.to.lo+r.to.hi)/2
+	for row := min(r.from.row, r.to.row) + 1; row < max(r.from.row, r.to.row); row++ {
+		if x := l.pass[[2]int{c, row}]; abs(x-a)+abs(x-b)-abs(a-b) > detourOffer {
+			return true
+		}
+	}
+	return false
+}
+
+// strays says some line between two boxes runs down a chain astray, so
+// drawing through the rows' gaps would draw something else.
+func (l *layout) strays(reqs []wireReq, chainOf []int) bool {
+	for i, r := range reqs {
+		if c := chainOf[i]; c >= 0 && r.from.node != "" && r.to.node != "" && l.astray(c, r) {
+			return true
+		}
+	}
+	return false
 }
 
 // bundlesPairs says some two lines between modules that use each other
@@ -492,6 +505,8 @@ type routing struct {
 	shares bool
 	// roomy says the counted tactic would give some ×N room (lay).
 	roomy bool
+	// strays says the through tactic would set some line off its chain.
+	strays bool
 	// bent are the lines lay took off their buses to drop straight that
 	// do not stand straight.
 	bent []int
@@ -595,6 +610,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		arrive[ak] = append(arrive[ak], i)
 	}
 	chainOf := l.chainsOf(reqs)
+	strays := l.strays(reqs, chainOf)
 	{
 		// A chain no line runs down keeps no room: a line that left it
 		// passes the rows on its own and may take its place.
@@ -2187,7 +2203,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			crooked = append(crooked, i)
 		}
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked, joined: joined, tracks: took}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, strays: strays, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked, joined: joined, tracks: took}
 }
 
 // teed says line i drops straight across a flat stretch of another line
@@ -2421,7 +2437,8 @@ func wanted(reqs []wireReq) [][2]string {
 }
 
 // detourOffer is how much longer than the direct way a chain may make a
-// line to a frame's chip before the line passes the rows on its own.
+// line to a frame's chip before the line passes the rows on its own, and,
+// with tactic.through, any line before it passes a row off its chain.
 const detourOffer = 160
 
 // slotGap is the least room between two lines on one edge of a box.

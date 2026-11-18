@@ -515,11 +515,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
@@ -656,7 +658,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Lists unit candidates from the layout and fans the reading out to a pstack swarm of how-explorer workers that report in the extraction format.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -771,7 +774,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's subsystem walkthrough; ABBD uses it to read code and to write each module's text.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -791,7 +795,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's parallel fan-out; ABBD setup reads the code and asks for the grouping through it.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -1375,11 +1380,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd",
@@ -1477,11 +1484,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the state always rests on the deterministic extraction alone",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/main.go runScript",
@@ -1762,11 +1771,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract",
@@ -2167,11 +2178,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -2694,7 +2707,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -2758,6 +2772,7 @@
         "internal/extract/frontend",
         "internal/extract/frontend/cargo.go",
         "internal/extract/frontend/cmake.go",
+        "internal/extract/frontend/cmakecompile.go",
         "internal/extract/frontend/frontend.go"
       ],
       "Parent": "MOD-0017",
@@ -2772,6 +2787,8 @@
       "Responsibility": null,
       "Anchors": [
         "internal/extract/relate",
+        "internal/extract/relate/c.go",
+        "internal/extract/relate/cread.go",
         "internal/extract/relate/golang.go",
         "internal/extract/relate/relate.go",
         "internal/extract/relate/rust.go",
@@ -5796,11 +5813,13 @@
       "Name": "/abbd-setup",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -6173,11 +6192,13 @@
       "Name": "abbd CLI",
       "Purpose": {
         "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 34,
@@ -12890,11 +12911,13 @@
       "Name": "internal/extract",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -12980,6 +13003,7 @@
             "internal/extract/frontend",
             "internal/extract/frontend/cargo.go",
             "internal/extract/frontend/cmake.go",
+            "internal/extract/frontend/cmakecompile.go",
             "internal/extract/frontend/frontend.go"
           ],
           "Understanding": null,
@@ -12997,6 +13021,8 @@
           "Guess": false,
           "Anchors": [
             "internal/extract/relate",
+            "internal/extract/relate/c.go",
+            "internal/extract/relate/cread.go",
             "internal/extract/relate/golang.go",
             "internal/extract/relate/relate.go",
             "internal/extract/relate/rust.go",
@@ -21475,11 +21501,13 @@
       "Name": "internal/screen",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -26622,6 +26650,111 @@
               },
               {
                 "Text": ")을 늘리지 않을 때만 남는다. 한 트랙을 양방향으로 함께 쓰는 선들은 그대로 둔다. 떼어 놓으면 공유 잉크가 숨기던 교차가 드러나 교차가 크게 늘기 때문이다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "배치는 행을 여럿 건너는 선의 체인을 꽉 찬 행의 끝 너머에 둘 수 있고, 그 체인을 타는 선은 여백으로 나갔다 돌아온다. 그래서 ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": "는 도로 위에 그린 그림에서 어떤 선의 길 전체가 규칙 15의 한도(",
+                "Code": false
+              },
+              {
+                "Text": "detourLimit",
+                "Code": true
+              },
+              {
+                "Text": ")보다 멀리 돌고(",
+                "Code": false
+              },
+              {
+                "Text": "cost.far",
+                "Code": true
+              },
+              {
+                "Text": "), 두 상자 사이 선 하나가 길에서 ",
+                "Code": false
+              },
+              {
+                "Text": "detourOffer",
+                "Code": true
+              },
+              {
+                "Text": "보다 먼 체인을 탈 때(",
+                "Code": false
+              },
+              {
+                "Text": "routing.strays",
+                "Code": true
+              },
+              {
+                "Text": ") 그 그림을 ",
+                "Code": false
+              },
+              {
+                "Text": "through",
+                "Code": true
+              },
+              {
+                "Text": " 전술로 한 번 더 그린다. ",
+                "Code": false
+              },
+              {
+                "Text": "through",
+                "Code": true
+              },
+              {
+                "Text": "에서는 그런 선이 칩으로 가는 선처럼 체인을 떠나 행의 틈으로 지나간다(",
+                "Code": false
+              },
+              {
+                "Text": "chainsOf",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "astray",
+                "Code": true
+              },
+              {
+                "Text": "). 그 그림은 그렇게 먼 선이 줄고 관문이 뷰를 묶는 어떤 합계도 늘지 않을 때만 남는다(",
+                "Code": false
+              },
+              {
+                "Text": "gateTotals",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "noWorse",
+                "Code": true
+              },
+              {
+                "Text": "). 상자의 행과 순서는 그대로이고, 행 사이 간격만 선이 잡는 트랙 수에 따라 늘거나 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "through_test.go",
+                "Code": true
+              },
+              {
+                "Text": "가 이를 지킨다.",
                 "Code": false
               }
             ]
@@ -34926,7 +35059,8 @@
       "Name": "pstack (external)",
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
