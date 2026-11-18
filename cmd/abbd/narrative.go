@@ -65,14 +65,14 @@ func unfinished(text string) error {
 }
 
 // checkText reports where a module's text falls short of the reader's
-// contract: an inside unit no line names, and a path in a code span that is
+// contract: an inside unit no line names, by its name or its ID, and a path in a code span that is
 // no code the text is stamped against. Like readText it never refuses.
 // keys adds the key units by fan-in, which cost a repository search, so
 // only storing a text checks them and status, run in CI, does not.
 func (e env) checkText(w io.Writer, units []model.Unit, id model.ID, text string, keys bool) {
 	lower := strings.ToLower(text)
 	for _, r := range topology.Explain(units, id).Inside {
-		if !strings.Contains(lower, strings.ToLower(r.Name)) {
+		if !strings.Contains(lower, strings.ToLower(r.Name)) && !strings.Contains(lower, strings.ToLower(string(r.ID))) {
 			fmt.Fprintf(w, "unmentioned: %s's text never names %s %s, which sits inside it; name it in a Key Concepts bullet, with the units it works with\n", id, r.ID, r.Name)
 		}
 	}
