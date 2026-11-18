@@ -29,9 +29,11 @@ var relaters = map[string]struct {
 	unread    string
 	run       func(t tree, o owners) (found, error)
 }{
-	"go":   {[]string{"go.mod"}, "left out by build constraints (read as " + strings.Join(goEnv, ", ") + ")", golang},
-	"rust": {[]string{"Cargo.toml"}, "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared (test code is left out unlisted)", rust},
-	"c":    {cManifests, "compiled by no entry of the compile database (test code is left out unlisted)", clang},
+	"go":     {[]string{"go.mod"}, "left out by build constraints (read as " + strings.Join(goEnv, ", ") + ")", golang},
+	"rust":   {[]string{"Cargo.toml"}, "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared (test code is left out unlisted)", rust},
+	"c":      {cManifests, "compiled by no entry of the compile database (test code is left out unlisted)", clang},
+	"ts":     {[]string{"tsconfig.json", "jsconfig.json", "package.json"}, "whose symbols typescript-language-server could not list (test code is left out unlisted)", typescript},
+	"python": {[]string{"pyproject.toml", "setup.py", "setup.cfg", "pyrightconfig.json", "requirements.txt"}, "whose symbols pyright could not list (test code is left out unlisted)", python},
 }
 
 // Names lists the bundled relaters.

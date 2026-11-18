@@ -1,0 +1,5 @@
+{
+  "compilerOptions": { "target": "es2020", "module": "esnext", "moduleResolution": "bundler", "strict": true, "noEmit": true, "allowJs": true },
+  "include": ["**/*.ts", "**/*.js"],
+  "exclude": ["node_modules"]
+}
