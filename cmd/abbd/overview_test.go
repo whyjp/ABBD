@@ -177,10 +177,14 @@ func TestAnOverviewGoesStaleWhenItsUnitsMoveOrLeave(t *testing.T) {
  {"key":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}`, "", 1)
 	noLedger = strings.Replace(noLedger, `,
  {"from":"l","to":"t","kind":"consumes","via":"data","evidence":[{"path":"ledger/book.go","lines":"3-4","quote":"SELECT amount FROM charges"}]}`, "", 1)
-	p.setup(0, "", "--supplement", p.file(t, "sup.json", noLedger), "--", exe)
+	gone := `line 1, from "MOD-0002" to "MOD-0001", names no unit of the state`
+	p.setup(0, gone, "--supplement", p.file(t, "sup.json", noLedger), "--", exe)
 	out = p.want(1, "STALE", "status", "--check")
 	if !strings.Contains(out, "stale: overview zone 1 (돈) is STALE: MOD-0002 is no longer in the state") {
 		t.Errorf("a zone whose unit left the state is STALE and says so:\n%s", out)
+	}
+	if !strings.Contains(out, gone) {
+		t.Errorf("status warns of a line whose unit left the state:\n%s", out)
 	}
 }
 

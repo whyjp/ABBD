@@ -231,25 +231,50 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
 	var c *cut
-	if in.Project.Cut() {
-		c = o.primary(in.Primary, ls, fs)
+	// A project that turned the cut off draws every line, record or not.
+	off := in.Project.OverviewCut != nil && !*in.Project.OverviewCut
+	if in.Overview.Known && len(in.Overview.Lines) > 0 && !off {
+		var lines []model.Line
+		for _, l := range in.Overview.Lines {
+			lines = append(lines, l.Claim)
+		}
+		if rec, said := o.recordedPairs(lines); rec != nil {
+			c = o.primary(in.Primary, ls, fs, rec, said)
+		}
+	}
+	if c == nil && in.Project.Cut() {
+		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
-	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
-		p := planOverview(in.Units, "", nil, t, ls, fs, c)
-		if p.layout.idle {
-			return Drawing{}, false
+	overview := func(c *cut) Drawing {
+		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+			p := planOverview(in.Units, "", nil, t, ls, fs, c)
+			if p.layout.idle {
+				return Drawing{}, false
+			}
+			d := p.draw(href)
+			*read = p.read
+			return d, true
+		}, func(d Drawing, read *cost) {
+			read.judge(d)
+			read.over = pastScreen(d, room)
+		})
+	}
+	m.Overview = overview(c)
+	// The focus views seat their boxes where the overview without the
+	// record sets them, so a record changes which lines the overview draws
+	// and not how each box's own view reads.
+	seats := m.Overview
+	if c.hides() && c.said != nil {
+		var plain *cut
+		if in.Project.Cut() {
+			plain = o.primary(in.Primary, ls, fs, nil, nil)
 		}
-		d := p.draw(href)
-		*read = p.read
-		return d, true
-	}, func(d Drawing, read *cost) {
-		read.judge(d)
-		read.over = pastScreen(d, room)
-	})
-	m.Focus = o.overviewFocus(in.Units, m.Overview, c.hides())
+		seats = overview(plain)
+	}
+	m.Focus = o.overviewFocus(in.Units, seats, c.hides())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
