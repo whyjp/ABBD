@@ -2,6 +2,7 @@ package relate
 
 import (
 	"bytes"
+	"cmp"
 	"os"
 	"path/filepath"
 	"slices"
@@ -95,7 +96,8 @@ func TestTSRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 
 func TestPythonRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 	needPython(t)
-	doc := extract.Doc{Units: scriptUnits("app", "circle", "shapes", "util")}
+	slot := extract.DocUnit{Ref: "if-shape", Kind: model.Interface, Name: "Shape", Anchors: []model.Anchor{{Path: "shapes/shape.py", Symbol: "Shape"}}}
+	doc := extract.Doc{Units: append(scriptUnits("app", "circle", "priv", "shapes", "util"), slot)}
 	var outs [2]bytes.Buffer
 	for i := range outs {
 		out, unread := relateScript(t, pyFixture, "python", doc)
@@ -105,11 +107,14 @@ func TestPythonRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 		if i > 0 {
 			continue
 		}
+		// priv is used only through a name that starts with an underscore.
 		want := []string{
-			"mod-app depends_on mod-circle via call [app/main.py:5:s: shape.Shape = Circle(2)]",
-			"mod-app depends_on mod-shapes via import [app/main.py:5:s: shape.Shape = Circle(2)]",
-			"mod-app depends_on mod-util via call [app/main.py:6:total = add(LIMIT, s.area())]",
+			"mod-app consumes if-shape via import [app/main.py:6:s: shape.Shape = Circle(2)]",
+			"mod-app depends_on mod-circle via call [app/main.py:6:s: shape.Shape = Circle(2)]",
+			"mod-app depends_on mod-shapes via import [app/main.py:6:s: shape.Shape = Circle(2)]",
+			"mod-app depends_on mod-util via call [app/main.py:7:total = add(LIMIT, s.area()) + _secret()]",
 			"mod-circle depends_on mod-shapes via trait [circle/circle.py:4:class Circle(Shape):]",
+			"mod-circle provides if-shape via trait [circle/circle.py:4:class Circle(Shape):]",
 		}
 		if got := lines(out); !slices.Equal(got, want) {
 			t.Errorf("relations:\n%s\nwant:\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
@@ -127,29 +132,47 @@ func TestRefViaReadsWhatTheCodeDoesWithTheName(t *testing.T) {
 	for _, c := range []struct {
 		line, name string
 		want       model.Via
+		above      []string
+		file       string
 	}{
-		{"const s = new Circle(2);", "Circle", "call"},
-		{"export const t = add(LIMIT, 1);", "add", "call"},
-		{"const v = pick<number>(1);", "pick", "call"},
-		{"import { add, LIMIT } from \"../util/util\";", "add", "import"},
-		{"const s: Shape = make();", "Shape", "import"},
-		{"export class Circle extends Base implements Shape {", "Base", "trait"},
-		{"export class Circle extends Base implements Shape {", "Shape", "trait"},
-		{"export interface Round extends Shape {", "Shape", "trait"},
-		{"class Circle(Shape):", "Shape", "trait"},
-		{"class Circle(Base, Shape):", "Shape", "trait"},
-		{"s = Circle(2)", "Circle", "call"},
-		{"@app.get(\"/\")", "app", "import"},
-		{"@register", "register", "call"},
-		{"x = Shape  # class A(Shape):", "Shape", "import"},
-		{"from util.maths import add", "add", "import"},
+		{"const s = new Circle(2);", "Circle", "call", nil, ""},
+		{"export const t = add(LIMIT, 1);", "add", "call", nil, ""},
+		{"const v = pick<number>(1);", "pick", "call", nil, ""},
+		{"import { add, LIMIT } from \"../util/util\";", "add", "import", nil, ""},
+		{"const s: Shape = make();", "Shape", "import", nil, ""},
+		{"export class Circle extends Base implements Shape {", "Base", "trait", nil, ""},
+		{"export class Circle extends Base implements Shape {", "Shape", "trait", nil, ""},
+		{"export interface Round extends Shape {", "Shape", "trait", nil, ""},
+		{"class Circle(Shape):", "Shape", "trait", nil, "a.py"},
+		{"class Circle(Base, Shape):", "Shape", "trait", nil, "a.py"},
+		{"s = Circle(2)", "Circle", "call", nil, "a.py"},
+		{"@app.get(\"/\")", "app", "import", nil, "a.py"},
+		{"@register", "register", "call", nil, "a.py"},
+		{"x = Shape  # class A(Shape):", "Shape", "import", nil, "a.py"},
+		{"from util.maths import add", "add", "import", nil, ""},
+		{"export class A extends Base<Foo> {", "Foo", "import", nil, ""},
+		{"export class A extends Base<Foo> {", "Base", "trait", nil, ""},
+		{"class A<T extends Foo> implements Base {", "Foo", "import", nil, ""},
+		{"class A<T extends Foo> implements Base {", "Base", "trait", nil, ""},
+		{"  Base,", "Base", "trait", []string{"export class A", "  extends Other,"}, ""},
+		{"  implements Shape {", "Shape", "trait", []string{"export class A"}, ""},
+		{"const x = Foo;", "Foo", "import", []string{"class A extends Base {", "}"}, ""},
+		{"class A(Base, metaclass=Meta):", "Meta", "import", nil, "a.py"},
+		{"class A(Base, metaclass=Meta):", "metaclass", "import", nil, "a.py"},
+		{"class A(Base, metaclass=Meta):", "Base", "trait", nil, "a.py"},
+		{"class A(Generic[T], Base):", "T", "import", nil, "a.py"},
+		{"class A(Generic[T], Base):", "Generic", "trait", nil, "a.py"},
+		{"    Base,", "Base", "trait", []string{"class A(", "    Other,"}, "a.py"},
+		{"    x = helper(Foo)", "Foo", "import", []string{"class A(Base):", "    pass"}, "a.py"},
+		{"const v = <Circle r={1} />;", "Circle", "call", nil, "a.tsx"},
+		{"const v: Array<Circle> = [];", "Circle", "import", nil, "a.tsx"},
 	} {
 		i := strings.Index(c.line, c.name)
-		if got := refVia(c.line, i, i+len(c.name)); got != c.want {
+		if got := refVia(append(append([]string{}, c.above...), c.line), len(c.above), i, i+len(c.name), cmp.Or(c.file, "a.ts")); got != c.want {
 			t.Errorf("refVia(%q, %s) = %q, want %q", c.line, c.name, got, c.want)
 		}
 	}
-	if got := refVia("short", 3, 99); got != "import" {
+	if got := refVia([]string{"short"}, 0, 3, 99, "a.ts"); got != "import" {
 		t.Errorf("a range past the line = %q, want import", got)
 	}
 }
@@ -157,7 +180,7 @@ func TestRefViaReadsWhatTheCodeDoesWithTheName(t *testing.T) {
 func TestScriptTestPathsAreLeftOut(t *testing.T) {
 	for p, want := range map[string]bool{
 		"src/a.test.ts": true, "src/a.spec.js": true, "src/__tests__/a.ts": true, "src/__mocks__/a.ts": true, "test/a.ts": true,
-		"src/latest.ts": false, "src/contest.ts": false, "src/a.ts": false,
+		"e2e/a.ts": true, "src/e2e/b.ts": true, "src/latest.ts": false, "src/contest.ts": false, "src/a.ts": false,
 	} {
 		if tsTest(p) != want {
 			t.Errorf("tsTest(%q) = %v, want %v", p, !want, want)

@@ -21,8 +21,8 @@ var tsLang = scriptLang{
 }
 
 // tsTest is whether a path names test code, which the relater leaves out
-// by design: a .test or .spec file, or under a test, tests, __tests__ or
-// __mocks__ directory.
+// by design: a .test or .spec file, or under a test, tests, e2e, __tests__
+// or __mocks__ directory.
 func tsTest(p string) bool {
 	if cTest(p) {
 		return true
@@ -52,18 +52,25 @@ func typescript(t tree, o owners) (found, error) {
 }
 
 // tsserverNear finds the tsserver.js of the typescript package installed
-// beside the server, in the node_modules that holds it, so a global install
-// reads the TypeScript it was installed with.
+// beside the server, in the node_modules that holds it and no further up,
+// so a global install reads the TypeScript it was installed with.
 func tsserverNear(bin string) string {
 	if r, err := filepath.EvalSymlinks(bin); err == nil {
 		bin = r
 	}
+	has := func(d string) string {
+		p := filepath.Join(d, "typescript", "lib", "tsserver.js")
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+		return ""
+	}
 	for d := filepath.Dir(bin); ; d = filepath.Dir(d) {
-		for _, rel := range []string{"typescript", filepath.Join("node_modules", "typescript")} {
-			p := filepath.Join(d, rel, "lib", "tsserver.js")
-			if _, err := os.Stat(p); err == nil {
-				return p
-			}
+		if filepath.Base(d) == "node_modules" {
+			return has(d)
+		}
+		if p := has(filepath.Join(d, "node_modules")); p != "" {
+			return p
 		}
 		if filepath.Dir(d) == d {
 			return ""

@@ -52,7 +52,7 @@ func scriptFiles(t tree, o owners, l scriptLang) ([]string, error) {
 			return nil
 		}
 		r, ok := t.rel(p)
-		if _, known := l.exts[strings.ToLower(path.Ext(r))]; !ok || !known || l.test(r) || strings.HasSuffix(r, ".d.ts") {
+		if _, known := l.exts[strings.ToLower(path.Ext(r))]; !ok || !known || l.test(r) || declarationFile(r) {
 			return nil
 		}
 		if _, ok := o.of(r); ok {
@@ -62,6 +62,13 @@ func scriptFiles(t tree, o owners, l scriptLang) ([]string, error) {
 	})
 	slices.Sort(out)
 	return out, err
+}
+
+// declarationFile is whether a path is a TypeScript declaration file, which
+// declares types and holds no code.
+func declarationFile(p string) bool {
+	p = strings.ToLower(p)
+	return strings.HasSuffix(p, ".d.ts") || strings.HasSuffix(p, ".d.mts") || strings.HasSuffix(p, ".d.cts")
 }
 
 // scriptServer is the server to run: the environment variable, else the
@@ -121,7 +128,7 @@ func scripting(t tree, o owners, l scriptLang, argv []string, init any) (found, 
 	}
 	r := &scriptRead{tree: t, owners: o, lang: l, src: map[string][]string{}, decl: map[string]bool{}, read: map[string]bool{}}
 	ctx := context.Background()
-	r.srv, err = lsp.Start(ctx, lsp.Server{Argv: argv, Root: t.dir, Init: init, Timeout: 5 * time.Minute, Ready: 2 * time.Hour})
+	r.srv, err = lsp.Start(ctx, lsp.Server{Argv: argv, Root: t.dir, Init: init, Timeout: 5 * time.Minute})
 	if err != nil {
 		return found{}, err
 	}
@@ -148,8 +155,14 @@ func scripting(t tree, o owners, l scriptLang, argv []string, init any) (found, 
 	if err := parallel(len(all), func(i int) error { return r.uses(ctx, all[i]) }); err != nil {
 		return found{}, err
 	}
+	provides := map[link]bool{}
+	for _, x := range r.facts {
+		if x.kind == model.Provides {
+			provides[x.link] = true
+		}
+	}
 	f.facts = slices.DeleteFunc(r.facts, func(x fact) bool {
-		return x.kind == model.Consumes && slices.ContainsFunc(r.facts, func(y fact) bool { return y.link == link{x.from, x.to, model.Provides} })
+		return x.kind == model.Consumes && provides[link{x.from, x.to, model.Provides}]
 	})
 	return f, nil
 }
@@ -223,7 +236,7 @@ func (r *scriptRead) uses(ctx context.Context, s scriptSymbol) error {
 		if !ok || !read || !owned || u == s.unit || declared || l.Range.Start.Line >= len(lines) {
 			continue
 		}
-		via := refVia(lines[l.Range.Start.Line], l.Range.Start.Character, l.Range.End.Character)
+		via := refVia(lines, l.Range.Start.Line, l.Range.Start.Character, l.Range.End.Character, p)
 		at := site{path: p, line: l.Range.Start.Line + 1}
 		r.mu.Lock()
 		r.facts = append(r.facts, fact{link{u, s.unit, model.DependsOn}, via, at})
@@ -240,31 +253,138 @@ func (r *scriptRead) uses(ctx context.Context, s scriptSymbol) error {
 }
 
 var (
-	// heritage is a TypeScript class or interface header with an extends or
-	// implements clause before the reference; a Python class header with an
-	// open parenthesis.
-	tsHeritage  = regexp.MustCompile(`\b(class|interface)\b[^{=]*\b(extends|implements)\b[^{(]*$`)
-	pyBases     = regexp.MustCompile(`^\s*class\s+\w+\s*\([^)]*$`)
 	callAfter   = regexp.MustCompile(`^\s*(<[^<>()]*>\s*)?\(`)
 	newBefore   = regexp.MustCompile(`\bnew\s+$`)
 	decorBefore = regexp.MustCompile(`^\s*@[\w.]*$`)
+	jsxBefore   = regexp.MustCompile(`(^|[^\w$.])</?$`)
+	tsHeader    = regexp.MustCompile(`\b(class|interface)\s+[\w$]`)
+	pyHeader    = regexp.MustCompile(`^\s*class\s+\w`)
+	keywordArg  = regexp.MustCompile(`^\s*=[^=]`)
 )
 
-// refVia is what the reference at byte columns start to end of a line is:
-// trait where it names a base class or an implemented interface, call where
-// it is called, instantiated with new or applied as a decorator, else
-// import.
-func refVia(line string, start, end int) model.Via {
-	line = strings.TrimSuffix(line, "\r")
+// headerLines is how far above a reference its class header is looked for.
+const headerLines = 40
+
+// header is the text from the nearest class header above the reference,
+// up to the reference, with comments cut; empty when there is none.
+func header(lines []string, row, start int, python bool) string {
+	re := tsHeader
+	if python {
+		re = pyHeader
+	}
+	for i := row; i >= 0 && i > row-headerLines; i-- {
+		text := lines[i]
+		if i == row {
+			text = text[:start]
+		}
+		if python {
+			text, _, _ = strings.Cut(text, "#")
+		} else {
+			text, _, _ = strings.Cut(text, "//")
+		}
+		if loc := re.FindStringIndex(text); loc != nil {
+			var b strings.Builder
+			b.WriteString(text[loc[0]:])
+			if i < row {
+				for _, l := range lines[i+1 : row] {
+					b.WriteString(" ")
+					b.WriteString(l)
+				}
+				b.WriteString(" ")
+				b.WriteString(lines[row][:start])
+			}
+			return b.String()
+		}
+	}
+	return ""
+}
+
+// heritage is whether a name that follows the class header text stands
+// directly in the class's base list: after extends or implements at depth 0
+// of a TypeScript header, or as a positional argument of a Python class's
+// parentheses. A type argument (Base<Foo>, Generic[T]), a keyword argument
+// (metaclass=Meta) and a name past the body's opening are not.
+func heritage(h string, python bool) bool {
+	var stack []byte
+	inBase, arg := false, 0
+	for i := 0; i < len(h); i++ {
+		c := h[i]
+		switch c {
+		case '(', '[', '{', '<':
+			if c == '<' && python {
+				continue
+			}
+			if c == '{' && !python && len(stack) == 0 {
+				return false
+			}
+			stack = append(stack, c)
+		case ')', ']', '}':
+			if len(stack) == 0 {
+				return false
+			}
+			stack = stack[:len(stack)-1]
+			if python && len(stack) == 0 {
+				return false
+			}
+		case ':':
+			if python && len(stack) == 0 {
+				return false
+			}
+		case '>':
+			if i > 0 && h[i-1] == '=' {
+				continue
+			}
+			if len(stack) > 0 && stack[len(stack)-1] == '<' {
+				stack = stack[:len(stack)-1]
+			}
+		case ',':
+			if python && len(stack) == 1 {
+				arg = i + 1
+			}
+		default:
+			if !python && len(stack) == 0 && (c == 'e' || c == 'i') {
+				for _, k := range []string{"extends", "implements"} {
+					if strings.HasPrefix(h[i:], k) && (i == 0 || !isWord(h[i-1])) && (i+len(k) == len(h) || !isWord(h[i+len(k)])) {
+						inBase = true
+					}
+				}
+			}
+		}
+	}
+	if python {
+		return len(stack) == 1 && stack[0] == '(' && !strings.Contains(strings.ReplaceAll(h[arg:], "==", ""), "=")
+	}
+	return inBase && len(stack) == 0
+}
+
+func isWord(c byte) bool {
+	return c == '_' || c == '$' || c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+}
+
+// refVia is what the reference at byte columns start to end of line row of
+// the file p is: trait where it names a base class or an implemented
+// interface, call where it is called, instantiated with new, written as a
+// JSX tag or applied as a decorator, else import.
+func refVia(lines []string, row, start, end int, p string) model.Via {
+	if row < 0 || row >= len(lines) {
+		return "import"
+	}
+	line := strings.TrimSuffix(lines[row], "\r")
 	if start < 0 || end < start || end > len(line) {
 		return "import"
 	}
+	python := strings.ToLower(path.Ext(p)) == ".py"
 	before, after := line[:start], line[end:]
 	switch {
-	case tsHeritage.MatchString(before) || pyBases.MatchString(before):
+	case !keywordArg.MatchString(after) && heritage(header(lines, row, start, python), python):
 		return "trait"
-	case callAfter.MatchString(after) || newBefore.MatchString(before) || decorBefore.MatchString(before) && !strings.HasPrefix(after, "."):
+	case callAfter.MatchString(after) || newBefore.MatchString(before) || jsxFile(p) && jsxBefore.MatchString(before) || decorBefore.MatchString(before) && !strings.HasPrefix(after, "."):
 		return "call"
 	}
 	return "import"
+}
+
+func jsxFile(p string) bool {
+	e := strings.ToLower(path.Ext(p))
+	return e == ".tsx" || e == ".jsx"
 }
