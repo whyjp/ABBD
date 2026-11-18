@@ -70,6 +70,49 @@ type cost struct {
 	// roomy says the counted tactic would give some ×N room, so drawing
 	// with it would draw something else.
 	roomy bool
+	// strays says the through tactic would set some line off its chain, so
+	// drawing with it would draw something else.
+	strays bool
+	// far counts the lines whose whole way, buses and roads included, runs
+	// more than detourLimit out of it: breaks reads each drawn path alone,
+	// and a line round a row's end may be drawn as trunks none of which
+	// runs far. through draws such a view again (choose).
+	far int
+	// gate are the totals the gate holds a view to, as judge reads them,
+	// each one lower in a drawing that reads better (gateTotals).
+	gate []int
+}
+
+// gateTotals are t's hard breaches and the totals gate.go bounds, ceilings
+// and page bounds alike, a floor negated so that lower reads better in all.
+func gateTotals(t Totals) []int {
+	out := []int{t.Hard}
+	for _, g := range gated {
+		out = append(out, g.total(t))
+	}
+	for _, g := range paged {
+		n := g.total(t)
+		if g.floor {
+			n = -n
+		}
+		out = append(out, n)
+	}
+	return out
+}
+
+// farWays counts the ways that run more than detourLimit out of their way.
+func farWays(ways [][]pt) int {
+	n := 0
+	for _, w := range ways {
+		run := 0
+		for i := 1; i < len(w); i++ {
+			run += span(w[i-1], w[i])
+		}
+		if len(w) > 1 && run-span(w[0], w[len(w)-1]) > detourLimit {
+			n++
+		}
+	}
+	return n
 }
 
 // past is 1 for a drawing that runs past one screen, else 0.
@@ -98,7 +141,7 @@ func (c *cost) judge(d Drawing) {
 			moved++
 		}
 	}
-	c.hard, c.moved, c.crossed = t.Hard, moved, t.Crossings
+	c.hard, c.moved, c.crossed, c.gate = t.Hard, moved, t.Crossings, gateTotals(t)
 	for _, b := range vl.Breaches {
 		if b.Criterion == "B1" && b.Allowed == 0 {
 			c.clear++
@@ -125,7 +168,7 @@ func (c cost) beats(o cost) bool {
 
 func costOf(r routing, reqs []wireReq) cost {
 	w := weigh(routing{drawn: r.drawn}, reqs)
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy}
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(r.ways)}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
@@ -288,13 +331,42 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			}
 		}
 	}
-	// The kept drawing is drawn once more with its lines on roads.
+	// The kept drawing is drawn once more with its lines on roads. Where
+	// some line of it still runs past rule 15's bound along its whole way,
+	// and some line rides a chain set astray (strays), it is drawn on roads
+	// again with such lines passing rows through their gaps (through),
+	// and that is kept where fewer lines run so far and no total the gate
+	// holds a view to reads worse. It keeps every box's row and order; only
+	// the gaps between rows grow or shrink with the tracks the lines take.
 	bt.roads = true
 	var c cost
-	if v, ok := draw(bt, &c); ok {
-		best = v
+	v, ok := draw(bt, &c)
+	if !ok {
+		return best
 	}
-	return best
+	if c.far > 0 && c.strays {
+		t := bt
+		t.through = true
+		var u cost
+		if w, ok := draw(t, &u); ok && u.far < c.far {
+			judge(v, &c)
+			judge(w, &u)
+			if len(u.gate) > 0 && len(u.gate) == len(c.gate) && noWorse(u.gate, c.gate) {
+				return w
+			}
+		}
+	}
+	return v
+}
+
+// noWorse says no total of a reads worse than b's.
+func noWorse(a, b []int) bool {
+	for i := range a {
+		if a[i] > b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // pick is which of the drawings of costs cs, those out left out, choose
