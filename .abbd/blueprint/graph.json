@@ -22124,6 +22124,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 10
       },
@@ -23549,7 +23550,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",

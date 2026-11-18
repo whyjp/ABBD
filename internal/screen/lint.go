@@ -142,6 +142,11 @@ type Totals struct {
 	// Density is the routes drawn per box, in tenths: the exemplars draw
 	// 10 to 17, and a page the debt file names may not raise it (gate.go).
 	Density int `json:"density"`
+	// Fans are the paths that start as strands, one per line leaving
+	// there, and Strands those strands (Fan). They say how a change draws
+	// departures; nothing bounds them.
+	Fans    int `json:"fans"`
+	Strands int `json:"strands"`
 }
 
 // Sum adds up the totals of several views.
@@ -163,6 +168,7 @@ func Sum(views []ViewLint) Totals {
 		t.Combs, t.Counts, t.Dots = t.Combs+o.Combs, t.Counts+o.Counts, t.Dots+o.Dots
 		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
 		t.Density += o.Density
+		t.Fans, t.Strands = t.Fans+o.Fans, t.Strands+o.Strands
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -365,6 +371,7 @@ func lintView(v view) (ViewLint, error) {
 	if n := len(v.d.Boxes); n > 0 {
 		vl.Totals.Density = 10 * len(v.d.ways) / n
 	}
+	vl.Totals.Fans, vl.Totals.Strands = s.fans, len(s.strands)
 	return vl, nil
 }
 

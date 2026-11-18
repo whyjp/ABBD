@@ -221,6 +221,32 @@ type Wire struct {
 	// owed is the count a bus gave up for the word wire by's label says
 	// for it, put back if that label is dropped later (unlabelKin).
 	owed *owed
+	// Fan, where set, draws the start of the path as one strand per line
+	// that leaves there, gathering into the path a few px out. D keeps the
+	// whole path, which every measure reads.
+	Fan *Fan `json:"-"`
+}
+
+// Fan is the strands a path starts with. Trunk is the path the page
+// draws, from where the strands meet; Stem is the point D starts at, which
+// the page writes on the trunk so lint reads the path whole (readSVG).
+// Plies are the twist's two plies past the meeting point, if it has one.
+type Fan struct {
+	Trunk, Stem string
+	Strands     []Strand
+	Plies       []string
+}
+
+// Strand is one line's strand: its path, and the classes that light it
+// with its line's route (hover.go).
+type Strand struct{ D, Lit string }
+
+// Drawn is the path the page draws for w.
+func (w Wire) Drawn() string {
+	if w.Fan != nil {
+		return w.Fan.Trunk
+	}
+	return w.D
 }
 
 type owed struct{ count, lx, ly, by int }
