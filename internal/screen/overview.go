@@ -60,6 +60,8 @@ type Drawing struct {
 	// composed overview only (compose.go).
 	reserved []box
 	first    func(Wire) bool
+	// roam lets its key stand anywhere along an edge (card.go).
+	roam bool
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for

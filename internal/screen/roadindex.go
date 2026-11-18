@@ -487,6 +487,9 @@ func newRoadIndex(v roadView, ways [][]pt) *roadIndex {
 			c.unseen++
 		}
 	}
+	if v.oneWay {
+		x.cost.opposite = opposite(ways)
+	}
 	return x
 }
 
@@ -619,7 +622,10 @@ func (ch *change) costWithin(limit roadCost) (roadCost, bool) {
 		return c, false
 	}
 	c.far += ch.far()
-	return c, c.far <= limit.far
+	if v.oneWay {
+		c.opposite = opposite(next)
+	}
+	return c, c.far <= limit.far && c.opposite <= limit.opposite
 }
 
 // crossed is how many crossings the change adds. Where the routes' runs

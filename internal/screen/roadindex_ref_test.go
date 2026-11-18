@@ -33,7 +33,7 @@ func TestATeeCountsOnARouteFoldedOverItsColumn(t *testing.T) {
 // early is one the recount refuses too.
 func TestTheRoadIndexWeighsChangesAsAWholeRecount(t *testing.T) {
 	r := rand.New(rand.NewSource(237))
-	limitless := roadCost{1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30}
+	limitless := roadCost{1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30}
 	for trial := range 2000 {
 		nr := 2 + r.Intn(10)
 		grid := 3 + r.Intn(6)

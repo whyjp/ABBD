@@ -93,6 +93,9 @@ type layout struct {
 	recorded bool
 	// axis is what the rows were ranked by.
 	axis axis
+	// oneWay says the roads never set lines that run opposite ways on one
+	// track: a composed overview (compose.go).
+	oneWay bool
 }
 
 const (

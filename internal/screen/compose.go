@@ -503,6 +503,10 @@ func (c *composer) lay(o *overview, t tactic) layout {
 						return false
 					}
 				}
+			}
+			// A chain in the row just above or below runs on into the gap
+			// this one runs in, so the two keep apart there too.
+			for r := chn.top - 1; r <= chn.bottom+1; r++ {
 				for _, s := range taken[r] {
 					if x+cw+chainSep > s[0] && x-chainSep < s[1] {
 						return false
@@ -530,6 +534,7 @@ func (c *composer) lay(o *overview, t tactic) layout {
 		l.chains = append(l.chains, chn)
 	}
 	l.width = right + padX
+	l.oneWay = true
 	l.axis = axis{basis: byFlow, cycle: cyclic(out), flow: &flowAxis{across: true, stage: c.stage}}
 	return l
 }
@@ -684,12 +689,14 @@ func (c *composer) unclash(d *Drawing) {
 }
 
 // legend sets the key where card finds room, and where the drawing has
-// none, on a strip added under it: a composed overview is short, and its
-// key is the only place its dashes and dots are said.
+// none, grows it by the least height that gives the key a place: a
+// composed overview is short, and its key is the only place its dashes
+// and dots are said.
 func (c *composer) legend(d *Drawing) {
-	d.card()
-	if d.Card == nil {
-		d.Height += cardHead + 7*cardRow + cardPad + 2*padY
+	d.roam = true
+	h := d.Height
+	for more := 0; d.Card == nil && more <= cardHead+7*cardRow+cardPad+2*padY; more += 4 {
+		d.Height = h + more
 		d.card()
 	}
 }

@@ -185,7 +185,7 @@ func (l *layout) routeLines(reqs []wireReq) routing {
 	}
 	*l = after
 	if l.roads {
-		r.confluent(reqs, l.position, len(l.rows))
+		r.confluent(reqs, l.position, len(l.rows), l.oneWay)
 	}
 	return r
 }

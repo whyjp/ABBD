@@ -281,6 +281,9 @@ func boxed(w []pt, boxes []box, limit int) int {
 // their ends, and the forks whose branches leave at different heights.
 type roadCost struct {
 	crossings, turns, beside, clash, near, far, forks, tees, unseen, combs int
+	// opposite is how far lines run both ways along one track, counted
+	// only on a view whose roads keep the ways apart (oneWay).
+	opposite int
 }
 
 // roadView is what confluent weighs routes against: each route's style and
@@ -306,6 +309,10 @@ type roadView struct {
 	forkGroups, fromGroups [][]int
 	dotting                bool
 	forkOf, fromOf         []int
+	// oneWay says no move may set lines that run opposite ways on one
+	// track, and a move that parts them reads better (#232): a composed
+	// overview's roads (compose.go).
+	oneWay bool
 }
 
 // dotted says route i shows dotted at rest, so its dots must show
@@ -342,23 +349,56 @@ func (v roadView) grouped() roadView {
 	return v
 }
 
-func (v roadView) cost(ways [][]pt) roadCost { return newRoadIndex(v, ways).cost }
+func (v roadView) cost(ways [][]pt) roadCost {
+	return newRoadIndex(v, ways).cost
+}
+
+// opposite is how far two routes run opposite ways along one track.
+func opposite(ways [][]pt) int {
+	type run struct {
+		route, way int
+		vertical   bool
+		at, lo, hi int
+	}
+	var rs []run
+	for i, w := range ways {
+		for j := 1; j < len(w); j++ {
+			if w[j-1] == w[j] {
+				continue
+			}
+			v, at, lo, hi := runOf(w[j-1], w[j])
+			rs = append(rs, run{i, heading(w[j-1], w[j]), v, at, lo, hi})
+		}
+	}
+	n := 0
+	for a := range rs {
+		for b := a + 1; b < len(rs); b++ {
+			p, q := rs[a], rs[b]
+			if p.route != q.route && p.vertical == q.vertical && p.at == q.at && p.way != q.way {
+				n += max(0, min(p.hi, q.hi)-max(p.lo, q.lo))
+			}
+		}
+	}
+	return n
+}
 
 // weight weighs settled roads against each other: a crossing, a turn and
 // roadBeside of road beside road weigh alike.
-func (c roadCost) weight() int { return c.crossings + c.turns + c.combs + c.beside/roadBeside }
+func (c roadCost) weight() int {
+	return c.crossings + c.turns + c.combs + c.beside/roadBeside + c.opposite
+}
 
 func (c roadCost) better(o roadCost) bool {
-	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.near > o.near || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen || c.combs > o.combs {
+	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.near > o.near || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen || c.combs > o.combs || c.opposite > o.opposite {
 		return false
 	}
-	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.combs < o.combs || c.beside < o.beside
+	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.combs < o.combs || c.beside < o.beside || c.opposite < o.opposite
 }
 
 // withers says o is no worse than c on any count.
 func (c roadCost) withers(o roadCost) bool {
 	return o.crossings <= c.crossings && o.turns <= c.turns && o.clash <= c.clash && o.near <= c.near && o.far <= c.far &&
-		o.forks <= c.forks && o.tees <= c.tees && o.unseen <= c.unseen && o.combs <= c.combs && o.beside <= c.beside
+		o.forks <= c.forks && o.tees <= c.tees && o.unseen <= c.unseen && o.combs <= c.combs && o.beside <= c.beside && o.opposite <= c.opposite
 }
 
 // stub is the way a route's first or last run leaves or reaches its place:
@@ -540,7 +580,7 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 }
 
 // confluent moves the routes onto shared roads and draws the road.
-func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
+func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, oneWay bool) {
 	ink, plan, lead, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
 	dest, to, from := make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
@@ -559,7 +599,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for i, w := range r.ways {
 		ways[i] = straight(w)
 	}
-	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, position: position}.grouped()
+	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, position: position, oneWay: oneWay}.grouped()
 	routed := ways
 	settle := func(stairsFirst bool) ([][]pt, roadCost) {
 		ways, cost := routed, v.cost(routed)
