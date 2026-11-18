@@ -203,6 +203,7 @@ type Model struct {
 // Build derives the screen from the store. It is deterministic: the same
 // input gives the same model, so the rendered files only change with the data.
 func Build(in Input) Model {
+	in = folded(in)
 	m := Model{Extract: in.Project.Extract}
 	ov := readOverview(in)
 	m.Zones, m.Lines = ov.zones, ov.lines
@@ -230,7 +231,7 @@ func Build(in Input) Model {
 	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
 	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
-	c := recordCut(in, o, ls, fs)
+	c := drawAll(o, recordCut(in, o, ls, fs))
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
