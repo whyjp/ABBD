@@ -1,0 +1,6 @@
+msbuild: app.sln names managed/Managed.csproj, which is no C++ project and is not read
+msbuild: app/app.vcxproj: $(VendorSdk) is unresolved in the clcompile setting additionalincludedirectories and what it names is left out
+msbuild: app/app.vcxproj: the clcompile gone.cpp matches no file here
+msbuild: app/app.vcxproj: the include directory "%VENDOR_HOME%/include" names the environment variable %VENDOR_HOME%, which depends on the machine, and is left out
+msbuild: files listed by several projects, which each compile their own copy, anchor no module, so no relation to them is drawn (1, such as Core/core.cpp (2 projects))
+msbuild: left out: tests (test, bench or vendored), tools (builds nothing from sources)

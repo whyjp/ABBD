@@ -515,11 +515,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
@@ -771,7 +773,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's subsystem walkthrough; ABBD uses it to read code and to write each module's text.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -791,7 +794,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's parallel fan-out; ABBD setup reads the code and asks for the grouping through it.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -1766,11 +1770,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract",
@@ -1814,11 +1820,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so no extraction can claim a purpose or responsibility as a code fact or as a human's word",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go inferred"
@@ -2702,7 +2710,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -2767,7 +2776,8 @@
         "internal/extract/frontend/cargo.go",
         "internal/extract/frontend/cmake.go",
         "internal/extract/frontend/cmakecompile.go",
-        "internal/extract/frontend/frontend.go"
+        "internal/extract/frontend/frontend.go",
+        "internal/extract/frontend/msbuild.go"
       ],
       "Parent": "MOD-0017",
       "Zone": "읽는 쪽"
@@ -5812,11 +5822,13 @@
       "Name": "/abbd-setup",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -6201,6 +6213,7 @@
         "Provides": 34,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6703,7 +6716,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -13066,16 +13079,19 @@
       "Name": "internal/extract",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -13156,7 +13172,8 @@
             "internal/extract/frontend/cargo.go",
             "internal/extract/frontend/cmake.go",
             "internal/extract/frontend/cmakecompile.go",
-            "internal/extract/frontend/frontend.go"
+            "internal/extract/frontend/frontend.go",
+            "internal/extract/frontend/msbuild.go"
           ],
           "Understanding": null,
           "Rank": {
@@ -13213,7 +13230,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -35493,7 +35510,8 @@
       "Name": "pstack (external)",
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -21,6 +22,9 @@ func (e env) extractBundled(args []string) error {
 	doc, err := frontend.ExtractWith(e.root, cacheDir(), specs, e.cacheOpts)
 	if err != nil {
 		return err
+	}
+	for _, n := range doc.Notes {
+		fmt.Fprintln(e.stderr, n)
 	}
 	return doc.Encode(e.stdout)
 }

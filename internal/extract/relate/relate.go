@@ -97,6 +97,12 @@ type found struct {
 	// gated are the read files with code the configuration leaves out,
 	// each as path (N lines).
 	gated []string
+	// notes are lines about how the code was read, and lacks are the headers
+	// the compiler could not find, each as name (N files).
+	notes, lacks []string
+	// capped are the sources past the relater's limit of cap sources.
+	capped []string
+	cap    int
 }
 
 // Unread is the code one relater could not read, and why. A gated entry
@@ -106,6 +112,9 @@ type Unread struct {
 	Relater, Why string
 	Paths        []string
 	Gated        bool
+	// Lead, when set, is a whole status line that Paths detail, with no
+	// files named unread.
+	Lead string
 }
 
 // Relate runs each relater over its directory under root and adds what it
@@ -140,7 +149,7 @@ func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend
 		}
 		r := relaters[s.Name]
 		dir := filepath.Join(root, filepath.FromSlash(s.Dir))
-		if !slices.ContainsFunc(r.manifests, func(m string) bool { _, err := os.Stat(filepath.Join(dir, m)); return err == nil }) {
+		if !slices.ContainsFunc(r.manifests, func(m string) bool { _, err := os.Stat(filepath.Join(dir, m)); return err == nil }) && !(s.Name == "c" && frontend.IsMSBuildPath(dir) && isFile(dir)) {
 			return doc, nil, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, strings.Join(r.manifests, " or "))
 		}
 		f, err := r.run(tree{root: root, dir: dir, cache: cache, defs: defs}, o)
@@ -154,10 +163,19 @@ func Relate(root, cache string, defs []string, doc extract.Doc, specs []frontend
 			slices.Sort(f.unread)
 			unread = append(unread, Unread{Relater: s.Name, Why: r.unread, Paths: slices.Compact(f.unread)})
 		}
+		if len(f.capped) > 0 {
+			unread = append(unread, Unread{Relater: s.Name, Lead: fmt.Sprintf("%d sources are past the limit of %d the relater reads, the first by path (ABBD_C_MAX_SOURCES changes it, 0 lifts it), so they are unread and the relations in them are missing", len(f.capped), f.cap), Paths: f.capped})
+		}
+		for _, n := range f.notes {
+			unread = append(unread, Unread{Relater: s.Name, Lead: n})
+		}
+		if len(f.lacks) > 0 {
+			unread = append(unread, Unread{Relater: s.Name, Lead: "the compiler could not find the headers below, which the Windows SDK, the MSVC toolset or a path the project file leaves unresolved holds on a machine that has them, so the relations through their names are missing", Paths: f.lacks})
+		}
 		if len(f.gated) > 0 {
 			unread = append(unread, Unread{Relater: s.Name, Why: "the compile configuration leaves out by #if", Paths: f.gated, Gated: true})
 		}
-		for _, p := range f.unread {
+		for _, p := range slices.Concat(f.unread, f.capped) {
 			if u, ok := o.of(p); ok {
 				partial[u] = true
 			}
@@ -363,4 +381,9 @@ func resolveExisting(p string) string {
 		rest = filepath.Join(filepath.Base(q), rest)
 		q = up
 	}
+}
+
+func isFile(p string) bool {
+	fi, err := os.Stat(p)
+	return err == nil && !fi.IsDir()
 }

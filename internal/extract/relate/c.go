@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
+	"maps"
 	"os"
 	"os/exec"
 	"path"
@@ -111,26 +113,37 @@ type cEntry struct {
 
 // cCompiles reads how the build compiles each source: from the directory's
 // compile_commands.json when it holds one, else from its CMake project.
-func cCompiles(t tree) ([]cEntry, error) {
-	db := filepath.Join(t.dir, "compile_commands.json")
-	if _, err := os.Stat(db); err != nil {
-		cs, err := frontend.CMakeCompiles(t.root, t.dir, t.cache, t.defs)
+func cCompiles(t tree) ([]cEntry, []string, error) {
+	if frontend.IsMSBuildPath(t.dir) {
+		cs, notes, err := frontend.MSBuildCompiles(t.root, t.dir)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		var out []cEntry
 		for _, c := range cs {
 			out = append(out, cEntry{c.File, map[string]any{"directory": c.Dir, "file": c.File, "arguments": c.Args}})
 		}
-		return out, nil
+		return out, notes, nil
+	}
+	db := filepath.Join(t.dir, "compile_commands.json")
+	if _, err := os.Stat(db); err != nil {
+		cs, err := frontend.CMakeCompiles(t.root, t.dir, t.cache, t.defs)
+		if err != nil {
+			return nil, nil, err
+		}
+		var out []cEntry
+		for _, c := range cs {
+			out = append(out, cEntry{c.File, map[string]any{"directory": c.Dir, "file": c.File, "arguments": c.Args}})
+		}
+		return out, nil, nil
 	}
 	b, err := os.ReadFile(db)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var raw []map[string]any
 	if err := json.Unmarshal(b, &raw); err != nil {
-		return nil, fmt.Errorf("%s: %w", filepath.ToSlash(filepath.Join(t.dir, "compile_commands.json")), err)
+		return nil, nil, fmt.Errorf("%s: %w", filepath.ToSlash(filepath.Join(t.dir, "compile_commands.json")), err)
 	}
 	var out []cEntry
 	for _, e := range raw {
@@ -149,7 +162,7 @@ func cCompiles(t tree) ([]cEntry, error) {
 		}
 		out = append(out, cEntry{f, e})
 	}
-	return out, nil
+	return out, nil, nil
 }
 
 // cDatabase writes the compile database clangd reads into the cache: the
@@ -158,9 +171,9 @@ func cCompiles(t tree) ([]cEntry, error) {
 // beside the database, so it lands in the cache too, never in the
 // repository. It returns the database's directory and the root-relative
 // sources it compiles.
-func cDatabase(t tree, o owners, entries []cEntry) (string, map[string]bool, error) {
+func cDatabase(t tree, o owners, entries []cEntry, max int) (string, map[string]bool, []string, error) {
 	compiled := map[string]bool{}
-	var keep []map[string]any
+	raws := map[string]map[string]any{}
 	for _, e := range entries {
 		r, ok := t.rel(e.file)
 		if !ok || compiled[r] || cTest(r) || !cExt(r, cSources) && !cExt(r, cHeaders) {
@@ -170,19 +183,68 @@ func cDatabase(t tree, o owners, entries []cEntry) (string, map[string]bool, err
 			continue
 		}
 		compiled[r] = true
-		keep = append(keep, e.raw)
+		raws[r] = e.raw
+	}
+	// Past max sources, the ones that sort last by path are left out, so the
+	// same entries are read on every machine.
+	var capped []string
+	if max > 0 {
+		var srcs []string
+		for r := range raws {
+			if cExt(r, cSources) {
+				srcs = append(srcs, r)
+			}
+		}
+		slices.Sort(srcs)
+		if len(srcs) > max {
+			capped = srcs[max:]
+			for _, r := range capped {
+				delete(raws, r)
+				delete(compiled, r)
+			}
+		}
+	}
+	var keep []map[string]any
+	for _, r := range slices.Sorted(maps.Keys(raws)) {
+		keep = append(keep, raws[r])
 	}
 	h := sha256.Sum256([]byte(strings.ToLower(filepath.ToSlash(t.root + "\n" + t.dir))))
 	dir := filepath.Join(t.cache, "clangd", hex.EncodeToString(h[:6]))
 	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 	b, err := json.MarshalIndent(keep, "", " ")
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
-	return dir, compiled, os.WriteFile(filepath.Join(dir, "compile_commands.json"), b, 0o644)
+	return dir, compiled, capped, os.WriteFile(filepath.Join(dir, "compile_commands.json"), b, 0o644)
 }
+
+// cMSBuildMaxSources is how many sources the relater reads of a Visual Studio
+// solution when ABBD_C_MAX_SOURCES says nothing. Each source opens a
+// translation unit that includes the Windows SDK and the MSVC library, so a
+// solution of hundreds of them takes minutes and gigabytes.
+const cMSBuildMaxSources = 150
+
+// cMaxSources is the most sources the relater reads: ABBD_C_MAX_SOURCES, 0
+// for no limit, else the limit for the kind of database, none for a CMake
+// project or a compile_commands.json.
+func cMaxSources(t tree) (int, error) {
+	if v := os.Getenv("ABBD_C_MAX_SOURCES"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 0 {
+			return 0, fmt.Errorf("ABBD_C_MAX_SOURCES is %q, but it must be a number of sources, 0 for no limit", v)
+		}
+		return n, nil
+	}
+	if frontend.IsMSBuildPath(t.dir) {
+		return cMSBuildMaxSources, nil
+	}
+	return 0, nil
+}
+
+// statusOut is where the relater says, before clangd starts, what it will do.
+var statusOut io.Writer = os.Stderr
 
 // cFiles are the C and C++ files a unit holds, root-relative and sorted,
 // tests left out.
@@ -225,11 +287,15 @@ func clang(t tree, o owners) (found, error) {
 	if err != nil {
 		return found{}, err
 	}
-	entries, err := cCompiles(t)
+	entries, notes, err := cCompiles(t)
 	if err != nil {
 		return found{}, err
 	}
-	db, compiled, err := cDatabase(t, o, entries)
+	limit, err := cMaxSources(t)
+	if err != nil {
+		return found{}, err
+	}
+	db, compiled, capped, err := cDatabase(t, o, entries, limit)
 	if err != nil {
 		return found{}, err
 	}
@@ -237,9 +303,13 @@ func clang(t tree, o owners) (found, error) {
 	if err != nil {
 		return found{}, err
 	}
-	f := found{covered: map[string]bool{}, when: map[link]string{}}
+	f := found{covered: map[string]bool{}, when: map[link]string{}, notes: notes}
 	var read []string
 	for _, p := range files {
+		if slices.Contains(capped, p) {
+			f.capped = append(f.capped, p)
+			continue
+		}
 		if !compiled[p] && !cExt(p, cHeaders) {
 			f.unread = append(f.unread, p)
 			continue
@@ -251,16 +321,22 @@ func clang(t tree, o owners) (found, error) {
 	if len(compiled) == 0 {
 		return found{}, fmt.Errorf("the compile database compiles no source a unit holds (%d entries)", len(entries))
 	}
-	r := &cReader{tree: t, owners: o, read: map[string]bool{}, src: map[string][]string{}, starts: map[string][]int{}, classes: map[string][]string{}, syms: map[string][]lsp.DocumentSymbol{}, gated: map[string][]lsp.Range{}}
+	f.cap = limit
+	warn := ""
+	if len(compiled) > 100 {
+		warn = "; a project this size can take minutes and gigabytes of memory, and ABBD_C_MAX_SOURCES=N reads only the first N sources by path"
+	}
+	fmt.Fprintf(statusOut, "relate: c: reading %d sources and %d headers with clangd%s\n", len(compiled), len(read)-len(compiled), warn)
+	r := &cReader{tree: t, owners: o, read: map[string]bool{}, src: map[string][]string{}, starts: map[string][]int{}, classes: map[string][]string{}, syms: map[string][]lsp.DocumentSymbol{}, gated: map[string][]lsp.Range{}, lack: map[string][]string{}}
 	for _, p := range read {
 		r.read[p] = true
 	}
 	r.order = read
 	ctx := context.Background()
 	r.srv, err = lsp.Start(ctx, lsp.Server{
-		Argv: []string{bin, "--compile-commands-dir=" + db, "--background-index", "--enable-config=false",
+		Argv: append([]string{bin, "--compile-commands-dir=" + db, "--background-index", "--enable-config=false",
 			"--limit-references=0", "--limit-results=0", "--header-insertion=never", "--clang-tidy=false", "--log=error",
-			fmt.Sprintf("-j=%d", max(2, runtime.NumCPU()))},
+			fmt.Sprintf("-j=%d", max(2, runtime.NumCPU()))}, strings.Fields(os.Getenv("ABBD_CLANGD_ARGS"))...),
 		Root: t.root, Timeout: 5 * time.Minute, Ready: 2 * time.Hour, Quiet: 20 * time.Second,
 		TextDocument: map[string]any{"inactiveRegionsCapabilities": map[string]any{"inactiveRegions": true}},
 		Note:         r.note,
@@ -275,6 +351,9 @@ func clang(t tree, o owners) (found, error) {
 	}
 	f.facts = facts
 	f.gated = r.gatedLines()
+	if frontend.IsMSBuildPath(t.dir) {
+		f.lacks = r.lackLines()
+	}
 	return f, nil
 }
 
@@ -301,6 +380,9 @@ type cReader struct {
 	// gated holds the ranges clangd reports its configuration leaves out of
 	// each open file, by #if.
 	gated map[string][]lsp.Range
+	// lack holds, for each open file, the headers clangd last reported it
+	// could not find.
+	lack  map[string][]string
 	facts []fact
 }
 
@@ -308,7 +390,12 @@ func (r *cReader) abs(p string) string { return filepath.Join(r.root, filepath.F
 
 // note keeps clangd's inactive regions of each file it opened.
 func (r *cReader) note(method string, params json.RawMessage) {
-	if method != "textDocument/inactiveRegions" {
+	switch method {
+	case "textDocument/publishDiagnostics":
+		r.diagnostics(params)
+		return
+	case "textDocument/inactiveRegions":
+	default:
 		return
 	}
 	var p struct {
@@ -360,4 +447,59 @@ func (r *cReader) add(x fact) {
 	r.mu.Lock()
 	r.facts = append(r.facts, x)
 	r.mu.Unlock()
+}
+
+var fileNotFound = regexp.MustCompile(`^'([^']+)' file not found`)
+
+// diagnostics keeps the headers clangd says an open file includes and cannot
+// find, replacing what it said of that file before.
+func (r *cReader) diagnostics(params json.RawMessage) {
+	var p struct {
+		URI         string `json:"uri"`
+		Diagnostics []struct {
+			Message string `json:"message"`
+		} `json:"diagnostics"`
+	}
+	if json.Unmarshal(params, &p) != nil {
+		return
+	}
+	abs, err := lsp.Path(p.URI)
+	if err != nil {
+		return
+	}
+	rel, ok := r.rel(abs)
+	if !ok {
+		return
+	}
+	var miss []string
+	for _, d := range p.Diagnostics {
+		if m := fileNotFound.FindStringSubmatch(d.Message); m != nil {
+			miss = append(miss, m[1])
+		}
+	}
+	r.mu.Lock()
+	r.lack[rel] = miss
+	r.mu.Unlock()
+}
+
+// lackLines names each header some read file includes and clangd could not
+// find, with how many files, as name (N files).
+func (r *cReader) lackLines() []string {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	n := map[string]int{}
+	for p, hs := range r.lack {
+		if !r.read[p] {
+			continue
+		}
+		for _, h := range slices.Compact(slices.Sorted(slices.Values(hs))) {
+			n[h]++
+		}
+	}
+	var out []string
+	for h, c := range n {
+		out = append(out, fmt.Sprintf("%s (%d files)", h, c))
+	}
+	slices.Sort(out)
+	return out
 }
