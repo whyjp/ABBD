@@ -490,11 +490,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd",
@@ -658,7 +660,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Lists unit candidates from the layout and fans the reading out to a pstack swarm of how-explorer workers that report in the extraction format.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -677,7 +680,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Writes a deterministic script that prints the extraction JSON from the code alone, and reconciles it against the swarm result.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -696,7 +700,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Writes supplement.json with what only reading tells: purposes, units and couplings the script cannot see, and the grouping into parts.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -1416,6 +1421,7 @@
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
         "cmd/abbd/stack.go",
+        "cmd/abbd/system.go",
         "cmd/abbd/table.go",
         "cmd/abbd/uncovered.go",
         "cmd/abbd/understand.go",
@@ -1435,11 +1441,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a PR and its reviewer see what changed and whether the record still holds, without writing",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/diff.go diff",
@@ -5434,11 +5442,13 @@
       "Name": "/abbd",
       "Purpose": {
         "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -7857,7 +7867,23 @@
                 "Code": true
               },
               {
-                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글은 거부한다. 긴 섹션, 역사 문구, 이름도 ID도 대지 않은 안쪽 유닛, 다른 유닛의 경로를 보고한다. brief는 reader가 채울 뼈대를 찍고 ",
+                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글은 거부한다. 긴 섹션, 역사 문구, 이름도 ID도 대지 않은 안쪽 유닛, 다른 유닛의 경로를 보고한다. status는 표준 라이브러리, 시스템 라이브러리, 저장소 밖 의존성, 시스템이나 도구가 정의한 환경 변수를 주로 담은 CFG처럼 프로젝트 자신의 것이 아닌 유닛을 ",
+                "Code": false
+              },
+              {
+                "Text": "system:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 알린다(",
+                "Code": false
+              },
+              {
+                "Text": "statusSystem",
+                "Code": true
+              },
+              {
+                "Text": "). 이는 보고일 뿐 검사를 막지 않는다. brief는 reader가 채울 뼈대를 찍고 ",
                 "Code": false
               },
               {
@@ -14738,6 +14764,37 @@
               },
               {
                 "Text": " 같은 흔한 이름이 엉뚱한 unit을 가리키기 때문이다. 구조 분해로 묶인 변수와 리터럴 기본 내보내기도 묻지 않는다. 서버가 심볼을 나열하지 못한 파일은 읽지 못한 것으로 돌려준다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "저장소 밖",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "저장소 밖 코드",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (MOD-0060 internal/extract/relate): relater는 저장소 루트 밖 경로와 어떤 unit의 anchor도 품지 않은 경로를 읽지 않으므로 표준 라이브러리, 시스템 헤더, 의존성 패키지는 unit도 relation도 되지 못한다. 테스트가 go, c, rust, ts, python 각각에서 이를 지킨다(",
+                "Code": false
+              },
+              {
+                "Text": "stdlib_test.go",
+                "Code": true
+              },
+              {
+                "Text": "). 이런 것은 개요도의 상자, 선, 계약이 아니다.",
                 "Code": false
               }
             ]

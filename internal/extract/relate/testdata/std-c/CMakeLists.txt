@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project(stdfx C)
+add_library(lib STATIC lib/lib.c)
+target_include_directories(lib PUBLIC lib)
+add_executable(app app/main.c)
+target_link_libraries(app PRIVATE lib)
