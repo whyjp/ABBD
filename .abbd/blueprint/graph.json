@@ -4948,6 +4948,14 @@
       "Quote": "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
+      "From": "MOD-0037",
+      "To": "MOD-0036",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+    },
+    {
       "From": "MOD-0038",
       "To": "DATA-0005",
       "Kind": "provides",
@@ -21909,7 +21917,7 @@
         "Uses": 12,
         "Direct": 6,
         "StaleNotes": 0,
-        "Dead": 11
+        "Dead": 10
       },
       "Units": [
         {
@@ -21925,7 +21933,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22054,7 +22062,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 2,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22191,8 +22199,8 @@
           ],
           "Rank": {
             "Basis": "dependency",
-            "N": 3,
-            "Of": 3
+            "N": 4,
+            "Of": 4
           }
         },
         {
@@ -22534,7 +22542,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -22623,7 +22631,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 1,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -23134,7 +23142,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         },
         {
@@ -23327,7 +23335,7 @@
           "Rank": {
             "Basis": "dependency",
             "N": 3,
-            "Of": 3
+            "Of": 4
           }
         }
       ],
@@ -30901,6 +30909,15 @@
           "Quotes": [
             "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
             "internal/screen/overview.go \"return Badge(model.Extracted)\""
+          ]
+        },
+        {
+          "From": "overview plan",
+          "To": "layered layout and routing",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
           ]
         },
         {
