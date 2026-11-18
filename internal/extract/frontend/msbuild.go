@@ -763,8 +763,7 @@ func (e *evalCtx) dirs(v string) []string {
 			e.m.note("msbuild: %s: the include directory %s names the environment variable %s, which depends on the machine, and is left out", e.m.rel(e.p.file), slash(d), envVar.FindString(d))
 			continue
 		}
-		p := join(e.p.dir, d)
-		_, ok := e.m.resolve(p)
+		p, ok := e.m.resolve(join(e.p.dir, d))
 		switch {
 		case !e.m.inside(p):
 			e.m.note("msbuild: %s: the include directory %s is outside the repository", e.m.rel(e.p.file), slash(d))

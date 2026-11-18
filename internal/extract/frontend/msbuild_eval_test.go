@@ -179,3 +179,33 @@ func TestAMSBuildCompilesNameTheNewerLanguageStandards(t *testing.T) {
 		t.Fatalf("%v\n%v", cs[0].Args, cs[1].Args)
 	}
 }
+
+func TestAMSBuildCompilesSpellIncludeDirectoriesAsTheyLieOnDisk(t *testing.T) {
+	root := t.TempDir()
+	files := map[string]string{
+		"app/p.vcxproj": vcx(`<ItemDefinitionGroup><ClCompile><AdditionalIncludeDirectories>..\inc;..\INC\Sub</AdditionalIncludeDirectories><ForcedIncludeFiles>..\inc\Force.H</ForcedIncludeFiles></ClCompile></ItemDefinitionGroup><ItemGroup><ClCompile Include="a.cpp"/></ItemGroup>`),
+		"app/a.cpp":     "",
+		"Inc/Sub/x.h":   "",
+		"Inc/force.h":   "",
+	}
+	for p, c := range files {
+		full := filepath.Join(root, filepath.FromSlash(p))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(c), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	cs, _, err := MSBuildCompiles(root, filepath.Join(root, "app", "p.vcxproj"))
+	if err != nil || len(cs) != 1 {
+		t.Fatalf("%v, %v", cs, err)
+	}
+	args := strings.Join(cs[0].Args, "\n")
+	rootS := filepath.ToSlash(root)
+	for _, want := range []string{"-I" + filepath.FromSlash(rootS+"/Inc"), "-I" + filepath.FromSlash(rootS+"/Inc/Sub"), "/FI" + filepath.FromSlash(rootS+"/Inc/force.h")} {
+		if !strings.Contains(args, want) {
+			t.Errorf("no argument %q in:\n%s", want, args)
+		}
+	}
+}
