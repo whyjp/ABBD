@@ -1775,11 +1775,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract",
@@ -1823,11 +1825,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so no extraction can claim a purpose or responsibility as a code fact or as a human's word",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go inferred"
@@ -2777,7 +2781,8 @@
         "internal/extract/frontend/cargo.go",
         "internal/extract/frontend/cmake.go",
         "internal/extract/frontend/cmakecompile.go",
-        "internal/extract/frontend/frontend.go"
+        "internal/extract/frontend/frontend.go",
+        "internal/extract/frontend/msbuild.go"
       ],
       "Parent": "MOD-0017",
       "Zone": "읽는 쪽"
@@ -7183,7 +7188,47 @@
                 "Code": true
               },
               {
-                "Text": "는 bundled front-end(MOD-0058)가 빌드 시스템의 모델에서 읽은 extraction JSON을 찍고, 설정한 빌드 트리는 저장소 밖 ",
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "msbuild=FILE",
+                "Code": true
+              },
+              {
+                "Text": "은 bundled front-end(MOD-0058)가 빌드 시스템의 모델에서 읽은 extraction JSON을 찍고, ",
+                "Code": false
+              },
+              {
+                "Text": "msbuild",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": ".sln",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": ".slnx",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": ".vcxproj",
+                "Code": true
+              },
+              {
+                "Text": " 파일 하나를 MSBuild 없이 XML로 읽으며 읽지 못한 것은 JSON이 아니라 표준 오류에 한 줄씩 밝히고, 설정한 빌드 트리는 저장소 밖 ",
                 "Code": false
               },
               {
@@ -7322,7 +7367,23 @@
                 "Code": true
               },
               {
-                "Text": "는 ",
+                "Text": "는 c에 한해 ",
+                "Code": false
+              },
+              {
+                "Text": "c=FILE",
+                "Code": true
+              },
+              {
+                "Text": "로 Visual Studio 솔루션이나 프로젝트 파일을 받고, 컴파일러가 찾지 못한 헤더와 읽는 소스 수 한도(",
+                "Code": false
+              },
+              {
+                "Text": "ABBD_C_MAX_SOURCES",
+                "Code": true
+              },
+              {
+                "Text": ")도 같은 표준 오류에 밝힌다. 이 명령은 ",
                 "Code": false
               },
               {
@@ -13105,11 +13166,13 @@
       "Name": "internal/extract",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -13195,7 +13258,8 @@
             "internal/extract/frontend/cargo.go",
             "internal/extract/frontend/cmake.go",
             "internal/extract/frontend/cmakecompile.go",
-            "internal/extract/frontend/frontend.go"
+            "internal/extract/frontend/frontend.go",
+            "internal/extract/frontend/msbuild.go"
           ],
           "Understanding": null,
           "Rank": {
@@ -13826,124 +13890,6 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "bundled front-end",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": " (MOD-0058 internal/extract/frontend): 빌드 시스템이 스스로 아는 모델을 읽어 같은 ",
-                "Code": false
-              },
-              {
-                "Text": "Doc",
-                "Code": true
-              },
-              {
-                "Text": "을 돌려주는 하위 모듈로, ",
-                "Code": false
-              },
-              {
-                "Text": "Names",
-                "Code": true
-              },
-              {
-                "Text": "가 나열하는 ",
-                "Code": false
-              },
-              {
-                "Text": "cargo",
-                "Code": true
-              },
-              {
-                "Text": "와 ",
-                "Code": false
-              },
-              {
-                "Text": "cmake",
-                "Code": true
-              },
-              {
-                "Text": " 둘이다. ",
-                "Code": false
-              },
-              {
-                "Text": "Extract",
-                "Code": true
-              },
-              {
-                "Text": "는 ",
-                "Code": false
-              },
-              {
-                "Text": "FRONTEND[=DIR]",
-                "Code": true
-              },
-              {
-                "Text": " spec마다 저장소 루트와 그 디렉터리, 빌드 캐시를 담은 ",
-                "Code": false
-              },
-              {
-                "Text": "tree",
-                "Code": true
-              },
-              {
-                "Text": "에서 front-end를 돌리고, 캐시가 저장소 안에 있거나 두 spec이 같은 ref의 unit을 만들면 거부한다. ",
-                "Code": false
-              },
-              {
-                "Text": "abbd extract",
-                "Code": true
-              },
-              {
-                "Text": "가 그 문서를 찍으므로, front-end의 출력도 스크립트의 출력처럼 ",
-                "Code": false
-              },
-              {
-                "Text": "Parse",
-                "Code": true
-              },
-              {
-                "Text": "의 검사를 거친다. ",
-                "Code": false
-              },
-              {
-                "Text": "cmake",
-                "Code": true
-              },
-              {
-                "Text": " front-end는 무엇이든 구성하기 전에 PATH의 CMake에 ",
-                "Code": false
-              },
-              {
-                "Text": "cmake -E capabilities",
-                "Code": true
-              },
-              {
-                "Text": "로 버전을 묻고, 4.2보다 낮으면 구성이 먼저 실패하는 곳에서도 거부한다(",
-                "Code": false
-              },
-              {
-                "Text": "cmakeVersion",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "oldCMake",
-                "Code": true
-              },
-              {
-                "Text": "). 빌드 트리 이름에 그 버전을 넣으므로, 옛 CMake가 만든 트리를 그것을 다시 쓰지 못하는 새 CMake가 만나는 일이 없다.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
                 "Text": "Unit 검사",
                 "Code": false,
                 "Bold": true
@@ -14403,6 +14349,189 @@
             "Kind": "h",
             "Parts": [
               {
+                "Text": "Front-end",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "bundled front-end",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (MOD-0058 internal/extract/frontend): 빌드 시스템이 스스로 아는 모델을 읽어 같은 ",
+                "Code": false
+              },
+              {
+                "Text": "Doc",
+                "Code": true
+              },
+              {
+                "Text": "을 돌려주는 하위 모듈로, ",
+                "Code": false
+              },
+              {
+                "Text": "Names",
+                "Code": true
+              },
+              {
+                "Text": "가 나열하는 ",
+                "Code": false
+              },
+              {
+                "Text": "cargo",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmake",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "msbuild",
+                "Code": true
+              },
+              {
+                "Text": " 셋이다. ",
+                "Code": false
+              },
+              {
+                "Text": "msbuild",
+                "Code": true
+              },
+              {
+                "Text": "만 매니페스트 없이 ",
+                "Code": false
+              },
+              {
+                "Text": "NAME=FILE",
+                "Code": true
+              },
+              {
+                "Text": "로 파일 하나를 받으며, 그 파일이 ",
+                "Code": false
+              },
+              {
+                "Text": ".sln",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": ".slnx",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": ".vcxproj",
+                "Code": true
+              },
+              {
+                "Text": "가 아니면 거부한다. ",
+                "Code": false
+              },
+              {
+                "Text": "Extract",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "FRONTEND[=DIR]",
+                "Code": true
+              },
+              {
+                "Text": " spec마다 저장소 루트와 그 디렉터리, 빌드 캐시를 담은 ",
+                "Code": false
+              },
+              {
+                "Text": "tree",
+                "Code": true
+              },
+              {
+                "Text": "에서 front-end를 돌리고, 캐시가 저장소 안에 있거나 두 spec이 같은 ref의 unit을 만들면 거부한다. front-end가 풀지 못한 것은 ",
+                "Code": false
+              },
+              {
+                "Text": "Doc.Notes",
+                "Code": true
+              },
+              {
+                "Text": "에 모았다가 표준 오류로만 내보낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd extract",
+                "Code": true
+              },
+              {
+                "Text": "가 그 문서를 찍으므로, front-end의 출력도 스크립트의 출력처럼 ",
+                "Code": false
+              },
+              {
+                "Text": "Parse",
+                "Code": true
+              },
+              {
+                "Text": "의 검사를 거친다. ",
+                "Code": false
+              },
+              {
+                "Text": "cmake",
+                "Code": true
+              },
+              {
+                "Text": " front-end는 무엇이든 구성하기 전에 PATH의 CMake에 ",
+                "Code": false
+              },
+              {
+                "Text": "cmake -E capabilities",
+                "Code": true
+              },
+              {
+                "Text": "로 버전을 묻고, 4.2보다 낮으면 구성이 먼저 실패하는 곳에서도 거부한다(",
+                "Code": false
+              },
+              {
+                "Text": "cmakeVersion",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "oldCMake",
+                "Code": true
+              },
+              {
+                "Text": "). 빌드 트리 이름에 그 버전을 넣으므로, 옛 CMake가 만든 트리를 그것을 다시 쓰지 못하는 새 CMake가 만나는 일이 없다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
                 "Text": "C relater",
                 "Code": false
               }
@@ -14449,7 +14578,47 @@
                 "Code": true
               },
               {
-                "Text": "). 테스트가 아닌 소스마다 명령 하나를 캐시의 컴파일 데이터베이스에 쓰므로, clangd의 색인도 저장소가 아니라 캐시에 놓인다. 다른 unit이 이름 붙일 수 있는 선언마다 참조를 물어, 호출은 call, 값으로 쥔 함수는 callback, 매크로는 macro, 타입과 상수는 import로 삼는다. 함수 포인터 필드를 가진 구조체를 중괄호로 채운 표는 호스트가 그 표로 부르는 callback이나 provides와 consumes가 된다. 컴파일 데이터베이스가 컴파일하지 않는 소스는 읽지 못한 것으로 두고, 읽은 파일 중 ",
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "c=FILE",
+                "Code": true
+              },
+              {
+                "Text": "로 Visual Studio 솔루션이나 프로젝트 파일을 받으면 msbuild front-end가 읽은 구성에서 ",
+                "Code": false
+              },
+              {
+                "Text": "cl.exe",
+                "Code": true
+              },
+              {
+                "Text": "가 컴파일하듯 명령을 만든다. 이 경우 읽는 소스는 기본 150개까지이며 첫 것부터 경로순으로 읽고(",
+                "Code": false
+              },
+              {
+                "Text": "ABBD_C_MAX_SOURCES",
+                "Code": true
+              },
+              {
+                "Text": "가 바꾸고 0이면 한도가 없다), 한도를 넘은 소스는 읽지 못한 것으로 둔다. 컴파일러가 찾지 못한 헤더도 ",
+                "Code": false
+              },
+              {
+                "Text": "Unread",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "Lead",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 돌려준다. 테스트가 아닌 소스마다 명령 하나를 캐시의 컴파일 데이터베이스에 쓰므로, clangd의 색인도 저장소가 아니라 캐시에 놓인다. 다른 unit이 이름 붙일 수 있는 선언마다 참조를 물어, 호출은 call, 값으로 쥔 함수는 callback, 매크로는 macro, 타입과 상수는 import로 삼는다. 함수 포인터 필드를 가진 구조체를 중괄호로 채운 표는 호스트가 그 표로 부르는 callback이나 provides와 consumes가 된다. 컴파일 데이터베이스가 컴파일하지 않는 소스는 읽지 못한 것으로 두고, 읽은 파일 중 ",
                 "Code": false
               },
               {

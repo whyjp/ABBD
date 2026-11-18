@@ -42,7 +42,13 @@ func (e env) relateExtraction(args []string) error {
 		return err
 	}
 	for _, u := range unread {
-		if u.Gated {
+		if u.Lead != "" {
+			fmt.Fprintf(e.stderr, "relate: %s: %s", u.Relater, u.Lead)
+			if len(u.Paths) > 0 {
+				fmt.Fprint(e.stderr, ":")
+			}
+			fmt.Fprintln(e.stderr)
+		} else if u.Gated {
 			fmt.Fprintf(e.stderr, "relate: %s: %d files hold code %s, so the relations in it are missing:\n", u.Relater, len(u.Paths), u.Why)
 		} else {
 			fmt.Fprintf(e.stderr, "relate: %s: %d files were not read, %s:\n", u.Relater, len(u.Paths), u.Why)

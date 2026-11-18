@@ -1,0 +1,76 @@
+{
+  "units": [
+    {
+      "ref": "msbuild:app",
+      "kind": "MOD",
+      "name": "app",
+      "anchors": [
+        {
+          "path": "app"
+        },
+        {
+          "path": "app/app.vcxproj"
+        },
+        {
+          "path": "app/local"
+        }
+      ],
+      "artifacts": [
+        "exe"
+      ]
+    },
+    {
+      "ref": "msbuild:core",
+      "kind": "MOD",
+      "name": "core",
+      "anchors": [
+        {
+          "path": "Core/core.h"
+        },
+        {
+          "path": "Core/core.vcxproj"
+        }
+      ],
+      "artifacts": [
+        "static"
+      ]
+    },
+    {
+      "ref": "msbuild:plugin",
+      "kind": "MOD",
+      "name": "plugin",
+      "anchors": [
+        {
+          "path": "plugin"
+        },
+        {
+          "path": "plugin/plugin.vcxproj"
+        }
+      ],
+      "artifacts": [
+        "shared"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": "msbuild:app",
+      "to": "msbuild:core",
+      "kind": "depends_on",
+      "via": "link"
+    },
+    {
+      "from": "msbuild:app",
+      "to": "msbuild:plugin",
+      "kind": "depends_on",
+      "via": "link",
+      "when": "Debug|x64 | Release|x64"
+    },
+    {
+      "from": "msbuild:plugin",
+      "to": "msbuild:core",
+      "kind": "depends_on",
+      "via": "link"
+    }
+  ]
+}
