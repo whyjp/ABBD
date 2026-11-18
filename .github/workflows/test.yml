@@ -1,4 +1,5 @@
-# Runs the Go suite on Linux, Windows and macOS. macOS is tested only here.
+# Runs the Go suite on Linux, the only CI-tested platform. Windows development runs through WSL.
+# Windows-native and macOS are neither tested here nor promised until after stabilization.
 name: test
 on:
   push:
@@ -14,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 35
     steps:
@@ -34,14 +35,12 @@ jobs:
         run: go vet ./...
       # The cmake front-end needs CMake 4.2 or later; its tests skip on an older one.
       - name: Install CMake 4.2.1
-        if: runner.os == 'Linux'
         run: |
           curl -fsSL https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-linux-x86_64.tar.gz | tar -xz -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/cmake-4.2.1-linux-x86_64/bin" >> "$GITHUB_PATH"
       # The rust relater needs rust-analyzer and cargo; its tests skip without them.
       # The pinned release 2026-11-09 is rust-analyzer 0.3.3113, the one the relater was measured with.
       - name: Install rust-analyzer 2026-11-09
-        if: runner.os == 'Linux'
         run: |
           mkdir -p "$RUNNER_TEMP/rust-analyzer"
           cd "$RUNNER_TEMP/rust-analyzer"
@@ -58,20 +57,16 @@ jobs:
       - name: Install clangd 23.1.0
         shell: bash
         run: |
-          case "$RUNNER_OS" in
-            Linux) asset=clangd-linux-23.1.0.zip; sha=e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd ;;
-            macOS) asset=clangd-mac-23.1.0.zip; sha=1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253 ;;
-            Windows) asset=clangd-windows-23.1.0.zip; sha=23412a240756a162e7b98a282f36aa2a23a88db5ce16a0cbc4fef7253768c810 ;;
-          esac
+          asset=clangd-linux-23.1.0.zip
+          sha=e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd
           dir="$RUNNER_TEMP/clangd"
           mkdir -p "$dir"
           cd "$dir"
           curl -fsSLO "https://github.com/clangd/clangd/releases/download/23.1.0/$asset"
-          if command -v sha256sum > /dev/null; then got=$(sha256sum "$asset" | cut -d' ' -f1); else got=$(shasum -a 256 "$asset" | cut -d' ' -f1); fi
+          got=$(sha256sum "$asset" | cut -d' ' -f1)
           if [ "$got" != "$sha" ]; then echo "$asset sha256 is $got, want $sha"; exit 1; fi
           unzip -q "$asset"
           bin="$dir/clangd_23.1.0/bin"
-          if [ "$RUNNER_OS" = Windows ]; then bin=$(cygpath -w "$bin"); fi
           echo "$bin" >> "$GITHUB_PATH"
       # The ts and python relaters need these language servers; their tests skip without them.
       # The pinned versions are the ones the relaters were measured with. TypeScript 7 ships no tsserver.js, so 5.x.
@@ -85,7 +80,6 @@ jobs:
         run: go test -timeout 20m ./...
       # The log stays outside the checkout: sync fingerprints every file in it.
       - name: The front-end tests ran, none skipped
-        if: runner.os == 'Linux'
         run: |
           cmake --version
           log="$RUNNER_TEMP/frontend.log"
@@ -93,7 +87,6 @@ jobs:
           grep -- '^--- ' "$log"
           if grep -- '--- SKIP' "$log"; then exit 1; fi
       - name: The relater tests ran, none skipped
-        if: runner.os == 'Linux'
         run: |
           "$RUNNER_TEMP/rust-analyzer/rust-analyzer" --version
           clangd --version
@@ -101,43 +94,12 @@ jobs:
           log="$RUNNER_TEMP/relate.log"
           go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
           if grep -- '--- SKIP' "$log"; then exit 1; fi
-      # The rust relater's tests skip here without rust-analyzer; the c, ts and python relaters' must not.
-      - name: The c, ts and python relater tests ran, none skipped
-        if: runner.os != 'Linux'
-        shell: bash
+      # abbd sync writes the same bytes on a second run over this repository's own state.
+      - name: Sync is deterministic
         run: |
-          cmake --version
-          clangd --version
-          typescript-language-server --version
-          log="$RUNNER_TEMP/relate-c.log"
-          go test -count=1 -v -run 'TestC|TestTS|TestPython' ./internal/extract/relate > "$log" || { cat "$log"; exit 1; }
-          grep -- '^--- ' "$log"
-          if grep -- '--- SKIP' "$log"; then exit 1; fi
-      - name: Digest the synced .abbd output
-        if: success() || failure()
-        shell: bash
-        run: |
+          digest() { find .abbd -type f | LC_ALL=C sort | while read -r f; do echo "$(git hash-object --no-filters "$f") $f"; done; }
           go run ./cmd/abbd sync > /dev/null
-          find .abbd -type f | LC_ALL=C sort | while read -r f; do
-            echo "$(git hash-object --no-filters "$f") $f"
-          done > abbd-digest-${{ matrix.os }}.txt
-      - uses: actions/upload-artifact@v4
-        if: success() || failure()
-        with:
-          name: abbd-digest-${{ matrix.os }}
-          path: abbd-digest-${{ matrix.os }}.txt
-  # abbd sync writes the same bytes on every OS for this repository's own state.
-  same-output:
-    needs: test
-    if: success() || failure()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: abbd-digest-*
-          merge-multiple: true
-      - name: Compare the digests
-        run: |
-          ls abbd-digest-*.txt
-          diff abbd-digest-ubuntu-latest.txt abbd-digest-windows-latest.txt
-          diff abbd-digest-ubuntu-latest.txt abbd-digest-macos-latest.txt
+          digest > "$RUNNER_TEMP/first.txt"
+          go run ./cmd/abbd sync > /dev/null
+          digest > "$RUNNER_TEMP/second.txt"
+          diff "$RUNNER_TEMP/first.txt" "$RUNNER_TEMP/second.txt"
