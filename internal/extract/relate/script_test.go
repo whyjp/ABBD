@@ -10,6 +10,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/extract/frontend"
+	"github.com/whyjp/abbd/internal/extract/lsp"
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -223,5 +224,19 @@ func TestScriptRelatersNeedTheirManifest(t *testing.T) {
 	_, _, err = Relate(t.TempDir(), t.TempDir(), nil, extract.Doc{}, []frontend.Spec{s})
 	if err == nil || !strings.Contains(err.Error(), "pyproject.toml") {
 		t.Errorf("err = %v, want the missing manifest named", err)
+	}
+}
+
+func TestDestructuredAndLiteralDeclarationsAreNotAsked(t *testing.T) {
+	lines := []string{"const { isFunction } = utils;", "export const [a, b] = pair;", "const f = utils.isFunction;", "export default null;", "export default {", "export default 'x';"}
+	for i, want := range []bool{true, true, false, true, false, true} {
+		kind := lsp.KindVariable
+		if i >= 3 {
+			kind = lsp.KindObject
+		}
+		s := lsp.DocumentSymbol{Kind: kind, Range: lsp.Range{Start: lsp.Position{Line: i}}}
+		if got := destructured(lines, s); got != want {
+			t.Errorf("destructured(%q) = %v, want %v", lines[i], got, want)
+		}
 	}
 }

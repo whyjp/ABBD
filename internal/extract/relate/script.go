@@ -175,11 +175,29 @@ func (r *scriptRead) symbols(ctx context.Context, p string, out *[]scriptSymbol)
 	r.src[p] = strings.Split(strings.ReplaceAll(string(b), "\r\n", "\n"), "\n")
 	for _, s := range syms {
 		r.decl[site3(p, s.SelectionRange.Start)] = true
-		if !r.lang.skip(s.Name) && s.Kind != lsp.KindTypeParameter {
+		if !r.lang.skip(s.Name) && s.Kind != lsp.KindTypeParameter && !destructured(r.src[p], s) {
 			*out = append(*out, scriptSymbol{p, s, unit})
 		}
 	}
 	return nil
+}
+
+var (
+	destructuring = regexp.MustCompile(`^\s*(?:export\s+)?(?:const|let|var)\s*[{\[]`)
+	literalExport = regexp.MustCompile(`^\s*export\s+default\s+(?:null|undefined|true|false|-?\d|['"` + "`" + `])`)
+)
+
+// destructured is whether a variable is bound by destructuring, as in
+// const { isFunction } = utils, or is a default export of a literal such as
+// null. The server lists the references of the property it reads among the
+// variable's own, from any receiver, and every use of the literal among a
+// literal's.
+func destructured(lines []string, s lsp.DocumentSymbol) bool {
+	n := s.Range.Start.Line
+	if n >= len(lines) {
+		return false
+	}
+	return (s.Kind == lsp.KindVariable || s.Kind == lsp.KindConstant) && destructuring.MatchString(lines[n]) || literalExport.MatchString(lines[n])
 }
 
 // uses adds a fact for every place another unit names s: a trait where it

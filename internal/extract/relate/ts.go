@@ -17,9 +17,7 @@ var tsLang = scriptLang{
 		".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".jsx": "javascriptreact",
 	},
 	test: tsTest,
-	skip: func(name string) bool {
-		return name == "" || name == "<unknown>" || name == "<function>" || strings.HasPrefix(name, "<")
-	},
+	skip: func(name string) bool { return name == "" || strings.HasPrefix(name, "<") },
 }
 
 // tsTest is whether a path names test code, which the relater leaves out
