@@ -2630,9 +2630,12 @@
         "internal/extract/relate/c.go",
         "internal/extract/relate/cread.go",
         "internal/extract/relate/golang.go",
+        "internal/extract/relate/python.go",
         "internal/extract/relate/relate.go",
         "internal/extract/relate/rust.go",
-        "internal/extract/relate/rusttext.go"
+        "internal/extract/relate/rusttext.go",
+        "internal/extract/relate/script.go",
+        "internal/extract/relate/ts.go"
       ],
       "Parent": "MOD-0017"
     },
@@ -12549,9 +12552,12 @@
             "internal/extract/relate/c.go",
             "internal/extract/relate/cread.go",
             "internal/extract/relate/golang.go",
+            "internal/extract/relate/python.go",
             "internal/extract/relate/relate.go",
             "internal/extract/relate/rust.go",
-            "internal/extract/relate/rusttext.go"
+            "internal/extract/relate/rusttext.go",
+            "internal/extract/relate/script.go",
+            "internal/extract/relate/ts.go"
           ],
           "Understanding": null
         },
