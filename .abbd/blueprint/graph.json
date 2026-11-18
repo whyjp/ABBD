@@ -490,13 +490,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd",
@@ -603,8 +601,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Records a purpose, responsibility or coupling the human states, with a source reference.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -623,8 +620,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -643,8 +639,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -663,8 +658,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Lists unit candidates from the layout and fans the reading out to a pstack swarm of how-explorer workers that report in the extraction format.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -683,8 +677,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Writes a deterministic script that prints the extraction JSON from the code alone, and reconciles it against the swarm result.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -703,8 +696,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Writes supplement.json with what only reading tells: purposes, units and couplings the script cannot see, and the grouping into parts.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -723,8 +715,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Runs abbd setup with script and supplement, and says how to fix each refusal it can give.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -743,8 +734,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Checks the blueprint against the swarm's account, installs the CLAUDE.md block, commits, and hands ongoing work to the abbd skill.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -763,8 +753,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Defines the JSON contract shared by swarm workers, the extractor script and the supplement: unit kinds, relation kinds, via values, evidence and parent rules.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -825,8 +814,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "ABBD's own recipe for reading a module and storing what it found; it needs only the abbd CLI and uses pstack as an optional engine when installed.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/references/reader.md"
@@ -845,8 +833,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "For each top-level module, reads it with the bundled reader and stores its Overview and Key Concepts with the reader's name.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -865,8 +852,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -1448,13 +1434,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a PR and its reviewer see what changed and whether the record still holds, without writing",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "cmd/abbd/diff.go diff",
@@ -1548,13 +1532,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader's or a human's finding enters the state only with live evidence or a stated source",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Owns record relation, record unit, record fact and understand: checking every quote against the tree, the origin precedence EXTRACTED over USER_STATED over INFERRED, the duplicate-code refusal, and refusing to restamp unchanged how text onto changed code.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "cmd/abbd/record.go citations",
@@ -1622,13 +1604,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/bootstrap",
@@ -1648,13 +1628,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader adds intent and couplings but never replaces what the script read from code",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/bootstrap/overlay.go Overlay"
@@ -1842,13 +1820,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so no extraction can claim a purpose or responsibility as a code fact or as a human's word",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/extract/extract.go inferred"
@@ -1889,13 +1865,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so malformed or overreaching extraction output fails loudly instead of entering the state",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader's unit is identified by the code it cites.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/extract/extract.go parseUnits"
@@ -1914,13 +1888,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so ABBD can ask git the few facts it needs without touching the user's index or history",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/gitx",
@@ -1985,13 +1957,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a sync can fingerprint the working tree, untracked files included, without disturbing the user's index",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/gitx/gitx.go Snapshot"
@@ -2010,13 +1980,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/identity",
@@ -2037,13 +2005,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so an extracted unit inherits a stored ID only when the code evidently is the same unit, regardless of input order",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Pairs extracted and stored units of the same kind that share two or more anchors or an identical anchor set, assigning globally best match first (identical, then larger overlap, then smaller difference).",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/identity/identity.go Reconcile"
@@ -2062,13 +2028,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader-found unit a human spoke about is not marked absent when a new supplement stops reporting it",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Computes, to a fixed point, the semantic units that carry a USER_STATED fact or relation or are pointed at by a stated relation from a unit that stays, and keeps them present as Stated.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/identity/identity.go heldByHuman"
@@ -2086,13 +2050,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a rerun of the script or of setup never overwrites what a human stated",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "On a match the extraction replaces anchors, signature, digest and EXTRACTED names and relations; INFERRED guesses are replaced only by a setup (ReplaceGuesses); USER_STATED facts and relations always survive.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/identity/identity.go merge",
@@ -2112,13 +2074,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/model",
@@ -2149,13 +2109,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package decides the same way which units and relations are a reader's guess and which are drawn as the topology",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "A unit is semantic when its name is INFERRED; a relation counts as topology only when it is live and EXTRACTED or USER_STATED, and is a guess when INFERRED.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/model/model.go Counts",
@@ -2173,13 +2131,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every relation, extracted, read or stated, has a meaning ABBD can draw",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/model/model.go ends",
@@ -2198,13 +2154,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so everyone can tell a code fact from a reader's guess from a human's word",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Defines the EXTRACTED, INFERRED and USER_STATED origins and enforces that a why-field is never EXTRACTED and that exactly the USER_STATED facts carry a source.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/model/model.go sourced",
@@ -2290,13 +2244,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows what inside a module meets each of its contracts and the other modules",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "draws a module's child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/screen/inside.go inferred",
@@ -2339,13 +2291,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "keeps the first level a picture of what the code and the human say, never of guesses",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/screen/overview.go draw",
@@ -2387,8 +2337,7 @@
       "Signature": "",
       "Purpose": {
         "Value": "tells the human whether what they read can be trusted",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "작업 트리 스냅숏을 sync한 지문과 견주고(상태 CURRENT, STALE, UNKNOWN), 상태가 말하는 블루프린트의 입력 해시를 지금 입력 해시와 견주며(블루프린트 신선도), 병합된 상태는 STALE로 읽는다",
@@ -2434,13 +2383,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/store",
@@ -2465,8 +2412,7 @@
       "Signature": "",
       "Purpose": {
         "Value": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
@@ -2489,13 +2435,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so an ID number, once given out, is never handed to another unit even after its unit is deleted",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Mints the next ID of a kind for a hand-recorded unit by bumping the per-kind high-water in state.yaml and saving it.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/store/store.go NextID"
@@ -2512,13 +2456,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a diff can compare today's units with those committed at a base revision",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/store/store.go UnitsAt"
@@ -2557,13 +2499,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a module's understanding text is marked STALE once any code it describes changes or disappears",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Fingerprints, CRLF-normalized and truncated to 16 hex, every file cited by the anchors and evidence of a present module and its child units, counting a missing file as missing.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/store/understanding.go ModuleDigest"
@@ -2580,13 +2520,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/topology",
@@ -2635,13 +2573,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a PR shows what changed in the architecture, not in the lines",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Compares two unit sets into sorted categories: units added and removed, contract signatures changed, contract code changed under the same signature, drawn relations between top-level units (an inside unit's relation lifted to its module), and reader couplings added.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/topology/diff.go Compare",
@@ -2835,6 +2771,7 @@
         "internal/extract/frontend",
         "internal/extract/frontend/cargo.go",
         "internal/extract/frontend/cmake.go",
+        "internal/extract/frontend/cmakecompile.go",
         "internal/extract/frontend/frontend.go"
       ],
       "Parent": "MOD-0017",
@@ -2849,6 +2786,8 @@
       "Responsibility": null,
       "Anchors": [
         "internal/extract/relate",
+        "internal/extract/relate/c.go",
+        "internal/extract/relate/cread.go",
         "internal/extract/relate/golang.go",
         "internal/extract/relate/relate.go",
         "internal/extract/relate/rust.go",
@@ -5480,13 +5419,11 @@
       "Name": "/abbd",
       "Purpose": {
         "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 0,
@@ -11098,13 +11035,11 @@
       "Name": "internal/bootstrap",
       "Purpose": {
         "Value": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 1,
@@ -12987,6 +12922,7 @@
         "Provides": 1,
         "Uses": 2,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -13066,6 +13002,7 @@
             "internal/extract/frontend",
             "internal/extract/frontend/cargo.go",
             "internal/extract/frontend/cmake.go",
+            "internal/extract/frontend/cmakecompile.go",
             "internal/extract/frontend/frontend.go"
           ],
           "Understanding": null,
@@ -13083,6 +13020,8 @@
           "Guess": false,
           "Anchors": [
             "internal/extract/relate",
+            "internal/extract/relate/c.go",
+            "internal/extract/relate/cread.go",
             "internal/extract/relate/golang.go",
             "internal/extract/relate/relate.go",
             "internal/extract/relate/rust.go",
@@ -13116,7 +13055,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -15232,13 +15171,11 @@
       "Name": "internal/gitx",
       "Purpose": {
         "Value": "so ABBD can ask git the few facts it needs without touching the user's index or history",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 0,
@@ -16664,13 +16601,11 @@
       "Name": "internal/identity",
       "Purpose": {
         "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 4,
@@ -17916,13 +17851,11 @@
       "Name": "internal/model",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 2,
@@ -26722,6 +26655,111 @@
             ]
           },
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "배치는 행을 여럿 건너는 선의 체인을 꽉 찬 행의 끝 너머에 둘 수 있고, 그 체인을 타는 선은 여백으로 나갔다 돌아온다. 그래서 ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": "는 도로 위에 그린 그림에서 어떤 선의 길 전체가 규칙 15의 한도(",
+                "Code": false
+              },
+              {
+                "Text": "detourLimit",
+                "Code": true
+              },
+              {
+                "Text": ")보다 멀리 돌고(",
+                "Code": false
+              },
+              {
+                "Text": "cost.far",
+                "Code": true
+              },
+              {
+                "Text": "), 두 상자 사이 선 하나가 길에서 ",
+                "Code": false
+              },
+              {
+                "Text": "detourOffer",
+                "Code": true
+              },
+              {
+                "Text": "보다 먼 체인을 탈 때(",
+                "Code": false
+              },
+              {
+                "Text": "routing.strays",
+                "Code": true
+              },
+              {
+                "Text": ") 그 그림을 ",
+                "Code": false
+              },
+              {
+                "Text": "through",
+                "Code": true
+              },
+              {
+                "Text": " 전술로 한 번 더 그린다. ",
+                "Code": false
+              },
+              {
+                "Text": "through",
+                "Code": true
+              },
+              {
+                "Text": "에서는 그런 선이 칩으로 가는 선처럼 체인을 떠나 행의 틈으로 지나간다(",
+                "Code": false
+              },
+              {
+                "Text": "chainsOf",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "astray",
+                "Code": true
+              },
+              {
+                "Text": "). 그 그림은 그렇게 먼 선이 줄고 관문이 뷰를 묶는 어떤 합계도 늘지 않을 때만 남는다(",
+                "Code": false
+              },
+              {
+                "Text": "gateTotals",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "noWorse",
+                "Code": true
+              },
+              {
+                "Text": "). 상자의 행과 순서는 그대로이고, 행 사이 간격만 선이 잡는 트랙 수에 따라 늘거나 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "through_test.go",
+                "Code": true
+              },
+              {
+                "Text": "가 이를 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -30581,13 +30619,11 @@
       "Name": "internal/store",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 5,
@@ -32613,13 +32649,11 @@
       "Name": "internal/topology",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 0,

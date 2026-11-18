@@ -34,14 +34,20 @@ abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [-DNAME=VALUE...] [--root DIR]
                                      relative to the root, "." when left out; -D options are
                                      CMake cache options for the configure; register it as
                                      abbd setup -- abbd extract cargo, or extend its output
-abbd relate RELATER[=DIR] [RELATER[=DIR]] [--root DIR] [-- EXTRACT-ARGV...]
+abbd relate RELATER[=DIR] [RELATER[=DIR]] [-DNAME=VALUE...] [--root DIR] [-- EXTRACT-ARGV...]
                                      print the extraction that EXTRACT-ARGV prints, or stdin,
                                      with the code-level relations a bundled relater reads
                                      between its units: go (go.mod; go/types, calls resolved
-                                     with VTA, tests left out, GOOS=linux) or rust (Cargo.toml;
+                                     with VTA, tests left out, GOOS=linux), rust (Cargo.toml;
                                      rust-analyzer from $ABBD_LSP_RUST or the PATH, tests left
                                      out, default and all features for x86_64-unknown-linux-gnu,
-                                     a relation found under one only says so in when); files no
+                                     a relation found under one only says so in when) or c (C and
+                                     C++: DIR's compile_commands.json, else its CMakeLists.txt
+                                     configured in $ABBD_CACHE_DIR with the -D options given as
+                                     to abbd extract; clangd from $ABBD_LSP_C or
+                                     the PATH; tests left out; function-pointer tables become
+                                     provides and consumes, or a callback from host to filler;
+                                     code #if leaves out is named on stderr); files no
                                      configuration compiles are named on stderr; it replaces the
                                      depends_on between units whose code it read, and adds a
                                      provides or consumes only where the extraction has none;
@@ -464,7 +470,7 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 			return inv, fmt.Errorf("nothing after --")
 		}
 	}
-	if inv.name == "extract" {
+	if inv.name == "extract" || inv.name == "relate" {
 		// A -DNAME=VALUE is a CMake cache option, not a flag of abbd.
 		inv.o.cacheOpts = slices.DeleteFunc(slices.Clone(args), func(a string) bool { return !strings.HasPrefix(a, "-D") })
 		args = slices.DeleteFunc(args, func(a string) bool { return strings.HasPrefix(a, "-D") })

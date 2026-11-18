@@ -664,13 +664,14 @@ func (r *rustReader) add(x fact, shows bool) {
 	r.mu.Unlock()
 }
 
-// parallel runs f over 0..n-1 on rustRequests workers and returns the first
-// error.
+// parallel runs f over 0..n-1 on rustRequests workers and returns the error
+// of the lowest index that failed, so the same failures give the same text.
 func parallel(n int, f func(i int) error) error {
 	var (
 		wg    sync.WaitGroup
-		once  sync.Once
+		mu    sync.Mutex
 		first error
+		at    = n
 	)
 	next := make(chan int)
 	for range rustRequests {
@@ -679,7 +680,11 @@ func parallel(n int, f func(i int) error) error {
 			defer wg.Done()
 			for i := range next {
 				if err := f(i); err != nil {
-					once.Do(func() { first = err })
+					mu.Lock()
+					if i < at {
+						at, first = i, err
+					}
+					mu.Unlock()
 				}
 			}
 		}()
