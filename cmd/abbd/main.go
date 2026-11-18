@@ -599,8 +599,8 @@ func (e env) sync() error {
 
 // attention prints what a reader or a human must look at after a write:
 // drifted and dead evidence, a human's parent the script moved under, two
-// claims that give one edge different conditions, and
-// a module the extraction does not cover.
+// claims that give one edge different conditions, a module the extraction
+// does not cover, and an overview line that names no unit.
 func (e env) attention(units []model.Unit) {
 	n := evidenceCounts(units)
 	if n[model.Drifted]+n[model.Dead] > 0 {
@@ -611,6 +611,9 @@ func (e env) attention(units []model.Unit) {
 	}
 	for _, w := range uncovered(e.root, units) {
 		fmt.Fprintln(e.stdout, w)
+	}
+	if o, err := e.st.LoadOverview(); err == nil && o.Known {
+		e.warnOverviewLines(units, o)
 	}
 }
 

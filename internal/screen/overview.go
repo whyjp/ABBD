@@ -32,6 +32,7 @@ type Drawing struct {
 	// relations those lines stand for.
 	Counted     [][2]string `json:"-"`
 	countedRels []string
+	said        map[pair]string
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
 	// Routes are each line's whole way, one per line the view requests.
@@ -490,6 +491,7 @@ type overview struct {
 	more        map[model.ID]int
 	counted     [][2]string
 	countedRels []string
+	said        map[pair]string
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -637,6 +639,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			}
 		}
 	}
+	var hidden []ledge
 	o.unreached = map[model.ID][]model.ID{}
 	for _, c := range o.contracts {
 		if len(o.users[c]) == 0 {
@@ -656,6 +659,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 				return false
 			}
 			o.counted = append(o.counted, [2]string{string(k[0]), string(k[1])})
+			hidden = append(hidden, ledge{string(k[0]), string(k[1])})
 			for _, ct := range o.carry[k] {
 				o.countedRels = append(o.countedRels, o.between(k[0], ct)...)
 				o.countedRels = append(o.countedRels, o.between(k[1], ct)...)
@@ -667,10 +671,15 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 				return false
 			}
 			o.counted = append(o.counted, [2]string{string(e.From), string(e.To)})
+			hidden = append(hidden, ledge{string(e.From), string(e.To)})
 			o.countedRels = append(o.countedRels, o.rels[e.String()]...)
 			return true
 		})
 		o.more = c.more
+		o.said = c.said
+		if c.said == nil {
+			hidden = nil
+		}
 	}
 	var edges []ledge
 	for _, k := range o.pairs {
@@ -749,8 +758,9 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
 	}
-	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)
+	o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
+	o.layout.recorded = len(hidden) > 0
 	return o
 }
 
@@ -1143,7 +1153,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads, axis: l.axis}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
