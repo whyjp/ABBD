@@ -73,6 +73,14 @@ jobs:
           bin="$dir/clangd_23.1.0/bin"
           if [ "$RUNNER_OS" = Windows ]; then bin=$(cygpath -w "$bin"); fi
           echo "$bin" >> "$GITHUB_PATH"
+      # The ts and python relaters need these language servers; their tests skip without them.
+      # The pinned versions are the ones the relaters were measured with. TypeScript 7 ships no tsserver.js, so 5.x.
+      - name: Install typescript-language-server 6.1.0 and pyright 1.1.414
+        shell: bash
+        run: |
+          npm install -g typescript-language-server@6.1.0 typescript@5.9.3 pyright@1.1.414
+          typescript-language-server --version
+          command -v pyright-langserver
       - name: go test
         run: go test -timeout 20m ./...
       # The log stays outside the checkout: sync fingerprints every file in it.
@@ -89,18 +97,20 @@ jobs:
         run: |
           "$RUNNER_TEMP/rust-analyzer/rust-analyzer" --version
           clangd --version
+          typescript-language-server --version
           log="$RUNNER_TEMP/relate.log"
           go test -count=1 -v ./internal/extract/relate ./internal/extract/lsp > "$log" || { cat "$log"; exit 1; }
           if grep -- '--- SKIP' "$log"; then exit 1; fi
-      # The rust relater's tests skip here without rust-analyzer; the c relater's must not.
-      - name: The c relater tests ran, none skipped
+      # The rust relater's tests skip here without rust-analyzer; the c, ts and python relaters' must not.
+      - name: The c, ts and python relater tests ran, none skipped
         if: runner.os != 'Linux'
         shell: bash
         run: |
           cmake --version
           clangd --version
+          typescript-language-server --version
           log="$RUNNER_TEMP/relate-c.log"
-          go test -count=1 -v -run 'TestC' ./internal/extract/relate > "$log" || { cat "$log"; exit 1; }
+          go test -count=1 -v -run 'TestC|TestTS|TestPython' ./internal/extract/relate > "$log" || { cat "$log"; exit 1; }
           grep -- '^--- ' "$log"
           if grep -- '--- SKIP' "$log"; then exit 1; fi
       - name: Digest the synced .abbd output
