@@ -20,12 +20,14 @@ import (
 
 // frontends is the one list of bundled front-ends. manifest is the file the
 // front-end's directory must hold.
+// A front-end with no manifest is named by a file, as msbuild=app.sln.
 var frontends = map[string]struct {
 	manifest string
 	run      func(t tree) (extract.Doc, error)
 }{
-	"cargo": {"Cargo.toml", cargo},
-	"cmake": {"CMakeLists.txt", cmake},
+	"cargo":   {"Cargo.toml", cargo},
+	"cmake":   {"CMakeLists.txt", cmake},
+	"msbuild": {"", msbuild},
 }
 
 // Names lists the bundled front-ends.
@@ -99,7 +101,11 @@ func ExtractWith(root, cache string, specs []Spec, defs []string) (extract.Doc, 
 		}
 		f := frontends[s.Name]
 		dir := filepath.Join(root, filepath.FromSlash(s.Dir))
-		if _, err := os.Stat(filepath.Join(dir, f.manifest)); err != nil {
+		if f.manifest == "" {
+			if fi, err := os.Stat(dir); err != nil || fi.IsDir() || !IsMSBuildPath(dir) {
+				return extract.Doc{}, fmt.Errorf("%s: %s is no .sln, .slnx or .vcxproj file", s.Name, s.Dir)
+			}
+		} else if _, err := os.Stat(filepath.Join(dir, f.manifest)); err != nil {
 			return extract.Doc{}, fmt.Errorf("%s: %s has no %s", s.Name, s.Dir, f.manifest)
 		}
 		d, err := f.run(tree{root: root, dir: dir, cache: cache, defs: defs})
@@ -114,6 +120,7 @@ func ExtractWith(root, cache string, specs []Spec, defs []string) (extract.Doc, 
 		}
 		doc.Units = append(doc.Units, d.Units...)
 		doc.Relations = append(doc.Relations, d.Relations...)
+		doc.Notes = append(doc.Notes, d.Notes...)
 	}
 	return doc, nil
 }

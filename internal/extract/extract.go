@@ -20,6 +20,8 @@ import (
 type Doc struct {
 	Units     []DocUnit     `json:"units"`
 	Relations []DocRelation `json:"relations,omitempty"`
+	// Notes are what a front-end could not resolve, for stderr, never printed in the JSON.
+	Notes []string `json:"-"`
 }
 
 // DocUnit is one unit of the extraction JSON.

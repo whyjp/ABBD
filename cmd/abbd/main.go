@@ -29,8 +29,9 @@ abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      fold in the semantic supplement, and sync
 abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [-DNAME=VALUE...] [--root DIR]
                                      print the extraction JSON a bundled front-end reads from the
-                                     build system's own model: cargo (Cargo.toml) or cmake
-                                     (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
+                                     build system's own model: cargo (Cargo.toml), cmake
+                                     (CMakeLists.txt, configured in $ABBD_CACHE_DIR) or msbuild=FILE
+                                     (a .sln, .slnx or .vcxproj, read as XML with no MSBuild); DIR is
                                      relative to the root, "." when left out; -D options are
                                      CMake cache options for the configure; register it as
                                      abbd setup -- abbd extract cargo, or extend its output
@@ -44,7 +45,9 @@ abbd relate RELATER[=DIR] [RELATER[=DIR]] [-DNAME=VALUE...] [--root DIR] [-- EXT
                                      a relation found under one only says so in when) or c (C and
                                      C++: DIR's compile_commands.json, else its CMakeLists.txt
                                      configured in $ABBD_CACHE_DIR with the -D options given as
-                                     to abbd extract; clangd from $ABBD_LSP_C or
+                                     to abbd extract; or c=FILE for the
+                                     .sln, .slnx or .vcxproj that abbd extract msbuild=FILE
+                                     reads, compiled as cl.exe would; clangd from $ABBD_LSP_C or
                                      the PATH; tests left out; function-pointer tables become
                                      provides and consumes, or a callback from host to filler;
                                      code #if leaves out is named on stderr), ts (TypeScript and

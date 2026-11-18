@@ -111,26 +111,37 @@ type cEntry struct {
 
 // cCompiles reads how the build compiles each source: from the directory's
 // compile_commands.json when it holds one, else from its CMake project.
-func cCompiles(t tree) ([]cEntry, error) {
-	db := filepath.Join(t.dir, "compile_commands.json")
-	if _, err := os.Stat(db); err != nil {
-		cs, err := frontend.CMakeCompiles(t.root, t.dir, t.cache, t.defs)
+func cCompiles(t tree) ([]cEntry, []string, error) {
+	if frontend.IsMSBuildPath(t.dir) {
+		cs, notes, err := frontend.MSBuildCompiles(t.root, t.dir)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		var out []cEntry
 		for _, c := range cs {
 			out = append(out, cEntry{c.File, map[string]any{"directory": c.Dir, "file": c.File, "arguments": c.Args}})
 		}
-		return out, nil
+		return out, notes, nil
+	}
+	db := filepath.Join(t.dir, "compile_commands.json")
+	if _, err := os.Stat(db); err != nil {
+		cs, err := frontend.CMakeCompiles(t.root, t.dir, t.cache, t.defs)
+		if err != nil {
+			return nil, nil, err
+		}
+		var out []cEntry
+		for _, c := range cs {
+			out = append(out, cEntry{c.File, map[string]any{"directory": c.Dir, "file": c.File, "arguments": c.Args}})
+		}
+		return out, nil, nil
 	}
 	b, err := os.ReadFile(db)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var raw []map[string]any
 	if err := json.Unmarshal(b, &raw); err != nil {
-		return nil, fmt.Errorf("%s: %w", filepath.ToSlash(filepath.Join(t.dir, "compile_commands.json")), err)
+		return nil, nil, fmt.Errorf("%s: %w", filepath.ToSlash(filepath.Join(t.dir, "compile_commands.json")), err)
 	}
 	var out []cEntry
 	for _, e := range raw {
@@ -149,7 +160,7 @@ func cCompiles(t tree) ([]cEntry, error) {
 		}
 		out = append(out, cEntry{f, e})
 	}
-	return out, nil
+	return out, nil, nil
 }
 
 // cDatabase writes the compile database clangd reads into the cache: the
@@ -225,7 +236,7 @@ func clang(t tree, o owners) (found, error) {
 	if err != nil {
 		return found{}, err
 	}
-	entries, err := cCompiles(t)
+	entries, notes, err := cCompiles(t)
 	if err != nil {
 		return found{}, err
 	}
@@ -237,7 +248,7 @@ func clang(t tree, o owners) (found, error) {
 	if err != nil {
 		return found{}, err
 	}
-	f := found{covered: map[string]bool{}, when: map[link]string{}}
+	f := found{covered: map[string]bool{}, when: map[link]string{}, notes: notes}
 	var read []string
 	for _, p := range files {
 		if !compiled[p] && !cExt(p, cHeaders) {
@@ -251,7 +262,7 @@ func clang(t tree, o owners) (found, error) {
 	if len(compiled) == 0 {
 		return found{}, fmt.Errorf("the compile database compiles no source a unit holds (%d entries)", len(entries))
 	}
-	r := &cReader{tree: t, owners: o, read: map[string]bool{}, src: map[string][]string{}, starts: map[string][]int{}, classes: map[string][]string{}, syms: map[string][]lsp.DocumentSymbol{}, gated: map[string][]lsp.Range{}}
+	r := &cReader{tree: t, owners: o, read: map[string]bool{}, src: map[string][]string{}, starts: map[string][]int{}, classes: map[string][]string{}, syms: map[string][]lsp.DocumentSymbol{}, gated: map[string][]lsp.Range{}, lack: map[string][]string{}}
 	for _, p := range read {
 		r.read[p] = true
 	}
@@ -275,6 +286,9 @@ func clang(t tree, o owners) (found, error) {
 	}
 	f.facts = facts
 	f.gated = r.gatedLines()
+	if frontend.IsMSBuildPath(t.dir) {
+		f.lacks = r.lackLines()
+	}
 	return f, nil
 }
 
@@ -301,6 +315,9 @@ type cReader struct {
 	// gated holds the ranges clangd reports its configuration leaves out of
 	// each open file, by #if.
 	gated map[string][]lsp.Range
+	// lack holds, for each open file, the headers clangd last reported it
+	// could not find.
+	lack  map[string][]string
 	facts []fact
 }
 
@@ -308,7 +325,12 @@ func (r *cReader) abs(p string) string { return filepath.Join(r.root, filepath.F
 
 // note keeps clangd's inactive regions of each file it opened.
 func (r *cReader) note(method string, params json.RawMessage) {
-	if method != "textDocument/inactiveRegions" {
+	switch method {
+	case "textDocument/publishDiagnostics":
+		r.diagnostics(params)
+		return
+	case "textDocument/inactiveRegions":
+	default:
 		return
 	}
 	var p struct {
@@ -360,4 +382,59 @@ func (r *cReader) add(x fact) {
 	r.mu.Lock()
 	r.facts = append(r.facts, x)
 	r.mu.Unlock()
+}
+
+var fileNotFound = regexp.MustCompile(`^'([^']+)' file not found`)
+
+// diagnostics keeps the headers clangd says an open file includes and cannot
+// find, replacing what it said of that file before.
+func (r *cReader) diagnostics(params json.RawMessage) {
+	var p struct {
+		URI         string `json:"uri"`
+		Diagnostics []struct {
+			Message string `json:"message"`
+		} `json:"diagnostics"`
+	}
+	if json.Unmarshal(params, &p) != nil {
+		return
+	}
+	abs, err := lsp.Path(p.URI)
+	if err != nil {
+		return
+	}
+	rel, ok := r.rel(abs)
+	if !ok {
+		return
+	}
+	var miss []string
+	for _, d := range p.Diagnostics {
+		if m := fileNotFound.FindStringSubmatch(d.Message); m != nil {
+			miss = append(miss, m[1])
+		}
+	}
+	r.mu.Lock()
+	r.lack[rel] = miss
+	r.mu.Unlock()
+}
+
+// lackLines names each header some read file includes and clangd could not
+// find, with how many files, as name (N files).
+func (r *cReader) lackLines() []string {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	n := map[string]int{}
+	for p, hs := range r.lack {
+		if !r.read[p] {
+			continue
+		}
+		for _, h := range slices.Compact(slices.Sorted(slices.Values(hs))) {
+			n[h]++
+		}
+	}
+	var out []string
+	for h, c := range n {
+		out = append(out, fmt.Sprintf("%s (%d files)", h, c))
+	}
+	slices.Sort(out)
+	return out
 }
