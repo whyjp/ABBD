@@ -2167,11 +2167,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -21475,11 +21477,13 @@
       "Name": "internal/screen",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 지금 것인지 말하며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -26718,7 +26722,7 @@
                 "Code": true
               },
               {
-                "Text": "). 상자는 옮기지 않으므로 경로만 바뀐다. ",
+                "Text": "). 상자의 행과 순서는 그대로이고, 행 사이 간격만 선이 잡는 트랙 수에 따라 늘거나 준다. ",
                 "Code": false
               },
               {
