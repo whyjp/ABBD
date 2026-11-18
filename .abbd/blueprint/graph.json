@@ -1762,13 +1762,11 @@
       "Signature": "",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "internal/extract",
@@ -4947,7 +4945,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
     },
     {
       "From": "MOD-0038",
@@ -12956,13 +12954,11 @@
       "Name": "internal/extract",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 1,
@@ -21664,7 +21660,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 10
       },
@@ -23090,7 +23085,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -30642,7 +30637,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go \"o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)\""
+            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
           ]
         },
         {
@@ -31827,14 +31822,7 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
-                "Need": "선택",
-                "Users": [
-                  {
-                    "ID": "MOD-0034",
-                    "Name": "internal/screen",
-                    "Badge": "extracted"
-                  }
-                ]
+                "Need": "선택"
               },
               {
                 "Key": "language",
@@ -31845,7 +31833,7 @@
             ],
             "Need": true,
             "Providers": false,
-            "Users": true,
+            "Users": false,
             "Data": true,
             "Notes": false
           }
@@ -36838,6 +36826,240 @@
         "MOD-0054",
         "MOD-0047"
       ]
+    }
+  ],
+  "lines": [
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0001",
+      "word": "abbd sync 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 38
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "MOD-0001",
+      "word": "abbd setup 실행",
+      "kinds": [
+        "consumes"
+      ],
+      "vias": [
+        "call",
+        "convention"
+      ],
+      "relations": 31
+    },
+    {
+      "from": "FEAT-0002",
+      "to": "FEAT-0001",
+      "word": "abbd 스킬의 리더",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "FEAT-0001",
+      "to": "MOD-0055",
+      "word": "pstack how 탐색",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0017",
+      "word": "스크립트 출력 Parse",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0009",
+      "word": "보충 doc Overlay",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0009",
+      "to": "MOD-0017",
+      "word": "extract.Result 덧입힘",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "data",
+        "import"
+      ],
+      "relations": 2
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0022",
+      "word": "작업 트리 Snapshot",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0026",
+      "word": "저장본과 추출 Reconcile",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0013",
+      "word": "단위 인용 Apply",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 5
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0054",
+      "word": "단위 Fallback 배치",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0041",
+      "word": "SaveUnits 단위 파일",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "data"
+      ],
+      "relations": 9
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0034",
+      "word": "청사진 Build",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 3
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0041",
+      "word": "LoadUnits 단위 읽기",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "config",
+        "convention",
+        "data"
+      ],
+      "relations": 12
+    },
+    {
+      "from": "MOD-0001",
+      "to": "MOD-0047",
+      "word": "topology.Explain 질의",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 6
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0047",
+      "word": "EntryUses 항목 사용처",
+      "kinds": [
+        "consumes",
+        "depends_on"
+      ],
+      "vias": [
+        "call",
+        "data"
+      ],
+      "relations": 4
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0057",
+      "word": "owners.Read 소유자",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
+    },
+    {
+      "from": "MOD-0034",
+      "to": "MOD-0056",
+      "word": "narrative.Lines 줄",
+      "kinds": [
+        "depends_on"
+      ],
+      "vias": [
+        "call"
+      ],
+      "relations": 1
     }
   ]
 }
