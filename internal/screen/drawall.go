@@ -87,8 +87,8 @@ func folded(in Input) Input {
 	zoned := map[model.ID]bool{}
 	type zone struct {
 		at, pairs int
-		name     string
-		boxes    []model.ID
+		name      string
+		boxes     []model.ID
 	}
 	var zs []zone
 	for i, z := range in.Overview.Zones {
