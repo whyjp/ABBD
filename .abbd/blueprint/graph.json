@@ -13147,7 +13147,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "x",
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
