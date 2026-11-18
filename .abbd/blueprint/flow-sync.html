@@ -11,6 +11,7 @@
   --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
   --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #b93e0a;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --lead-ink: #ffffff;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -18,6 +19,7 @@
     --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
     --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
     --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    --lead-ink: #161614;
     color-scheme: dark;
   }
 }
@@ -25,6 +27,7 @@
   --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
   --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
   --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  --lead-ink: #161614;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -49,6 +52,9 @@ code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywher
 ul.plain { list-style: none; padding: 0; margin: 4px 0; }
 ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
 ul.plain li:last-child { border-bottom: 0; }
+ol.runs { margin: 4px 0 0; padding-left: 2em; }
+ul.plain ol.runs li { border-bottom: 0; padding: 1px 0; }
+p.role { margin: 4px 0; }
 table { border-collapse: collapse; width: 100%; }
 td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
 td.id { white-space: nowrap; width: 1%; }
@@ -63,19 +69,39 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
-svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.8; }
-svg .box[data-h] rect { stroke: color-mix(in srgb, var(--c) 80%, var(--panel)); }
-svg .box path.bar { fill: none; stroke: var(--c); stroke-width: 4; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
+svg .box[data-h] rect { stroke: var(--c); fill: color-mix(in srgb, var(--c) 5%, var(--panel)); }
 svg .box.inner rect { stroke-width: 1.5; }
 svg .box.inner.has rect { stroke-width: 2.2; }
+svg .box.inner.has:not(.focus):hover rect, svg a:hover .box.inner.has:not(.focus) rect, svg a:focus .box.inner.has:not(.focus) rect { stroke-width: 2.6; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
 svg .box.focus rect { stroke-width: 3.4; }
+svg .box.lead rect { fill: var(--c); stroke: var(--c); }
+svg .box.lead text.name, svg .box.lead text.sub { fill: var(--lead-ink); }
+svg .box.lead text.sub { opacity: .85; }
+svg g.port.onfill rect { stroke: var(--panel); stroke-width: 1.4; }
+svg g.zone, svg g.leadway, svg g.card { pointer-events: none; }
+svg rect.card { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+svg text.ct { font: 600 9.5px var(--mono); letter-spacing: .14em; fill: var(--muted); }
+svg g.ci text { font-size: 11px; fill: var(--ink); }
+svg g.zone rect.band { fill: color-mix(in srgb, var(--c) 7%, transparent); stroke: color-mix(in srgb, var(--c) 26%, transparent); stroke-width: 1; }
+svg g.zone text.zt { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--c); }
 svg .box.twin rect { stroke-dasharray: 6 3; }
 svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box[data-h]:not(.focus):hover rect { stroke-width: 2.6; }
+svg a:hover .box.focus rect, svg a:focus .box.focus rect { stroke-width: 3.4; }
+svg .box[data-h]:hover rect, svg a:hover .box[data-h] rect, svg a:focus .box[data-h] rect { stroke: var(--c); }
+svg .box.lead[data-h]:hover rect, svg a:hover .box.lead[data-h] rect, svg a:focus .box.lead[data-h] rect { fill: color-mix(in srgb, var(--c) 82%, var(--ink)); }
+svg a:focus-visible { outline: 2px dashed var(--ink); outline-offset: 3px; }
 .picker a.chip { text-decoration: none; }
 svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
 svg .port rect { stroke-width: 1.2; }
@@ -85,21 +111,42 @@ svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
 svg .port.entry text { fill: var(--accent); }
 svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
 svg .port.other text { fill: var(--muted); }
+svg .port.exit[data-h] rect { fill: color-mix(in srgb, var(--c) 15%, var(--panel)); stroke: var(--c); }
+svg .port.exit[data-h] text { fill: color-mix(in srgb, var(--c) 80%, var(--ink)); }
+svg .port.entry[data-h] rect { stroke: var(--c); }
+svg .port.entry[data-h] text { fill: var(--c); }
+svg a:hover .port[data-h] rect { stroke: var(--c); }
+svg g.port.onfill[data-h] rect, svg a:hover g.port.onfill[data-h] rect { stroke: var(--panel); }
 svg path.w { fill: none; stroke: var(--c); stroke-width: 1.5; }
 svg path.provides { stroke-width: 2; }
-svg path.bypass, svg path.mutual { stroke-width: 2.6; }
+svg path.bypass, svg path.mutual { stroke-width: 1.5; }
 svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
 svg circle.junction { fill: var(--c); }
+svg g.more rect { fill: var(--panel); stroke: var(--muted); stroke-width: 1.2; }
+svg g.more text { fill: var(--muted); font: 700 10.5px system-ui, sans-serif; }
+svg a:hover g.more rect { stroke: var(--accent); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
 svg path.w.joins { marker-end: none; }
+svg path.w.plan:not(.back) { stroke-dasharray: 0.5 3.5; stroke-linecap: round; stroke-width: 2; }
+svg.quiet path.w { stroke-width: 1.2; }
+svg.quiet path.w.provides, svg.quiet path.w.bypass, svg.quiet path.w.mutual { stroke-width: 1.5; }
+svg g.hop path.hop-way { fill: none; stroke: var(--c); stroke-width: 3.2; stroke-linejoin: round; }
+svg g.badge circle, svg g.badge rect { fill: var(--c); stroke: var(--panel); stroke-width: 2; }
+svg g.badge text { fill: var(--lead-ink); font: 700 10.5px system-ui, sans-serif; text-anchor: middle; }
+svg g.badge.small text { font-size: 8.5px; }
+svg g.badge text.step { fill: var(--c); font: 600 10px system-ui, sans-serif; text-anchor: start; }
+svg g.hop, svg g.badge { transition: opacity .12s; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
+svg g.route { opacity: 0; pointer-events: none; transition: opacity .12s; }
+svg g.route path.way { fill: none; stroke: var(--c); stroke-width: 3; }
+svg g.route.back path.way { stroke-dasharray: 6 4; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
@@ -216,6 +263,7 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }
 :root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
 :root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
@@ -238,16 +286,18 @@ svg [data-h="n"] { --c: var(--hn); }
     <li><a href="index.html">모듈과 계약</a></li>
     <li><a href="contracts.html">계약 목록</a></li>
     <li><a href="units.html">단위 목록</a></li>
+    <li><a href="decisions.html">결정 목록</a></li>
+    <li><a href="legend.html">범례</a></li>
   </ul>
   
 </nav>
 <main>
 <header>
   <p class="crumbs"><a href="index.html">청사진</a> › What does abbd sync do, in order?</p>
-  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+  
 </header>
 <div class="solo"><section class="inside flow" id="flow-sync">
-  <div class="drawhead"><h2>What does abbd sync do, in order? <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></h2><div class="views"><span class="muted">13단계</span> <a href="index.html">모듈과 계약으로</a></div></div>
+  <div class="drawhead"><h2>What does abbd sync do, in order? <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></h2><div class="views"><span class="muted">13단계</span> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">번호는 실행 순서입니다. 왼쪽 상자는 그 단계를 실행하는 단위이고, 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. → 칸은 단계가 닿는 단위로, 저장된 관계가 있는 것만 그립니다.</p>
   <div class="caption text"><p>What one <code>abbd sync</code> does, from the registered script to the rendered blueprint. Everything after the extraction runs inside <code>syncActual</code>, and publishing runs in <code>run</code> after any command that writes.</p></div>
   
