@@ -256,9 +256,10 @@ func TestKillTreeStopsWhatTheServerStarted(t *testing.T) {
 	var child *os.Process
 	for range 100 {
 		if b, err := os.ReadFile(pidfile); err == nil {
-			pid, _ := strconv.Atoi(string(b))
-			child, _ = os.FindProcess(pid)
-			break
+			if pid, err := strconv.Atoi(string(b)); err == nil && pid > 0 {
+				child, _ = os.FindProcess(pid)
+				break
+			}
 		}
 		time.Sleep(50 * time.Millisecond)
 	}

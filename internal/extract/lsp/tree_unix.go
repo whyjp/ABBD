@@ -8,7 +8,8 @@ import (
 )
 
 // ownTree puts the server in its own process group, so killTree reaches
-// what a launcher script started.
+// what a launcher script started. Ctrl-C then no longer reaches the server,
+// but it exits on the stdin EOF an interrupted abbd leaves.
 func ownTree(cmd *exec.Cmd) { cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true} }
 
 // killTree stops the server and everything it started.
