@@ -165,29 +165,16 @@ func (l *layout) route(reqs []wireReq) routing {
 	return r
 }
 
-// routeLines is route but for the counts and the hops.
+// routeLines is route but for the counts and the hops: the built-in
+// policy routes the lines (router.go), and the lines of the drawing it keeps
+// ride roads where the view has them.
 func (l *layout) routeLines(reqs []wireReq) routing {
 	if f := l.hooks.onRouting(); f != nil {
 		f(l, reqs)
 	}
-	before := l.keep()
-	r := l.routeApart(reqs)
-	after := l.keep()
-	*l = before
-	if len(reqs) <= shareMost && l.straighten(reqs) {
-		moved := l.keep()
-		for _, held := range []map[[3]int]int{nil, r.tracks} {
-			*l = moved
-			l.held = held
-			s := l.routeApart(reqs)
-			l.held = nil
-			if weigh(s, reqs).beats(weigh(r, reqs)) {
-				r, after = s, l.keep()
-				break
-			}
-		}
-	}
-	*l = after
+	s := builtin{}.route(newRouter(*l, reqs))
+	*l = s.at
+	r := s.r
 	if l.roads {
 		r.confluent(reqs, l.position, len(l.rows), l.apart, l.hooks.onRoads())
 	}
@@ -272,22 +259,6 @@ func (l *layout) straighten(reqs []wireReq) bool {
 		}
 	}
 	return moved
-}
-
-func (l *layout) routeApart(reqs []wireReq) routing {
-	if !bundlesPairs(reqs) {
-		return l.routeOnce(reqs, false)
-	}
-	before := l.keep()
-	apart := l.routeOnce(reqs, true)
-	after := l.keep()
-	*l = before
-	bundled := l.routeOnce(reqs, false)
-	if costOf(apart, reqs).breaks <= costOf(bundled, reqs).breaks {
-		*l = after
-		return apart
-	}
-	return bundled
 }
 
 // chainsOf is the chain each line runs down, or -1: a line between places
@@ -398,108 +369,15 @@ func bundlesPairs(reqs []wireReq) bool {
 	return false
 }
 
-// keep is a copy of the layout to restore: lay sets the gaps and rows
-// afresh, and the boxes' y in place.
+// keep is a copy of the layout to lay on, leaving the layout as it was:
+// lay sets the gaps and rows afresh, and the boxes' y in place.
 func (l *layout) keep() layout {
 	k := *l
 	k.pos, k.pass = maps.Clone(l.pos), maps.Clone(l.pass)
 	return k
 }
 
-// routeOnce draws every request. Where lines could share arrival buses, it
-// draws the view both ways and keeps the shared buses only when they spare
-// the reader turns and cost nothing else, as weigh measures it. weigh
-// compares every pair of strands, so a view with more than shareMost
-// requests keeps the plain drawing rather than pay for that.
-func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
-	plain := l.layDrops(reqs, layOpts{Apart: apart})
-	if !plain.shares || len(reqs) > shareMost {
-		return plain
-	}
-	kept := l.keep()
-	if shared := l.layDrops(reqs, layOpts{Shared: true, Apart: apart}); weigh(shared, reqs).beats(weigh(plain, reqs)) {
-		return shared
-	}
-	*l = kept
-	return plain
-}
-
 const shareMost = 200
-
-// layDrops lays the view, then lays it again with every line that drops()
-// took off its buses but could not stand straight kept on them, since such
-// a line leaves or reaches its box beside its bundle (rule 4).
-func (l *layout) layDrops(reqs []wireReq, o layOpts) routing {
-	before := l.keep()
-	bent := map[int]bool{}
-	var r routing
-	for {
-		kept := l.keep()
-		r = l.layStraight(reqs, layOpts{Shared: o.Shared, Apart: o.Apart, Drops: true, Bent: bent})
-		grew := false
-		for _, i := range r.bent {
-			grew = grew || !bent[i]
-			bent[i] = true
-		}
-		if !grew {
-			break
-		}
-		*l = kept
-	}
-	if !r.dropped {
-		return r
-	}
-	after := l.keep()
-	*l = before
-	bundled := l.layStraight(reqs, o)
-	if weigh(r, reqs).beats(weigh(bundled, reqs)) {
-		*l = after
-		return r
-	}
-	return bundled
-}
-
-// layStraight lays the view with the lines that would cross over the box
-// they reach and come back set straight onto their arrival trunks, and
-// keeps that only where it costs the reader less than the plain drawing.
-func (l *layout) layStraight(reqs []wireReq, o layOpts) routing {
-	before := l.keep()
-	o.Tweak = true
-	r := l.layJoined(reqs, o)
-	if !r.tweaked {
-		return r
-	}
-	after := l.keep()
-	*l = before
-	o.Tweak = false
-	plain := l.layJoined(reqs, o)
-	if costOf(r, reqs).beats(costOf(plain, reqs)) {
-		*l = after
-		return r
-	}
-	return plain
-}
-
-// layJoined lays the view with a line that steps off its departure trunk
-// leading its arrival bus's drop (lay's early), and keeps that only where
-// weigh says it reads better than the plain drawing.
-func (l *layout) layJoined(reqs []wireReq, o layOpts) routing {
-	before := l.keep()
-	o.Early = true
-	r := l.lay(reqs, o)
-	if !r.joined {
-		return r
-	}
-	after := l.keep()
-	*l = before
-	o.Early = false
-	plain := l.lay(reqs, o)
-	if weigh(r, reqs).beats(weigh(plain, reqs)) {
-		*l = after
-		return r
-	}
-	return plain
-}
 
 // routing is one way to draw a view's lines.
 type routing struct {

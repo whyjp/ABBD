@@ -331,72 +331,100 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		var none T
 		return none
 	}
-	// The kept drawing is drawn again with room for its counts, where some
-	// count would get it, and that is kept if the checks above pass it and
-	// it reads no worse. Only the kept drawing's roomy is read, and it was
-	// drawn without counted.
-	best, bt := vs[k], kept[k]
-	if cs[k].roomy {
-		t := bt
-		t.counted = true
+	// Then choose calls its redraws on the drawing it keeps, in turn (see
+	// redraw).
+	type drawing struct {
+		v      T
+		c      cost
+		t      tactic
+		judged bool
+	}
+	cur := drawing{vs[k], cs[k], kept[k], true}
+	for _, rd := range []redraw{
+		// The kept drawing is drawn again with room for its counts, where
+		// some count would get it, and that is kept if the checks above pass
+		// it and it reads no worse. Only the kept drawing's roomy is read,
+		// and it was drawn without counted.
+		{actCounted, func(t *tactic) { t.counted = true }, func(c cost) bool { return c.roomy }, nil, true,
+			func(t tactic, kept, c cost) bool {
+				pass := without < 0 || fits(t, c, cs[without], b.crossed)
+				if !t.laned && !t.gather {
+					pass = b.admit(t, c)
+				}
+				return pass && !kept.beats(c)
+			}},
+		// It is drawn once more with its lines on roads, and that is kept. It
+		// keeps every box's row and order; only the gaps between rows grow
+		// or shrink with the tracks the lines take.
+		{actRoads, func(t *tactic) { t.roads = true }, func(cost) bool { return true }, nil, false,
+			func(tactic, cost, cost) bool { return true }},
+		// Where some line climbs, it is drawn again with such lines on roads
+		// of their own, and that is kept where sharing roads reads worse.
+		{actApart, func(t *tactic) { t.apart = true }, func(c cost) bool { return c.climbs }, nil, true,
+			func(_ tactic, shared, apart cost) bool { return !sharedOrApart(shared, apart) }},
+		// Where some line still runs past rule 15's bound along its whole
+		// way, and some line rides a chain set astray (strays), it is drawn
+		// on roads again with such lines passing rows through their gaps,
+		// and that is kept where fewer lines run so far and no total the
+		// gate holds a view to reads worse.
+		{actThrough, func(t *tactic) { t.through = true }, func(c cost) bool { return c.far > 0 && c.strays },
+			func(kept, c cost) bool { return c.far < kept.far }, true,
+			func(_ tactic, kept, c cost) bool {
+				return len(c.gate) > 0 && len(c.gate) == len(kept.gate) && noWorse(c.gate, kept.gate)
+			}},
+	} {
+		if !rd.applies(cur.c) {
+			continue
+		}
+		t := cur.t
+		rd.turn(&t)
 		var c cost
-		if v, ok := draw(t, &c); ok {
+		v, ok := draw(t, &c)
+		switch {
+		case !ok && rd.action == actRoads:
+			return cur.v
+		case !ok || rd.worth != nil && !rd.worth(cur.c, c):
+			continue
+		}
+		// Each drawing is judged once, and only where a redraw reads what
+		// lint says of it.
+		if rd.judges {
+			if !cur.judged {
+				judge(cur.v, &cur.c)
+				cur.judged = true
+			}
 			judge(v, &c)
-			pass := without < 0 || fits(t, c, cs[without], b.crossed)
-			if !t.laned && !t.gather {
-				pass = b.admit(t, c)
-			}
-			if pass && !cs[k].beats(c) {
-				best, bt = v, t
-			}
+		}
+		if rd.keeps(t, cur.c, c) {
+			cur = drawing{v, c, t, rd.judges}
 		}
 	}
-	// The kept drawing is drawn once more with its lines on roads. Where
-	// some line of it still runs past rule 15's bound along its whole way,
-	// and some line rides a chain set astray (strays), it is drawn on roads
-	// again with such lines passing rows through their gaps (through),
-	// and that is kept where fewer lines run so far and no total the gate
-	// holds a view to reads worse. It keeps every box's row and order; only
-	// the gaps between rows grow or shrink with the tracks the lines take.
-	bt.roads = true
-	var c cost
-	v, ok := draw(bt, &c)
-	if !ok {
-		return best
-	}
-	// Where some line climbs, it is drawn again with such lines on roads of
-	// their own, and that is kept where sharing roads reads worse. Either
-	// way the drawing kept is judged once, there or below.
-	judged := false
-	if c.climbs {
-		t := bt
-		t.apart = true
-		var a cost
-		if w, ok := draw(t, &a); ok {
-			judge(v, &c)
-			judge(w, &a)
-			judged = true
-			if !sharedOrApart(c, a) {
-				v, c, bt = w, a, t
-			}
-		}
-	}
-	if c.far > 0 && c.strays {
-		t := bt
-		t.through = true
-		var u cost
-		if w, ok := draw(t, &u); ok && u.far < c.far {
-			if !judged {
-				judge(v, &c)
-			}
-			judge(w, &u)
-			if len(u.gate) > 0 && len(u.gate) == len(c.gate) && noWorse(u.gate, c.gate) {
-				return w
-			}
-		}
-	}
-	return v
+	return cur.v
 }
+
+// A redraw is an action choose calls on the drawing it keeps: draw it
+// again with one more flag of its tactic turned on (turn), where the cost
+// of the drawing kept so far says there is something to draw so (applies),
+// and keep that where keeps reads it better. worth, where set, says from
+// the costs as drawn whether the new drawing is worth judging at all, and
+// judges whether keeps reads what lint says of both. A redraw that cannot
+// draw is passed over, but for roads: a view with no drawing on roads
+// keeps the drawing it had.
+type redraw struct {
+	action  string
+	turn    func(t *tactic)
+	applies func(c cost) bool
+	worth   func(kept, c cost) bool
+	judges  bool
+	keeps   func(t tactic, kept, c cost) bool
+}
+
+// The redraws choose calls, by the names a log or a caller knows them by.
+const (
+	actCounted = "counted"
+	actRoads   = "roads"
+	actThrough = "through"
+)
 
 // noWorse says no total of a reads worse than b's.
 func noWorse(a, b []int) bool {
