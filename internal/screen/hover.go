@@ -156,7 +156,8 @@ func (d *Drawing) hover() {
 // end, and at its start too when the two boxes use each other. The two
 // lines of a folded pair (fold.go) each take the folded line's route, the
 // way its kept line runs, with a head at each end and both their relations:
-// pointing at either lights the one line drawn.
+// pointing at either lights the one line drawn. Only the kept line's route
+// says whether the line runs against the axis, so one stroke counts once.
 func (d *Drawing) route(r routing, reqs []wireReq, rels func(int) []string) {
 	for i := range r.ways {
 		k, mate := i, -1
@@ -170,7 +171,7 @@ func (d *Drawing) route(r routing, reqs []wireReq, rels func(int) []string) {
 			src = reqs[k].to.node
 		}
 		ps := straight(r.ways[k])
-		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[k], Both: reqs[i].kind == kindMutual || mate >= 0, Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i}), rels: rels(i)}
+		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[i], Both: reqs[i].kind == kindMutual || mate >= 0, Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i}), rels: rels(i)}
 		if mate >= 0 {
 			rt.rels = append(slices.Clone(rels(k)), rels(slices.Index(r.rider, k))...)
 		}

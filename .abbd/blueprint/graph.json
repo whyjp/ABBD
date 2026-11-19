@@ -24775,7 +24775,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -27926,7 +27926,7 @@
                 "Code": true
               },
               {
-                "Text": "은 제3의 선과 잉크를 나누지 않는 쌍만 남기는 둘째 단계다.",
+                "Text": "은 제3의 선과 잉크를 나누지 않는 쌍만 남기는 둘째 단계다. 축을 거스르는지는 남은 선의 길만 말하므로 한 획은 한 번만 센다.",
                 "Code": false
               }
             ]
