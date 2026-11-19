@@ -3,25 +3,25 @@ question: What does abbd sync do, in order?
 format: 1
 steps:
     - unit: MOD-0041
-      does: LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice
+      does: LoadProject() reads project.yaml → script argv, name, purpose, drawing switches
       fails: stops when project.yaml names no script; run abbd setup first
       calls:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "588"
+          lines: "595"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "540"
+          lines: "561"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "544"
+          lines: "565"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
-        internal/store/store.go#quote-ac7ade60: 384e6d146d0e2fc6
+        internal/store/store.go#quote-ac7ade60: 738cd123f9a9d4b4
     - unit: MOD-0004
       does: runScript(argv) → 루트에서 돌린 스크립트의 stdout, argv의 abbd는 지금 도는 바이너리
       fails: 스크립트가 0이 아닌 값으로 끝나면 멈추고 그 stderr를 찍는다
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "547"
+          lines: "568"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "687"
+          lines: "711"
           symbol: runScript
           quote: cmd := exec.Command(name, argv[1:]...)
       writer: reader
@@ -45,10 +45,10 @@ steps:
         - DATA-0002
       evidence:
         - path: internal/extract/extract.go
-          lines: "121"
+          lines: "123"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "551"
+          lines: "572"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -71,7 +71,7 @@ steps:
           lines: "326"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "617"
+          lines: "641"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "113"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "629"
+          lines: "653"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "322"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "638"
+          lines: "662"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "648"
+          lines: "672"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -132,7 +132,7 @@ steps:
           lines: "76"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "642"
+          lines: "666"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -143,10 +143,10 @@ steps:
       note: a drifted quote dies at the first sync of a later revision, and only then does a crowded level fall back to directories
       evidence:
         - path: internal/evidence/evidence.go
-          lines: "227"
+          lines: "245"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "652"
+          lines: "676"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -160,7 +160,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "653"
+          lines: "677"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -203,7 +203,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "511"
+          lines: "532"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
@@ -360,6 +360,23 @@ retired:
       code:
         cmd/abbd/main.go#quote-5664e499: 9d734f0de284ca33
         internal/identity/identity.go#quote-215518d5: ffa9923d84229d05
+    - unit: MOD-0041
+      does: LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice
+      fails: stops when project.yaml names no script; run abbd setup first
+      evidence:
+        - path: internal/store/store.go
+          lines: "588"
+          quote: return p, readYAML(s.path("project.yaml"), &p)
+        - path: cmd/abbd/main.go
+          lines: "540"
+          quote: p, err := e.st.LoadProject()
+        - path: cmd/abbd/main.go
+          lines: "544"
+          quote: if len(p.Extract) == 0 {
+      code:
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
+        internal/store/store.go#quote-ac7ade60: 384e6d146d0e2fc6
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.
