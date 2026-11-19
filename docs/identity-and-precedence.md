@@ -1,5 +1,7 @@
 # Evidence statuses and one precedence table
 
+This is a design record. It is kept as it was written and describes the design at that time. The code, the skills and `docs/blueprint-svg.md` say how ABBD works now.
+
 Status: implemented on branch `abbd-identity-design` (PR #9). This is the reduced design an adversarial review asked for. The first draft (commit 1f77540) proposed a symbol index and one layer of claims per writer. Section 7 lists what the review found and what was deferred.
 
 ABBD keeps a repository's topology true across code edits and several writers. The script extracts what is mechanical. pstack readers record what needs reading, with verbatim evidence, through the setup supplement or `abbd record`. Humans state facts with a source. `abbd sync` keeps all of it true without an agent. Most past defects came from two parts of the data model: how reader evidence stays alive, and how writers reconcile one field. This design changes those two parts and nothing else.
