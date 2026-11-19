@@ -200,6 +200,8 @@ type UnitRow struct {
 	// Rank is where the unit's box stands on the overview, for a unit the
 	// overview draws.
 	Rank *Rank `json:",omitempty"`
+	// UsedBy names the units that depend on an external library.
+	UsedBy []string `json:",omitempty"`
 }
 
 type Model struct {
@@ -258,6 +260,7 @@ func Build(in Input) Model {
 		}
 		m.Units = append(m.Units, row)
 	}
+	usedBy(m.Units, in.Units)
 	m.Edges = lines(in.Units)
 	m.Decisions = decisions(in)
 	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
@@ -559,4 +562,33 @@ func parts(units []model.Unit) []Part {
 		}
 	}
 	return append(mods, feats...)
+}
+
+// usedBy names on each external library's row the units that depend on it,
+// so the list keeps every use the overview folds into one line or one chip.
+func usedBy(rows []UnitRow, units []model.Unit) {
+	at := map[string]int{}
+	for i, r := range rows {
+		if r.Kind == string(model.External) {
+			at[r.ID] = i
+		}
+	}
+	if len(at) == 0 {
+		return
+	}
+	for _, u := range model.Present(units) {
+		seen := map[int]bool{}
+		for _, r := range u.Relations {
+			if i, ok := at[string(r.To)]; ok && !r.Dead && !seen[i] {
+				seen[i] = true
+				rows[i].UsedBy = append(rows[i].UsedBy, u.Name.Value)
+			}
+		}
+	}
+}
+
+// HasLibraries says the model holds an external library, so the legend
+// says how one is drawn.
+func (m Model) HasLibraries() bool {
+	return slices.ContainsFunc(m.Units, func(r UnitRow) bool { return r.Kind == string(model.External) })
 }

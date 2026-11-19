@@ -104,10 +104,11 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 			}
 		}
 		// The overview draws a top-level contract as a chip on the module
-		// that provides it, not as a box.
+		// that provides it, and an external library as a chip of its own,
+		// not as a box.
 		boxes := 0
 		for _, u := range out {
-			if !u.Absent && u.Parent == container && (container != "" || !u.Kind.IsContract()) {
+			if !u.Absent && u.Parent == container && u.Kind != model.External && (container != "" || !u.Kind.IsContract()) {
 				boxes++
 			}
 		}
