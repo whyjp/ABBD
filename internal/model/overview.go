@@ -448,3 +448,71 @@ func LineCandidates(units []Unit) []LineCandidate {
 	})
 	return out
 }
+
+// OverviewScopes bounds the scope marks of the overview.
+const OverviewScopes = 20
+
+// The scopes a unit can be marked with. A sample or an example shows how to
+// use the product and is no part of it. A build artifact is what a build
+// leaves, such as a generated file or a packaged binary. A tool is code
+// that tests, builds or serves the product from beside it.
+const (
+	ScopeSample   = "sample"
+	ScopeArtifact = "artifact"
+	ScopeTool     = "tool"
+)
+
+// ScopeNames lists the scopes in the order the guidance names them.
+var ScopeNames = []string{ScopeSample, ScopeArtifact, ScopeTool}
+
+// ScopeMark is one mark a reader puts on a unit of the overview: it is a
+// sample, a build artifact or a tool, not the product, with the code that
+// shows it. A plug-in or an implementer the product loads is the product's
+// own, so it takes no mark. The mark is the overview's own record: it
+// stores no unit and no relation, and tells whoever draws the overview that
+// the unit does not stand for the product beside the others.
+type ScopeMark struct {
+	Unit     ID         `yaml:"unit"`
+	Scope    string     `yaml:"scope"`
+	Evidence []Evidence `yaml:"evidence"`
+}
+
+// Kind makes the scope marks a kind of figure part, each unit marked once.
+func (ScopeMark) Kind() FigureKind[ScopeMark] {
+	return FigureKind[ScopeMark]{Noun: "overview", Part: "scope", Parts: "scope marks", Max: OverviewScopes, Whole: holdOnce[ScopeMark](0)}
+}
+
+// Validate checks the mark on its own: a unit, one of the scopes, and the
+// code it rests on.
+func (s ScopeMark) Validate() error {
+	if _, _, err := ParseID(string(s.Unit)); err != nil {
+		return err
+	}
+	if !slices.Contains(ScopeNames, s.Scope) {
+		return fmt.Errorf("scope of %s is %q; it is one of %s", s.Unit, s.Scope, strings.Join(ScopeNames, ", "))
+	}
+	if len(s.Evidence) == 0 {
+		return fmt.Errorf("scope of %s cites no code; cite the lines that show it is a %s", s.Unit, s.Scope)
+	}
+	return validateEvidence(s.Evidence)
+}
+
+func (s ScopeMark) Label() string                   { return string(s.Unit) + " " + s.Scope }
+func (s ScopeMark) Names() []ID                     { return []ID{s.Unit} }
+func (s ScopeMark) Words() []Word                   { return nil }
+func (s ScopeMark) Quotes() []Evidence              { return s.Evidence }
+func (s ScopeMark) Requote(es []Evidence) ScopeMark { s.Evidence = es; return s }
+func (s ScopeMark) Retire() ScopeMark               { return s }
+
+// Gaps reads the mark against the state: the unit is present, and one quote
+// at least lies in its code or the code of a unit inside it.
+func (s ScopeMark) Gaps(units []Unit) []string {
+	st := stateOf(units)
+	if _, ok := st[s.Unit]; !ok {
+		return []string{fmt.Sprintf("%s is no longer in the state", s.Unit)}
+	}
+	if !st.rests([]ID{s.Unit}, s.Evidence) {
+		return []string{fmt.Sprintf("none of the quotes of the scope of %s is in its code; cite the lines that show it is a %s", s.Unit, s.Scope)}
+	}
+	return nil
+}

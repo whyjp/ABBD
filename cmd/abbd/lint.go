@@ -38,6 +38,9 @@ type lintReport struct {
 	// Undescribed names the drawn boxes that say only their kind, since
 	// their units record neither a purpose nor a responsibility.
 	Undescribed []model.ID `json:"undescribed,omitempty"`
+	// Unscoped names the top-level modules named or placed like samples,
+	// examples, tests or generated code that the overview marks with no scope.
+	Unscoped []string `json:"unscoped,omitempty"`
 	// Prose names each stored text that does not read in the language
 	// project.yaml names, as unit field, note or figure.
 	Prose    []string       `json:"prose,omitempty"`
@@ -133,6 +136,7 @@ func (e env) lint(pos []string) error {
 		}
 		r.Unphrased, r.Chosen = unphrased(in.Units, m.Overview, chosen), len(chosen) > 0
 		r.Undescribed = undescribed(in.Units)
+		r.Unscoped = unscoped(in.Units, in.Overview)
 		// Only a language project.yaml names gates the prose, so the
 		// gate does not move with the machine lint runs on.
 		if t := in.Project.Language; t != "" {
@@ -205,6 +209,15 @@ func printLint(e env, r lintReport) {
 		}
 		fmt.Fprintf(e.stdout, "lint: phrases: %s %s with no live phrase on any relation, so each says only how it arises; give one of the relations it names a phrase, or more until half carry one:\n", plural(n, "line"), where)
 		for _, p := range r.Unphrased[:min(n, 10)] {
+			fmt.Fprintf(e.stdout, "  %s\n", p)
+		}
+		if n > 10 {
+			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
+		}
+	}
+	if n := len(r.Unscoped); n > 0 {
+		fmt.Fprintf(e.stdout, "lint: scope: %s named or placed like samples, examples, tests or generated code carry no scope mark; mark each sample, artifact or tool in the overview record (scope: unit, scope, evidence) or leave it be if it is the product:\n", plural(n, "box"))
+		for _, p := range r.Unscoped[:min(n, 10)] {
 			fmt.Fprintf(e.stdout, "  %s\n", p)
 		}
 		if n > 10 {

@@ -25,6 +25,7 @@ const OverviewFile = "overview.md"
 type Overview struct {
 	Zones   []Part[model.Zone]
 	Lines   []Part[model.Line]
+	Scopes  []Part[model.ScopeMark]
 	Caption string
 	File    string
 	Known   bool
@@ -33,13 +34,14 @@ type Overview struct {
 
 // overviewYAML is the overview's frontmatter, its parts as Z and L: the
 // claims alone in a draft, the stamped parts in the stored file.
-type overviewYAML[Z, L any] struct {
+type overviewYAML[Z, L, S any] struct {
 	Format int `yaml:"format,omitempty"`
 	Zones  []Z `yaml:"zones,omitempty"`
 	Lines  []L `yaml:"lines,omitempty"`
+	Scope  []S `yaml:"scope,omitempty"`
 }
 
-type storedOverview = overviewYAML[Part[model.Zone], Part[model.Line]]
+type storedOverview = overviewYAML[Part[model.Zone], Part[model.Line], Part[model.ScopeMark]]
 
 // decodeOverview reads an overview's frontmatter, refusing a key it does not
 // know, so a misspelt field is no part silently dropped.
@@ -74,6 +76,7 @@ func ParseOverviewDraft(b []byte) (Overview, error) {
 	out := Overview{Caption: CleanText(string(body)), Known: true}
 	out.Zones = claimsOnly(o.Zones)
 	out.Lines = claimsOnly(o.Lines)
+	out.Scopes = claimsOnly(o.Scope)
 	return out, nil
 }
 
@@ -88,8 +91,8 @@ func claimsOnly[C model.Claim[C]](parts []Part[C]) []Part[C] {
 // OverviewDraft is the stored overview as a draft to edit, without what
 // abbd sets.
 func OverviewDraft(o Overview) ([]byte, error) {
-	var d overviewYAML[model.Zone, model.Line]
-	d.Zones, d.Lines = ClaimsOf(o.Zones), ClaimsOf(o.Lines)
+	var d overviewYAML[model.Zone, model.Line, model.ScopeMark]
+	d.Zones, d.Lines, d.Scope = ClaimsOf(o.Zones), ClaimsOf(o.Lines), ClaimsOf(o.Scopes)
 	front, err := yaml.Marshal(d)
 	if err != nil {
 		return nil, err
@@ -108,9 +111,12 @@ func SaveOverview(s Store, o Overview) error {
 	if o.Lines, err = stampParts(s, "lines", o.Lines); err != nil {
 		return err
 	}
+	if o.Scopes, err = stampParts(s, "scope", o.Scopes); err != nil {
+		return err
+	}
 	var f storedOverview
 	f.Format = figureFormat
-	f.Zones, f.Lines = plainQuotes(o.Zones), plainQuotes(o.Lines)
+	f.Zones, f.Lines, f.Scope = plainQuotes(o.Zones), plainQuotes(o.Lines), plainQuotes(o.Scopes)
 	front, err := yaml.Marshal(f)
 	if err != nil {
 		return err
@@ -140,9 +146,10 @@ func (s Store) LoadOverview() (Overview, error) {
 	if err != nil {
 		return Overview{File: file, Why: "has frontmatter abbd cannot read (" + err.Error() + ")"}, nil
 	}
-	o := Overview{Zones: f.Zones, Lines: f.Lines, Caption: CleanText(string(body)), File: file, Known: true}
+	o := Overview{Zones: f.Zones, Lines: f.Lines, Scopes: f.Scope, Caption: CleanText(string(body)), File: file, Known: true}
 	readParts(s, o.Zones)
 	readParts(s, o.Lines)
+	readParts(s, o.Scopes)
 	return o, nil
 }
 
@@ -159,6 +166,7 @@ func (o Overview) Gaps(units []model.Unit) []OverviewGap {
 	}
 	add("zone", model.Zone{}.Kind().Whole(nil, ClaimsOf(o.Zones), units))
 	add("line", model.Line{}.Kind().Whole(nil, ClaimsOf(o.Lines), units))
+	add("scope", model.ScopeMark{}.Kind().Whole(nil, ClaimsOf(o.Scopes), units))
 	return out
 }
 

@@ -52,7 +52,10 @@ func checkOverview(e env, o *store.Overview, units []model.Unit) error {
 	if err := partCount(len(o.Lines), model.Line{}.Kind()); err != nil {
 		return err
 	}
-	for _, err := range []error{checkParts(e, o.Zones, units), checkParts(e, o.Lines, units)} {
+	if err := partCount(len(o.Scopes), model.ScopeMark{}.Kind()); err != nil {
+		return err
+	}
+	for _, err := range []error{checkParts(e, o.Zones, units), checkParts(e, o.Lines, units), checkParts(e, o.Scopes, units)} {
 		if err != nil {
 			return err
 		}
@@ -127,7 +130,7 @@ func (p shownPart) String() string { return fmt.Sprintf("overview %s %d (%s)", p
 // overviewParts are the overview's parts in the file's order: zones, then
 // lines.
 func overviewParts(o store.Overview) []shownPart {
-	return slices.Concat(partsShown(o.Zones), partsShown(o.Lines))
+	return slices.Concat(partsShown(o.Zones), partsShown(o.Lines), partsShown(o.Scopes))
 }
 
 func partsShown[C model.Claim[C]](parts []store.Part[C]) []shownPart {
@@ -151,7 +154,11 @@ func (e env) statusOverview(units []model.Unit, o store.Overview) string {
 	}
 	e.warnOverviewLines(units, o)
 	stale := overviewStale(o, units)
-	fmt.Fprintf(e.stdout, "overview: %d zones, %d lines, %d STALE\n", len(o.Zones), len(o.Lines), len(stale))
+	marks := ""
+	if len(o.Scopes) > 0 {
+		marks = fmt.Sprintf(", %d scope marks", len(o.Scopes))
+	}
+	fmt.Fprintf(e.stdout, "overview: %d zones, %d lines%s, %d STALE\n", len(o.Zones), len(o.Lines), marks, len(stale))
 	for _, l := range stale {
 		fmt.Fprintln(e.stdout, "stale:", l.text+"; "+l.fix())
 	}
