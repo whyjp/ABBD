@@ -614,7 +614,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
-		d.Wires[i].from = map[bool]wordFrom{true: fromPhrase, false: fromVia}[saids[i]]
+		d.Wires[i].from = fromVia
+		if saids[i] {
+			d.Wires[i].from = fromPhrase
+		}
 		if len(w.ends) == 2 {
 			if s := d.said[pairOf(model.ID(w.ends[0]), model.ID(w.ends[1]))]; s != "" {
 				words[i], saids[i] = s, false

@@ -31868,7 +31868,31 @@
                 "Code": true
               },
               {
-                "Text": ")와, 기록이 낱말을 준 상자 쌍 가운데 그려진 경로에 그 낱말이 붙은 수를 진단으로만 낸다.",
+                "Text": ")와, 기록이 낱말을 준 상자 쌍 가운데 그려진 경로에 그 낱말이 붙은 수를 진단으로만 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "speaksFor",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "labelled",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "이 함께 쓰는, 말이 붙은 선이 경로를 대변하는지 읽는 한 술어다.",
                 "Code": false
               }
             ]

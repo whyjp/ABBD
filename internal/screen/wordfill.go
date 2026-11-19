@@ -1,8 +1,6 @@
 package screen
 
 import (
-	"slices"
-
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -45,18 +43,16 @@ func (f WordFill) Add(o WordFill) WordFill {
 }
 
 // wordFill reads d's words at rest: a route is labelled as labelled reads
-// it, and the record's pairs from the words the drawing was given.
+// it, and the record's pairs from the words the drawing was given. A pair
+// counts as said when a wire of its own carries the record's word; where a
+// net whose paths all say one word sets it once on another pair's wire, the
+// word shows but the pair is not counted.
 func wordFill(d Drawing) WordFill {
 	f := WordFill{Routes: len(d.ways)}
-	speaks := func(w Wire, k int, r Route) bool {
-		return w.Label != nil && (slices.Contains(w.rides, k) || slices.ContainsFunc(w.lines, func(l []string) bool {
-			return slices.ContainsFunc(l, func(rel string) bool { return slices.Contains(r.rels, rel) })
-		}))
-	}
 	for k, r := range d.ways {
 		best := -1
 		for _, w := range d.Wires {
-			if speaks(w, k, r) {
+			if speaksFor(w, k, r) {
 				best = max(best, int(w.from))
 			}
 		}

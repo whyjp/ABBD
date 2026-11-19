@@ -43,8 +43,12 @@ func TestTheWordFillSaysWhereEachWordComesFrom(t *testing.T) {
 	var rec store.Overview
 	rec.Known = true
 	rec.Lines = []store.Part[model.Line]{{Claim: model.Line{From: model.ID(first.ends[0]), To: model.ID(first.ends[1]), Word: "orders"}}}
-	f := wordFill(Build(Input{Units: units, Overview: rec}).Overview)
-	if f.RecordPairs != 1 || f.RecordSaid > 1 || f.Record < f.RecordSaid {
+	d := Build(Input{Units: units, Overview: rec}).Overview
+	f := wordFill(d)
+	if f.Labelled != labelled(d) || f.Record+f.Phrase+f.Via != f.Labelled {
+		t.Errorf("with a record, fill %+v does not add up to %d labelled", f, labelled(d))
+	}
+	if f.RecordPairs != 1 || f.RecordSaid != 1 || f.Record < 1 {
 		t.Errorf("a record of one worded pair fills %+v", f)
 	}
 }
