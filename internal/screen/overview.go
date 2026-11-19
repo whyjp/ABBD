@@ -547,6 +547,8 @@ type overview struct {
 	// band are the ambient boxes drawn as a foundation band under the rest
 	// (hubfold.go), out of the layout.
 	band map[model.ID]bool
+	// bandUses are the boxes each band uses (hubfold.go).
+	bandUses map[model.ID][]model.ID
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -742,7 +744,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		})
 		o.more = c.more
 		o.said = c.said
-		o.fold, o.band = c.fold, c.band
+		o.fold, o.band, o.bandUses = c.fold, c.band, c.bandUses
 		if c.said == nil {
 			hidden = nil
 		}
@@ -1307,7 +1309,15 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		if _, ok := bandAt[m]; ok {
 			b.Ambient = true
+			if us := o.bandUses[m]; len(us) > 0 {
+				var names []string
+				for _, u := range us {
+					names = append(names, o.name(u))
+				}
+				b.Title += "\n쓰는 상자: " + strings.Join(names, ", ")
+			}
 			d.Height = max(d.Height, r.Y+r.H+padY)
+			d.Width = max(d.Width, r.X+r.W+padX)
 		}
 		d.Boxes = append(d.Boxes, b)
 	}

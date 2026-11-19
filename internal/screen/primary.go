@@ -54,6 +54,8 @@ type cut struct {
 	// band are the boxes the overview record marks ambient, drawn as a
 	// foundation band under the others, every line of theirs folded.
 	band map[model.ID]bool
+	// bandUses are the boxes each band uses, named in its tooltip.
+	bandUses map[model.ID][]model.ID
 }
 
 // folds says the cut folds some hub's lines.

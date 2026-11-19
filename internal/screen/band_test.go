@@ -60,3 +60,26 @@ func TestAnAmbientBoxStandsAsAFoundationBand(t *testing.T) {
 		}
 	}
 }
+
+// A box a line of the record ends on stays a box, whatever its mark, so
+// the record's word is never lost to the band.
+func TestARecordedLineKeepsAnAmbientBoxABox(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "api", rel("MOD-0002", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		called("MOD-0002", "core", rel("MOD-0003", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		called("MOD-0003", "store", rel("MOD-0005", model.DependsOn)),
+		called("MOD-0004", "cli", rel("MOD-0001", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		called("MOD-0005", "log"),
+	}
+	units[4].Anchors = []model.Anchor{{Path: "log.go"}}
+	var rec store.Overview
+	rec.Known = true
+	rec.Ambient = []store.Part[model.AmbientMark]{{Claim: model.AmbientMark{Unit: "MOD-0005", As: model.AmbientGlobal, Evidence: []model.Evidence{{Path: "log.go", Quote: "var Log"}}}}}
+	rec.Lines = []store.Part[model.Line]{{Claim: model.Line{From: "MOD-0001", To: "MOD-0005", Word: "logs"}}}
+	m := Build(Input{Units: units, Overview: rec, Project: store.Project{OverviewAmbient: true}})
+	for _, b := range m.Overview.Boxes {
+		if b.Ambient {
+			t.Errorf("%s stands as a band though the record draws a line to it", b.Name)
+		}
+	}
+}

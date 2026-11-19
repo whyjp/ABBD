@@ -91,12 +91,25 @@ func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[mod
 		}
 		return out
 	}
+	// A stage of the primary flow, a box a line of the record ends on and a
+	// box the lead rides through are read through their lines, so each
+	// stays a box whatever its mark.
+	read := map[model.ID]bool{}
+	for _, l := range ls {
+		if lead[l] || said[l] != "" {
+			read[l[0]], read[l[1]] = true, true
+		}
+	}
 	band := map[model.ID]bool{}
+	bandUses := map[model.ID][]model.ID{}
 	for _, m := range o.modules {
-		// A stage of the primary flow is read through its lines, so it
-		// stays a box whatever its mark.
-		if ambient[m] && stage[string(m)] == 0 {
+		if ambient[m] && stage[string(m)] == 0 && !read[m] {
 			band[m], fold[m] = true, usersOf(m)
+			for _, t := range o.modules {
+				if users[string(t)][string(m)] {
+					bandUses[m] = append(bandUses[m], t)
+				}
+			}
 		}
 	}
 	for _, l := range ls {
@@ -130,7 +143,7 @@ func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[mod
 		}
 		return k
 	}())
-	out.keep, out.fold, out.band = keep, fold, band
+	out.keep, out.fold, out.band, out.bandUses = keep, fold, band, bandUses
 	if c != nil {
 		out.said = c.said
 	}
@@ -145,8 +158,9 @@ func usedByText(n int) string { return fmt.Sprintf("%d개 상자가 사용", n) 
 const bandGap = 24
 
 // bandRects are where the overview's foundation bands stand: under every
-// box the layout placed, each as wide as those boxes span and no narrower
-// than the widest box, one under another in the order of the modules.
+// box the layout placed and below the gap under its last row, each as wide
+// as those boxes span and at least boxMax wide, one under another in the
+// order of the modules.
 func (o *overview) bandRects(l *layout) map[model.ID]rect {
 	if len(o.band) == 0 {
 		return nil
@@ -162,11 +176,14 @@ func (o *overview) bandRects(l *layout) map[model.ID]rect {
 		left, right = padX, max(l.width, minWidth)-padX
 	}
 	out := map[model.ID]rect{}
-	y := bottom + bandGap
+	// Lines entering a bottom-row box from below take tracks in the gap
+	// under the last row, which the layout's height holds.
+	y := max(bottom+bandGap, l.height)
 	for _, m := range o.modules {
 		if o.band[m] {
-			out[m] = rect{X: left, Y: y, W: max(right-left, boxMax), H: boxH}
-			y += boxH + bandGap/2
+			h := boxH + (len(o.names[m])-1)*nameLine
+			out[m] = rect{X: left, Y: y, W: max(right-left, boxMax), H: h}
+			y += h + bandGap/2
 		}
 	}
 	return out
