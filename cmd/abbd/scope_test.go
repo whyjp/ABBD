@@ -51,11 +51,14 @@ func TestUnscopedNamesBoxesThatLookLikeSamplesAndTestsUntilTheyAreMarked(t *test
 		unit("MOD-0004", "testing", "", "src/testing/a.go"),
 		unit("MOD-0005", "tests helpers", "MOD-0001", "src/core/tests/a.go"),
 		unit("MOD-0006", "generator", "", "tools/generator/a.go"),
+		unit("MOD-0007", "api", "", "src/api/server.go", "src/api/testdata/x.json"),
+		unit("MOD-0008", "web", "", "web/__tests__/a.js", "web/__tests__/b.js"),
 	}
 	got := unscoped(units, store.Overview{})
 	want := []string{
 		`MOD-0002 샘플 요청과 핸들러 samples (its name says "samples")`,
 		`MOD-0003 billing (its anchor examples/billing/a.go lies under "examples")`,
+		`MOD-0008 web (its anchor web/__tests__/a.js lies under "__tests__")`,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("unscoped =\n%q\nwant\n%q", got, want)
@@ -99,7 +102,7 @@ func TestAHandBrokenStoredScopeEntryDoesNotCrashStatus(t *testing.T) {
 	p.overview(0, "stored the overview", chargeOverview)
 	stored := p.read("overview.md")
 	p.code(".abbd/overview.md", strings.Replace(stored, "\n---\n", "\nscope:\n  - unit: \"\"\n    scope: sample\n---\n", 1))
-	p.want(0, "", "status")
+	p.want(1, "scope 1", "status", "--check")
 	p.want(0, "", "lint")
 }
 
@@ -122,7 +125,8 @@ func TestAMediatRLikeRepositoryNamesItsSampleBoxesUntilMarked(t *testing.T) {
 		unit("MOD-0004", "MediatR.Tests", "test/MediatR.Tests/PublishTests.cs"),
 		unit("MOD-0005", "MediatR.Extensions", "src/MediatR.Extensions/Registry.cs"),
 	}
-	if got := unscoped(units, store.Overview{}); len(got) != 3 {
+	got := unscoped(units, store.Overview{})
+	if len(got) != 3 || !strings.HasPrefix(got[0], "MOD-0002 ") || !strings.HasPrefix(got[1], "MOD-0003 ") || !strings.HasPrefix(got[2], "MOD-0004 ") {
 		t.Fatalf("the three sample boxes are named, the library and its extension are not: %q", got)
 	}
 	var marks store.Overview

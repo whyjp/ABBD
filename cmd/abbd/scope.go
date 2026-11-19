@@ -16,7 +16,7 @@ import (
 var scopeWords = []string{
 	"example", "examples", "sample", "samples", "demo", "demos",
 	"test", "tests", "testdata", "bench", "benches", "benchmark", "benchmarks",
-	"generated", "mock", "mocks",
+	"generated", "mock", "mocks", "e2e", "fixtures",
 }
 
 func scopeWordIn(s string) string {
@@ -62,17 +62,8 @@ func unscoped(units []model.Unit, o store.Overview) []string {
 		if w := scopeWordIn(u.Name.Value); w != "" {
 			why = fmt.Sprintf("its name says %q", w)
 		}
-		for _, a := range u.Anchors {
-			if why != "" {
-				break
-			}
-			dirs := strings.Split(strings.ReplaceAll(a.Path, "\\", "/"), "/")
-			for _, d := range dirs[:max(len(dirs)-1, 0)] {
-				if w := scopeWordIn(d); w != "" && strings.ToLower(d) == w {
-					why = fmt.Sprintf("its anchor %s lies under %q", a.Path, w)
-					break
-				}
-			}
+		if why == "" {
+			why = anchorsUnderScope(u.Anchors)
 		}
 		if why != "" {
 			out = append(out, fmt.Sprintf("%s %s (%s)", u.ID, u.Name.Value, why))
@@ -80,4 +71,31 @@ func unscoped(units []model.Unit, o store.Overview) []string {
 	}
 	slices.Sort(out)
 	return out
+}
+
+// anchorsUnderScope says why when every anchor of a unit lies under a
+// directory named for samples, examples, tests or generated code. One such
+// anchor is not enough, since a product module may anchor a test file.
+func anchorsUnderScope(anchors []model.Anchor) string {
+	if len(anchors) == 0 {
+		return ""
+	}
+	first := ""
+	for _, a := range anchors {
+		hit := ""
+		dirs := strings.Split(strings.ReplaceAll(a.Path, "\\", "/"), "/")
+		for _, d := range dirs[:max(len(dirs)-1, 0)] {
+			if scopeWordIn(d) != "" {
+				hit = d
+				break
+			}
+		}
+		if hit == "" {
+			return ""
+		}
+		if first == "" {
+			first = fmt.Sprintf("its anchor %s lies under %q", a.Path, hit)
+		}
+	}
+	return first
 }
