@@ -73,6 +73,15 @@ type cost struct {
 	// strays says the through tactic would set some line off its chain, so
 	// drawing with it would draw something else.
 	strays bool
+	// stemmed says gather moved a branch of a stem in the drawing, so it
+	// draws otherwise stemless.
+	stemmed bool
+	// words says, of each route, whether a reader finds a word on it at
+	// rest, as judge reads the drawn view (labelledRoutes), and rest are
+	// its crossings, doglegs and stretches of ink, what a reader meets at
+	// rest that a gathered road must not add to (stemsKept).
+	words []bool
+	rest  []int
 	// far counts the lines whose whole way, buses and roads included, runs
 	// more than detourLimit out of it: breaks reads each drawn path alone,
 	// and a line round a row's end may be drawn as trunks none of which
@@ -142,6 +151,7 @@ func (c *cost) judge(d Drawing) {
 		}
 	}
 	c.hard, c.moved, c.crossed, c.gate = t.Hard, moved, t.Crossings, gateTotals(t)
+	c.words, c.rest = labelledRoutes(d), []int{t.Crossings, t.Doglegs, t.Segments}
 	for _, b := range vl.Breaches {
 		if b.Criterion == "B1" && b.Allowed == 0 {
 			c.clear++
@@ -168,7 +178,7 @@ func (c cost) beats(o cost) bool {
 
 func costOf(r routing, reqs []wireReq) cost {
 	w := weigh(routing{drawn: r.drawn}, reqs)
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(r.ways)}
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, stemmed: r.stemmed, far: farWays(r.ways)}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
@@ -344,6 +354,20 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	if !ok {
 		return best
 	}
+	// Where gather moved a branch of a stem, the drawing keeps it only if
+	// every line that says a word at rest without it still says one.
+	if c.stemmed {
+		t := bt
+		t.stemless = true
+		var u cost
+		if w, ok := draw(t, &u); ok {
+			judge(v, &c)
+			judge(w, &u)
+			if !stemsKept(c, u) {
+				v, c, bt = w, u, t
+			}
+		}
+	}
 	if c.far > 0 && c.strays {
 		t := bt
 		t.through = true
@@ -357,6 +381,14 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		}
 	}
 	return v
+}
+
+// stemsKept says a drawing of cost c, where gather moved branches of a
+// stem, reads at rest no worse than the one of cost u drawn stemless: every
+// line that says a word in it still says one, and it crosses, doglegs and
+// breaks its ink no more.
+func stemsKept(c, u cost) bool {
+	return keepsWords(c.words, u.words) && len(c.rest) > 0 && len(c.rest) == len(u.rest) && noWorse(c.rest, u.rest)
 }
 
 // noWorse says no total of a reads worse than b's.

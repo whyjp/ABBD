@@ -51,8 +51,9 @@ type Drawing struct {
 	Zones []Zone `json:",omitempty"`
 	// Card is the key the drawing keeps in a free corner (card.go).
 	Card *Card `json:",omitempty"`
-	// roads says its lines ride roads (confluence.go).
-	roads bool
+	// roads says its lines ride roads (confluence.go), and stemmed that
+	// gather moved some branch of a stem on them (stemroad.go).
+	roads, stemmed bool
 	// axis is what its layout ranked the rows by (rank.go).
 	axis axis
 }
@@ -1203,7 +1204,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, stemmed: routed.stemmed, axis: l.axis}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]

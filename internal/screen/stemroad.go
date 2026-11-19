@@ -7,7 +7,8 @@ import "sort"
 // stem toward boxes of any row, or come into one place from one row, the
 // branches that go the same way across may turn off or onto the stem at
 // different heights on tracks that also carry lines the other way: moving
-// the whole track would set opposite lines on one road, so nothing moved.
+// the whole track would set opposite lines on one road, so those passes
+// leave them.
 // gather moves only the runs going one way, onto a sibling's height, and
 // keeps a move only where it costs nothing else.
 
@@ -49,6 +50,20 @@ func goesOn(w []pt, last bool) bool {
 		return sign(w[n-3].y-w[n-4].y) == sign(w[n-1].y-w[n-2].y)
 	}
 	return sign(w[3].y-w[2].y) == sign(w[1].y-w[0].y)
+}
+
+// ownLegShrinks says that route w, turning off or onto its stem at height
+// from, runs less of its way alone when it turns at to instead: its leg
+// between the turn and its own box, the last run past the turn, or, when
+// last is set, the run before it. A branch gathered onto a sibling's turn
+// further from its own box would run its own leg longer, down through rows
+// of boxes it passed on the stem before.
+func ownLegShrinks(w []pt, last bool, from, to int) bool {
+	n := len(w)
+	if last {
+		return sign(to-from) == sign(w[n-4].y-w[n-3].y)
+	}
+	return sign(to-from) == sign(w[3].y-w[2].y)
 }
 
 // spread counts, over every stem group, the heights past the first at
@@ -118,10 +133,11 @@ func opposesMore(was, now map[track]int) bool {
 }
 
 // gather sets one way's branches of a stem group on one track, by a move
-// of the runs going that way alone that lowers spread and costs nothing
-// else: no roadCost count, d's included, no fork level as the lint reads
-// it and no track's stretch of opposite lines side by side grows.
-func (r *routing) gather(ways [][]pt, v, d roadView, cost roadCost) ([][]pt, bool) {
+// of the runs going that way alone that sets a branch on a sibling's turn
+// nearer its own box (ownLegShrinks), lowers spread and costs nothing
+// else: no roadCost count, no fork level as the lint reads it and no
+// track's stretch of opposite lines side by side grows.
+func (r *routing) gather(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	rs := roadRunsBy(ways, v, true)
 	at := runsAt(rs)
 	type turn struct{ route, y int }
@@ -158,8 +174,13 @@ func (r *routing) gather(ways [][]pt, v, d roadView, cost roadCost) ([][]pt, boo
 				if !v.joins(ways, rs[a], rs[b]) {
 					continue
 				}
-				for _, m := range [][2]int{{a, b}, {b, a}} {
-					if !seen[m] && rs[m[0]].moves(rs[m[1]].at) {
+				for _, o := range []struct {
+					m    [2]int
+					by   turn
+					onto int
+				}{{[2]int{a, b}, p, q.y}, {[2]int{b, a}, q, p.y}} {
+					m := o.m
+					if !seen[m] && rs[m[0]].moves(rs[m[1]].at) && ownLegShrinks(ways[o.by.route], k.last, o.by.y, o.onto) {
 						seen[m] = true
 						moves = append(moves, roadMove{rs[m[0]], rs[m[1]].at, 0})
 					}
@@ -170,13 +191,9 @@ func (r *routing) gather(ways [][]pt, v, d roadView, cost roadCost) ([][]pt, boo
 	if len(moves) == 0 {
 		return nil, false
 	}
-	spread, dc, levels, opp := v.spread(ways), d.cost(ways), forkLevelsOf(ways, v), opposed(ways)
+	spread, levels, opp := v.spread(ways), forkLevelsOf(ways, v), opposed(ways)
 	return r.firstKept(ways, v, cost, moves, false, func(next [][]pt, nc roadCost) bool {
-		if v.spread(next) >= spread || !cost.withers(nc) || nc.meets > cost.meets || opposesMore(opp, opposed(next)) ||
-			forkLevelsOf(next, v) > levels {
-			return false
-		}
-		dn := d.cost(next)
-		return dc.withers(dn) && dn.meets <= dc.meets
+		return v.spread(next) < spread && cost.withers(nc) && nc.meets <= cost.meets && !opposesMore(opp, opposed(next)) &&
+			forkLevelsOf(next, v) <= levels
 	})
 }

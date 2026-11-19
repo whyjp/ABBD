@@ -232,6 +232,10 @@ type tactic struct {
 	// passes a full row in its gaps rather than round the row's end. choose
 	// tries it on the drawing it keeps on roads.
 	through bool
+	// stemless keeps a stem's branches where the roads leave them, with no
+	// gather (stemroad.go). choose and the focus views draw a view on roads
+	// so where gathering costs a line the word it says at rest.
+	stemless bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},

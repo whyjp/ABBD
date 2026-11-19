@@ -538,18 +538,42 @@ func labelRepeats(d Drawing) int {
 	return n
 }
 
-// labelled counts the routes a reader finds a word on at rest: a route is
-// labelled when a labelled wire rides it or carries one of its relations.
+// labelled counts the routes a reader finds a word on at rest.
 func labelled(d Drawing) int {
 	n := 0
-	for k, r := range d.ways {
-		if slices.ContainsFunc(d.Wires, func(w Wire) bool {
-			return w.Label != nil && (slices.Contains(w.rides, k) || slices.ContainsFunc(w.lines, func(l []string) bool {
-				return slices.ContainsFunc(l, func(rel string) bool { return slices.Contains(r.rels, rel) })
-			}))
-		}) {
+	for _, w := range labelledRoutes(d) {
+		if w {
 			n++
 		}
 	}
 	return n
+}
+
+// labelledRoutes says, of each route, whether a reader finds a word on it
+// at rest: a labelled wire rides it or carries one of its relations.
+func labelledRoutes(d Drawing) []bool {
+	out := make([]bool, len(d.ways))
+	for k, r := range d.ways {
+		out[k] = slices.ContainsFunc(d.Wires, func(w Wire) bool {
+			return w.Label != nil && (slices.Contains(w.rides, k) || slices.ContainsFunc(w.lines, func(l []string) bool {
+				return slices.ContainsFunc(l, func(rel string) bool { return slices.Contains(r.rels, rel) })
+			}))
+		})
+	}
+	return out
+}
+
+// keepsWords says a drawing whose routes say words now leaves every route
+// that said one in was its word: a road that gathers lines must not take
+// the word a line had at rest.
+func keepsWords(now, was []bool) bool {
+	if len(now) != len(was) {
+		return false
+	}
+	for k, w := range was {
+		if w && !now[k] {
+			return false
+		}
+	}
+	return true
 }

@@ -185,7 +185,7 @@ func (l *layout) routeLines(reqs []wireReq) routing {
 	}
 	*l = after
 	if l.roads {
-		r.confluent(reqs, l.position, len(l.rows))
+		r.confluent(reqs, l.position, len(l.rows), !l.stemless)
 	}
 	return r
 }
@@ -507,6 +507,8 @@ type routing struct {
 	roomy bool
 	// strays says the through tactic would set some line off its chain.
 	strays bool
+	// stemmed says gather moved some branch of a stem (stemroad.go).
+	stemmed bool
 	// bent are the lines lay took off their buses to drop straight that
 	// do not stand straight.
 	bent []int

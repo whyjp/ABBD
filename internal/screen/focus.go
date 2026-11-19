@@ -148,13 +148,19 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) [
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planScoped(units, m, centres(full), tactic{roads: true}, nil, nil, nil, o.scope)
-		d := f.draw(func(id model.ID) string {
+		href := func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
 			}
 			return "#" + focusID("", base(id))
-		})
+		}
+		d := planScoped(units, m, centres(full), tactic{roads: true}, nil, nil, nil, o.scope).draw(href)
+		if d.stemmed {
+			// Drawn stemless where gathering reads worse at rest.
+			if bare := planScoped(units, m, centres(full), tactic{roads: true, stemless: true}, nil, nil, nil, o.scope).draw(href); !stemmedReads(d, bare) {
+				d = bare
+			}
+		}
 		out = append(out, o.focus("", "#overview", "모듈과 계약", m, d))
 	}
 	return out
@@ -191,10 +197,26 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
 			ins = alt
 		}
+		if ins.Drawing.stemmed {
+			// Drawn stemless where gathering reads worse at rest.
+			t.stemless = true
+			if bare, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok && !stemmedReads(ins.Drawing, bare.Drawing) {
+				ins = bare
+			}
+		}
 		d := ins.Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
 	}
 	return out
+}
+
+// stemmedReads says drawing d, where gather moved branches of a stem, reads
+// at rest no worse than bare, the same view drawn stemless (stemsKept).
+func stemmedReads(d, bare Drawing) bool {
+	var c, u cost
+	c.judge(d)
+	u.judge(bare)
+	return stemsKept(c, u)
 }
 
 func (o *overview) focus(scope model.ID, of, ofName string, unit model.ID, d Drawing) Focus {

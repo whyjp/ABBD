@@ -283,7 +283,7 @@ type roadCost struct {
 	crossings, turns, beside, clash, near, far, forks, tees, unseen, combs int
 	// meets are the routes into one place from one row that turn onto
 	// their stem at another height than their siblings: a fork read from
-	// its other end, which level alone weighs.
+	// its other end, which level and gather weigh.
 	meets int
 }
 
@@ -600,7 +600,7 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 }
 
 // confluent moves the routes onto shared roads and draws the road.
-func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
+func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, stems bool) {
 	ink, plan, lead, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
 	dest, src, to, from := make([]int, len(reqs)), make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
@@ -687,7 +687,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		}
 		cost = d.cost(ways)
 	}
-	// Last of all, lines into one place from one row come in on one flat
+	// Then lines into one place from one row come in on one flat
 	// road where they turned onto its stem at different heights and setting
 	// them level costs nothing else.
 	for n, cost := 0, v.cost(ways); n < roadMoves; n++ {
@@ -701,14 +701,15 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		}
 		cost = v.cost(ways)
 	}
-	// Then the branches of a stem that go one way across gather on one
-	// track, moved apart from the lines the other way that share theirs.
-	for n, cost := 0, v.cost(ways); n < roadMoves; n++ {
-		next, ok := r.gather(ways, v, d, cost)
+	// Last, the branches of a stem that go one way across gather on one
+	// track, moved apart from the lines the other way that share theirs,
+	// unless the view is drawn stemless.
+	for n, cost := 0, v.cost(ways); stems && n < roadMoves; n++ {
+		next, ok := r.gather(ways, v, cost)
 		if !ok {
 			break
 		}
-		ways = next
+		ways, r.stemmed = next, true
 		for i := range ways {
 			ways[i] = straight(ways[i])
 		}
