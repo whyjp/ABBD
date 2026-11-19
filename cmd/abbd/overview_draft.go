@@ -47,7 +47,7 @@ func (e env) overviewDraft() error {
 		return err
 	}
 	front, caption, _ := strings.Cut(strings.TrimPrefix(string(b), "---\n"), "---\n")
-	if len(prev.Zones)+len(prev.Lines)+len(prev.Scopes) == 0 {
+	if len(prev.Zones)+len(prev.Lines)+len(prev.Scopes)+len(prev.Ambient) == 0 {
 		front = "zones: []\nlines: []\nscope: []\n"
 	}
 	var w strings.Builder
@@ -321,6 +321,11 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	fmt.Fprintln(w, "# output leaves, per-run stages only. Set-up wiring (registration, construction, CLI and")
 	fmt.Fprintln(w, "# test tooling) stays off the lines unless understanding needs it, and then its word says")
 	fmt.Fprintln(w, "# it happens at set-up.")
+	fmt.Fprintln(w, "#")
+	fmt.Fprintln(w, "# An ambient mark (ambient: unit, as, evidence) names a box most others reach as")
+	fmt.Fprintln(w, "# global state, static data or a context handed down every call (as: global, static")
+	fmt.Fprintln(w, "# or context), such as a registry, configuration or a request context, quoting a")
+	fmt.Fprintln(w, "# line of its own code that shows it. Mark only what the code shows.")
 	fmt.Fprintf(w, "#\n# The boxes the overview draws (%d), and the stage of the primary flow each stands at:\n", len(boxes))
 	for _, id := range boxes {
 		at := "-"
