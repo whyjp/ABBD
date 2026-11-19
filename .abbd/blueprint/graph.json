@@ -2224,6 +2224,7 @@
         "internal/screen/hues.go",
         "internal/screen/ink.go",
         "internal/screen/inside.go",
+        "internal/screen/lay.go",
         "internal/screen/layered.go",
         "internal/screen/layout.go",
         "internal/screen/lead.go",
@@ -26912,7 +26913,47 @@
                 "Code": true
               },
               {
-                "Text": "가 그 그림이 묶은 그림을 이긴다고 볼 때만 남긴다. 출발 줄기가 끝나는 곳에서 그 줄기를 떠나는 선은, 같은 간격에서 다른 선이 그 줄기에서 내려서지 않는 한 다음 행에서도 줄기의 x로 계속 간다. 틀에서 오는 체인의 레인이 한 칩의 여러 종류 선을 나를 때는 레인이 체인 폭 전체에 퍼지므로 두 줄기가 나란히 달리지 않는다.",
+                "Text": "가 그 그림이 묶은 그림을 이긴다고 볼 때만 남긴다. 출발 줄기가 끝나는 곳에서 그 줄기를 떠나는 선은, 같은 간격에서 다른 선이 그 줄기에서 내려서지 않는 한 다음 행에서도 줄기의 x로 계속 간다. 틀에서 오는 체인의 레인이 한 칩의 여러 종류 선을 나를 때는 레인이 체인 폭 전체에 퍼지므로 두 줄기가 나란히 달리지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "lay",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "lay.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 ",
+                "Code": false
+              },
+              {
+                "Text": "layOpts",
+                "Code": true
+              },
+              {
+                "Text": "가 켠 방식(공유 버스, 쌍별 버스, 곧은 내림과 그 예외 ",
+                "Code": false
+              },
+              {
+                "Text": "Bent",
+                "Code": true
+              },
+              {
+                "Text": ", 트랙 위로 곧게, 먼저 합류)으로 한 번 놓으며, 그 일은 ",
+                "Code": false
+              },
+              {
+                "Text": "layRun",
+                "Code": true
+              },
+              {
+                "Text": "의 단계 메서드가 차례로 한다: 계획, 체인과 레인, 버스와 이끄는 선, 슬롯 배치, 행 통과, 내려서기, 트랙 배정, 간격 크기, 그리기.",
                 "Code": false
               }
             ]
