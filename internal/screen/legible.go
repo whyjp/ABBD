@@ -435,10 +435,9 @@ type Metrics struct {
 	OriginDashed, Unmarked                   int
 	UnwiredOnFrame, NodeOverlaps, ThroughBox int
 	// Forward and Back count the lines that arrive at a box or a chip by
-	// the way they run, BackPlain the back lines drawn like forward ones,
-	// and SplitIn the lines of one kind that arrive at one edge of a box
-	// apart from the bundle of their kind.
-	Forward, Back, BackPlain, SplitIn int
+	// the way they run, and SplitIn the lines of one kind that arrive at
+	// one edge of a box apart from the bundle of their kind.
+	Forward, Back, SplitIn int
 	// Braid is how far, in pixels, lines of different bundles run side by
 	// side within braidGap of each other, away from their ends: a run a
 	// shared trunk would draw once. Detour is how much longer, in pixels,
@@ -448,23 +447,22 @@ type Metrics struct {
 	// Bends is how many times the lines turn, and MaxBends the most any
 	// one line does.
 	Bends, MaxBends int
-	// Length is how long, in pixels, the lines run in all, and BackLength
-	// how much of that is drawn dashed: the ink of the lines that climb.
-	Length, BackLength int
+	// Length is how long, in pixels, the lines run in all.
+	Length int
 	// crossed are the points R1 counts as crossings.
 	crossed []fpt
 }
 
 func (m Metrics) String() string {
-	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, escaped chips %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
+	return fmt.Sprintf("forward %d, back %d, split arrivals %d, ", m.Forward, m.Back, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, escaped chips %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
 		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx, bends %d, most bends %d, length %dpx", m.Braid, m.Detour, m.MaxDetour, m.Bends, m.MaxBends, m.Length)
 }
 
 func measure(s sheet) Metrics { return measureBy(s, nil) }
 
 // measureBy is measure, but a back stroke whose every route turns is
-// left out of rule 13's count of back lines, though it must still be
-// dashed: on a view that lays a primary flow out, a line from a later
+// left out of rule 13's count of back lines: on a view that lays a
+// primary flow out, a line from a later
 // stage to an earlier one runs back by the order the flow's stages set,
 // which O4 judges, not by the layout.
 func measureBy(s sheet, turns func(route int) bool) Metrics {
@@ -486,11 +484,7 @@ func measureBy(s sheet, turns func(route int) bool) Metrics {
 		m.Bends += n
 		m.MaxBends = max(m.MaxBends, n)
 		for i := 1; i < len(w.pts); i++ {
-			d := int(math.Abs(w.pts[i].x-w.pts[i-1].x) + math.Abs(w.pts[i].y-w.pts[i-1].y))
-			m.Length += d
-			if strings.Contains(" "+w.class+" ", " back ") {
-				m.BackLength += d
-			}
+			m.Length += int(math.Abs(w.pts[i].x-w.pts[i-1].x) + math.Abs(w.pts[i].y-w.pts[i-1].y))
 		}
 	}
 	box := bounds(ws)
@@ -764,13 +758,8 @@ func measureBy(s sheet, turns func(route int) bool) Metrics {
 		switch {
 		case forward:
 			m.Forward++
-		default:
-			if routes == 0 || turned < routes {
-				m.Back++
-			}
-			if !strings.Contains(" "+w.class+" ", " back ") {
-				m.BackPlain++
-			}
+		case routes == 0 || turned < routes:
+			m.Back++
 		}
 		edge := sideOf(r, b)
 		switch {
@@ -904,7 +893,6 @@ func (m Metrics) violations(width int) []string {
 	check(m.Unmarked == 0, "11", "%d lines from a reader or a human without an origin mark", m.Unmarked)
 	check(m.UnwiredOnFrame == 0, "12", "%d unwired contracts spread on the frame", m.UnwiredOnFrame)
 	check(m.Back <= max(1, int(backShare*float64(m.Forward+m.Back))), "13", "%d of %d arriving lines run up or left, limit %d", m.Back, m.Forward+m.Back, max(1, int(backShare*float64(m.Forward+m.Back))))
-	check(m.BackPlain == 0, "13", "%d lines run up or left drawn like forward ones", m.BackPlain)
 	check(m.Braid <= braidPerLine*max(1, m.Wires), "14", "lines run %dpx side by side for %d drawn lines, limit %dpx", m.Braid, m.Wires, braidPerLine*max(1, m.Wires))
 	check(m.MaxDetour <= detourLimit, "15", "a line runs %dpx longer than the shortest way between its ends, limit %dpx", m.MaxDetour, detourLimit)
 	return out
@@ -954,23 +942,20 @@ func sideOf(r frect, p fpt) string {
 	return ""
 }
 
-// edgeMeet is where a line meets a box edge and how it is dotted there: back
-// for a line that climbs, plan for one that arises only in design.
+// edgeMeet is where a line meets a box edge and whether it is dotted there,
+// as a line that arises only in design is.
 type edgeMeet struct {
 	p    fpt
-	dots string
+	dots bool
 }
 
-// dotsOf is the marks of class that dot or dash a line.
-func dotsOf(class string) string {
-	f := strings.Fields(class)
-	return fmt.Sprint(slices.Contains(f, "back"), slices.Contains(f, "plan"))
-}
+// dotsOf says class dots its line.
+func dotsOf(class string) bool { return slices.Contains(strings.Fields(class), "plan") }
 
 // stubs is how many stubs the groups of lines gs, by the points where each
 // meets one box edge, draw there: groups that meet it at one point, dotted
 // alike, share one stub, which a reader sees as one bundle, whatever ink
-// each runs on past it. A dashed line that leaves a solid one's stub reads
+// each runs on past it. A dotted line that leaves a solid one's stub reads
 // as a split.
 func stubs(gs map[int][]edgeMeet) int {
 	ks := slices.Sorted(maps.Keys(gs))

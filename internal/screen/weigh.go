@@ -1,5 +1,7 @@
 package screen
 
+import "slices"
+
 // A routing is weighed by what a reader pays to follow it, measured the way
 // docs/blueprint-svg.md bounds a drawing: where lines of different bundles
 // meet or run together away from their ends, and how often lines turn.
@@ -43,7 +45,7 @@ func (w weight) beats(o weight) bool {
 // breaches, then its weighed sum, then the crossings with each excess turn
 // and tee priced high), then the staircase steps along each routed line's
 // way with its crossings, then lines that turn more than twice, braid, and the
-// dashed ink of the lines that climb (rule 13). breaks counts the lines
+// ink of the lines that climb (rule 13). breaks counts the lines
 // that run more than detourLimit out of their way and the back lines past
 // rule 13's bound. steps counts, once per pair of places, each turn past
 // the second and each stretch between two turns shorter than jogUnder (a
@@ -81,6 +83,21 @@ type cost struct {
 	// gate are the totals the gate holds a view to, as judge reads them,
 	// each one lower in a drawing that reads better (gateTotals).
 	gate []int
+	// climbs says some line runs against the reading axis, so the view may
+	// be drawn with such lines apart (tactic.apart).
+	climbs bool
+}
+
+// sharedOrApart says a drawing whose lines that climb share roads with the
+// others, of cost c, reads no worse than the one with them apart, of cost a,
+// on every total the gate holds a view to, as judge reads the view before
+// its colours are painted, and on its crossings. Moving climbing lines onto
+// shared roads reroutes the other lines too, which can set two lines of
+// one way opposite on a track or off a two-lane road; this check, not the
+// road cost, keeps such a drawing out. A total read only after painting,
+// such as colour_switches, is not seen.
+func sharedOrApart(c, a cost) bool {
+	return len(c.gate) > 0 && len(c.gate) == len(a.gate) && noWorse(c.gate, a.gate) && c.crossed <= a.crossed
 }
 
 // gateTotals are t's hard breaches and the totals gate.go bounds, ceilings
@@ -168,7 +185,7 @@ func (c cost) beats(o cost) bool {
 
 func costOf(r routing, reqs []wireReq) cost {
 	w := weigh(routing{drawn: r.drawn}, reqs)
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(r.ways)}
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(r.ways), climbs: slices.Contains(r.back, true)}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
@@ -196,9 +213,12 @@ func costOf(r routing, reqs []wireReq) cost {
 	}
 	arrive, back := 0, 0
 	for _, d := range r.drawn {
+		// A piece of road climbs where some line it carries does: on a
+		// shared road a climbing line still counts against rule 13.
+		climbs := d.back || slices.ContainsFunc(d.reqs, func(i int) bool { return i < len(r.back) && r.back[i] })
 		if !d.joins {
 			arrive++
-			if d.back {
+			if climbs {
 				back++
 			}
 		}
@@ -211,7 +231,7 @@ func costOf(r routing, reqs []wireReq) cost {
 			if run-span(pts[0], pts[len(pts)-1]) > detourLimit {
 				c.breaks++
 			}
-			if d.back {
+			if climbs {
 				c.climb += run
 			}
 		}
@@ -343,6 +363,20 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	v, ok := draw(bt, &c)
 	if !ok {
 		return best
+	}
+	// Where some line climbs, it is drawn again with such lines on roads of
+	// their own, and that is kept where sharing roads reads worse.
+	if c.climbs {
+		t := bt
+		t.apart = true
+		var a cost
+		if w, ok := draw(t, &a); ok {
+			judge(v, &c)
+			judge(w, &a)
+			if !sharedOrApart(c, a) {
+				v, c, bt = w, a, t
+			}
+		}
 	}
 	if c.far > 0 && c.strays {
 		t := bt

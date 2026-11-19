@@ -70,7 +70,9 @@ func (d Drawing) Roads() bool { return d.roads }
 // its line's colour, so every line there lights whole however many paths
 // draw its ink. A route takes no pointer itself, so the ink keeps its title.
 type Route struct {
-	D, Kind    string
+	D, Kind string
+	// Back says the route runs against the reading axis, up or left within
+	// a row. The page draws it as any other line; the lint counts it.
 	Back, Both bool
 	Hue, Lit   string
 	// Vars name, for each box at an end, the colour the route takes while
@@ -175,9 +177,6 @@ type Wire struct {
 	// Joins says the path ends on a bundle's trunk, not at a box, so it
 	// carries no arrowhead.
 	Joins bool `json:",omitempty"`
-	// Back says the line runs against the reading direction: up, or left
-	// within a row. The page draws it dashed.
-	Back bool `json:",omitempty"`
 	// Both says the path starts at a box that the line also reaches: two
 	// modules that use each other. The page draws a head at its start too.
 	Both   bool     `json:",omitempty"`
@@ -1225,7 +1224,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, fanout: o.fanout()}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, fanout: o.fanout()}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
@@ -1332,7 +1331,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
+		w.Net, w.Joins = p.net, p.joins
 		w.ends = endsOf(reqs, p.reqs)
 		if l.roads {
 			w.rides = p.reqs

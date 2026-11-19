@@ -305,7 +305,7 @@ func (d *Drawing) dotCutTees(paths []drawn) {
 			tees = append(tees, t)
 		}
 	}
-	d.Dots = append(d.Dots, faint(tees, paths)...)
+	d.Dots = append(d.Dots, tees...)
 }
 
 // nearCut says a gap cuts a line of ink kind through p, or of any kind

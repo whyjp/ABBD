@@ -7,6 +7,7 @@ import (
 	"math"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -1330,7 +1331,7 @@ func (l *look) hubsCentred() []Breach {
 
 // H2. Rule 4 bundles the lines of one kind into one edge of a box. A hub's
 // forward lines of one kind reach it as one bundle, whichever edge they
-// reach. The dashed lines that climb to it are rule 13's, not H2's.
+// reach. The lines that climb to it are rule 13's, not H2's.
 func (l *look) hubsOneTrunk() []Breach {
 	var out []Breach
 	hs := l.hubs()
@@ -1338,7 +1339,7 @@ func (l *look) hubsOneTrunk() []Breach {
 		r := l.s.shapes[h].r.grow(5)
 		groups := map[string]map[int]bool{}
 		for _, w := range l.s.strokes {
-			if len(w.pts) < 2 || strings.Contains(" "+w.class+" ", " joins ") || strings.Contains(" "+w.class+" ", " back ") || !r.contains(w.pts[len(w.pts)-1], 0) || r.contains(w.pts[0], 0) {
+			if len(w.pts) < 2 || strings.Contains(" "+w.class+" ", " joins ") || l.climbs(w) || !r.contains(w.pts[len(w.pts)-1], 0) || r.contains(w.pts[0], 0) {
 				continue
 			}
 			k := colour(w.class)
@@ -1355,6 +1356,23 @@ func (l *look) hubsOneTrunk() []Breach {
 		}
 	}
 	return out
+}
+
+// climbs says every route stroke w carries runs against the reading axis,
+// as the drawing's routes record it: the page draws no mark for it.
+func (l *look) climbs(w stroke) bool {
+	n := 0
+	for _, c := range strings.Fields(w.class) {
+		k, err := strconv.Atoi(strings.TrimPrefix(c, "r"))
+		if err != nil || c[0] != 'r' || k >= len(l.v.d.Routes) {
+			continue
+		}
+		if !l.v.d.Routes[k].Back {
+			return false
+		}
+		n++
+	}
+	return n > 0
 }
 
 // oneWay sorts the boxes that join other boxes into those that only use,

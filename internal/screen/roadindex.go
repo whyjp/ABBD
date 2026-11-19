@@ -123,6 +123,35 @@ func spansOf(legs []leg, style []string) []roadSpan {
 	return out
 }
 
+// opposed is how far, in px, the legs on one track of a route that runs
+// against the reading axis and of one of its style that does not run over
+// each other opposite ways, or the one dotted and the other not, which
+// roadCost counts as a clash. Opposite ways, the shared ink reads as running
+// one way; of two dottings, the shared ink is drawn solid and the planned
+// line loses its dots there. Such routes share a road only where they run
+// the same way and are dotted alike. Routes of two styles clash wherever
+// they overlap (besideCost).
+func (v roadView) opposed(legs []leg, ways [][]pt) int {
+	if v.back == nil {
+		return 0
+	}
+	n := 0
+	for i, a := range legs {
+		for _, b := range legs[i+1:] {
+			if !a.flat || !b.flat || v.back[a.route] == v.back[b.route] || v.style[a.route] != v.style[b.route] {
+				continue
+			}
+			if o := min(a.hi, b.hi) - max(a.lo, b.lo); o > 0 && (headingOf(a, ways) != headingOf(b, ways) || v.plan[a.route] != v.plan[b.route]) {
+				n += o
+			}
+		}
+	}
+	return n
+}
+
+// headingOf is the way leg s goes along its track.
+func headingOf(s leg, ways [][]pt) int { return heading(ways[s.route][s.k], ways[s.route][s.k+1]) }
+
 // besideCost adds what two pieces of road d apart on parallel lines cost.
 func besideCost(c *roadCost, a, b roadSpan, d, sign int) {
 	o := min(a.hi, b.hi) - max(a.lo, b.lo)
@@ -439,6 +468,7 @@ func newRoadIndex(v roadView, ways [][]pt) *roadIndex {
 	all := trackView{A: map[track]bool{}, spans: func(l track) []roadSpan { return x.spans[l] }}
 	for l, legs := range x.lines {
 		x.spans[l] = spansOf(legs, v.style)
+		c.clash += v.opposed(legs, ways)
 		all.A[l] = true
 		if l.vertical() {
 			x.ups = append(x.ups, l.at())
@@ -618,6 +648,11 @@ func (ch *change) costWithin(limit roadCost) (roadCost, bool) {
 	}
 	x.besidesCost(&c, was, -1)
 	x.besidesCost(&c, now, 1)
+	if v.back != nil {
+		for l := range ch.A {
+			c.clash += v.opposed(ch.legsOn(l), next) - v.opposed(x.lines[l], x.ways)
+		}
+	}
 	if c.clash > limit.clash || c.near > limit.near {
 		return c, false
 	}

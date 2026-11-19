@@ -60,7 +60,8 @@ type drawn struct {
 	joins bool
 	// back says the line runs against the reading direction, rule 13: up,
 	// or left within a row. A line that provides a contract reads from the
-	// contract to its unit, so it runs the other way.
+	// contract to its unit, so it runs the other way. A piece of road is
+	// back where every line it carries is.
 	back bool
 	// joinsAt are where a line steps off its departure track onto an
 	// arrival trunk.
@@ -185,7 +186,7 @@ func (l *layout) routeLines(reqs []wireReq) routing {
 	}
 	*l = after
 	if l.roads {
-		r.confluent(reqs, l.position, len(l.rows))
+		r.confluent(reqs, l.position, len(l.rows), l.apart)
 	}
 	return r
 }

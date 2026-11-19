@@ -191,6 +191,20 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
 			ins = alt
 		}
+		// Where some line climbs, the view is drawn again with such lines on
+		// roads of their own, and that is kept where sharing roads reads worse.
+		if slices.ContainsFunc(ins.Drawing.Routes, func(r Route) bool { return r.Back }) {
+			at := t
+			at.apart = true
+			if apart, ok := o.inside(scope, units, id, centres(full.Drawing), at, nil); ok {
+				var c, ac cost
+				c.judge(ins.Drawing)
+				ac.judge(apart.Drawing)
+				if !sharedOrApart(c, ac) {
+					ins = apart
+				}
+			}
+		}
 		d := ins.Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+" 내부", id, d))
 	}
