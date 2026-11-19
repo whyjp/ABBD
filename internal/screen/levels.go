@@ -5,6 +5,8 @@ import (
 	"slices"
 	"sort"
 	"strings"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // The bounds of a level. The overview shows the parts an engineer names
@@ -48,8 +50,13 @@ type Level struct {
 	Lines int    `json:"lines"`
 	// Hubs are the boxes most of the view uses, such as shared types or a
 	// shared UI kit. The lines into them do not count toward the density.
-	Hubs   []string `json:"hubs,omitempty"`
-	Advice []string `json:"advice,omitempty"`
+	Hubs []string `json:"hubs,omitempty"`
+	// Cycles are the boxes that use each other round a cycle, by name, one
+	// group per cycle: no order runs between them, so the code has no
+	// layer for the view to read them down by. It is a finding about the
+	// code, not about the drawing, so it never fails lint either.
+	Cycles [][]string `json:"cycles,omitempty"`
+	Advice []string   `json:"advice,omitempty"`
 	// Kept is why the repository keeps the view at this level, as
 	// .abbd/lint-debt.yaml records it.
 	Kept string `json:"kept,omitempty"`
@@ -115,6 +122,7 @@ func level(name string, d Drawing, at where) Level {
 		users[to][from] = true
 	}
 	l.Lines = len(lines)
+	l.Cycles = cycleNames(d)
 	hub := hubs(d.Boxes, part, users)
 	for _, b := range d.Boxes {
 		if hub[b.ID] {
@@ -169,6 +177,47 @@ func hubs(boxes []Box, part map[string]bool, users map[string]map[string]bool) m
 		hub[id] = true
 	}
 	return hub
+}
+
+// OverviewCycles are the groups of the overview's boxes that use each other
+// round a cycle, by name, read off the graph the overview's layout ranks
+// with every line drawn, as Levels gives them for the overview. It plans
+// the overview alone, without routing any view, so abbd status can say it.
+func OverviewCycles(in Input) [][]string {
+	o := planScoped(in.Units, "", nil, tactic{}, layerings(in), walks(in), nil, scopeOf(in))
+	var out [][]string
+	for _, c := range o.layout.axis.cycles {
+		var g []string
+		for _, id := range c {
+			g = append(g, o.name(model.ID(id)))
+		}
+		out = append(out, g)
+	}
+	return out
+}
+
+// cycleNames are the groups of boxes the view's layout found sharing a
+// cycle of the lines it layered, by the boxes' names. A place that is no
+// box of the view, such as a frame's chip, is left out, and so is a group
+// left with fewer than two boxes.
+func cycleNames(d Drawing) [][]string {
+	name := map[string]string{}
+	for _, b := range d.Boxes {
+		name[b.ID] = b.Name
+	}
+	var out [][]string
+	for _, c := range d.axis.cycles {
+		var g []string
+		for _, id := range c {
+			if n, ok := name[id]; ok {
+				g = append(g, n)
+			}
+		}
+		if len(g) > 1 {
+			out = append(out, g)
+		}
+	}
+	return out
 }
 
 func boxCount(n int) string {

@@ -319,3 +319,20 @@ func TestStatusCountsRelationsWithoutAVia(t *testing.T) {
 	p, _ := diffProject(t)
 	p.want(0, "via: 2 relation(s) say no via", "status")
 }
+
+// status and lint report boxes that use each other round a cycle as a
+// finding: each cycle by its boxes, and the check still passes.
+func TestStatusAndLintReportACycleOfBoxes(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.extract(`{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}
+],"relations":[{"from":"billing","to":"ledger","kind":"depends_on","via":"call"},{"from":"ledger","to":"billing","kind":"depends_on","via":"call"}]}`)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "cycles: 1 on the overview", "status")
+	p.want(0, "cycle overview: billing, ledger use each other round a cycle", "status", "--check")
+	p.want(0, "cycle overview: billing, ledger use each other round a cycle", "lint")
+}

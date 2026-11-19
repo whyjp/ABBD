@@ -38,6 +38,8 @@ const (
 type axis struct {
 	basis string
 	cycle map[string]bool
+	// cycles are the places of cycle, grouped by the cycle they share.
+	cycles [][]string
 	// flow is how the view laid the primary flow out, nil when it shows
 	// fewer than two stages.
 	flow *flowAxis
@@ -101,13 +103,26 @@ func drawnRows(boxes []Box) (map[string]int, int) {
 // or more places of the graph uses draws.
 func cyclic(uses map[string][]string) map[string]bool {
 	out := map[string]bool{}
-	for _, c := range components(uses) {
-		if len(c) > 1 {
-			for _, id := range c {
-				out[id] = true
-			}
+	for _, c := range cycleGroups(uses) {
+		for _, id := range c {
+			out[id] = true
 		}
 	}
+	return out
+}
+
+// cycleGroups are the strongly connected components of two or more places
+// of the graph uses draws, each in ID order and the groups by their first
+// place, so the same graph gives the same groups.
+func cycleGroups(uses map[string][]string) [][]string {
+	var out [][]string
+	for _, c := range components(uses) {
+		if len(c) > 1 {
+			slices.Sort(c)
+			out = append(out, c)
+		}
+	}
+	slices.SortFunc(out, func(a, b []string) int { return cmp.Compare(a[0], b[0]) })
 	return out
 }
 

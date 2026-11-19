@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"maps"
 	"slices"
 	"strings"
@@ -240,6 +241,7 @@ func (e env) statusLines() error {
 	if b := e.statusOverview(in.Units, in.Overview); b != "" {
 		behind = append(behind, b)
 	}
+	statusCycles(e.stdout, screen.OverviewCycles(in))
 	e.statusBreaches(in.Units, fs.Stacks)
 	e.statusCells(in.Units, fs.Tables)
 	if len(texts) > 0 {
@@ -276,6 +278,17 @@ func (e env) statusLines() error {
 		return fmt.Errorf("not current: %s", strings.Join(behind, "; "))
 	}
 	return nil
+}
+
+// statusCycles says how many cycles of uses the overview's boxes close, and
+// each one, as a finding about the code: it never makes the state behind,
+// since only a change to the code ends a cycle. abbd lint names those on
+// each module's page.
+func statusCycles(w io.Writer, cycles [][]string) {
+	fmt.Fprintf(w, "cycles: %d on the overview; abbd lint names those on each module's page\n", len(cycles))
+	for _, c := range cycles {
+		fmt.Fprintf(w, "cycle overview: %s\n", cycleLine(c))
+	}
 }
 
 // dropNote says how to remove an orphaned note: by abbd forget when its file

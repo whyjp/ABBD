@@ -249,6 +249,9 @@ func printLint(e env, r lintReport) {
 		if l.Kept != "" {
 			fmt.Fprintf(e.stdout, "level %s: kept, %s\n", l.View, l.Kept)
 		}
+		for _, c := range l.Cycles {
+			fmt.Fprintf(e.stdout, "cycle %s: %s\n", l.View, cycleLine(c))
+		}
 	}
 	for _, f := range r.Failures {
 		fmt.Fprintf(e.stdout, "lint: breaks the gate: %s\n", f)
@@ -313,6 +316,12 @@ func offLevel(views []screen.ViewLint, levels []screen.Level, kept map[string]st
 		}
 	}
 	return out
+}
+
+// cycleLine says what one cycle of boxes is: a finding about the code, which
+// only a change to the code ends, so it never fails lint or the check.
+func cycleLine(names []string) string {
+	return fmt.Sprintf("%s use each other round a cycle, so no order runs between them. Only the code ends it, by dropping one of the uses or turning it round through an interface; it never fails lint", strings.Join(names, ", "))
 }
 
 // levelsOf is the levels of the full views lint checked.
