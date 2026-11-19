@@ -1392,8 +1392,7 @@
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "cmd/abbd",
@@ -6001,7 +6000,7 @@
                 "Kind": "p",
                 "Parts": [
                   {
-                    "Text": "/abbd-setup 스킬 맨 위의 태도다. setup은 사람에게 overview를 얼마나 촘촘히 그릴지 한 가지만 묻고, 그것도 대화에 사람이 있을 때만 묻는다. 처음 커밋하는 상태가 기준선이고, 사람은 그것을 청사진과 PR에서 읽는다. setup은 abbd CLI와 읽기 에이전트만 있으면 되고, pstack은 고를 수 있는 엔진이다.",
+                    "Text": "/abbd-setup 스킬 맨 위의 태도다. setup은 사람에게 overview를 얼마나 촘촘히 그릴지 한 가지만 묻고, 그것도 대화에 사람이 있을 때만 묻는다. 처음 커밋하는 상태가 기준선이고, 사람은 그것을 블루프린트와 PR에서 읽는다. setup은 abbd CLI와 읽기 에이전트만 있으면 되고, pstack은 고를 수 있는 엔진이다.",
                     "Code": false
                   }
                 ]
@@ -6231,8 +6230,7 @@
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Standing": {
         "Provides": 34,
@@ -7744,7 +7742,15 @@
                 "Code": true
               },
               {
-                "Text": "로 생존과 신선도를 쓰지 않고 보고한다.",
+                "Text": "로 생존과 신선도를 쓰지 않고 보고한다. 비교 페이지는 전체 그림을 ",
+                "Code": false
+              },
+              {
+                "Text": "블루프린트",
+                "Code": true
+              },
+              {
+                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다.",
                 "Code": false
               }
             ]
@@ -20465,7 +20471,7 @@
                 "Code": true
               },
               {
-                "Text": "는 청사진의 단어(예: 호출)를, ",
+                "Text": "는 블루프린트의 단어(예: 호출)를, ",
                 "Code": false
               },
               {
@@ -20736,7 +20742,7 @@
                 "Code": true
               },
               {
-                "Text": "가 청사진 단어로 준다.",
+                "Text": "가 블루프린트 단어로 준다.",
                 "Code": false
               }
             ]
@@ -21217,7 +21223,7 @@
                 "Code": true
               },
               {
-                "Text": "는 module이나 계약이 가지는 slot의 단일 목록으로, 청사진이 보여 주는 순서와 한국어 제목(",
+                "Text": "는 module이나 계약이 가지는 slot의 단일 목록으로, 블루프린트가 보여 주는 순서와 한국어 제목(",
                 "Code": false
               },
               {
@@ -29344,7 +29350,15 @@
                 "Code": true
               },
               {
-                "Text": "을 더하며, 모두 모델만으로 만든다. 그래서 같은 저장소는 어느 sync가 썼든 같은 바이트를 그린다.",
+                "Text": "을 더하며, 모두 모델만으로 만든다. 그래서 같은 저장소는 어느 sync가 썼든 같은 바이트를 그린다. 페이지 제목과 머리글은 ",
+                "Code": false
+              },
+              {
+                "Text": "\u003c이름\u003e 블루프린트",
+                "Code": true
+              },
+              {
+                "Text": "로 읽는다.",
                 "Code": false
               }
             ]
@@ -34946,7 +34960,7 @@
                 "Code": true
               },
               {
-                "Text": "과 청사진의 entry 표가 이것을 읽는다.",
+                "Text": "과 블루프린트의 entry 표가 이것을 읽는다.",
                 "Code": false
               }
             ]
@@ -36775,7 +36789,15 @@
                 "Code": true
               },
               {
-                "Text": "는 줄의 단어나 단계 이름처럼 홀로 서는 글에 같은 판정을 쓰되, 글자는 있는데 산문 단어가 하나도 없는 식별자만의 글은 읽히지 않는 것으로 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다.",
+                "Text": "는 줄의 단어나 단계 이름처럼 홀로 서는 글에 같은 판정을 쓰되, 글자는 있는데 산문 단어가 하나도 없는 식별자만의 글은 읽히지 않는 것으로 본다. 한국어 산문은 영어 용어를 자유롭게 섞으므로 기준이 낮고, 다른 언어의 산문은 0에 가깝다. 패키지는 이 결과로 아무것도 거부하지 않는다. CLI의 lint가 project.yaml이 정한 언어에 대해 관문으로 쓴다. 한국어로만 쓴 문장에는 Latin 글자가 없어서 ",
+                "Code": false
+              },
+              {
+                "Text": "ReadsIn",
+                "Code": true
+              },
+              {
+                "Text": "이 Latin으로 읽지 않는다.",
                 "Code": false
               }
             ]

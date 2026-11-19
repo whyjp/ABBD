@@ -42,4 +42,4 @@ zones:
         internal/topology/impact.go#quote-aae46dc8: b632aab8d7ef2476
 ---
 
-에이전트는 /abbd와 /abbd-setup 스킬로 abbd CLI를 부른다. sync는 추출을 읽고 ID를 맞추고 인용을 검사해 store에 쓴 뒤 screen이 청사진을 그린다. internal/model은 CLI와 대부분의 internal 패키지가 쓰는 어휘라 선을 그리지 않았다.
+에이전트는 /abbd와 /abbd-setup 스킬로 abbd CLI를 부른다. sync는 추출을 읽고 ID를 맞추고 인용을 검사해 store에 쓴 뒤 screen이 블루프린트를 그린다. internal/model은 CLI와 대부분의 internal 패키지가 쓰는 어휘라 선을 그리지 않았다.

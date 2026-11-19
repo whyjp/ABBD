@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<title>{{.Title}} · {{.Name}} 청사진</title>
+<title>{{.Title}} · {{.Name}} 블루프린트</title>
 <style>
 {{css .}}
 </style>
 </head>
 <body>
 <div class="shell">
-<nav class="site" aria-label="청사진 안내">
-  <a class="home" href="#overview">{{.Name}} 청사진</a>
+<nav class="site" aria-label="블루프린트 안내">
+  <a class="home" href="#overview">{{.Name}} 블루프린트</a>
   <ul class="plain top">
     <li><a href="#overview"{{if eq .Current "overview"}} aria-current="page"{{end}}>모듈과 계약</a></li>
     <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a></li>
@@ -29,8 +29,8 @@
 </nav>
 <main>
 <header>
-  <p class="crumbs"><a href="#overview">청사진</a>{{range .Trail}} › {{if index $.Paged .ID}}<a href="#m-{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}{{end}}{{if and (ne .Current "overview") (not .Trail)}} › {{.Title}}{{end}}</p>
-  {{if eq .Current "overview" "legend"}}<p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>{{end}}
+  <p class="crumbs"><a href="#overview">블루프린트</a>{{range .Trail}} › {{if index $.Paged .ID}}<a href="#m-{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}{{end}}{{if and (ne .Current "overview") (not .Trail)}} › {{.Title}}{{end}}</p>
+  {{if eq .Current "overview" "legend"}}<p class="fresh muted">이 블루프린트가 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>{{end}}
 </header>
 {{end}}
 {{define "foot"}}<p class="muted">추출 <code>{{join .Extract " "}}</code></p>
