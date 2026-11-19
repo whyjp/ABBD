@@ -516,3 +516,77 @@ func (s ScopeMark) Gaps(units []Unit) []string {
 	}
 	return nil
 }
+
+// OverviewAmbient bounds the ambient marks of the overview.
+const OverviewAmbient = 8
+
+// The ways a unit is ambient. Global state is one instance every part
+// reaches, such as a registry or a logger. Static is fixed data every part
+// reads, such as configuration, constants or shared types. Context is a
+// value handed down through every call, such as a request context or an
+// environment.
+const (
+	AmbientGlobal  = "global"
+	AmbientStatic  = "static"
+	AmbientContext = "context"
+)
+
+// AmbientNames lists the ways a unit is ambient, in the order the guidance
+// names them.
+var AmbientNames = []string{AmbientGlobal, AmbientStatic, AmbientContext}
+
+// AmbientMark is one mark a reader puts on a box of the overview: the unit
+// is ambient, global state, static data or a passed-down context that most
+// parts reach, so a line from each of them says only that they do. It is
+// the product's own, unlike a scope mark, and the mark stores no unit and
+// no relation: it tells whoever draws the overview that the unit is a
+// foundation the parts stand on, which may be drawn without its lines.
+type AmbientMark struct {
+	Unit     ID         `yaml:"unit"`
+	As       string     `yaml:"as"`
+	Evidence []Evidence `yaml:"evidence"`
+}
+
+// Kind makes the ambient marks a kind of figure part, each unit marked once.
+func (AmbientMark) Kind() FigureKind[AmbientMark] {
+	return FigureKind[AmbientMark]{Noun: "overview", Part: "ambient", Parts: "ambient marks", Max: OverviewAmbient, Whole: holdOnce[AmbientMark](0)}
+}
+
+// Validate checks the mark on its own: a unit, one of the ways, and the
+// code it rests on.
+func (a AmbientMark) Validate() error {
+	if _, _, err := ParseID(string(a.Unit)); err != nil {
+		return err
+	}
+	if !slices.Contains(AmbientNames, a.As) {
+		return fmt.Errorf("ambient %s is %q; it is one of %s", a.Unit, a.As, strings.Join(AmbientNames, ", "))
+	}
+	if len(a.Evidence) == 0 {
+		return fmt.Errorf("ambient %s cites no code; cite the lines that show the parts reach it as %s", a.Unit, a.As)
+	}
+	return validateEvidence(a.Evidence)
+}
+
+func (a AmbientMark) Label() string                     { return string(a.Unit) + " " + a.As }
+func (a AmbientMark) Names() []ID                       { return []ID{a.Unit} }
+func (a AmbientMark) Words() []Word                     { return nil }
+func (a AmbientMark) Quotes() []Evidence                { return a.Evidence }
+func (a AmbientMark) Requote(es []Evidence) AmbientMark { a.Evidence = es; return a }
+func (a AmbientMark) Retire() AmbientMark               { return a }
+
+// Gaps reads the mark against the state: the unit is present and is a box
+// the overview draws, and one quote at least lies in its code or the code
+// of a unit inside it.
+func (a AmbientMark) Gaps(units []Unit) []string {
+	st := stateOf(units)
+	if _, ok := st[a.Unit]; !ok {
+		return []string{fmt.Sprintf("%s is no longer in the state", a.Unit)}
+	}
+	if box := st.box(a.Unit); box != a.Unit {
+		return []string{fmt.Sprintf("%s sits inside %s, which the overview draws as one box; mark %s", a.Unit, box, box)}
+	}
+	if !st.rests([]ID{a.Unit}, a.Evidence) {
+		return []string{fmt.Sprintf("none of the quotes of ambient %s is in its code; cite the lines that show the parts reach it as %s", a.Unit, a.As)}
+	}
+	return nil
+}

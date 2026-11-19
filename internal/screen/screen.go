@@ -223,6 +223,8 @@ type Model struct {
 	// for it, with their words.
 	Zones []ZoneView
 	Lines []ChosenLine
+	// Ambient are the boxes the overview record marks ambient, with how.
+	Ambient []AmbientView
 	// Name and Purpose are the project's, and Parts its top-level modules
 	// and every feature with the one line each says of itself, which the
 	// overview opens with.
@@ -244,7 +246,7 @@ type Model struct {
 func Build(in Input) Model {
 	m := Model{Extract: in.Project.Extract}
 	ov := readOverview(in)
-	m.Zones, m.Lines = ov.zones, ov.lines
+	m.Zones, m.Lines, m.Ambient = ov.zones, ov.lines, ov.ambient
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
