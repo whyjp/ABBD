@@ -185,18 +185,27 @@ The **excess turns** of a drawing are each line's turns past its B1 allowance, s
 
 `abbd lint` gives each view, and all of them, these totals. They are the hard and target breaches, the breaches of each criterion, the excess turns, the placement debt, the crossings, the weighed sum, and the path measures of the trace. The **placement debt** is the breaches of P1, P2, H1, H2, O1, O2 and F1 added up. The **weighed sum** is the crossings plus 1 for each excess turn and 4 for each staircase step (`stepCrossings`), the measure the chooser ranks a view's drawings by (One measure for chooser and gate), so a step saved may cost at most 4 crossings. A **tee** is a point where a line's straight drop crosses a flat stretch of another line from the same place, inside both, with no junction dot: a T a reader takes for a branch, a relation that is not there. Each tee counts as one of the crossings, and `route` keeps such a line on its bus (`eval/lint/decisions.tsv` row 92). The **tees** have a ceiling of their own, since the weighed sum prices a tee at one crossing, less than the two turns it saves. The weighed sum once priced each tee at 9 and each excess turn at 4, while the chooser priced them at 1. Every change that made a drawing the chooser had passed over cheaper could then flip a view to one the gate weighed more. The **excess turns** have a ceiling of their own too. The weighed sum prices an excess turn at one crossing, so a change that bends two lines twice more to save three crossings weighs one less, while the reader follows the bends a hand drawing leaves out. When the ceiling was set, the drawings stayed as they were and the fixtures measured self 269, ripgrep 49, Orca 864 and pstack 475 excess turns, and this repository 237. A change to the renderer is held by this gate, and `abbd lint` holds a repository to it.
 
-1. No view has more hard breaches of a criterion than its debt records.
-2. The weighed sum stays at or under its ceiling, and so does the overflow, the views that break S.
-3. The placement debt stays at or under its ceiling plus 2% of it, rounded down. A change that saves turns may move a few boxes, and the next kept change starts from the new total.
-4. The traced bends and the paths that turn more than twice are tie-breakers. Between two changes that weigh the same, the one with fewer wins. Neither has a ceiling.
-5. The phantom pairs have no ceiling of their own, and J3 holds them at their debt. The lines against the axis (`against_axis`, rule 13) stay at or under their ceiling over every view, pages the debt file does not name included. A page the debt file names may not raise those lines, nor their ink (`against_axis_ink`). The ink has no ceiling over every view yet: a share of each view's ink, which a view that grows in proportion keeps, is still to come.
-6. Any view whose weighed sum rises by more than 8 needs a look by eye, even when the totals fall. `eval/lint/compare.py` lists those views.
-7. After each kept change, `abbd lint --record` lowers the debts and the ceilings to what the drawings measure. It never raises a ceiling. A total the gate lets pass its ceiling, as the placement debt may by 2%, keeps the ceiling it had, so the slack cannot ratchet a ceiling up one kept change at a time. Raising a ceiling is an edit to the file that a review sees.
-8. The detours (B3, B4) stay at or under their ceiling. A line that rides past its turn and comes back, or runs beside itself, is what a person polishing the drawing by hand removes first, so no change may add one, whatever it saves elsewhere.
-9. The tees stay at or under their ceiling. A T reads as a branch to a place the line does not reach, so no change may add one, whatever it saves in the weighed sum.
-10. The excess turns stay at or under their ceiling. A bend the drawing does not need is what a reader of a hand drawing notices first, so no change may add one, whatever crossings it saves.
+This list is the gate. The skills, the README and `eval/lint/compare.py` point here and do not restate it. `internal/screen/gate.go` holds it as code.
 
-`abbd lint` checks the first three, the eighth, the ninth and the tenth over every view and fails when one breaks. With a VIEW it checks only the first. `TestLintFixtures` checks each fixture against its own `.abbd/lint-debt.yaml`, and fails as well when a debt or a ceiling stands above what the fixture measures, so a kept change always lowers them. When the criteria were set, the fixtures' 274 views measured as follows.
+1. **Hard debt.** No view has more hard breaches of a criterion than its debt records.
+2. **Ceilings.** Over every view, each of these totals stays at or under its ceiling in `.abbd/lint-debt.yaml`:
+   - `weighed`, the weighed sum.
+   - `tees`. A T reads as a branch to a place the line does not reach.
+   - `excess_turns`. A bend the drawing does not need is the first thing a reader of a hand drawing notices.
+   - `detours`, the turn-backs B3 counts plus the pairs B4 counts.
+   - `against_axis`, the lines that run back by rule 13, pages the debt file does not name included.
+   - `two_lane_off`, the ink of lines that run opposite ways side by side other than as a two-lane road.
+   - `opposite_shared`, the ink two lines run on one track opposite ways.
+   - `overflow`, the views that break S.
+
+   None of them may rise, whatever a change saves elsewhere.
+3. **Placement.** The placement debt stays at or under its ceiling plus 2% of it, rounded down. A change that saves turns may move a few boxes, and the next kept change starts from the new total.
+4. **Page bounds.** A page the debt file names under `pages` may not raise its own `colour_switches`, `parallel_ink`, `two_lane_off`, `abreast`, `combs`, `doglegs`, `counts`, `dots`, `label_repeats`, `density`, `false_joins` (J3), `against_axis` or `against_axis_ink`, and may not lower its `labelled`. A page the debt file names that no view draws fails too.
+5. **Tie-breakers.** The traced bends and the paths that turn more than twice break ties. Between two changes that weigh the same, the one with fewer wins. Neither has a ceiling. The phantom pairs have no ceiling either; J3 holds them at their debt.
+6. **A look by eye.** Any view whose weighed sum rises by more than 8 needs a look by eye, even when the totals fall.
+7. **Record.** After each kept change, `abbd lint --record` lowers the debts and the ceilings to what the drawings measure. It never raises a ceiling. A total the gate lets pass its ceiling, as the placement debt may by 2%, keeps the ceiling it had, so the slack cannot ratchet a ceiling up one kept change at a time. Raising a ceiling is an edit to the file that a review sees.
+
+`abbd lint` checks 1 to 4 over every view and fails when one breaks. With a VIEW it checks 1 and 4 for those views only. `TestLintFixtures` checks each fixture against its own `.abbd/lint-debt.yaml`, and fails as well when a debt or a ceiling stands above what the fixture measures, so a kept change always lowers them. `eval/lint/compare.py` checks 2 and 3 between two fixture tables for every total the tables carry, and lists the views for 1 and 6. When the criteria were set, the fixtures' 274 views measured as follows.
 
 | Total | Fixtures | Gate |
 | --- | --- | --- |
