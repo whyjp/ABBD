@@ -371,9 +371,10 @@ func flatNear(pts []fpt, last bool) (float64, bool) {
 }
 
 // colourSwitches counts, over every line a road drawing routes, the
-// times its ink changes colour on its way from its start to its end: at
-// rest a reader follows a line by its colour, and a line that turns
-// neutral for a stretch and back reads as broken.
+// times its ink changes colour on its way from its start to its end. Every
+// line now rests in one grey, so it reads 0; it stays as a guard, since a
+// line that changes colour on its way, as a road painted one rider's
+// colour made it, reads as broken.
 func colourSwitches(d Drawing) int {
 	n := 0
 	for k, r := range d.Routes {
