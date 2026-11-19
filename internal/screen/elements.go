@@ -40,8 +40,10 @@ type Elements struct {
 }
 
 // WarnShare is the share of a view's own range, in percent, past which its
-// count is reported. A view that draws every line it could and gives half
-// of them a word stands there. It is chosen, not measured.
+// count is reported: a view passes it when 100*(Count-Min) > WarnShare*span.
+// A view with no lead that draws every line it could and gives half of them
+// a word stands there; a lead puts that drawing a little lower. It is
+// chosen, not measured.
 const WarnShare = 75
 
 // elementsOf counts d's elements and its range.
@@ -91,7 +93,7 @@ func elementsOf(d Drawing) Elements {
 	e.Max = e.Shapes + 2*e.Possible + numbers + steps
 	if span := e.Max - e.Min; span > 0 {
 		p := 100 * (e.Count - e.Min) / span
-		w := e.Min + (span*WarnShare+99)/100
+		w := e.Min + span*WarnShare/100
 		e.Percent, e.WarnAt, e.Over = &p, &w, e.Count > w
 	}
 	return e

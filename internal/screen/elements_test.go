@@ -36,8 +36,8 @@ func TestElementsCountWhatAReaderSeesAtRest(t *testing.T) {
 	if e.Flow != 2 || e.Possible != 5 || e.Min != 9 || e.Max != 18 {
 		t.Fatalf("got %+v, want flow 2, 5 possible lines, range 9..18", e)
 	}
-	if e.Percent == nil || *e.Percent != 66 || *e.WarnAt != 16 || e.Over {
-		t.Fatalf("got %+v, want 66%% of the range and a warning past 16, not reached", e)
+	if e.Percent == nil || *e.Percent != 66 || *e.WarnAt != 15 || e.Over {
+		t.Fatalf("got %+v, want 66%% of the range and a warning past 15, not reached", e)
 	}
 }
 
@@ -50,8 +50,8 @@ func TestElementsWarnAtAShareOfEachViewsOwnRange(t *testing.T) {
 	if te.Min != 2 || te.Max != 4 || be.Min != 30 || be.Max != 150 {
 		t.Fatalf("ranges %d..%d and %d..%d, want 2..4 and 30..150", te.Min, te.Max, be.Min, be.Max)
 	}
-	if *te.WarnAt != 4 || *be.WarnAt != 120 {
-		t.Fatalf("warning points %d and %d, want 4 and 120: each at %d%% of its own range", *te.WarnAt, *be.WarnAt, WarnShare)
+	if *te.WarnAt != 3 || *be.WarnAt != 120 {
+		t.Fatalf("warning points %d and %d, want 3 and 120: each at %d%% of its own range", *te.WarnAt, *be.WarnAt, WarnShare)
 	}
 	if te.Over || be.Over || be.Count != 70 {
 		t.Fatalf("tiny %+v big %+v: neither passes its own point, though big holds 70 elements", te, be)
