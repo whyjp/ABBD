@@ -633,10 +633,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
-	// ink is the unit a wire's lines come from, the colour they light in on
-	// hover, as far as labels need it:
-	// its one source, or for a road whose lines leave several, the source
-	// of its rider that runs furthest on roads, or none.
+	// ink groups wires for repeated words only: its one source, or for a
+	// road whose lines leave several, the source of its rider that runs
+	// furthest on roads, or none. It is the grouping roads once wore as a
+	// colour, kept so the words said once stay as they were.
 	onRoad := d.onRoad()
 	ink := func(w Wire) string {
 		var one model.ID

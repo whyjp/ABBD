@@ -309,8 +309,9 @@ func TestEveryLineRestsGreyAndLightsInItsBoxsColour(t *testing.T) {
 	}
 }
 
-// A view that draws a lead draws every other line grey, its dots too, so
-// the lead is its one coloured way (lead.go).
+// A view that draws a lead keeps the lead in its entry's colour and draws
+// every other line grey, its dots too, so the lead is its one coloured way
+// at rest (lead.go).
 func TestALeadQuietsEveryOtherLine(t *testing.T) {
 	t.Parallel()
 	leads := 0
@@ -321,6 +322,11 @@ func TestALeadQuietsEveryOtherLine(t *testing.T) {
 				continue
 			}
 			leads++
+			for _, b := range d.Boxes {
+				if b.ID == d.Lead.Entry && b.Hue != "" && d.Lead.Hue != b.Hue {
+					t.Errorf("%s: the lead wears %q, not its entry's colour %q", name, d.Lead.Hue, b.Hue)
+				}
+			}
 			for _, w := range d.Wires {
 				if w.Hue != hueKey(-1) {
 					t.Errorf("%s: a %s line beside a lead wears %q", name, w.Kind, w.Hue)

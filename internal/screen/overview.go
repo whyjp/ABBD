@@ -45,8 +45,7 @@ type Drawing struct {
 	// and Lead the way the view draws bold over them (lead.go).
 	ways []Route
 	Lead *Lead `json:",omitempty"`
-	// Quiet says the view rests its lines grey but for its lead's or its
-	// hub's own (lead.go, dress.go).
+	// Quiet says the view thins every line but its lead's (lead.go).
 	Quiet bool `json:"-"`
 	// Zones are the bands behind the boxes of the groupings the project
 	// shows (zone.go).
