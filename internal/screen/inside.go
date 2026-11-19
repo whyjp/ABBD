@@ -664,7 +664,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)
 	}
-	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), roads: l.roads, axis: l.axis}
+	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), roads: l.roads, axis: l.axis}
 	var unwired []port
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)
@@ -774,7 +774,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
+		w.Net, w.Joins = p.net, p.joins
 		w.ends = endsOf(reqs, p.reqs)
 		if l.roads {
 			w.rides = p.reqs

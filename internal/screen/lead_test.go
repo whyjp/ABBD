@@ -152,9 +152,8 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 
 // A view's card lists a sample only for a mark its rendered drawing
 // shows as the sample does, read from the SVG the page draws: the lead's
-// bold way, a filled box, a bypass line, a dotted line that does
-// not climb, a climbing line. Its area keeps cardRoom from all other ink
-// and every number, as the card promises.
+// bold way, a filled box, a bypass line, a dotted line. Its area keeps
+// cardRoom from all other ink and every number, as the card promises.
 func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 	t.Parallel()
 	marks := map[string]*regexp.Regexp{
@@ -162,10 +161,8 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
 		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b`),
 		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
-		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
 		"more":   regexp.MustCompile(`<g class="more">`),
 	}
-	climbs := regexp.MustCompile(`\bback\b`)
 	cards := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -181,11 +178,12 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 			}
 			svg := b.String()
 			for _, it := range c.Items {
-				found := marks[it.Kind].FindAllString(svg, -1)
-				if it.Kind == "plan" {
-					found = slices.DeleteFunc(found, func(s string) bool { return climbs.MatchString(s) })
+				mark, ok := marks[it.Kind]
+				if !ok {
+					t.Errorf("%s: a card lists %s, a mark no line draws", name, it.Kind)
+					continue
 				}
-				if len(found) == 0 {
+				if !mark.MatchString(svg) {
 					t.Errorf("%s: a card lists %s, which its drawing does not show", name, it.Kind)
 				}
 			}

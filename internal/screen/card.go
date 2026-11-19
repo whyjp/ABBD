@@ -5,8 +5,7 @@ import "slices"
 // A card is the small key a hand-drawn diagram keeps in a corner of its
 // own canvas: a few samples, each of a mark the view draws as the sample
 // shows it and few readers would guess, so the drawing reads on its own,
-// without the key below the page. A dotted line is listed only where one
-// is drawn dotted, not dashed for climbing. It names only what this view draws, and it sits only in room
+// without the key below the page. It names only what this view draws, and it sits only in room
 // nothing else uses, so it never covers a box, chip, line, word or band.
 // A view with no such room keeps only the key below it.
 
@@ -43,11 +42,8 @@ func (d *Drawing) card() {
 	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return warns(w.Kind) }) {
 		items = append(items, CardItem{Kind: "bypass", Text: "직접 의존, 열린 화살촉"})
 	}
-	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan && !w.Back }) {
+	if d.Planned() {
 		items = append(items, CardItem{Kind: "plan", Text: "설계로만 이어짐"})
-	}
-	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Back }) {
-		items = append(items, CardItem{Kind: "back", Text: "되돌아가는 선"})
 	}
 	if slices.ContainsFunc(d.Boxes, func(b Box) bool { return b.More > 0 }) {
 		items = append(items, CardItem{Kind: "more", Text: "줄인 선, 누르면 모두"})

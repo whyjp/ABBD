@@ -54,8 +54,6 @@ type rendered struct {
 func strokeWidth(class string) float64 {
 	cs := " " + class + " "
 	switch {
-	case strings.Contains(cs, " back "):
-		return 1.2
 	case strings.Contains(cs, " bypass "), strings.Contains(cs, " mutual "):
 		return 2.6
 	case strings.Contains(cs, " provides "):

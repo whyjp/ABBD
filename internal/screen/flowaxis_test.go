@@ -490,31 +490,6 @@ func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
 	}
 }
 
-// A line from a later stage to an earlier one left out of rule 13's count
-// must still be dashed: drawn solid it reads forward, and rule 13 breaks.
-func TestALineBackToAnEarlierStageDrawnSolidBreaksTheAxis(t *testing.T) {
-	units, parts := backToConfig()
-	v := views(Build(Input{Units: units, Figures: primaryStack(parts...)}))[0]
-	s, err := sheetOf(v.d)
-	if err != nil {
-		t.Fatal(err)
-	}
-	solid := 0
-	for i, w := range s.strokes {
-		if c := strings.Fields(w.class); slices.Contains(c, "back") {
-			s.strokes[i].class = strings.Join(slices.DeleteFunc(c, func(f string) bool { return f == "back" }), " ")
-			solid++
-		}
-	}
-	if solid == 0 {
-		t.Fatal("no back line drawn to make solid")
-	}
-	got := newLook(v, s).metrics.violations(v.budget)
-	if !slices.ContainsFunc(got, func(b string) bool { return strings.HasPrefix(b, "13: ") && strings.Contains(b, "drawn like forward") }) {
-		t.Errorf("%d back lines drawn solid, rule 13 says %q", solid, got)
-	}
-}
-
 // Only lines between stages run back by the stage order: on a view that
 // lays the flow out, a back line between boxes no stage holds still
 // counts against the axis.

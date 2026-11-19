@@ -296,8 +296,10 @@ func TestMutualUseIsOneLine(t *testing.T) {
 		if w.Kind == "mutual" {
 			mutual = append(mutual, w)
 		}
-		if w.Back {
-			t.Errorf("no line should climb, got %q", w.Title)
+	}
+	for _, r := range m.Overview.Routes {
+		if r.Back {
+			t.Errorf("no line should climb, got the route from %s", r.src)
 		}
 	}
 	if len(mutual) != 1 || !mutual[0].Both || len(mutual[0].Rels) != 2 {
