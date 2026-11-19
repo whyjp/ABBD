@@ -288,6 +288,10 @@ func Build(in Input) Model {
 	if c == nil && in.Project.Cut() {
 		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
+	unfolded := c
+	if in.Project.OverviewFoldHubs {
+		c = o.foldHubs(c, fs)
+	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
@@ -313,15 +317,19 @@ func Build(in Input) Model {
 	// The focus views seat their boxes where the overview without the
 	// record sets them, so a record changes which lines the overview draws
 	// and not how each box's own view reads.
+	// Folded hubs leave every box where the overview without the fold
+	// sets it, for the same reason.
 	seats := m.Overview
-	if c.hides() && c.said != nil {
+	if unfolded.hides() && unfolded.said != nil {
 		var plain *cut
 		if in.Project.Cut() {
 			plain = o.primary(in.Primary, ls, fs, nil, nil)
 		}
 		seats = overview(plain)
+	} else if c.folds() {
+		seats = overview(unfolded)
 	}
-	m.Focus = o.overviewFocus(in.Units, seats, c.hides())
+	m.Focus = o.overviewFocus(in.Units, seats, c.hides() || c.folds())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {

@@ -124,6 +124,9 @@ type Box struct {
 	// of drawing, and MoreHref the focus view that draws them all.
 	More     int    `json:",omitempty"`
 	MoreHref string `json:",omitempty"`
+	// UsedBy is how many boxes use a hub whose incoming lines the overview
+	// folds into its last line (hubfold.go), 0 for every other box.
+	UsedBy int `json:"-"`
 }
 
 // MoreW is how wide the pill counting a box's undrawn links is, MoreX and
@@ -539,6 +542,9 @@ type overview struct {
 	counted     [][2]string
 	countedRels []string
 	said        map[pair]string
+	// fold is the boxes that use each hub whose lines the overview folds
+	// (hubfold.go).
+	fold map[model.ID][]model.ID
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -734,6 +740,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		})
 		o.more = c.more
 		o.said = c.said
+		o.fold = c.fold
 		if c.said == nil {
 			hidden = nil
 		}
@@ -806,7 +813,13 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
+		h := boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow
+		if len(o.fold[m]) > 0 && len(exits) > 0 && len(entries) > 0 {
+			// A folded hub's last line stands for its lines, so chips on
+			// both edges never leave it out for want of room (dress.go).
+			h += nameLine
+		}
+		nodes = append(nodes, lnode{id: string(m), w: w, h: h, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
@@ -1261,6 +1274,14 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		if n := o.more[m]; n > 0 {
 			b.More, b.MoreHref = n, "#"+focusID("", m)
+		}
+		if us := o.fold[m]; len(us) > 0 {
+			b.UsedBy = len(us)
+			var names []string
+			for _, u := range us {
+				names = append(names, o.name(u))
+			}
+			b.Title += "\n" + usedByText(len(us)) + ": " + strings.Join(names, ", ") + ". 선은 접어 그렸고, 이 상자의 초점 뷰가 모두 그립니다"
 		}
 		if base(m) != m {
 			b.Title += "\n" + twinNote
