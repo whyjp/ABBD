@@ -15,7 +15,7 @@ const libsExtraction = `{"units":[
 
 // abbd libs adds each library the go.mod requires as one EXT unit, and sync
 // keeps it like any extracted unit: the same ID on the next sync, a line in
-// explain, and nothing drawn yet.
+// explain.
 func TestLibsAddsExternalUnitsThatSyncKeeps(t *testing.T) {
 	t.Parallel()
 	p, exe := bare(t)
@@ -44,9 +44,6 @@ func TestLibsAddsExternalUnitsThatSyncKeeps(t *testing.T) {
 	p.want(0, "", "sync")
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "architecture", "EXT-0001.md")); err != nil {
 		t.Errorf("the library lost its ID on the next sync: %v", err)
-	}
-	if strings.Contains(p.blueprint(), "yaml.v3") {
-		t.Errorf("the blueprint draws the library before any view draws one")
 	}
 }
 

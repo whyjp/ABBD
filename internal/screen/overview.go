@@ -318,7 +318,7 @@ const (
 func kindWord(k model.Kind) string {
 	return map[model.Kind]string{
 		model.Module: "모듈", model.Interface: "인터페이스", model.Event: "이벤트",
-		model.Data: "데이터", model.Config: "설정", model.Feature: "기능", model.Exec: "실행", model.External: "외부 라이브러리",
+		model.Data: "데이터", model.Config: "설정", model.Feature: "기능", model.Exec: "실행",
 	}[k]
 }
 

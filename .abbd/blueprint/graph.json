@@ -7642,7 +7642,23 @@
                 "Code": true
               },
               {
-                "Text": "으로 기록할 수 없다. 사용법 글이 rust의 ",
+                "Text": "으로 기록할 수 없다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd libs",
+                "Code": true
+              },
+              {
+                "Text": "가 더한 ",
+                "Code": false
+              },
+              {
+                "Text": "EXT",
+                "Code": true
+              },
+              {
+                "Text": "는 아직 어느 뷰에도 그려지지 않고, 단위 목록과 explain, path, impact에만 나온다. 사용법 글이 rust의 ",
                 "Code": false
               },
               {
@@ -24265,31 +24281,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "가 끌어내는 것이다. ",
-                  "Code": false
-                },
-                {
-                  "Text": "Build",
-                  "Code": true
-                },
-                {
-                  "Text": "는 먼저 ",
-                  "Code": false
-                },
-                {
-                  "Text": "withoutLibraries",
-                  "Code": true
-                },
-                {
-                  "Text": "로 외부 라이브러리(",
-                  "Code": false
-                },
-                {
-                  "Text": "EXT",
-                  "Code": true
-                },
-                {
-                  "Text": ") 단위와 그것에 닿는 관계와 구절을 빼므로, 아직 어느 뷰도 라이브러리를 그리지 않는다. 단위 목록, ",
+                  "Text": "가 끌어내는 것이다. 단위 목록, ",
                   "Code": false
                 },
                 {
@@ -24782,7 +24774,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -25539,31 +25531,7 @@
                 "Code": true
               },
               {
-                "Text": "가 끌어내는 것이다. ",
-                "Code": false
-              },
-              {
-                "Text": "Build",
-                "Code": true
-              },
-              {
-                "Text": "는 먼저 ",
-                "Code": false
-              },
-              {
-                "Text": "withoutLibraries",
-                "Code": true
-              },
-              {
-                "Text": "로 외부 라이브러리(",
-                "Code": false
-              },
-              {
-                "Text": "EXT",
-                "Code": true
-              },
-              {
-                "Text": ") 단위와 그것에 닿는 관계와 구절을 빼므로, 아직 어느 뷰도 라이브러리를 그리지 않는다. 단위 목록, ",
+                "Text": "가 끌어내는 것이다. 단위 목록, ",
                 "Code": false
               },
               {
