@@ -2250,6 +2250,7 @@
         "internal/screen/tree.go",
         "internal/screen/twolane.go",
         "internal/screen/weigh.go",
+        "internal/screen/wordfill.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
       ],
@@ -6790,7 +6791,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "abbd reader",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -7803,7 +7804,79 @@
                 "Code": true
               },
               {
-                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다.",
+                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "cycles:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에, 묶음마다 상자 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle overview:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 발견으로 알리고, lint는 모든 전체 뷰의 묶음을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].cycles",
+                "Code": true
+              },
+              {
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "cycles:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에, 묶음마다 상자 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle overview:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 발견으로 알리고, lint는 모든 전체 뷰의 묶음을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].cycles",
+                "Code": true
+              },
+              {
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. lint는 ",
+                "Code": false
+              },
+              {
+                "Text": "lint: words:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 개요와 모든 뷰가 정지 화면에서 말을 단 경로의 비율과 그 말의 출처를 알리며, 이 줄도 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -8453,7 +8526,31 @@
                 "Code": true
               },
               {
-                "Text": " 줄로 알린다. 이 줄은 권고일 뿐 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
+                "Text": " 줄로 알린다. 이 줄은 권고일 뿐 관문을 실패시키지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "fanout",
+                "Code": true
+              },
+              {
+                "Text": " 줄은 제공자가 셋 이상인 계약에서 개요가 사용자마다 모든 제공자로 잇는 선의 수를 뷰마다 나열하고, ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": "의 뷰별 합계와 전체 합계에도 ",
+                "Code": false
+              },
+              {
+                "Text": "fanout",
+                "Code": true
+              },
+              {
+                "Text": "으로 남긴다. 이 줄도 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
                 "Code": false
               },
               {
@@ -22737,7 +22834,39 @@
                   "Code": true
                 },
                 {
-                  "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다.",
+                  "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다. 부모 모듈이 있는 계약은 최상위가 아니므로 이 짝짓기에 들지 않는다. 그 사용자와 구현자의 관계는 계약을 선언한 부모 모듈과의 간선으로 올라가며, 개요는 그 곁에 ",
+                  "Code": false
+                },
+                {
+                  "Text": "depends_on",
+                  "Code": true
+                },
+                {
+                  "Text": "이 없으면 이 간선에 선을 그리지 않는다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "fanout",
+                  "Code": true
+                },
+                {
+                  "Text": "은 제공자가 ",
+                  "Code": false
+                },
+                {
+                  "Text": "fanoutProviders",
+                  "Code": true
+                },
+                {
+                  "Text": "(3) 이상인 계약을 나르는 짝 선의 수를 세어 그림에 남기고, lint는 이를 뷰별 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Totals.Fanout",
+                  "Code": true
+                },
+                {
+                  "Text": "으로 더하되 상한을 두지 않는다.",
                   "Code": false
                 }
               ]
@@ -23223,7 +23352,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                  "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                   "Code": false
                 },
                 {
@@ -24473,7 +24602,7 @@
                 "Code": true
               },
               {
-                "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                 "Code": false
               },
               {
@@ -24861,7 +24990,39 @@
                 "Code": true
               },
               {
-                "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다.",
+                "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다. 부모 모듈이 있는 계약은 최상위가 아니므로 이 짝짓기에 들지 않는다. 그 사용자와 구현자의 관계는 계약을 선언한 부모 모듈과의 간선으로 올라가며, 개요는 그 곁에 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": "이 없으면 이 간선에 선을 그리지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "fanout",
+                "Code": true
+              },
+              {
+                "Text": "은 제공자가 ",
+                "Code": false
+              },
+              {
+                "Text": "fanoutProviders",
+                "Code": true
+              },
+              {
+                "Text": "(3) 이상인 계약을 나르는 짝 선의 수를 세어 그림에 남기고, lint는 이를 뷰별 ",
+                "Code": false
+              },
+              {
+                "Text": "Totals.Fanout",
+                "Code": true
+              },
+              {
+                "Text": "으로 더하되 상한을 두지 않는다.",
                 "Code": false
               }
             ]
@@ -31659,7 +31820,79 @@
                 "Code": true
               },
               {
-                "Text": "를 할당 횟수에, 느슨한 10초 실제 시간 안전판과 함께 묶으며, 그 횟수가 프로세스 전체의 것이므로 병렬로 돌지 않는다.",
+                "Text": "를 할당 횟수에, 느슨한 10초 실제 시간 안전판과 함께 묶으며, 그 횟수가 프로세스 전체의 것이므로 병렬로 돌지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Cycles",
+                "Code": true
+              },
+              {
+                "Text": "는 뷰의 배치가 층을 매긴 그래프에서 서로를 돌아 쓰는 상자 묶음, 곧 상자 둘 이상의 강하게 연결된 요소를 이름으로 내며, 개요의 묶음은 자르기나 기록이 무엇을 빼든 모든 선을 그린 계획에서 읽는다. 순환 의존은 그림이 아니라 코드의 일이므로 발견으로만 알리고 lint를 실패시키지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "OverviewCycles",
+                "Code": true
+              },
+              {
+                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다. ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "wordfill.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 정지 화면에서 말이 붙은 경로를 세고, 그 말이 개요 기록의 낱말, 관계의 구절, via 가운데 어디서 왔는지(",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": "가 정하는 ",
+                "Code": false
+              },
+              {
+                "Text": "Wire.from",
+                "Code": true
+              },
+              {
+                "Text": ")와, 기록이 낱말을 준 상자 쌍 가운데 그려진 경로에 그 낱말이 붙은 수를 진단으로만 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "speaksFor",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "labelled",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "이 함께 쓰는, 말이 붙은 선이 경로를 대변하는지 읽는 한 술어다.",
                 "Code": false
               }
             ]

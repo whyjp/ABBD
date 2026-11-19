@@ -148,6 +148,10 @@ type Totals struct {
 	// departures; nothing bounds them.
 	Fans    int `json:"fans"`
 	Strands int `json:"strands"`
+	// Fanout is the lines the overview derives from a contract with three
+	// or more providers, meeting each of its users with every provider
+	// (overview.fanout). It shows the exposure; nothing bounds it.
+	Fanout int `json:"fanout"`
 }
 
 // Sum adds up the totals of several views.
@@ -170,6 +174,7 @@ func Sum(views []ViewLint) Totals {
 		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
 		t.Density += o.Density
 		t.Fans, t.Strands = t.Fans+o.Fans, t.Strands+o.Strands
+		t.Fanout += o.Fanout
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -185,7 +190,10 @@ type ViewLint struct {
 	// Elements is a diagnostic lint reports and never gates on, read from
 	// the ink lintView measures.
 	Elements Elements `json:"elements"`
-	ink      inkMeasure
+	// Words is how many of the view's routes say a word at rest and where
+	// each word comes from, a diagnostic lint never gates on (wordfill.go).
+	Words WordFill `json:"words"`
+	ink   inkMeasure
 }
 
 // The thresholds of the criteria. They are this file's own constants, as
@@ -399,10 +407,12 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	vl.Totals.Combs, vl.Totals.Counts, vl.Totals.Dots = combs(t.Ways), len(s.counts), len(s.junctions)
 	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
+	vl.Words = wordFill(v.d)
 	if n := len(v.d.Boxes); n > 0 {
 		vl.Totals.Density = 10 * len(v.d.ways) / n
 	}
 	vl.Totals.Fans, vl.Totals.Strands = s.fans, len(s.strands)
+	vl.Totals.Fanout = v.d.fanout
 	return vl, nil
 }
 

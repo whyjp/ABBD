@@ -623,9 +623,14 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		if w.folded() && len(w.lines) == 2 {
 			words[i], saids[i], ends[i] = twoWays(t, w.lines)
 		}
+		d.Wires[i].from = fromVia
+		if saids[i] {
+			d.Wires[i].from = fromPhrase
+		}
 		if len(w.ends) == 2 {
 			if s := d.said[pairOf(model.ID(w.ends[0]), model.ID(w.ends[1]))]; s != "" {
 				words[i], saids[i] = s, false
+				d.Wires[i].from = fromRecord
 			}
 		}
 		most[i] = !saids[i] && words[i] != "" && allVia(t, w.lines) == ""
