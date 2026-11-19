@@ -167,6 +167,9 @@ func (l *layout) route(reqs []wireReq) routing {
 
 // routeLines is route but for the counts and the hops.
 func (l *layout) routeLines(reqs []wireReq) routing {
+	if f := l.hooks.onRouting(); f != nil {
+		f(l, reqs)
+	}
 	before := l.keep()
 	r := l.routeApart(reqs)
 	after := l.keep()
@@ -409,12 +412,12 @@ func (l *layout) keep() layout {
 // compares every pair of strands, so a view with more than shareMost
 // requests keeps the plain drawing rather than pay for that.
 func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
-	plain := l.layDrops(reqs, false, apart)
+	plain := l.layDrops(reqs, layOpts{Apart: apart})
 	if !plain.shares || len(reqs) > shareMost {
 		return plain
 	}
 	kept := l.keep()
-	if shared := l.layDrops(reqs, true, apart); weigh(shared, reqs).beats(weigh(plain, reqs)) {
+	if shared := l.layDrops(reqs, layOpts{Shared: true, Apart: apart}); weigh(shared, reqs).beats(weigh(plain, reqs)) {
 		return shared
 	}
 	*l = kept
@@ -426,13 +429,13 @@ const shareMost = 200
 // layDrops lays the view, then lays it again with every line that drops()
 // took off its buses but could not stand straight kept on them, since such
 // a line leaves or reaches its box beside its bundle (rule 4).
-func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
+func (l *layout) layDrops(reqs []wireReq, o layOpts) routing {
 	before := l.keep()
 	bent := map[int]bool{}
 	var r routing
 	for {
 		kept := l.keep()
-		r = l.layStraight(reqs, shared, apart, bent)
+		r = l.layStraight(reqs, layOpts{Shared: o.Shared, Apart: o.Apart, Drops: true, Bent: bent})
 		grew := false
 		for _, i := range r.bent {
 			grew = grew || !bent[i]
@@ -448,7 +451,7 @@ func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
 	}
 	after := l.keep()
 	*l = before
-	bundled := l.layStraight(reqs, shared, apart, nil)
+	bundled := l.layStraight(reqs, o)
 	if weigh(r, reqs).beats(weigh(bundled, reqs)) {
 		*l = after
 		return r
@@ -459,15 +462,17 @@ func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
 // layStraight lays the view with the lines that would cross over the box
 // they reach and come back set straight onto their arrival trunks, and
 // keeps that only where it costs the reader less than the plain drawing.
-func (l *layout) layStraight(reqs []wireReq, shared, apart bool, bent map[int]bool) routing {
+func (l *layout) layStraight(reqs []wireReq, o layOpts) routing {
 	before := l.keep()
-	r := l.layJoined(reqs, shared, apart, bent, true)
+	o.Tweak = true
+	r := l.layJoined(reqs, o)
 	if !r.tweaked {
 		return r
 	}
 	after := l.keep()
 	*l = before
-	plain := l.layJoined(reqs, shared, apart, bent, false)
+	o.Tweak = false
+	plain := l.layJoined(reqs, o)
 	if costOf(r, reqs).beats(costOf(plain, reqs)) {
 		*l = after
 		return r
@@ -478,15 +483,17 @@ func (l *layout) layStraight(reqs []wireReq, shared, apart bool, bent map[int]bo
 // layJoined lays the view with a line that steps off its departure trunk
 // leading its arrival bus's drop (lay's early), and keeps that only where
 // weigh says it reads better than the plain drawing.
-func (l *layout) layJoined(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak bool) routing {
+func (l *layout) layJoined(reqs []wireReq, o layOpts) routing {
 	before := l.keep()
-	r := l.lay(reqs, shared, apart, bent, tweak, true)
+	o.Early = true
+	r := l.lay(reqs, o)
 	if !r.joined {
 		return r
 	}
 	after := l.keep()
 	*l = before
-	plain := l.lay(reqs, shared, apart, bent, tweak, false)
+	o.Early = false
+	plain := l.lay(reqs, o)
 	if weigh(r, reqs).beats(weigh(plain, reqs)) {
 		*l = after
 		return r
@@ -527,10 +534,31 @@ type routing struct {
 	tracks map[[3]int]int
 }
 
-// lay draws every request, with shared arrival buses where shared allows
-// them, and with each line between modules that use each other on buses of
-// its own pair where apart says so.
-func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak, early bool) routing {
+// layOpts are the modes lay draws a view's lines in, the ones route turns
+// to keep the drawing that reads best.
+type layOpts struct {
+	// Shared lets lines share arrival buses where they could (share).
+	Shared bool `json:"shared,omitempty"`
+	// Apart puts each line between two modules that use each other on
+	// buses of its own pair (rule 18).
+	Apart bool `json:"apart,omitempty"`
+	// Tweak sets lines straight onto their arrival trunks (layStraight).
+	Tweak bool `json:"tweak,omitempty"`
+	// Early lets a line that steps off its departure trunk lead its arrival
+	// bus (layJoined).
+	Early bool `json:"early,omitempty"`
+	// Drops takes a line that can drop straight off its buses in any view,
+	// not only in a focus view (layDrops). Bent are the lines kept on their
+	// buses anyway, since they did not stand straight; only Drops sets any.
+	Drops bool         `json:"drops,omitempty"`
+	Bent  map[int]bool `json:"bent,omitempty"`
+}
+
+// lay draws every request in the modes o turns on: with shared arrival
+// buses where o.Shared allows them, and with each line between modules that
+// use each other on buses of its own pair where o.Apart says so.
+func (l *layout) lay(reqs []wireReq, o layOpts) routing {
+	shared := o.Shared
 	tweaked, joined := false, false
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
@@ -602,7 +630,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		ak.key += "|" + r.kind
 		// A line between two modules that use each other reads both ways,
 		// so apart keeps it off the buses of other pairs' lines (rule 18).
-		if apart && r.kind == kindMutual {
+		if o.Apart && r.kind == kindMutual {
 			dk.key += "|" + place(r.to)
 			ak.key += "|" + place(r.from)
 		}
@@ -718,7 +746,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	drops := func(i int) bool {
 		f, t := reqs[i].from, reqs[i].to
 		_, hub := hubs[t.node]
-		return (l.ring && !bent[i] || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+		return (l.ring && !o.Bent[i] || o.Drops && !o.Bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
 	}
 	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
 	// A hub, a box hubUsers or more places use, still takes its lines as
@@ -882,7 +910,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	// where they can, and join on the track.
 	offChain := map[int]bool{}
 	for _, b := range buses {
-		if !early || !b.arrive || b.lead >= len(reqs) || chainOf[b.lead] < 0 || plans[b.lead].dep >= 0 {
+		if !o.Early || !b.arrive || b.lead >= len(reqs) || chainOf[b.lead] < 0 || plans[b.lead].dep >= 0 {
 			continue
 		}
 		c := chainOf[b.lead]
@@ -920,7 +948,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			bx, ok := l.pass[[2]int{chainOf[b.lead], r}]
 			ox, mine := l.pass[[2]int{chainOf[m], r}]
 			t := reqs[m].to
-			p.late = tweak && ok && mine && (bx < t.lo && ox > t.hi || bx > t.hi && ox < t.lo)
+			p.late = o.Tweak && ok && mine && (bx < t.lo && ox > t.hi || bx > t.hi && ox < t.lo)
 			tweaked = tweaked || p.late
 		}
 	}
@@ -1052,7 +1080,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				// A stub with no trunk below it stands over a line of its
 				// own that leads an arrival trunk down its chain, so the
 				// stub runs straight on into that trunk.
-				if tweak && i == len(reqs) && buses[b].deep == 0 {
+				if o.Tweak && i == len(reqs) && buses[b].deep == 0 {
 					for _, m := range sl.is {
 						if a := plans[m].arr; a < 0 || buses[a].lead != m {
 							continue
