@@ -353,7 +353,7 @@ func plural(n int, noun string) string {
 // in, against the view's own range, and lists the views past their own
 // warning point. It never fails lint.
 func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals) {
-	fmt.Fprintf(w, "lint: elements: %d in %s, against %d..%d; %s past %d%% of their own range. A view counts its boxes and chips, lines, words at rest and badges; its range runs from its skeleton, the shapes with only the primary flow's lines and numbers, to every line it could draw between its places, drawn apart, each with a word, with the flow's numbers and step words kept, so badges can take a view past 100%%. It never fails lint\n", t.Count, plural(len(views), "view"), t.Min, t.Max, plural(len(t.Over), "view"), screen.WarnShare)
+	fmt.Fprintf(w, "lint: elements: %d in %s, against %d..%d; %s past %d%% of their own range. A view counts its boxes and chips, the straight stretches of its ink (a bundle's trunk once, each bend one more), its words at rest and its badges; its range runs from its skeleton, the shapes with the primary flow's lines as one straight stretch each and its numbers, to every line it could draw between its places drawn apart with the stretches rule B1 allows it and a word. It never fails lint\n", t.Count, plural(len(views), "view"), t.Min, t.Max, plural(len(t.Over), "view"), screen.WarnShare)
 	shown := 0
 	for _, v := range views {
 		el := v.Elements
@@ -371,7 +371,7 @@ func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals)
 
 // elementsLine is one view's elements, its range and where it stands.
 func elementsLine(el screen.Elements) string {
-	parts := fmt.Sprintf("%s, %s, %s, %s", plural(el.Shapes, "shape"), plural(el.Lines, "line"), plural(el.Words, "word"), plural(el.Badges, "badge"))
+	parts := fmt.Sprintf("%s, %s (%s), %s, %s", plural(el.Shapes, "shape"), plural(el.Ink, "run"), plural(el.Bends, "bend"), plural(el.Words, "word"), plural(el.Badges, "badge"))
 	if el.Percent == nil {
 		return fmt.Sprintf("%d, its skeleton and its every line one number: %s", el.Count, parts)
 	}

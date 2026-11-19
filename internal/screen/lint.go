@@ -182,8 +182,10 @@ type ViewLint struct {
 	View     string   `json:"view"`
 	Breaches []Breach `json:"breaches"`
 	Totals   Totals   `json:"totals"`
-	// Elements is a diagnostic lint reports and never gates on.
+	// Elements is a diagnostic lint reports and never gates on, read from
+	// the ink lintView measures.
 	Elements Elements `json:"elements"`
+	ink      inkMeasure
 }
 
 // The thresholds of the criteria. They are this file's own constants, as
@@ -320,7 +322,7 @@ func Lint(m Model, only string) ([]ViewLint, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", v.name, err)
 		}
-		got.Elements = elementsOf(v.d)
+		got.Elements = elementsOf(v.d, got.ink)
 		out = append(out, got)
 	}
 	return out, nil
@@ -359,14 +361,17 @@ func lintView(v view) (ViewLint, error) {
 	for _, w := range t.Ways {
 		vl.Totals.Doglegs += doglegs(w.pts)
 	}
-	for _, ln := range l.lines() {
+	lines := l.lines()
+	for _, ln := range lines {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + vl.Totals.ExcessTurns + stepCrossings*vl.Totals.Steps
 	vl.Totals.Height = v.d.Height
 	vl.Totals.AgainstAxis, vl.Totals.AgainstAxisInk = againstAxis(v.d)
 	vl.Totals.FlowMonotone = vl.Totals.Criteria["O4"]
-	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
+	stretches := inkStretches(s)
+	vl.ink = measureInk(stretches, lines)
+	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(stretches)
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.TwoLaneOff, vl.Totals.OppositeShared = twoLaneOff(s), oppositeShared(s)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
