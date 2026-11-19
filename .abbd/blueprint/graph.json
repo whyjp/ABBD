@@ -22470,7 +22470,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -23968,7 +23967,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -25404,7 +25403,15 @@
                 "Code": true
               },
               {
-                "Text": ")을 읽어 경로와 그림이 어긋나지 않는다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
+                "Text": ")을 읽어 경로와 그림이 어긋나지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestInferredLeadsTurnOff",
+                "Code": true
+              },
+              {
+                "Text": "는 저장된 흐름이 없는 self 픽스처에서 이 값을 끄면 어느 뷰도 리드를 그리지 않음을 지킨다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
                 "Code": false
               },
               {
