@@ -120,14 +120,20 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	} else {
 		groups = d.folders(t)
 	}
-	var outside []string
+	var outside, libraries []string
 	for _, b := range d.Boxes {
-		if !coloured(b) {
+		switch {
+		case b.Kind == string(model.External):
+			libraries = append(libraries, b.ID)
+		case !coloured(b):
 			outside = append(outside, b.ID)
 		}
 	}
-	if len(outside) >= 1 && len(outside) < len(d.Boxes) {
+	if len(outside) >= 1 && len(outside)+len(libraries) < len(d.Boxes) {
 		groups = append(groups, group{title: "외부 계약", ids: outside})
+	}
+	if len(libraries) >= 2 && len(outside)+len(libraries) < len(d.Boxes) {
+		groups = append(groups, group{title: "외부 라이브러리", ids: libraries})
 	}
 	n := 0
 	for _, g := range groups {
@@ -264,9 +270,12 @@ func (d *Drawing) folders(t tree) []group {
 		}
 		at[dir] = append(at[dir], b.ID)
 	}
+	// A library chip is no box of the product, so a folder that holds
+	// every box but the libraries holds them all.
+	own := len(d.Boxes) - countLibraries(d.Boxes)
 	var out []group
 	for _, k := range keys {
-		if n := len(at[k]); n >= 2 && n < len(d.Boxes) {
+		if n := len(at[k]); n >= 2 && n < own {
 			out = append(out, group{title: k + "/", ids: at[k]})
 		}
 	}
@@ -531,4 +540,15 @@ func (d *Drawing) onBadge(area box) bool {
 		}
 	}
 	return false
+}
+
+// countLibraries is how many of boxes are external library chips.
+func countLibraries(boxes []Box) int {
+	n := 0
+	for _, b := range boxes {
+		if b.Kind == string(model.External) {
+			n++
+		}
+	}
+	return n
 }
