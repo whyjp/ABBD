@@ -23966,7 +23966,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-sonnet-5.5",
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -25387,7 +25387,7 @@
                 "Code": true
               },
               {
-                "Text": "이면 이 추정을 하지 않아 저장된 흐름과 주 흐름만 번호를 받고, ",
+                "Text": "이면 이 추정을 하지 않아 주 흐름과 저장된 흐름만 번호를 받고, ",
                 "Code": false
               },
               {
