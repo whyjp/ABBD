@@ -22192,7 +22192,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 10
       },
@@ -23658,7 +23657,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -27231,7 +27230,7 @@
                 "Code": true
               },
               {
-                "Text": "). 그래서 그런 옮김이 없는 그림은 그대로다. ",
+                "Text": "). 점선 여부별로 센 갈래 수도 늘리지 않는다. 줄기로 드는 평평한 구간이 첫 줄기에서 나오는 구간이기도 해서, 앞 단계가 맞춘 갈래를 되돌리지 않기 위해서다. 그래서 그런 옮김이 없는 그림은 그대로다. ",
                 "Code": false
               },
               {
