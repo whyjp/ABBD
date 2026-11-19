@@ -2239,6 +2239,7 @@
         "internal/screen/rank.go",
         "internal/screen/roadindex.go",
         "internal/screen/route.go",
+        "internal/screen/router.go",
         "internal/screen/screen.go",
         "internal/screen/site.go",
         "internal/screen/stack.go",
@@ -26953,7 +26954,175 @@
                 "Code": true
               },
               {
-                "Text": "의 단계 메서드가 차례로 한다: 계획, 체인과 레인, 버스와 이끄는 선, 슬롯 배치, 행 통과, 내려서기, 트랙 배정, 간격 크기, 그리기.",
+                "Text": "의 단계 메서드가 차례로 한다: 계획, 체인과 레인, 버스와 이끄는 선, 슬롯 배치, 행 통과, 내려서기, 트랙 배정, 간격 크기, 그리기. 어느 방식으로 놓을지는 ",
+                "Code": false
+              },
+              {
+                "Text": "router",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "router.go",
+                "Code": true
+              },
+              {
+                "Text": ")가 정한다. 상태(레이아웃과 ",
+                "Code": false
+              },
+              {
+                "Text": "layOpts",
+                "Code": true
+              },
+              {
+                "Text": ")에서 다른 상태로 가는 액션(",
+                "Code": false
+              },
+              {
+                "Text": "apart",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "share",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "drops",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "bend",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "tweak",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "early",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "straighten",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "hold",
+                "Code": true
+              },
+              {
+                "Text": ")마다 복사본 위에 놓아 그 그림을 재므로 레이아웃을 되돌리는 일이 없고, 정책(",
+                "Code": false
+              },
+              {
+                "Text": "policy",
+                "Code": true
+              },
+              {
+                "Text": ")이 액션을 부르고 잰 값을 읽어 하나를 남긴다. 기본 정책 ",
+                "Code": false
+              },
+              {
+                "Text": "builtin",
+                "Code": true
+              },
+              {
+                "Text": "은 ",
+                "Code": false
+              },
+              {
+                "Text": "choices",
+                "Code": true
+              },
+              {
+                "Text": " 표의 순서와 판정 그대로 고르며, 그림마다 그 상태에 이른 액션 경로를 지녀 ",
+                "Code": false
+              },
+              {
+                "Text": "replay",
+                "Code": true
+              },
+              {
+                "Text": "가 같은 그림을 다시 그린다. ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": "의 남긴 그림 다시 그리기(",
+                "Code": false
+              },
+              {
+                "Text": "counted",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "roads",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "apart",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "through",
+                "Code": true
+              },
+              {
+                "Text": ")도 같은 모양의 ",
+                "Code": false
+              },
+              {
+                "Text": "redraw",
+                "Code": true
+              },
+              {
+                "Text": " 목록이다.",
                 "Code": false
               }
             ]
@@ -26995,15 +27164,23 @@
                 "Code": true
               },
               {
-                "Text": "가 그 합류가 아무 독자도 속이지 않는다고 할 때는 예외다. 그때는 트랙이 줄기로 이어지고 다른 선들을 위해 비아의 x를 지킨다. 선이 이끄는 도착 줄기는 그 선의 출발 줄기가 끝난 행을 지날 수 있으므로, 간격 가운데로 휘지 않고 앞장선 선의 체인을 따라 계속 내려간다. 줄기 없는 스텁이 도착 줄기를 이끄는 구성원 위에 설 수 있거나, 구성원 자신의 체인이 버스가 닿는 상자의 먼 쪽을 지날 때, ",
+                "Text": "가 그 합류가 아무 독자도 속이지 않는다고 할 때는 예외다. 그때는 트랙이 줄기로 이어지고 다른 선들을 위해 비아의 x를 지킨다. 선이 이끄는 도착 줄기는 그 선의 출발 줄기가 끝난 행을 지날 수 있으므로, 간격 가운데로 휘지 않고 앞장선 선의 체인을 따라 계속 내려간다. 줄기 없는 스텁이 도착 줄기를 이끄는 구성원 위에 설 수 있거나, 구성원 자신의 체인이 버스가 닿는 상자의 먼 쪽을 지날 때, 라우터의 ",
                 "Code": false
               },
               {
-                "Text": "layStraight",
+                "Text": "tweak",
                 "Code": true
               },
               {
-                "Text": "는 뷰를 두 방식으로 놓는다. 스텁을 그 선 위에 세우고 먼 구성원이 자기 트랙에서 버스에 합류하게 한 뒤, ",
+                "Text": " 선택(",
+                "Code": false
+              },
+              {
+                "Text": "router.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 뷰를 두 방식으로 놓는다. 스텁을 그 선 위에 세우고 먼 구성원이 자기 트랙에서 버스에 합류하게 한 뒤, ",
                 "Code": false
               },
               {
@@ -27189,11 +27366,11 @@
                 "Code": false
               },
               {
-                "Text": "layJoined",
+                "Text": "early",
                 "Code": true
               },
               {
-                "Text": "는 ",
+                "Text": " 선택은 ",
                 "Code": false
               },
               {
