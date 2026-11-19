@@ -1392,7 +1392,8 @@
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd",
@@ -2201,7 +2202,8 @@
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 최신인지 알려 주며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -2210,6 +2212,7 @@
         "internal/screen/chosen.go",
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
+        "internal/screen/elements.go",
         "internal/screen/entries.go",
         "internal/screen/figure.go",
         "internal/screen/flow.go",
@@ -6230,7 +6233,8 @@
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 34,
@@ -8400,7 +8404,71 @@
                 "Code": true
               },
               {
-                "Text": " 줄로 알린다. 이 줄은 권고일 뿐 관문을 실패시키지 않는다. project.yaml이 ",
+                "Text": " 줄로 알린다. 이 줄은 권고일 뿐 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
+                "Code": false
+              },
+              {
+                "Text": "elements:",
+                "Code": true
+              },
+              {
+                "Text": " 줄(",
+                "Code": false
+              },
+              {
+                "Text": "elementsLine",
+                "Code": true
+              },
+              {
+                "Text": ")로 요소 수와 그 뷰 자신의 범위를 알리고, ",
+                "Code": false
+              },
+              {
+                "Text": "lint: elements:",
+                "Code": true
+              },
+              {
+                "Text": " 줄(",
+                "Code": false
+              },
+              {
+                "Text": "printElements",
+                "Code": true
+              },
+              {
+                "Text": ")은 모든 뷰의 합과 경고점을 넘은 뷰를 열 개까지 나열하며, ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": "은 같은 값을 ",
+                "Code": false
+              },
+              {
+                "Text": "views[].elements",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "totals.elements",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "lintTotals",
+                "Code": true
+              },
+              {
+                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다. project.yaml이 ",
                 "Code": false
               },
               {
@@ -22240,7 +22308,8 @@
       },
       "Responsibility": {
         "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 최신인지 알려 주며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -30933,6 +31002,115 @@
             "Parts": [
               {
                 "Text": "린트 (5)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "elements.go",
+                "Code": true
+              },
+              {
+                "Text": "는 뷰마다 읽는 이가 마우스를 올리기 전의 그림에서 만나는 요소 수를 센다(",
+                "Code": false
+              },
+              {
+                "Text": "Elements",
+                "Code": true
+              },
+              {
+                "Text": "). 도형은 상자와 칩이며, 접힌 줄의 \"+N\" 칩은 한 번 센다. 선은 읽는 이가 따라가는 선마다 하나이고, 잉크 조각이 몇이든 하나로 센다. 말은 선에 붙은 라벨과 주 흐름 홉 곁의 낱말이다. 배지는 묶음의 ×N, 상자의 +N 알약, 주 흐름의 번호와 머무름 알약이다. 모든 뷰에 같은 수 하나를 대면 작은 뷰와 큰 뷰를 잘못 재므로, 수는 그 뷰 자신의 범위에 대어 읽는다. 최솟값은 뼈대, 곧 도형과 주 흐름이 타는 선과 그 번호뿐이다. 최댓값은 그 뷰의 장소 사이에 그릴 수 있는 선을 모두 따로 그리고 저마다 말을 단 그림이다. 그릴 수 있는 선은 장소 짝과 관계 종류마다 하나이고, ",
+                "Code": false
+              },
+              {
+                "Text": "overview_cut",
+                "Code": true
+              },
+              {
+                "Text": "이 상자에 센 선도 든다. 주 흐름의 번호, 머무름 알약, 단계 낱말은 그려진 그대로 최댓값에도 들므로, 모든 선을 그리고 저마다 말을 단 뷰에 ×N과 +N이 붙으면 위치가 100%를 넘는다. 한 짝으로 올라온 저장된 관계들은 한 번 센다. 범례 카드, 구역 이름, 상자의 종류 줄, 화살촉, 갈림 점, 출처 점은 부분이나 관계의 이름이 아니므로 세지 않는다. 선을 요청마다 하나로 세므로 묶음으로 합쳐도 선의 수는 줄지 않는다. 수는 묶음이 없애는 말만큼 줄고, 붙는 ×N 하나만큼 는다. 위치는 올림한 백분율이라 경고점을 넘은 뷰가 75%로 읽히지 않는다. 잘린 개요가 아닌 뷰는 그릴 수 있는 선을 모두 그리므로, 위치는 말과 배지로만 오른다. 위치는 ",
+                "Code": false
+              },
+              {
+                "Text": "(수 - 최솟값) / (최댓값 - 최솟값)",
+                "Code": true
+              },
+              {
+                "Text": "이고, 범위의 ",
+                "Code": false
+              },
+              {
+                "Text": "WarnShare",
+                "Code": true
+              },
+              {
+                "Text": "(75%)를 넘은 뷰, 곧 ",
+                "Code": false
+              },
+              {
+                "Text": "100×(수 - 최솟값)",
+                "Code": true
+              },
+              {
+                "Text": "이 ",
+                "Code": false
+              },
+              {
+                "Text": "75×(최댓값 - 최솟값)",
+                "Code": true
+              },
+              {
+                "Text": "보다 큰 뷰를 보고한다. 이 몫은 정한 값이며 잰 값이 아니다. ",
+                "Code": false
+              },
+              {
+                "Text": "Lint",
+                "Code": true
+              },
+              {
+                "Text": "가 ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": " 다음에 이 값을 붙이므로 ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": "는 그림을 고를 때 이 값을 읽지 않는다. lint는 이 값으로 실패하지 않으며, 상한도 부채 기록도 두지 않는다. 글 출력은 뷰마다 이 값을 한 줄로 내고 경고점을 넘은 뷰를 따로 나열하며, ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": "은 ",
+                "Code": false
+              },
+              {
+                "Text": "views[].elements",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "totals.elements",
+                "Code": true
+              },
+              {
+                "Text": "를 준다. 최솟값과 최댓값이 같은 뷰에는 위치와 경고점이 없다.",
                 "Code": false
               }
             ]
