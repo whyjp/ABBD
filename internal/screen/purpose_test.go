@@ -163,11 +163,8 @@ func TestTheOverviewOpensWithTheProject(t *testing.T) {
 func TestAnUnnamedProjectCarriesNoName(t *testing.T) {
 	ps := pages(t, Build(Input{Units: ripgrep()}))
 	idx := ps["index.html"]
-	if strings.Contains(idx, "ABBD") && !strings.Contains(idx, "<code>purpose</code>") {
-		t.Errorf("an unnamed project's overview should not say ABBD")
-	}
 	for name, p := range ps {
-		if strings.Contains(p, " 블루프린트</title>") && strings.Contains(p, "ABBD 블루프린트") {
+		if strings.Contains(p, "ABBD") {
 			t.Errorf("%s names ABBD in a project that has no name", name)
 		}
 	}
