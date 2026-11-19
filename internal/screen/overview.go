@@ -208,6 +208,9 @@ type Wire struct {
 	// Label is the word that says how the line's relations arise, set
 	// along its own ink (rule 25).
 	Label *Label `json:",omitempty"`
+	// from is where the word labels sets comes from: the overview record's
+	// chosen line, a relation's phrase, or the via its relations name.
+	from wordFrom
 	// Hue is the palette key the line is drawn in and Head the marker at
 	// its end, its shape for its kind and its colour (rule 11).
 	Hue  string `json:"-"`

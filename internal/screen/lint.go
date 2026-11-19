@@ -190,7 +190,10 @@ type ViewLint struct {
 	// Elements is a diagnostic lint reports and never gates on, read from
 	// the ink lintView measures.
 	Elements Elements `json:"elements"`
-	ink      inkMeasure
+	// Words is how many of the view's routes say a word at rest and where
+	// each word comes from, a diagnostic lint never gates on (wordfill.go).
+	Words WordFill `json:"words"`
+	ink   inkMeasure
 }
 
 // The thresholds of the criteria. They are this file's own constants, as
@@ -404,6 +407,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	vl.Totals.Combs, vl.Totals.Counts, vl.Totals.Dots = combs(t.Ways), len(s.counts), len(s.junctions)
 	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
+	vl.Words = wordFill(v.d)
 	if n := len(v.d.Boxes); n > 0 {
 		vl.Totals.Density = 10 * len(v.d.ways) / n
 	}
