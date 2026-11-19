@@ -60,6 +60,9 @@ type Drawing struct {
 	// fanout is how many of its lines join a user to a provider of a
 	// contract with fanoutProviders or more providers (overview.fanout).
 	fanout int
+	// Matrix is the table a dense cyclic full view adds below its drawing
+	// (matrix.go), nil for any other view.
+	Matrix *Matrix `json:"-"`
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for
