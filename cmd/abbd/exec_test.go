@@ -111,7 +111,7 @@ func TestLintCountsTheFanoutOfAContractWithThreeProviders(t *testing.T) {
  {"from":"a","to":"api","kind":"provides","via":"trait"},{"from":"b","to":"api","kind":"provides","via":"trait"},{"from":"c","to":"api","kind":"provides","via":"trait"}]}`)
 	p.setup(0, "synced", "--", exe)
 	code, out := lintAt(t, p.root)
-	contains(t, out, "lint: fanout: 3 lines join each user of a contract with three or more providers to every provider (overview 3)")
+	contains(t, out, "lint: fanout: lines that join each user of a contract with three or more providers to every provider, by view: overview 3;")
 	if code != exitOK {
 		t.Errorf("the fanout count failed lint, exit %d:\n%s", code, out)
 	}

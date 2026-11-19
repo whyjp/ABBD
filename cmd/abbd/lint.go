@@ -231,7 +231,7 @@ func printLint(e env, r lintReport) {
 				by = append(by, fmt.Sprintf("%s %d", v.View, v.Totals.Fanout))
 			}
 		}
-		fmt.Fprintf(e.stdout, "lint: fanout: %s join each user of a contract with three or more providers to every provider (%s); a user of an extension point may name none of its implementers, so read these lines against the code\n", plural(r.Totals.Fanout, "line"), strings.Join(by, ", "))
+		fmt.Fprintf(e.stdout, "lint: fanout: lines that join each user of a contract with three or more providers to every provider, by view: %s; a user of an extension point may name none of its implementers, so read these lines against the code\n", strings.Join(by, ", "))
 	}
 	printProse(e.stdout, r.Prose, r.Language)
 	if len(r.Undescribed) > 0 {

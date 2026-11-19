@@ -35,10 +35,10 @@ func fanoutOf(t *testing.T, units []model.Unit) int {
 	return views[0].Totals.Fanout
 }
 
-// An extension point its declaring module holds draws the dispatcher's
-// line and each plug-in's to that module, never from the dispatcher to a
-// plug-in it does not name.
-func TestAnExtensionPointsUserEndsAtItsDeclaringModule(t *testing.T) {
+// An extension point its declaring module holds is no top-level contract,
+// so the pairing never meets the dispatcher with a plug-in it does not
+// name; the dispatcher's and each plug-in's relations lift to that module.
+func TestAnExtensionPointItsModuleHoldsPairsNoUserWithAnImplementer(t *testing.T) {
 	t.Parallel()
 	units := pluginHost(true)
 	o := planOverview(units, "", nil, tactic{}, nil, nil, nil)
