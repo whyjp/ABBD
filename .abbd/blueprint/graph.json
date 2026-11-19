@@ -23337,7 +23337,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                  "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                   "Code": false
                 },
                 {
@@ -23966,7 +23966,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -24587,7 +24587,7 @@
                 "Code": true
               },
               {
-                "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                 "Code": false
               },
               {
