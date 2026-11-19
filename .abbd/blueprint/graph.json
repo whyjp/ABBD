@@ -3349,6 +3349,14 @@
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd relate\""
     },
     {
+      "From": "FEAT-0002",
+      "To": "IF-0034",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd libs\""
+    },
+    {
       "From": "FEAT-0003",
       "To": "FEAT-0002",
       "Kind": "depends_on",
@@ -5947,7 +5955,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 26,
+        "Uses": 27,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -6129,7 +6137,8 @@
             "brief",
             "extract",
             "overview",
-            "relate"
+            "relate",
+            "libs"
           ]
         }
       ],
@@ -8804,7 +8813,31 @@
                 "Code": true
               },
               {
-                "Text": ")는 두 스킬과 읽기 에이전트가 실제 CLI 명령과 이 보고의 기준을 말하는지 고정한다.",
+                "Text": ")는 두 스킬과 읽기 에이전트가 실제 CLI 명령과 이 보고의 기준을 말하는지 고정한다. 두 지침이 표준 라이브러리와 시스템만 빼고, 서드파티 라이브러리는 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd libs",
+                "Code": true
+              },
+              {
+                "Text": "가 읽는 ",
+                "Code": false
+              },
+              {
+                "Text": "EXT",
+                "Code": true
+              },
+              {
+                "Text": " 하나와 모듈마다 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " 하나로 그리고 reader가 라이브러리를 직접 기록하지 않는다고 말하는지도 고정한다.",
                 "Code": false
               }
             ]
