@@ -78,6 +78,26 @@ func readOverview(in Input) chosen {
 	return c
 }
 
+// scopeOf is the scope of each unit the overview record marks as a sample, an
+// artifact or a tool. A mark that is stale, names a unit that is gone or
+// names no known scope counts as no mark.
+func scopeOf(in Input) map[model.ID]string {
+	if !in.Overview.Known {
+		return nil
+	}
+	var out map[model.ID]string
+	for _, p := range in.Overview.Scopes {
+		if !slices.Contains(model.ScopeNames, p.Claim.Scope) || len(p.Why(in.Units)) > 0 {
+			continue
+		}
+		if out == nil {
+			out = map[model.ID]string{}
+		}
+		out[p.Claim.Unit] = p.Claim.Scope
+	}
+	return out
+}
+
 func idStrings(us []model.ID) []string {
 	out := make([]string, len(us))
 	for i, u := range us {
