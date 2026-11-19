@@ -20,9 +20,10 @@ var systemNames = map[string]bool{
 var systemDirs = []string{"include/c++"}
 
 // libraryDirs are path segments where a package manager keeps third-party
-// libraries' code. A unit anchored there draws a library by its code; a
-// library is one external unit the manifest declares instead.
-var libraryDirs = []string{"site-packages", "node_modules", ".cargo/registry"}
+// libraries' code, each with whether abbd libs reads the manifests of its
+// ecosystem. A unit anchored there draws a library by its code; a library
+// is one external unit the manifest declares instead.
+var libraryDirs = map[string]bool{"node_modules": true, ".cargo/registry": true, "site-packages": false}
 
 // systemVars are environment variables the operating system, the shell or the
 // toolchain defines, by exact name, and systemVarPrefixes by prefix.
@@ -91,8 +92,14 @@ func libraryLook(u model.Unit) string {
 		return ""
 	}
 	for _, a := range u.Anchors {
-		if p := strings.ToLower(strings.ReplaceAll(a.Path, "\\", "/")); under(p, libraryDirs) {
-			return "its anchor " + a.Path + " lies in a library's code a package manager keeps"
+		p := strings.ToLower(strings.ReplaceAll(a.Path, "\\", "/"))
+		for d, read := range libraryDirs {
+			if under(p, []string{d}) {
+				if !read {
+					return "its anchor " + a.Path + " lies in a library's code a package manager keeps, whose manifests abbd libs does not read yet, so name the library in one line of the module's text"
+				}
+				return "its anchor " + a.Path + " lies in a library's code a package manager keeps, so register abbd libs, which draws it from the manifest"
+			}
 		}
 	}
 	return ""
@@ -118,7 +125,7 @@ func statusSystem(w io.Writer, units []model.Unit) {
 		if why := systemLook(u); why != "" {
 			fmt.Fprintf(w, "system: %s %q is not the project's own, so no diagram draws it: %s; leave it out, and say in one line of the module's text that the module uses it\n", u.ID, u.Name.Value, why)
 		} else if why := libraryLook(u); why != "" {
-			fmt.Fprintf(w, "library: %s %q draws a third-party library by its code: %s; the diagram draws a library as one external unit its manifest declares, with one line from each module that uses it, so leave this unit out and register abbd libs\n", u.ID, u.Name.Value, why)
+			fmt.Fprintf(w, "library: %s %q draws a third-party library by its code: %s; the diagram draws a library as one external unit its manifest declares, with one line from each module that uses it, so leave this unit out\n", u.ID, u.Name.Value, why)
 		}
 	}
 }

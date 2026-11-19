@@ -222,3 +222,62 @@ func TestLibrariesLeaveAnExtractionWithoutLibrariesAlone(t *testing.T) {
 		t.Errorf("an extraction without libraries changed: %+v", got)
 	}
 }
+
+// A Rust path names its crate by its first segment only, outside strings
+// and comments, and crate, self and super name the crate's own code.
+func TestRustImportsReadOnlyThePathsFirstSegment(t *testing.T) {
+	t.Parallel()
+	for line, want := range map[string][]string{
+		"use std::time::Instant;":             {"std"},
+		"let c = axum::http::StatusCode::OK;": {"axum"},
+		"crate::config::load();":              nil,
+		`println!("see tokio::spawn");`:       nil,
+		"x(); // uses log::info":              nil,
+		"#[tokio::main]":                      {"tokio"},
+		"extern crate serde;":                 {"serde"},
+	} {
+		var got []string
+		for _, im := range rustImports([]byte(line)) {
+			got = append(got, im.spec)
+		}
+		if !slices.Equal(got, want) {
+			t.Errorf("%q imports %q, want %q", line, got, want)
+		}
+	}
+}
+
+// A package.json written on one line still declares its libraries, and an
+// import inside a comment or a string is none.
+func TestNpmReadsAOneLineManifestAndOnlyRealImports(t *testing.T) {
+	t.Parallel()
+	ds := npmDeclares([]byte(`{"name":"w","dependencies":{"react":"18","lodash":"4"}}`), localNames{modules: map[string]bool{}})
+	if len(ds) != 2 || ds[0].line != 1 {
+		t.Errorf("a one-line package.json declares %+v, want react and lodash on line 1", ds)
+	}
+	var got []string
+	for _, im := range npmImports([]byte("/* import x from 'a' */\nconst s = \"copy from 'b'\";\nimport c from 'c';\n} from 'd';\n")) {
+		got = append(got, im.spec)
+	}
+	if !slices.Equal(got, []string{"c", "d"}) {
+		t.Errorf("imports %q, want c and d", got)
+	}
+}
+
+// A package named build or external is the project's own code; only a
+// target directory beside a Cargo.toml is build output.
+func TestLibrariesReadAPackageNamedLikeBuildOutput(t *testing.T) {
+	t.Parallel()
+	root := writeTree(t, map[string]string{
+		"go.mod":               "module example.com/app\n\nrequire github.com/spf13/cobra v1.8.0\n",
+		"internal/build/b.go":  "package build\n\nimport \"github.com/spf13/cobra\"\n",
+		"internal/target/t.go": "package target\n\nimport \"github.com/spf13/cobra\"\n",
+	})
+	doc := extract.Doc{Units: []extract.DocUnit{libMod("build", "internal/build"), libMod("target", "internal/target")}}
+	got, _, err := Libraries(root, doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if l := libLines(got); len(l) != 2 {
+		t.Errorf("lines %q, want one from each package", l)
+	}
+}

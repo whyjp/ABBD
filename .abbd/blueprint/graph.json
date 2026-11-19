@@ -8148,7 +8148,31 @@
                 "Code": true
               },
               {
-                "Text": " 줄로 알려 매니페스트가 선언한 ",
+                "Text": " 줄로 알린다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd libs",
+                "Code": true
+              },
+              {
+                "Text": "가 읽는 생태계(",
+                "Code": false
+              },
+              {
+                "Text": "node_modules",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": ".cargo/registry",
+                "Code": true
+              },
+              {
+                "Text": ")면 등록해 매니페스트가 선언한 ",
                 "Code": false
               },
               {
@@ -8156,7 +8180,15 @@
                 "Code": true
               },
               {
-                "Text": " 하나로 바꾸라고 말한다. ",
+                "Text": " 하나로 그리라고 하고, 아직 읽지 않는 ",
+                "Code": false
+              },
+              {
+                "Text": "site-packages",
+                "Code": true
+              },
+              {
+                "Text": "면 모듈 글 한 줄에 이름을 적으라고 한다. ",
                 "Code": false
               },
               {
@@ -13904,11 +13936,83 @@
                   "Code": false
                 },
                 {
+                  "Text": "Cargo.toml",
+                  "Code": true
+                },
+                {
+                  "Text": " 옆의 ",
+                  "Code": false
+                },
+                {
                   "Text": "target",
                   "Code": true
                 },
                 {
-                  "Text": ", 의존성과 빌드 산출물 디렉터리의 매니페스트와 코드, 테스트 코드는 읽지 않는다.",
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "node_modules",
+                  "Code": true
+                },
+                {
+                  "Text": "나 ",
+                  "Code": false
+                },
+                {
+                  "Text": "vendor",
+                  "Code": true
+                },
+                {
+                  "Text": " 같은 의존성 디렉터리의 매니페스트와 코드, 테스트 코드는 읽지 않고, 읽지 못한 디렉터리는 건너뛰며 note로 밝힌다. Rust는 문자열과 주석을 뺀 뒤 경로의 첫 마디만 crate 이름으로 읽고(",
+                  "Code": false
+                },
+                {
+                  "Text": "crate",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "self",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "super",
+                  "Code": true
+                },
+                {
+                  "Text": "는 뺀다), npm은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "import",
+                  "Code": true
+                },
+                {
+                  "Text": "·",
+                  "Code": false
+                },
+                {
+                  "Text": "export",
+                  "Code": true
+                },
+                {
+                  "Text": "·",
+                  "Code": false
+                },
+                {
+                  "Text": "require",
+                  "Code": true
+                },
+                {
+                  "Text": " 문맥의 지정자만 읽는다.",
                   "Code": false
                 }
               ]
@@ -15543,11 +15647,83 @@
                 "Code": false
               },
               {
+                "Text": "Cargo.toml",
+                "Code": true
+              },
+              {
+                "Text": " 옆의 ",
+                "Code": false
+              },
+              {
                 "Text": "target",
                 "Code": true
               },
               {
-                "Text": ", 의존성과 빌드 산출물 디렉터리의 매니페스트와 코드, 테스트 코드는 읽지 않는다.",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "node_modules",
+                "Code": true
+              },
+              {
+                "Text": "나 ",
+                "Code": false
+              },
+              {
+                "Text": "vendor",
+                "Code": true
+              },
+              {
+                "Text": " 같은 의존성 디렉터리의 매니페스트와 코드, 테스트 코드는 읽지 않고, 읽지 못한 디렉터리는 건너뛰며 note로 밝힌다. Rust는 문자열과 주석을 뺀 뒤 경로의 첫 마디만 crate 이름으로 읽고(",
+                "Code": false
+              },
+              {
+                "Text": "crate",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "self",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "super",
+                "Code": true
+              },
+              {
+                "Text": "는 뺀다), npm은 ",
+                "Code": false
+              },
+              {
+                "Text": "import",
+                "Code": true
+              },
+              {
+                "Text": "·",
+                "Code": false
+              },
+              {
+                "Text": "export",
+                "Code": true
+              },
+              {
+                "Text": "·",
+                "Code": false
+              },
+              {
+                "Text": "require",
+                "Code": true
+              },
+              {
+                "Text": " 문맥의 지정자만 읽는다.",
                 "Code": false
               }
             ]
