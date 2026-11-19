@@ -701,6 +701,19 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		}
 		cost = v.cost(ways)
 	}
+	// Then the branches of a stem that go one way across gather on one
+	// track, moved apart from the lines the other way that share theirs.
+	for n, cost := 0, v.cost(ways); n < roadMoves; n++ {
+		next, ok := r.gather(ways, v, d, cost)
+		if !ok {
+			break
+		}
+		ways = next
+		for i := range ways {
+			ways[i] = straight(ways[i])
+		}
+		cost = v.cost(ways)
+	}
 	ways = r.twoLanes(ways, v)
 	if roadsDrawn != nil {
 		roadsDrawn(r.ways, ways)
