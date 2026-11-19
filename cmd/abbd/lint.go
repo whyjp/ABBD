@@ -371,7 +371,7 @@ func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals)
 
 // elementsLine is one view's elements, its range and where it stands.
 func elementsLine(el screen.Elements) string {
-	parts := fmt.Sprintf("%s, %s (%s), %s, %s", plural(el.Shapes, "shape"), plural(el.Ink, "segment"), plural(el.Bends, "bend"), plural(el.Words, "word"), plural(el.Badges, "badge"))
+	parts := fmt.Sprintf("%s, %s (%s), %s, %s", plural(el.Shapes, "shape"), plural(el.Ink, "run"), plural(el.Bends, "bend"), plural(el.Words, "word"), plural(el.Badges, "badge"))
 	if el.Percent == nil {
 		return fmt.Sprintf("%d, its skeleton and its every line one number: %s", el.Count, parts)
 	}

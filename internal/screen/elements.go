@@ -20,8 +20,8 @@ import (
 // count is read against the view's own range. Min is its skeleton: its boxes
 // and chips with only the primary flow's lines, each one straight stretch,
 // and their numbers. Max is every line the view could draw between its
-// places drawn apart, each with as many stretches as rule B1 allows it and a
-// word. Percent is where the count stands between the two, and WarnAt the
+// places drawn apart, each with one run more than the turns rule B1 allows
+// it and a word. Percent is where the count stands between the two, and WarnAt the
 // count at WarnShare of the range, past which Over is set.
 type Elements struct {
 	// Shapes are the boxes and the chips drawn, a folded row's "+N" chip
