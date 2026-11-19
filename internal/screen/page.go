@@ -88,11 +88,13 @@ type Graph struct {
 	// for it, each with its word.
 	Zones []ZoneView   `json:"zones,omitempty"`
 	Lines []ChosenLine `json:"lines,omitempty"`
+	// Ambient are the boxes the overview's reader marked ambient.
+	Ambient []AmbientView `json:"ambient,omitempty"`
 }
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary, Zones: m.Zones, Lines: m.Lines}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary, Zones: m.Zones, Lines: m.Lines, Ambient: m.Ambient}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

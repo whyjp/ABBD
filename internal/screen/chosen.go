@@ -28,13 +28,22 @@ type ChosenLine struct {
 	Reasons   []string `json:"reasons,omitempty"`
 }
 
+// AmbientView is one ambient mark of the overview: the unit, how it is
+// ambient, and why it is STALE, if it is.
+type AmbientView struct {
+	Unit    string   `json:"unit"`
+	As      string   `json:"as"`
+	Reasons []string `json:"reasons,omitempty"`
+}
+
 // chosen is the stored overview as graph.json gives it, and the zone of
 // each unit a zone holds, itself or through a unit that holds it. It is
 // empty when there is no overview abbd can read.
 type chosen struct {
-	zones []ZoneView
-	lines []ChosenLine
-	zone  map[model.ID]string
+	zones   []ZoneView
+	lines   []ChosenLine
+	ambient []AmbientView
+	zone    map[model.ID]string
 }
 
 func readOverview(in Input) chosen {
@@ -71,6 +80,9 @@ func readOverview(in Input) chosen {
 		slices.Sort(cl.Vias)
 		cl.Kinds, cl.Vias = slices.Compact(cl.Kinds), slices.Compact(cl.Vias)
 		c.lines = append(c.lines, cl)
+	}
+	for i, a := range o.Ambient {
+		c.ambient = append(c.ambient, AmbientView{Unit: string(a.Claim.Unit), As: a.Claim.As, Reasons: reasons("ambient", i+1, a.Why(in.Units))})
 	}
 	for id, n := range model.Holders(store.ClaimsOf(o.Zones), in.Units) {
 		c.zone[id] = o.Zones[n-1].Claim.Name
