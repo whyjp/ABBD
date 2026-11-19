@@ -103,6 +103,9 @@ func TestManyLibrariesFoldIntoOneChip(t *testing.T) {
 	if got := libraryWires(m.Overview); !slices.Equal(got, want) {
 		t.Errorf("lines to the fold stand for %q, want %q", got, want)
 	}
+	if !slices.ContainsFunc(m.Overview.Wires, func(w Wire) bool { return strings.Contains(w.Title, "m1 → 외부 라이브러리 3개: 쓰는 라이브러리 a") }) {
+		t.Errorf("the line from m1 to the fold does not name the library it uses")
+	}
 	for _, r := range m.Units {
 		if r.ID == "EXT-0001" && !slices.Equal(r.UsedBy, []string{"m1", "m4"}) {
 			t.Errorf("the list says a is used by %q, want m1 and m4", r.UsedBy)

@@ -1147,7 +1147,11 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	}
 	for _, e := range o.relations {
 		if e.Kind == model.DependsOn && isModule(e.From) && slices.Contains(o.libraries, e.To) {
-			specs = append(specs, wireSpec{kind: kindDependsOn, title: fmt.Sprintf("%s → %s: 외부 라이브러리를 씁니다", o.name(e.From), o.name(e.To)), from: e.From, to: e.To, rels: o.rels[e.String()]})
+			title := fmt.Sprintf("%s → %s: 외부 라이브러리를 씁니다", o.name(e.From), o.name(e.To))
+			if e.To == libraryFold {
+				title = fmt.Sprintf("%s → %s: 쓰는 라이브러리 %s", o.name(e.From), o.name(e.To), strings.Join(o.reached(o.rels[e.String()]), ", "))
+			}
+			specs = append(specs, wireSpec{kind: kindDependsOn, title: title, from: e.From, to: e.To, rels: o.rels[e.String()]})
 		}
 	}
 
@@ -1433,6 +1437,17 @@ func (o *overview) foldLibraries(boxes int) {
 	o.libraries = []model.ID{libraryFold}
 	o.libUsers = map[model.ID]int{libraryFold: len(users)}
 	o.libNames = names
+}
+
+// reached names the units the stored relations reach, each once, in order.
+func (o *overview) reached(rels []string) []string {
+	var out []string
+	for _, r := range rels {
+		if e, err := model.ParseEdge(r); err == nil && !slices.Contains(out, o.name(e.To)) {
+			out = append(out, o.name(e.To))
+		}
+	}
+	return out
 }
 
 // usedBy says in one line how many boxes of the overview use a library.
