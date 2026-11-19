@@ -2201,7 +2201,7 @@
         "Stale": true
       },
       "Responsibility": {
-        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 청사진이 최신인지 알려 주며, 청사진 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
+        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 최신인지 알려 주며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
         "Badge": "inferred"
       },
       "Anchors": [
@@ -6771,7 +6771,7 @@
                 "Code": true
               },
               {
-                "Text": "가 일부만 거부되면 청사진을 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table, overview다. 읽기 동사는 extract, relate, explain, brief, path, impact, diff, review, evidence, status, lint다. ",
+                "Text": "가 일부만 거부되면 블루프린트를 다시 그린다. 쓰기 동사는 setup, sync, migrate, record relation·unit·parent·fact·evidence, retract, understand, forget, flow, stack, table, overview다. 읽기 동사는 extract, relate, explain, brief, path, impact, diff, review, evidence, status, lint다. ",
                 "Code": false
               },
               {
@@ -7318,7 +7318,7 @@
                 "Code": true
               },
               {
-                "Text": "): 어시스턴트에게 청사진을 먼저 묻고, sync하고, diff를 남기고, ",
+                "Text": "): 어시스턴트에게 블루프린트를 먼저 묻고, sync하고, diff를 남기고, ",
                 "Code": false
               },
               {
@@ -7348,7 +7348,7 @@
                 "Code": true
               },
               {
-                "Text": "): 트리 스냅숏과 함께 화면 입력을 읽어 청사진 파일을 쓰고, 입력과 렌더 해시를 상태에 남긴다. 유닛이 없으면 아무것도 하지 않는다.",
+                "Text": "): 트리 스냅숏과 함께 화면 입력을 읽어 블루프린트 파일을 쓰고, 입력과 렌더 해시를 상태에 남긴다. 유닛이 없으면 아무것도 하지 않는다.",
                 "Code": false
               }
             ]
@@ -8370,7 +8370,7 @@
                 "Code": true
               },
               {
-                "Text": "로 판정한다. 사람이 쓴 part는 건너뛴다. lint는 청사진이나 한 뷰의 그림을 부채 파일에 견준다. 모든 뷰를 볼 때는 설명 없는 상자와, 그린 관계에 살아 있는 문구가 없는 개요 줄(",
+                "Text": "로 판정한다. 사람이 쓴 part는 건너뛴다. lint는 블루프린트나 한 뷰의 그림을 부채 파일에 견준다. 모든 뷰를 볼 때는 설명 없는 상자와, 그린 관계에 살아 있는 문구가 없는 개요 줄(",
                 "Code": false
               },
               {
@@ -16191,7 +16191,7 @@
                 "Code": true
               },
               {
-                "Text": "와 청사진이 상태를 STALE이라 부를 수 있게 한다. ",
+                "Text": "와 블루프린트가 상태를 STALE이라 부를 수 있게 한다. ",
                 "Code": false
               },
               {
@@ -22233,7 +22233,7 @@
         "Stale": true
       },
       "Responsibility": {
-        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 청사진이 최신인지 알려 주며, 청사진 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
+        "Value": "저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 최신인지 알려 주며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다",
         "Badge": "inferred"
       },
       "Standing": {
