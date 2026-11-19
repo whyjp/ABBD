@@ -172,7 +172,7 @@ func (v roadView) fullCost(ways [][]pt) roadCost {
 
 // fullOpposed sums, over every pair of runs on one track of a route that
 // climbs and one of its style that does not, how far they run over each
-// other opposite ways.
+// other opposite ways or dotted differently.
 func (v roadView) fullOpposed(ways [][]pt) int {
 	n := 0
 	for i := range ways {
@@ -188,7 +188,7 @@ func (v roadView) fullOpposed(ways [][]pt) int {
 					}
 					v1, at1, lo1, hi1 := runOf(p, q)
 					v2, at2, lo2, hi2 := runOf(r, s)
-					if o := min(hi1, hi2) - max(lo1, lo2); v1 == v2 && at1 == at2 && o > 0 && heading(p, q) != heading(r, s) {
+					if o := min(hi1, hi2) - max(lo1, lo2); v1 == v2 && at1 == at2 && o > 0 && (heading(p, q) != heading(r, s) || v.plan[i] != v.plan[j]) {
 						n += o
 					}
 				}

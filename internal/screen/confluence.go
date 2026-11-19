@@ -1169,6 +1169,9 @@ func roads(ways [][]pt, style []string, reqs []wireReq, back []bool) []drawn {
 			}
 			p := placeOf(d.reqs[0])
 			if !slices.ContainsFunc(d.reqs, func(i int) bool { return placeOf(i) != p }) {
+				// A bus whose every line climbs keeps a net of its own:
+				// joined to its place's other bus, labels would say a word
+				// once for both and leave a climbing line no word at rest.
 				at[side] = fmt.Sprint(side, p, d.kind, d.back)
 			}
 		}

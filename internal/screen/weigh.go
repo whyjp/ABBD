@@ -90,8 +90,12 @@ type cost struct {
 
 // sharedOrApart says a drawing whose lines that climb share roads with the
 // others, of cost c, reads no worse than the one with them apart, of cost a,
-// on every total the gate holds a view to and on its crossings: sharing a
-// road is kept only where it costs a reader nothing the gate counts.
+// on every total the gate holds a view to, as judge reads the view before
+// its colours are painted, and on its crossings. Moving climbing lines onto
+// shared roads reroutes the other lines too, which can set two lines of
+// one way opposite on a track or off a two-lane road; this check, not the
+// road cost, keeps such a drawing out. A total read only after painting,
+// such as colour_switches, is not seen.
 func sharedOrApart(c, a cost) bool {
 	return len(c.gate) > 0 && len(c.gate) == len(a.gate) && noWorse(c.gate, a.gate) && c.crossed <= a.crossed
 }
@@ -209,9 +213,12 @@ func costOf(r routing, reqs []wireReq) cost {
 	}
 	arrive, back := 0, 0
 	for _, d := range r.drawn {
+		// A piece of road climbs where some line it carries does: on a
+		// shared road a climbing line still counts against rule 13.
+		climbs := d.back || slices.ContainsFunc(d.reqs, func(i int) bool { return i < len(r.back) && r.back[i] })
 		if !d.joins {
 			arrive++
-			if d.back {
+			if climbs {
 				back++
 			}
 		}
@@ -224,7 +231,7 @@ func costOf(r routing, reqs []wireReq) cost {
 			if run-span(pts[0], pts[len(pts)-1]) > detourLimit {
 				c.breaks++
 			}
-			if d.back {
+			if climbs {
 				c.climb += run
 			}
 		}

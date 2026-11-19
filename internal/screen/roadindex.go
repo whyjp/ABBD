@@ -125,10 +125,12 @@ func spansOf(legs []leg, style []string) []roadSpan {
 
 // opposed is how far, in px, the legs on one track of a route that runs
 // against the reading axis and of one of its style that does not run over
-// each other opposite ways: ink a reader takes to run one way, which
-// roadCost counts as a clash. Such routes share a road only where they run
-// the same way. Routes of two styles clash wherever they overlap
-// (besideCost).
+// each other opposite ways, or the one dotted and the other not, which
+// roadCost counts as a clash. Opposite ways, the shared ink reads as running
+// one way; of two dottings, the shared ink is drawn solid and the planned
+// line loses its dots there. Such routes share a road only where they run
+// the same way and are dotted alike. Routes of two styles clash wherever
+// they overlap (besideCost).
 func (v roadView) opposed(legs []leg, ways [][]pt) int {
 	if v.back == nil {
 		return 0
@@ -139,7 +141,7 @@ func (v roadView) opposed(legs []leg, ways [][]pt) int {
 			if !a.flat || !b.flat || v.back[a.route] == v.back[b.route] || v.style[a.route] != v.style[b.route] {
 				continue
 			}
-			if o := min(a.hi, b.hi) - max(a.lo, b.lo); o > 0 && headingOf(a, ways) != headingOf(b, ways) {
+			if o := min(a.hi, b.hi) - max(a.lo, b.lo); o > 0 && (headingOf(a, ways) != headingOf(b, ways) || v.plan[a.route] != v.plan[b.route]) {
 				n += o
 			}
 		}
