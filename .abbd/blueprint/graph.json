@@ -132,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,UsedBy,Zone},zones{name,reasons,units}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,Zone},zones{name,reasons,units}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -448,7 +448,7 @@
       "Parent": "MOD-0054",
       "Zone": "토폴로지 규칙",
       "Evidence": [
-        "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+        "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
     },
     {
@@ -2252,12 +2252,14 @@
         "internal/screen/levels.go",
         "internal/screen/lint.go",
         "internal/screen/marks.go",
+        "internal/screen/matrix.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
         "internal/screen/primary.go",
         "internal/screen/rank.go",
         "internal/screen/roadindex.go",
+        "internal/screen/roadwalk.go",
         "internal/screen/route.go",
         "internal/screen/router.go",
         "internal/screen/screen.go",
@@ -2265,11 +2267,13 @@
         "internal/screen/stack.go",
         "internal/screen/stages.go",
         "internal/screen/standing.go",
+        "internal/screen/symmetry.go",
         "internal/screen/table.go",
         "internal/screen/trace.go",
         "internal/screen/tree.go",
         "internal/screen/twolane.go",
         "internal/screen/weigh.go",
+        "internal/screen/wordfill.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
       ],
@@ -2463,11 +2467,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go InputsHash",
@@ -2507,11 +2513,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a diff can compare today's units with those committed at a base revision",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go UnitsAt"
@@ -5410,7 +5418,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+      "Quote": "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
     },
     {
       "From": "MOD-0054",
@@ -7634,7 +7642,23 @@
                 "Code": true
               },
               {
-                "Text": "으로 기록할 수 없다. 사용법 글이 rust의 ",
+                "Text": "으로 기록할 수 없다. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd libs",
+                "Code": true
+              },
+              {
+                "Text": "가 더한 ",
+                "Code": false
+              },
+              {
+                "Text": "EXT",
+                "Code": true
+              },
+              {
+                "Text": "는 아직 어느 뷰에도 그려지지 않고, 단위 목록과 explain, path, impact에만 나온다. 사용법 글이 rust의 ",
                 "Code": false
               },
               {
@@ -7959,7 +7983,15 @@
                 "Code": true
               },
               {
-                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다.",
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. lint는 ",
+                "Code": false
+              },
+              {
+                "Text": "lint: words:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 개요와 모든 뷰가 정지 화면에서 말을 단 경로의 비율과 그 말의 출처를 알리며, 이 줄도 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -8196,23 +8228,7 @@
                 "Code": true
               },
               {
-                "Text": " 자신은 libc 같은 이름이어도 알리지 않고, 이름이 곧 설명이므로 purpose를 요구하지 않으며(",
-                "Code": false
-              },
-              {
-                "Text": "undescribed",
-                "Code": true
-              },
-              {
-                "Text": "), lint는 라이브러리로 가는 선에 구절을 요구하지 않는다(",
-                "Code": false
-              },
-              {
-                "Text": "unphrased",
-                "Code": true
-              },
-              {
-                "Text": "). 이는 보고일 뿐 검사를 막지 않는다. brief는 reader가 채울 뼈대를 찍고 ",
+                "Text": " 자신은 libc 같은 이름이어도 알리지 않는다. 이는 보고일 뿐 검사를 막지 않는다. brief는 reader가 채울 뼈대를 찍고 ",
                 "Code": false
               },
               {
@@ -8705,9 +8721,87 @@
                 "Code": true
               },
               {
-                "Text": " 줄로 알린다. 이 줄은 권고일 뿐 관문을 실패시키지 않는다. ",
+                "Text": " 줄로 알린다. 이 줄은 권고일 뿐 관문을 실패시키지 않는다. project.yaml이 ",
                 "Code": false
               },
+              {
+                "Text": "language",
+                "Code": true
+              },
+              {
+                "Text": "를 정하면 ",
+                "Code": false
+              },
+              {
+                "Text": "proseGate",
+                "Code": true
+              },
+              {
+                "Text": "가 부채가 지지 않은 외국어 글을 실패로, 이제 읽히는 글을 내릴 수 있는 부채로 이른다. 부채는 키와 digest가 둘 다 맞아야 글을 진다. 부채가 진 키에 영어로 다시 쓴 글은 digest가 달라 부채가 아니고, 다시 썼다는 말과 함께 실패한다. ",
+                "Code": false
+              },
+              {
+                "Text": "lint --record",
+                "Code": true
+              },
+              {
+                "Text": "는 그 목록을 ",
+                "Code": false
+              },
+              {
+                "Text": "proseDebt",
+                "Code": true
+              },
+              {
+                "Text": "로 ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/lint-debt.yaml",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "prose",
+                "Code": true
+              },
+              {
+                "Text": "에 키와 digest로 남긴다. 언어가 같으면 이전 부채와 키와 digest가 같은 글만 남겨 부채는 줄기만 한다. 그 사이 새로 쓰거나 다시 쓴 외국어 글은 부채에 들지 않고, record는 그 개수를 오류로 알리며 1로 끝난다. 처음 기록하거나 언어가 바뀔 때만 찾은 것을 모두 받는다. 같은 패키지의 테스트(",
+                "Code": false
+              },
+              {
+                "Text": "skills_test.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "narrative_test.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 두 스킬과 읽기 에이전트가 실제 CLI 명령과 이 보고의 기준을 말하는지 고정한다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "lint 진단 줄",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "fanout",
                 "Code": true
@@ -8729,7 +8823,47 @@
                 "Code": true
               },
               {
-                "Text": "으로 남긴다. 이 줄도 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
+                "Text": "으로 남긴다. 어떤 뷰가 리드를 선에서 추정하면 ",
+                "Code": false
+              },
+              {
+                "Text": "leads",
+                "Code": true
+              },
+              {
+                "Text": " 줄(",
+                "Code": false
+              },
+              {
+                "Text": "printLeads",
+                "Code": true
+              },
+              {
+                "Text": ")이 주 흐름, 저장된 흐름, 선에서 추정한 리드를 따르는 뷰의 수와 추정한 홉 수를 알리고, ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": "은 뷰마다 ",
+                "Code": false
+              },
+              {
+                "Text": "lead",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "totals.lead_hops",
+                "Code": true
+              },
+              {
+                "Text": "로 준다. 두 줄 모두 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
                 "Code": false
               },
               {
@@ -8801,71 +8935,7 @@
                 "Code": true
               },
               {
-                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다. project.yaml이 ",
-                "Code": false
-              },
-              {
-                "Text": "language",
-                "Code": true
-              },
-              {
-                "Text": "를 정하면 ",
-                "Code": false
-              },
-              {
-                "Text": "proseGate",
-                "Code": true
-              },
-              {
-                "Text": "가 부채가 지지 않은 외국어 글을 실패로, 이제 읽히는 글을 내릴 수 있는 부채로 이른다. 부채는 키와 digest가 둘 다 맞아야 글을 진다. 부채가 진 키에 영어로 다시 쓴 글은 digest가 달라 부채가 아니고, 다시 썼다는 말과 함께 실패한다. ",
-                "Code": false
-              },
-              {
-                "Text": "lint --record",
-                "Code": true
-              },
-              {
-                "Text": "는 그 목록을 ",
-                "Code": false
-              },
-              {
-                "Text": "proseDebt",
-                "Code": true
-              },
-              {
-                "Text": "로 ",
-                "Code": false
-              },
-              {
-                "Text": ".abbd/lint-debt.yaml",
-                "Code": true
-              },
-              {
-                "Text": "의 ",
-                "Code": false
-              },
-              {
-                "Text": "prose",
-                "Code": true
-              },
-              {
-                "Text": "에 키와 digest로 남긴다. 언어가 같으면 이전 부채와 키와 digest가 같은 글만 남겨 부채는 줄기만 한다. 그 사이 새로 쓰거나 다시 쓴 외국어 글은 부채에 들지 않고, record는 그 개수를 오류로 알리며 1로 끝난다. 처음 기록하거나 언어가 바뀔 때만 찾은 것을 모두 받는다. 같은 패키지의 테스트(",
-                "Code": false
-              },
-              {
-                "Text": "skills_test.go",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "narrative_test.go",
-                "Code": true
-              },
-              {
-                "Text": ")는 두 스킬과 읽기 에이전트가 실제 CLI 명령과 이 보고의 기준을 말하는지 고정한다.",
+                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -24211,119 +24281,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "가 끌어내는 것이다. 외부 라이브러리(",
-                  "Code": false
-                },
-                {
-                  "Text": "EXT",
-                  "Code": true
-                },
-                {
-                  "Text": ")는 개요에서 제품 상자와 구분되는 칩 하나로 서고(",
-                  "Code": false
-                },
-                {
-                  "Text": "libraries",
-                  "Code": true
-                },
-                {
-                  "Text": "), 그것을 쓰는 모듈마다 실선 ",
-                  "Code": false
-                },
-                {
-                  "Text": "depends_on",
-                  "Code": true
-                },
-                {
-                  "Text": " 한 줄이 닿으며, 칩의 hover는 몇 개 상자가 쓰는지 한 줄로 말한다(",
-                  "Code": false
-                },
-                {
-                  "Text": "usedBy",
-                  "Code": true
-                },
-                {
-                  "Text": "). 라이브러리가 개요 상자 수의 4분의 1(",
-                  "Code": false
-                },
-                {
-                  "Text": "libraryRoom",
-                  "Code": true
-                },
-                {
-                  "Text": ")을 넘으면 모두 ",
-                  "Code": false
-                },
-                {
-                  "Text": "libraryFold",
-                  "Code": true
-                },
-                {
-                  "Text": " 칩 하나로 접히고(",
-                  "Code": false
-                },
-                {
-                  "Text": "foldLibraries",
-                  "Code": true
-                },
-                {
-                  "Text": "), 모듈마다 한 줄이 남아 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적으며(",
-                  "Code": false
-                },
-                {
-                  "Text": "reached",
-                  "Code": true
-                },
-                {
-                  "Text": "), ",
-                  "Code": false
-                },
-                {
-                  "Text": "units.html",
-                  "Code": true
-                },
-                {
-                  "Text": "의 행은 라이브러리마다 쓰는 모듈을 모두 적는다(",
-                  "Code": false
-                },
-                {
-                  "Text": "UnitRow.UsedBy",
-                  "Code": true
-                },
-                {
-                  "Text": "). 초점 뷰는 그 모듈의 라이브러리를 남기고, 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
-                  "Code": false
-                },
-                {
-                  "Text": "tree.toLibrary",
-                  "Code": true
-                },
-                {
-                  "Text": "), 상자로 가는 bypass 선과 도로를 함께 쓰지 않도록 kind가 ",
-                  "Code": false
-                },
-                {
-                  "Text": "depends_on",
-                  "Code": true
-                },
-                {
-                  "Text": "이고, 칩이 둘 이상이면 ",
-                  "Code": false
-                },
-                {
-                  "Text": "외부 라이브러리",
-                  "Code": true
-                },
-                {
-                  "Text": " 띠에 묶인다(",
-                  "Code": false
-                },
-                {
-                  "Text": "zone",
-                  "Code": true
-                },
-                {
-                  "Text": "). 단위 목록, ",
+                  "Text": "가 끌어내는 것이다. 단위 목록, ",
                   "Code": false
                 },
                 {
@@ -24816,7 +24774,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -25573,119 +25531,7 @@
                 "Code": true
               },
               {
-                "Text": "가 끌어내는 것이다. 외부 라이브러리(",
-                "Code": false
-              },
-              {
-                "Text": "EXT",
-                "Code": true
-              },
-              {
-                "Text": ")는 개요에서 제품 상자와 구분되는 칩 하나로 서고(",
-                "Code": false
-              },
-              {
-                "Text": "libraries",
-                "Code": true
-              },
-              {
-                "Text": "), 그것을 쓰는 모듈마다 실선 ",
-                "Code": false
-              },
-              {
-                "Text": "depends_on",
-                "Code": true
-              },
-              {
-                "Text": " 한 줄이 닿으며, 칩의 hover는 몇 개 상자가 쓰는지 한 줄로 말한다(",
-                "Code": false
-              },
-              {
-                "Text": "usedBy",
-                "Code": true
-              },
-              {
-                "Text": "). 라이브러리가 개요 상자 수의 4분의 1(",
-                "Code": false
-              },
-              {
-                "Text": "libraryRoom",
-                "Code": true
-              },
-              {
-                "Text": ")을 넘으면 모두 ",
-                "Code": false
-              },
-              {
-                "Text": "libraryFold",
-                "Code": true
-              },
-              {
-                "Text": " 칩 하나로 접히고(",
-                "Code": false
-              },
-              {
-                "Text": "foldLibraries",
-                "Code": true
-              },
-              {
-                "Text": "), 모듈마다 한 줄이 남아 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적으며(",
-                "Code": false
-              },
-              {
-                "Text": "reached",
-                "Code": true
-              },
-              {
-                "Text": "), ",
-                "Code": false
-              },
-              {
-                "Text": "units.html",
-                "Code": true
-              },
-              {
-                "Text": "의 행은 라이브러리마다 쓰는 모듈을 모두 적는다(",
-                "Code": false
-              },
-              {
-                "Text": "UnitRow.UsedBy",
-                "Code": true
-              },
-              {
-                "Text": "). 초점 뷰는 그 모듈의 라이브러리를 남기고, 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
-                "Code": false
-              },
-              {
-                "Text": "tree.toLibrary",
-                "Code": true
-              },
-              {
-                "Text": "), 상자로 가는 bypass 선과 도로를 함께 쓰지 않도록 kind가 ",
-                "Code": false
-              },
-              {
-                "Text": "depends_on",
-                "Code": true
-              },
-              {
-                "Text": "이고, 칩이 둘 이상이면 ",
-                "Code": false
-              },
-              {
-                "Text": "외부 라이브러리",
-                "Code": true
-              },
-              {
-                "Text": " 띠에 묶인다(",
-                "Code": false
-              },
-              {
-                "Text": "zone",
-                "Code": true
-              },
-              {
-                "Text": "). 단위 목록, ",
+                "Text": "가 끌어내는 것이다. 단위 목록, ",
                 "Code": false
               },
               {
@@ -26341,7 +26187,39 @@
                 "Code": true
               },
               {
-                "Text": "는 뷰의 주 흐름을 고른다. 저장된 흐름 가운데 단계가 뷰 위에서 가장 멀리 이어지는 것으로, 다음 단계마다 그려진 선이 이어 주는 상자에 있어야 한다. 저장된 흐름이 없으면 다른 상자가 쓰지 않는 유일한 상자에서 시작해, 관계가 엄격히 가장 많은 선을 따라가다 동률에서 멈추는 선 사슬이다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
+                "Text": "는 뷰의 주 흐름을 고른다. 저장된 흐름 가운데 단계가 뷰 위에서 가장 멀리 이어지는 것으로, 다음 단계마다 그려진 선이 이어 주는 상자에 있어야 한다. 저장된 흐름이 없으면 다른 상자가 쓰지 않는 유일한 상자에서 시작해, 관계가 엄격히 가장 많은 선을 따라가다 동률에서 멈추는 선 사슬이다. project.yaml이 ",
+                "Code": false
+              },
+              {
+                "Text": "inferred_lead: false",
+                "Code": true
+              },
+              {
+                "Text": "이면 이 추정을 하지 않아 주 흐름과 저장된 흐름만 번호를 받고, ",
+                "Code": false
+              },
+              {
+                "Text": "leadLines",
+                "Code": true
+              },
+              {
+                "Text": "도 같은 값(",
+                "Code": false
+              },
+              {
+                "Text": "overview.stored",
+                "Code": true
+              },
+              {
+                "Text": ")을 읽어 경로와 그림이 어긋나지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestInferredLeadsTurnOff",
+                "Code": true
+              },
+              {
+                "Text": "는 저장된 흐름이 없는 self 픽스처에서 이 값을 끄면 어느 뷰도 리드를 그리지 않음을 지킨다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
                 "Code": false
               },
               {
@@ -30150,6 +30028,85 @@
             "Kind": "h",
             "Parts": [
               {
+                "Text": "행렬",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Matrix",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "matrix.go",
+                "Code": true
+              },
+              {
+                "Text": "): 상자들이 빽빽하게, 순환으로 서로 쓰는 전체 뷰(개요와 각 모듈 내부)에 그림은 그대로 두고 그 아래 접힌 표를 덧붙인다(",
+                "Code": false
+              },
+              {
+                "Text": "MatrixRow",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "MatrixCell",
+                "Code": true
+              },
+              {
+                "Text": "). 행과 열은 읽는 순서(줄 위에서 아래, 줄 안에서 왼쪽에서 오른쪽)의 상자이고, 칸은 그 뷰가 그린 선 가운데 행의 상자가 열의 상자를 쓰는 저장된 관계 수다. 레이아웃이 순환으로 본(",
+                "Code": false
+              },
+              {
+                "Text": "axis.cycle",
+                "Code": true
+              },
+              {
+                "Text": ") 두 상자 사이에서 열의 상자가 그린 선을 따라 다시 행의 상자에 닿는 칸은 순환으로 칠한다. 표를 붙일지는 뷰 자신의 범위로 정한다. 상자 n개가 이어진 뷰는 쌍을 n-1개에서 n(n-1)/2개까지 잇는데, 그린 선이 이은 쌍이 그 범위의 3분의 1(",
+                "Code": false
+              },
+              {
+                "Text": "matrixPart",
+                "Code": true
+              },
+              {
+                "Text": ")을 넘고, 상자가 4개(",
+                "Code": false
+              },
+              {
+                "Text": "matrixMin",
+                "Code": true
+              },
+              {
+                "Text": ") 이상이며, 상자의 절반 이상이 그 순환에 있을 때만 붙인다. 표는 자기 스타일을 함께 가진 HTML이라 표가 없는 페이지는 바이트 하나 바뀌지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestADenseCyclicViewAddsAMatrix",
+                "Code": true
+              },
+              {
+                "Text": "가 조건과 표의 모양을 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
                 "Text": "신선도",
                 "Code": false
               }
@@ -32422,6 +32379,154 @@
             "Kind": "h",
             "Parts": [
               {
+                "Text": "도로 걷기",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "roadwalk.go",
+                "Code": true
+              },
+              {
+                "Text": "는 경로를 가진 그림에서 선이 다른 선과 함께 쓰는 잉크 위에서 꺾인 횟수(",
+                "Code": false
+              },
+              {
+                "Text": "road_turns",
+                "Code": true
+              },
+              {
+                "Text": "), 제 길의 두 끝을 뺀 곳에서 다른 선이 그 잉크에 들어오거나 떠나는 갈림점 수(",
+                "Code": false
+              },
+              {
+                "Text": "junctions",
+                "Code": true
+              },
+              {
+                "Text": ", 지나는 선마다 한 번씩 세며 양옆에서 와서 한 줄기로 합치는 곳도 든다), 그리고 한쪽에서 들어온 선 가운데 곧게 가는 선이 있는데도 다른 한쪽으로 꺾는 선이 더 많은 갈림점, 또는 나가는 쪽에서 같은 식으로 읽은 갈림점 수(",
+                "Code": false
+              },
+              {
+                "Text": "bent_junctions",
+                "Code": true
+              },
+              {
+                "Text": ")를 ",
+                "Code": false
+              },
+              {
+                "Text": "walkRoads",
+                "Code": true
+              },
+              {
+                "Text": "로 센다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "가 이 셋을 뷰의 합계에 넣고, 관문은 어느 것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestRoadWalkCountsTurnsAndJunctions",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "TestRoadWalkCountsMerges",
+                "Code": true
+              },
+              {
+                "Text": "가 그 셈을 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "대칭",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "symmetry.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "symmetryOf",
+                "Code": true
+              },
+              {
+                "Text": "는 그림이 얼마나 가지런한지 잰다. 상자가 둘 이상인 줄 가운데 상자 중심이 한 가로선에 서지 않는 줄(",
+                "Code": false
+              },
+              {
+                "Text": "rows_off",
+                "Code": true
+              },
+              {
+                "Text": "), 바로 아랫줄의 상자를 둘 이상 쓰는 상자(",
+                "Code": false
+              },
+              {
+                "Text": "parents",
+                "Code": true
+              },
+              {
+                "Text": "), 그리고 그 가운데 제 중심이 그 상자들 중심의 가운데에서 그 중심들이 덮는 폭의 4분의 1보다 더 벗어난 상자(",
+                "Code": false
+              },
+              {
+                "Text": "off_centre",
+                "Code": true
+              },
+              {
+                "Text": ")를 센다. 벗어남의 한도는 상자마다 그 상자들 중심이 덮는 폭에 비례한다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "가 이 셋을 뷰의 합계에 넣고, 관문은 어느 것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestSymmetryReadsCentresAndRows",
+                "Code": true
+              },
+              {
+                "Text": "가 그 셈을 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
                 "Text": "린트 (5)",
                 "Code": false
               }
@@ -32783,7 +32888,63 @@
                 "Code": true
               },
               {
-                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다.",
+                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다. ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "wordfill.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 정지 화면에서 말이 붙은 경로를 세고, 그 말이 개요 기록의 낱말, 관계의 구절, via 가운데 어디서 왔는지(",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": "가 정하는 ",
+                "Code": false
+              },
+              {
+                "Text": "Wire.from",
+                "Code": true
+              },
+              {
+                "Text": ")와, 기록이 낱말을 준 상자 쌍 가운데 그려진 경로에 그 낱말이 붙은 수를 진단으로만 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "speaksFor",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "labelled",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "이 함께 쓰는, 말이 붙은 선이 경로를 대변하는지 읽는 한 술어다.",
                 "Code": false
               }
             ]
@@ -33499,7 +33660,23 @@
                 "Code": true
               },
               {
-                "Text": "(사람이 고르기 전에는 nil이라, 고른 false가 저장을 거쳐도 남는다), 그리고 사람이 저장된 산문을 읽는 언어 ",
+                "Text": "(사람이 고르기 전에는 nil이라, 고른 false가 저장을 거쳐도 남는다), 저장된 흐름이 없는 뷰가 선에서 읽은 주 흐름을 그릴지 정하는 ",
+                "Code": false
+              },
+              {
+                "Text": "InferredLead",
+                "Code": true
+              },
+              {
+                "Text": "(nil이면 그리고, ",
+                "Code": false
+              },
+              {
+                "Text": "InferLead",
+                "Code": true
+              },
+              {
+                "Text": "가 그 값을 읽는다), 그리고 사람이 저장된 산문을 읽는 언어 ",
                 "Code": false
               },
               {
@@ -34377,6 +34554,12 @@
                     "Badge": "extracted"
                   }
                 ]
+              },
+              {
+                "Key": "inferred-lead",
+                "Name": "inferred_lead",
+                "Shape": "*bool",
+                "Need": "선택"
               },
               {
                 "Key": "language",
@@ -35314,7 +35497,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice"
+              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치"
             },
             {
               "N": 4,
@@ -37728,7 +37911,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+            "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
           ]
         }
       ],
@@ -38532,7 +38715,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice",
+              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",

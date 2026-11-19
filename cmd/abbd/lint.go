@@ -56,6 +56,7 @@ type lintReport struct {
 type lintTotals struct {
 	screen.Totals
 	Elements screen.ElementTotals `json:"elements"`
+	Words    screen.WordFill      `json:"words"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -129,7 +130,10 @@ func (e env) lint(pos []string) error {
 	}
 	every := only == ""
 	r := lintReport{Schema: lintSchema, Criteria: screen.Criteria(), Views: views, Failures: screen.Gate(views, debt, every), Lowerable: screen.Lowerable(views, debt, every)}
-	r.Totals = lintTotals{screen.Sum(views), screen.SumElements(views)}
+	r.Totals = lintTotals{screen.Sum(views), screen.SumElements(views), screen.WordFill{}}
+	for _, v := range views {
+		r.Totals.Words = r.Totals.Words.Add(v.Words)
+	}
 	r.Levels = levels
 	for i, l := range r.Levels {
 		if len(l.Advice) > 0 {
@@ -212,6 +216,7 @@ func printLint(e env, r lintReport) {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	printElements(e.stdout, r.Views, r.Totals.Elements)
+	printWords(e.stdout, r.Views, r.Totals.Words)
 	if n := len(r.Unphrased); n > 0 {
 		where := "between overview boxes"
 		if r.Chosen {
@@ -243,6 +248,7 @@ func printLint(e env, r lintReport) {
 		}
 		fmt.Fprintf(e.stdout, "lint: fanout: lines that join each user of a contract with three or more providers to every provider, by view: %s; a user of an extension point may name none of its implementers, so read these lines against the code\n", strings.Join(by, ", "))
 	}
+	printLeads(e.stdout, r.Views)
 	printProse(e.stdout, r.Prose, r.Language)
 	if len(r.Undescribed) > 0 {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
@@ -387,6 +393,35 @@ func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals)
 	}
 }
 
+// printWords reports how many routes say a word at rest and where each
+// word comes from: on the overview, with what its record's words add, and
+// over every view. It never fails lint.
+func printWords(w io.Writer, views []screen.ViewLint, t screen.WordFill) {
+	for _, v := range views {
+		if v.View != "overview" || v.Words.Routes == 0 {
+			continue
+		}
+		f := v.Words
+		fmt.Fprintf(w, "lint: words: the overview says a word on %s at rest (%s), %d by the overview record's words, %d by phrases and %d by vias", fill(f), percent(f), f.Record, f.Phrase, f.Via)
+		if f.RecordPairs > 0 {
+			fmt.Fprintf(w, "; of the %s the record gives a word, %d label a drawn route", plural(f.RecordPairs, "pair"), f.RecordSaid)
+		} else {
+			fmt.Fprint(w, "; the overview record gives no line a word")
+		}
+		fmt.Fprintln(w, ". It never fails lint")
+	}
+	if t.Routes > 0 {
+		fmt.Fprintf(w, "lint: words: every view says a word on %s at rest (%s), %d by the record, %d by phrases, %d by vias\n", fill(t), percent(t), t.Record, t.Phrase, t.Via)
+	}
+}
+
+func fill(f screen.WordFill) string {
+	return fmt.Sprintf("%d of %s", f.Labelled, plural(f.Routes, "route"))
+}
+
+// percent is the share of routes labelled, rounded down.
+func percent(f screen.WordFill) string { return fmt.Sprintf("%d%%", 100*f.Labelled/f.Routes) }
+
 // elementsLine is one view's elements, its range and where it stands.
 func elementsLine(el screen.Elements) string {
 	parts := fmt.Sprintf("%s, %s (%s), %s, %s", plural(el.Shapes, "shape"), plural(el.Ink, "run"), plural(el.Bends, "bend"), plural(el.Words, "word"), plural(el.Badges, "badge"))
@@ -394,4 +429,21 @@ func elementsLine(el screen.Elements) string {
 		return fmt.Sprintf("%d, its skeleton and its every line one number: %s", el.Count, parts)
 	}
 	return fmt.Sprintf("%d in %d..%d (%d%%), warns past %d: %s", el.Count, el.Min, el.Max, *el.Percent, *el.WarnAt, parts)
+}
+
+// printLeads says where the views' leads come from when some view infers
+// its lead from its lines: how many follow the primary flow, a stored flow,
+// or their lines, and how many hops the inferred ones number.
+func printLeads(w io.Writer, views []screen.ViewLint) {
+	n, hops := map[string]int{}, 0
+	for _, v := range views {
+		n[v.Lead]++
+		if v.Lead == screen.LeadInferred {
+			hops += v.Totals.LeadHops
+		}
+	}
+	if n[screen.LeadInferred] == 0 {
+		return
+	}
+	fmt.Fprintf(w, "lint: leads: %d follow the primary flow, %d a stored flow, %d are inferred from their lines with %s; inferred_lead: false in .abbd/project.yaml numbers the primary flow and stored flows only\n", n[screen.LeadPrimary], n[screen.LeadStored], n[screen.LeadInferred], plural(hops, "hop"))
 }

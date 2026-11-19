@@ -50,7 +50,7 @@
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림을 옆으로 밀면 나머지가 보입니다.</p>
   <div class="mapbox">{{template "drawing" .Overview}}</div>
   {{template "legend" (legendFor "overview" .Overview.Quiet)}}{{template "keys" .Overview}}
-  {{template "picker" .Focus}}
+  {{template "picker" .Focus}}{{template "matrix" .Overview.Matrix}}
   {{if .Links}}<h3>계약 사이의 관계</h3>
   <ul class="plain">{{range .Links}}<li>{{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span></li>{{end}}</ul>{{end}}
   <p class="muted" style="margin:6px 0 0">에이전트가 판독한 결합도 그립니다. sync마다 인용한 코드가 아직 있는지 검사하고, 인용이 사라진 결합은 그리지 않습니다. 각 결합의 근거는 그 결합이 이어진 모듈 내부에 나열합니다.</p>
@@ -67,7 +67,7 @@
   {{with .Responsibility}}<p class="role"><strong>역할</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{if .Stale}} <span class="pill STALE" title="이 문장을 쓴 뒤 이 단위의 코드가 바뀌었습니다">STALE</span>{{end}}</p>{{end}}{{with .Purpose}}<p class="role"><strong>목적</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{if .Stale}} <span class="pill STALE" title="이 문장을 쓴 뒤 이 단위의 코드가 바뀌었습니다">STALE</span>{{end}}</p>{{end}}
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
   {{template "keys" .Drawing}}
-  {{template "picker" .Focus}}
+  {{template "picker" .Focus}}{{template "matrix" .Drawing.Matrix}}
   <div class="text">
     <div class="about">
       {{with .Understanding}}
@@ -163,6 +163,9 @@
 {{define "entries"}}<details class="entries"{{if and .Notes (le (len .Rows) 20)}} open{{end}}><summary class="muted" style="font-weight:400">항목 {{len .Rows}}개</summary><table><tr><th>항목</th><th>{{.Shape}}</th>{{if .Need}}<th>필수</th>{{end}}{{if .Providers}}<th>{{if .Data}}쓰는 단위{{else}}제공{{end}}</th>{{end}}{{if .Users}}<th>{{if .Data}}읽는 단위{{else}}쓰는 단위{{end}}</th>{{end}}{{if .Notes}}<th>설명</th>{{end}}</tr>{{$t := .}}{{range .Rows}}<tr id="e-{{$t.ID}}.{{.Key}}"><td class="name"><code>{{.Name}}</code></td><td>{{if .Shape}}<code>{{.Shape}}</code>{{end}}</td>{{if $t.Need}}<td>{{.Need}}</td>{{end}}{{if $t.Providers}}<td>{{range .Providers}}{{template "who" .}}{{end}}</td>{{end}}{{if $t.Users}}<td>{{range .Users}}{{template "who" .}}{{end}}</td>{{end}}{{if $t.Notes}}<td class="note">{{with .Note}}{{template "blocks" .Blocks}}{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details>{{end}}</td>{{end}}</tr>{{end}}</table></details>{{end}}
 {{define "who"}}<span class="who" title="{{.ID}}">{{.Name}}{{if ne .Badge "extracted"}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{end}}</span>{{end}}
 {{define "picker"}}{{if .}}<div class="chips picker"><span class="muted">선이 많아 한 상자씩 봅니다. 상자를 고르면 그 상자와 이어진 상자, 그 사이의 선만 그립니다:</span>{{range .}} <a class="chip" href="#{{.ID}}" title="이어진 상자 {{.Ring}}개">{{.Name}}</a>{{end}}</div>{{end}}{{end}}
+{{define "matrix"}}{{with .}}<style>details.dsm{margin:8px 0 0}details.dsm>summary{cursor:pointer;font-size:13.5px}details.dsm>p{margin:4px 0;font-size:13px}.dsm-box{overflow-x:auto;max-width:100%}table.dsm{width:auto;border-collapse:collapse;font-size:12.5px}table.dsm th,table.dsm td{border:1px solid var(--line);padding:3px 6px;text-align:center;white-space:nowrap}table.dsm tbody th{text-align:left;font-weight:400;background:var(--panel)}table.dsm tbody th .n,table.dsm thead th{color:var(--muted);font-weight:600}table.dsm thead th.corner{font-weight:400}table.dsm th.loop{box-shadow:inset 3px 0 0 var(--accent)}table.dsm td{min-width:1.6em}table.dsm td.self{background:var(--line)}table.dsm td.loop{background:var(--accent-bg);color:var(--accent);font-weight:700}</style><details class="dsm"><summary>표로 보기: 상자 {{len .Heads}}개 가운데 {{.Loops}}개가 순환 의존으로 이어져 있습니다</summary>
+<p class="muted">칸의 수는 그림에 그린 선 가운데 행의 상자가 열의 상자를 쓰는 관계 수입니다. n번 열은 n번 행과 같은 상자입니다. 칠한 칸은 열의 상자가 다시 행의 상자로 이어지는 순환 의존입니다. 선을 하나씩 따라가기 어려울 때, 어떤 상자들이 한 순환으로 묶이는지와 두 상자가 함께 쓰는 상자를 이 표에서 찾습니다.</p>
+<div class="dsm-box"><table class="dsm"><thead><tr><th class="corner">행이 열을 씀</th>{{range .Heads}}<th scope="col" title="{{.Name}}"{{if .Loop}} class="loop"{{end}}>{{.N}}</th>{{end}}</tr></thead><tbody>{{range .Rows}}<tr><th scope="row"{{if .Head.Loop}} class="loop"{{end}}><span class="n">{{.Head.N}}</span> {{.Head.Name}}</th>{{range .Cells}}{{if .Self}}<td class="self"></td>{{else if .N}}<td{{if .Loop}} class="loop"{{end}} title="{{.Title}}">{{.N}}</td>{{else}}<td></td>{{end}}{{end}}</tr>{{end}}</tbody></table></div></details>{{end}}{{end}}
 {{define "focus"}}<section class="inside" id="{{.ID}}">
   <div class="drawhead"><h2>{{.Name}} 주변 <span class="muted key">{{.Unit}}</span></h2><div class="views"><span class="muted">{{.OfName}}에서 고른 상자</span> <a href="{{.Of}}">전체 그림으로</a>{{if .In}} <a href="{{.In}}">{{.Name}} 내부로</a>{{end}}</div></div>
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
