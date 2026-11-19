@@ -22045,14 +22045,6 @@
                 "Code": true
               },
               {
-                "Text": "은 overview 상자 하나를 전역 상태(global), 정적 데이터(static), 매 호출로 건네는 맥락(context) 가운데 하나로 표시하는 기록이다. unit이나 relation을 만들지 않으며, 상자 안의 unit을 이름 지으면 그 상자를 표시하라고 거부되고, 인용이 그 상자의 코드에 없으면 STALE이 된다. ",
-                "Code": false
-              },
-              {
-                "Text": "AmbientMark",
-                "Code": true
-              },
-              {
                 "Text": "은 overview 상자 하나를 전역 상태(global), 정적 데이터(static), 매 호출로 건네는 맥락(context) 가운데 하나로 표시하는 기록이다. unit이나 relation을 만들지 않으며, 상자 안의 unit을 이름 지으면 그 상자를 표시하라고 거부되고, 인용이 그 상자의 코드에 없으면 STALE이 된다.",
                 "Code": false
               }
@@ -31677,6 +31669,84 @@
               },
               {
                 "Text": ")는 각 ×N을 규칙 22에 묶는다. 한 구간에 닿는 거리 안에, 다음으로 가까운 구간에서 떨어져, 다른 어느 와이어보다 자기 와이어의 잉크에 더 가까이 있어야 한다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "도로 걷기",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "roadwalk.go",
+                "Code": true
+              },
+              {
+                "Text": "는 경로를 가진 그림에서 선이 다른 선과 함께 쓰는 잉크 위에서 꺾인 횟수(",
+                "Code": false
+              },
+              {
+                "Text": "road_turns",
+                "Code": true
+              },
+              {
+                "Text": "), 제 길의 두 끝을 뺀 곳에서 다른 선이 그 잉크에 들어오거나 떠나는 갈림점 수(",
+                "Code": false
+              },
+              {
+                "Text": "junctions",
+                "Code": true
+              },
+              {
+                "Text": ", 지나는 선마다 한 번씩 세며 양옆에서 와서 한 줄기로 합치는 곳도 든다), 그리고 한쪽에서 들어온 선 가운데 곧게 가는 선이 있는데도 다른 한쪽으로 꺾는 선이 더 많은 갈림점, 또는 나가는 쪽에서 같은 식으로 읽은 갈림점 수(",
+                "Code": false
+              },
+              {
+                "Text": "bent_junctions",
+                "Code": true
+              },
+              {
+                "Text": ")를 ",
+                "Code": false
+              },
+              {
+                "Text": "walkRoads",
+                "Code": true
+              },
+              {
+                "Text": "로 센다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "가 이 셋을 뷰의 합계에 넣고, 관문은 어느 것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestRoadWalkCountsTurnsAndJunctions",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "TestRoadWalkCountsMerges",
+                "Code": true
+              },
+              {
+                "Text": "가 그 셈을 지킨다.",
                 "Code": false
               }
             ]
