@@ -565,6 +565,10 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// InferredLead says whether a view with no stored flow draws the lead
+	// its lines show plainly. On by default; false numbers stored flows
+	// and the primary flow only, so the two can be read side by side.
+	InferredLead *bool `yaml:"inferred_lead,omitempty"`
 	// Language is the BCP-47 tag of the language a person reads the
 	// stored prose in, such as ko. Loading refuses a tag that is no
 	// BCP-47 tag. The zero Language leaves the choice to the OS.
@@ -582,6 +586,9 @@ func (p Project) Lang() model.Language {
 
 // Cut says whether the overview draws its primary links only.
 func (p Project) Cut() bool { return p.OverviewCut != nil && *p.OverviewCut }
+
+// InferLead says whether a view with no stored flow draws an inferred lead.
+func (p Project) InferLead() bool { return p.InferredLead == nil || *p.InferredLead }
 
 func (s Store) LoadProject() (Project, error) {
 	var p Project
