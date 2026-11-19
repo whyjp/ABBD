@@ -103,7 +103,9 @@ func TestManyLibrariesFoldIntoOneChip(t *testing.T) {
 	if got := libraryWires(m.Overview); !slices.Equal(got, want) {
 		t.Errorf("lines to the fold stand for %q, want %q", got, want)
 	}
-	if !slices.ContainsFunc(m.Overview.Wires, func(w Wire) bool { return strings.Contains(w.Title, "m1 → 외부 라이브러리 3개: 쓰는 라이브러리 a") }) {
+	if !slices.ContainsFunc(m.Overview.Wires, func(w Wire) bool {
+		return strings.Contains(w.Title, "m1 → 외부 라이브러리 3개: 쓰는 라이브러리 a")
+	}) {
 		t.Errorf("the line from m1 to the fold does not name the library it uses")
 	}
 	for _, r := range m.Units {
@@ -129,5 +131,27 @@ func TestAnInsideViewLeavesTheLibrariesOut(t *testing.T) {
 				t.Errorf("the inside of %s draws the library as a port: %+v", in.ID, p)
 			}
 		}
+	}
+}
+
+// A focus view weighs its module's libraries against its own boxes: a
+// module that uses one library shows that library, not the overview's fold.
+func TestAFocusViewFoldsByItsOwnBoxes(t *testing.T) {
+	t.Parallel()
+	us := libraryUnits(8, 4, "a", "b", "c")
+	if o := planOverview(us, "", nil, tactic{}, nil, nil, nil); !slices.Equal(o.libraries, []model.ID{libraryFold}) {
+		t.Fatalf("the overview keeps %v, want the fold", o.libraries)
+	}
+	if o := planOverview(us, "MOD-0001", nil, tactic{}, nil, nil, nil); !slices.Equal(o.libraries, []model.ID{"EXT-0001"}) {
+		t.Errorf("m1's focus keeps %v, want the one library it uses", o.libraries)
+	}
+}
+
+// The legend says how a library is drawn only where there is one.
+func TestTheLegendNamesLibrariesOnlyWhereThereAreSome(t *testing.T) {
+	t.Parallel()
+	with, without := Build(Input{Units: libraryUnits(8, 3, "serde")}), Build(Input{Units: libraryUnits(8, 0, "serde")[:8]})
+	if !with.HasLibraries() || without.HasLibraries() {
+		t.Errorf("HasLibraries is %v with a library and %v without", with.HasLibraries(), without.HasLibraries())
 	}
 }

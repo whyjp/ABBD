@@ -270,9 +270,12 @@ func (d *Drawing) folders(t tree) []group {
 		}
 		at[dir] = append(at[dir], b.ID)
 	}
+	// A library chip is no box of the product, so a folder that holds
+	// every box but the libraries holds them all.
+	own := len(d.Boxes) - countLibraries(d.Boxes)
 	var out []group
 	for _, k := range keys {
-		if n := len(at[k]); n >= 2 && n < len(d.Boxes) {
+		if n := len(at[k]); n >= 2 && n < own {
 			out = append(out, group{title: k + "/", ids: at[k]})
 		}
 	}
@@ -537,4 +540,15 @@ func (d *Drawing) onBadge(area box) bool {
 		}
 	}
 	return false
+}
+
+// countLibraries is how many of boxes are external library chips.
+func countLibraries(boxes []Box) int {
+	n := 0
+	for _, b := range boxes {
+		if b.Kind == string(model.External) {
+			n++
+		}
+	}
+	return n
 }

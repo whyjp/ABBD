@@ -666,7 +666,9 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		}
 	}
 	slices.Sort(o.libraries)
-	o.foldLibraries(len(o.modules))
+	if focus == "" {
+		o.foldLibraries(len(o.modules))
+	}
 	add := func(m map[model.ID][]model.ID, k, v model.ID) {
 		if !slices.Contains(m[k], v) {
 			m[k] = append(m[k], v)
@@ -722,6 +724,8 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	}
 	if focus != "" {
 		o.around(focus)
+		// A focus view weighs its own libraries against its own boxes.
+		o.foldLibraries(len(o.modules))
 		for _, id := range o.modules {
 			isModule[id] = true
 		}

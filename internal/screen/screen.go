@@ -566,10 +566,18 @@ func usedBy(rows []UnitRow, units []model.Unit) {
 		return
 	}
 	for _, u := range model.Present(units) {
+		seen := map[int]bool{}
 		for _, r := range u.Relations {
-			if i, ok := at[string(r.To)]; ok && !r.Dead && !slices.Contains(rows[i].UsedBy, u.Name.Value) {
+			if i, ok := at[string(r.To)]; ok && !r.Dead && !seen[i] {
+				seen[i] = true
 				rows[i].UsedBy = append(rows[i].UsedBy, u.Name.Value)
 			}
 		}
 	}
+}
+
+// HasLibraries says the model holds an external library, so the legend
+// says how one is drawn.
+func (m Model) HasLibraries() bool {
+	return slices.ContainsFunc(m.Units, func(r UnitRow) bool { return r.Kind == string(model.External) })
 }

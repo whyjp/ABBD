@@ -102,7 +102,7 @@
   <h2>범례</h2>
   <p class="muted" style="margin:0 0 6px">모든 그림이 같은 기호를 씁니다. 그림마다 되풀이하지 않고 여기에 한 번 둡니다.</p>
   <div class="legend"><span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:color-mix(in srgb, var(--h0) 5%, var(--panel));stroke:var(--h0);stroke-width:1.5"/></svg>상자 테두리와 옅은 바탕: 그 상자의 색. 상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span></div>
-  <p>주 흐름은 굵은 색 선과 번호입니다. 다른 선은 직접 의존도 가늘고 회색이며, 마우스를 올리면 제 색으로 바뀝니다. 채운 상자는 진입점(주 흐름이 시작하는 상자)이거나 허브(다른 어느 상자보다 선이 1.5배 넘게 이어진 상자)입니다. 허브의 선만 그 색이고 다른 선은 회색이며, 상자에 마우스를 올리면 제 색으로 바뀝니다. 점선은 실행 중 호출이나 데이터 없이 설계로만 이어진 관계입니다 (관례, 임포트, 트레이트, 매크로, 빌드 기능). 옅은 띠는 프로젝트가 보여 주는 묶음입니다 (저장된 층, 같은 디렉터리, 외부 계약). 그 상자들이 붙어 있을 때만 그립니다.</p>
+  <p>주 흐름은 굵은 색 선과 번호입니다. 다른 선은 직접 의존도 가늘고 회색이며, 마우스를 올리면 제 색으로 바뀝니다. 채운 상자는 진입점(주 흐름이 시작하는 상자)이거나 허브(다른 어느 상자보다 선이 1.5배 넘게 이어진 상자)입니다. 허브의 선만 그 색이고 다른 선은 회색이며, 상자에 마우스를 올리면 제 색으로 바뀝니다. 점선은 실행 중 호출이나 데이터 없이 설계로만 이어진 관계입니다 (관례, 임포트, 트레이트, 매크로, 빌드 기능). 옅은 띠는 프로젝트가 보여 주는 묶음입니다 (저장된 층, 같은 디렉터리, 외부 계약). 그 상자들이 붙어 있을 때만 그립니다.{{if .HasLibraries}} 점선 테두리 칩에 이름만 적힌 것은 외부 라이브러리 하나이고, 그 라이브러리를 쓰는 상자마다 실선 한 줄이 닿습니다. 라이브러리가 그림의 상자 수 4분의 1을 넘으면 "외부 라이브러리 N개" 칩 하나로 접히고, 칩이 둘 이상이면 "외부 라이브러리" 띠로 묶습니다.{{end}}</p>
   <h3>모듈과 계약</h3>
   {{template "legend" (legendFor "overview" false)}}
   <p>주 흐름이나 허브가 있는 그림은 그 선만 색으로 그리고, 다른 선은 직접 의존도 회색으로 그립니다. 상자나 선에 마우스를 올리면 제 색으로 바뀝니다.</p>
@@ -137,7 +137,7 @@
   <table>{{range .Units}}<tr id="u-{{.ID}}"><td class="id key">{{.ID}}</td><td>{{if index $.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{label .Kind}}</span>{{if .Parent}} <span class="muted">· <a href="#m-{{.Parent}}" title="{{.Parent}}">{{nameOf $.Model .Parent}}</a> 안</span>{{end}}
     {{with .Responsibility}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{else}}{{with .Purpose}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{end}}{{end}}
     {{if .Anchors}}<div class="key muted anchors">{{join .Anchors " · "}}</div>{{end}}{{if .UsedBy}}
-    <div class="muted">{{len .UsedBy}}개 모듈이 사용: {{join .UsedBy ", "}}</div>{{end}}
+    <div class="muted">{{len .UsedBy}}개 단위가 사용: {{join .UsedBy ", "}}</div>{{end}}
     {{if or .Signature .Evidence}}<details><summary class="muted" style="font-weight:400">시그니처와 근거</summary>{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{range .Evidence}}<div class="quote">근거 <q>{{.}}</q></div>{{end}}</details>{{end}}{{if .Notes}}<details class="text"><summary class="muted" style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}{{with .Entries}}{{template "entries" .}}{{end}}</td></tr>{{end}}</table>
 </section>
 {{template "foot" .}}{{end}}
