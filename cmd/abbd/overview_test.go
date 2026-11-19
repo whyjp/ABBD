@@ -205,7 +205,7 @@ func TestTheOverviewDraftOffersWhatAWriterChoosesFrom(t *testing.T) {
 		"#   1 books: MOD-0002",
 		"# Line candidates (1)",
 		"#     ledger -> billing: runs 1 (consumes data 1)",
-		"zones: []\nlines: []\n---",
+		"zones: []\nlines: []\nscope: []\n---",
 	} {
 		if !strings.Contains(draft, want) {
 			t.Errorf("the draft holds %q:\n%s", want, draft)

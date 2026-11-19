@@ -169,7 +169,10 @@ abbd overview FILE|- [--root DIR]
                                      up to 20 lines; a zone is a short name, the overview boxes it
                                      holds and the code it cites, a unit in one zone at most; a
                                      line joins units in two overview boxes, carries a short word,
-                                     draws stored relations in its direction and cites code; each
+                                     draws stored relations in its direction and cites code; a
+                                     scope mark (scope: unit, scope sample, artifact or tool, and
+                                     code) says a unit is a sample, a build artifact or a tool and
+                                     not the product, at most 20; each
                                      part is stamped with the lines around its quotes, so it goes
                                      STALE when that code changes or the state moves under it
 abbd overview [--root DIR]           print a draft to write the overview from: the stored zones

@@ -19,7 +19,7 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
    - **Failure paths**: what it returns or raises when something fails, and what it retries.
    - **Key units**: the `Key units by fan-in` the brief lists. Name each in the text, or say in one line why it stays out.
    Note where the module stops, what is not obvious, open questions and the files you read.
-   The standard library, the runtime, system headers, the system environment and ubiquitous third-party libraries the module uses are outside the repository: no unit, no relation, no contract. Name them in at most one line of the text.
+   The standard library, the runtime, system headers, the system environment and ubiquitous third-party libraries the module uses are outside the repository: no unit, no relation, no contract. Name them in at most one line of the text. A sample, example, build artifact or test tool of the repository is its own unit but not the product: say so in its text, and the overview record marks it with `scope`.
    The text covers every one of these lists: name the lifecycle, the threads, the failure paths and the run-time binding in Key Concepts, or say in one line that the module has none.
 4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
 
