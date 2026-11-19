@@ -120,14 +120,20 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	} else {
 		groups = d.folders(t)
 	}
-	var outside []string
+	var outside, libraries []string
 	for _, b := range d.Boxes {
-		if !coloured(b) {
+		switch {
+		case b.Kind == string(model.External):
+			libraries = append(libraries, b.ID)
+		case !coloured(b):
 			outside = append(outside, b.ID)
 		}
 	}
-	if len(outside) >= 1 && len(outside) < len(d.Boxes) {
+	if len(outside) >= 1 && len(outside)+len(libraries) < len(d.Boxes) {
 		groups = append(groups, group{title: "외부 계약", ids: outside})
+	}
+	if len(libraries) >= 2 && len(outside)+len(libraries) < len(d.Boxes) {
+		groups = append(groups, group{title: "외부 라이브러리", ids: libraries})
 	}
 	n := 0
 	for _, g := range groups {

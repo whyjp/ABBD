@@ -37,7 +37,7 @@ const (
 
 // planOnly says every one of rels, and at least one, arises only in design.
 func (t tree) planOnly(rels []string) bool {
-	return len(rels) > 0 && !slices.ContainsFunc(rels, func(r string) bool { return !planned[t.vias[r]] })
+	return len(rels) > 0 && !slices.ContainsFunc(rels, func(r string) bool { return !planned[t.vias[r]] || t.toLibrary[r] })
 }
 
 func insides(ins []Inside) []*Drawing {

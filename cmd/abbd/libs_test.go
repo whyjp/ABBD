@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 const libsExtraction = `{"units":[
@@ -15,7 +18,7 @@ const libsExtraction = `{"units":[
 
 // abbd libs adds each library the go.mod requires as one EXT unit, and sync
 // keeps it like any extracted unit: the same ID on the next sync, a line in
-// explain, and nothing drawn yet.
+// explain, and a chip on the overview.
 func TestLibsAddsExternalUnitsThatSyncKeeps(t *testing.T) {
 	t.Parallel()
 	p, exe := bare(t)
@@ -45,8 +48,8 @@ func TestLibsAddsExternalUnitsThatSyncKeeps(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "architecture", "EXT-0001.md")); err != nil {
 		t.Errorf("the library lost its ID on the next sync: %v", err)
 	}
-	if strings.Contains(p.blueprint(), "yaml.v3") {
-		t.Errorf("the blueprint draws the library before any view draws one")
+	if !strings.Contains(p.blueprint(), "yaml.v3: 외부 라이브러리. 1개 상자가 사용") {
+		t.Errorf("the overview does not draw the library as a chip one box uses")
 	}
 }
 
@@ -60,4 +63,17 @@ func TestRecordRefusesAnExternalUnit(t *testing.T) {
 	p.extract(libsExtraction)
 	p.setup(0, "synced", "--", exe)
 	p.want(1, "abbd libs", "record", "unit", "EXT", "yaml", "--evidence", "go.mod:3:require gopkg.in/yaml.v3 v3.0.1")
+}
+
+// An external library is described by its name: lint and status never ask
+// it for a purpose.
+func TestAnExternalLibraryNeedsNoPurpose(t *testing.T) {
+	t.Parallel()
+	us := []model.Unit{
+		{ID: "MOD-0001", Kind: model.Module, Name: model.Said(model.Script, "store")},
+		{ID: "EXT-0001", Kind: model.External, Name: model.Said(model.Script, "yaml")},
+	}
+	if got := undescribed(us); !slices.Equal(got, []model.ID{"MOD-0001"}) {
+		t.Errorf("undescribed %v, want only the module", got)
+	}
 }

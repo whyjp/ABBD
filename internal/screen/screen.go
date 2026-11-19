@@ -200,6 +200,8 @@ type UnitRow struct {
 	// Rank is where the unit's box stands on the overview, for a unit the
 	// overview draws.
 	Rank *Rank `json:",omitempty"`
+	// UsedBy names the units that depend on an external library.
+	UsedBy []string `json:",omitempty"`
 }
 
 type Model struct {
@@ -242,7 +244,6 @@ type Model struct {
 // Build derives the screen from the store. It is deterministic: the same
 // input gives the same model, so the rendered files only change with the data.
 func Build(in Input) Model {
-	in.Units = withoutLibraries(in.Units)
 	m := Model{Extract: in.Project.Extract}
 	ov := readOverview(in)
 	m.Zones, m.Lines = ov.zones, ov.lines
@@ -257,6 +258,7 @@ func Build(in Input) Model {
 		}
 		m.Units = append(m.Units, row)
 	}
+	usedBy(m.Units, in.Units)
 	m.Edges = lines(in.Units)
 	m.Decisions = decisions(in)
 	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
@@ -545,27 +547,23 @@ func parts(units []model.Unit) []Part {
 	return append(mods, feats...)
 }
 
-// withoutLibraries leaves out the external libraries and the relations and
-// phrases that reach them. No view draws a library yet.
-func withoutLibraries(units []model.Unit) []model.Unit {
-	ext := map[model.ID]bool{}
-	for _, u := range units {
-		if u.Kind == model.External {
-			ext[u.ID] = true
+// usedBy names on each external library's row the units that depend on it,
+// so the list keeps every use the overview folds into one line or one chip.
+func usedBy(rows []UnitRow, units []model.Unit) {
+	at := map[string]int{}
+	for i, r := range rows {
+		if r.Kind == string(model.External) {
+			at[r.ID] = i
 		}
 	}
-	if len(ext) == 0 {
-		return units
+	if len(at) == 0 {
+		return
 	}
-	out := make([]model.Unit, 0, len(units))
-	for _, u := range units {
-		if ext[u.ID] {
-			continue
+	for _, u := range model.Present(units) {
+		for _, r := range u.Relations {
+			if i, ok := at[string(r.To)]; ok && !r.Dead && !slices.Contains(rows[i].UsedBy, u.Name.Value) {
+				rows[i].UsedBy = append(rows[i].UsedBy, u.Name.Value)
+			}
 		}
-		u.Relations = slices.DeleteFunc(slices.Clone(u.Relations), func(r model.Relation) bool { return ext[r.To] })
-		u.Hidden = slices.DeleteFunc(slices.Clone(u.Hidden), func(r model.Relation) bool { return ext[r.To] })
-		u.Phrases = slices.DeleteFunc(slices.Clone(u.Phrases), func(n model.PhraseNote) bool { return ext[n.To] })
-		out = append(out, u)
 	}
-	return out
 }
