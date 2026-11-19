@@ -99,11 +99,9 @@ func Load(st store.Store) (Input, error) {
 	if in.Project, err = st.LoadProject(); err != nil {
 		return in, err
 	}
-	// A name taken from the checkout's folder would differ per clone with
-	// no input changing, so with none written the blueprint is ABBD's.
-	if in.Project.Name == "" {
-		in.Project.Name = "ABBD"
-	}
+	// With no name written the pages carry none. The checkout's folder would
+	// differ per clone with no input changing, and ABBD's own name on
+	// another repository's blueprint says what it is not.
 	if in.Synced, err = st.LoadState(); err != nil {
 		return in, err
 	}
