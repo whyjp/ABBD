@@ -244,13 +244,17 @@ func (d *Drawing) subtitle(b *Box) {
 	}
 	s := kind
 	switch {
+	case b.UsedBy > 0:
+		// A hub whose lines are folded says how many boxes use it, in place
+		// of its kind and role, since the line stands for its lines.
+		s = usedByText(b.UsedBy)
 	case outside(*b):
 		s = r + " · " + kind
 	case r != "":
 		s += " · " + r
 	}
 	width := subWidth
-	if b.Gist != "" {
+	if b.Gist != "" && b.UsedBy == 0 {
 		width = monoWidth
 		if width(s) > b.W-16 {
 			s = kind

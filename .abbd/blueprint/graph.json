@@ -2221,6 +2221,7 @@
         "internal/screen/graph.go",
         "internal/screen/hop.go",
         "internal/screen/hover.go",
+        "internal/screen/hubfold.go",
         "internal/screen/hues.go",
         "internal/screen/ink.go",
         "internal/screen/inside.go",
@@ -2443,11 +2444,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "정렬한 파일 집합을 상대 경로, 길이, 바이트로 해시한다. InputsHash는 블루프린트와 state.yaml을 뺀 .abbd 파일 모두에 걸치고, 상태는 그것을 블루프린트를 그린 입력으로 남긴다.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go InputsHash",
@@ -2487,11 +2490,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a diff can compare today's units with those committed at a base revision",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go UnitsAt"
@@ -29081,6 +29086,68 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "허브 접기",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "overview_fold_hubs",
+                "Code": true
+              },
+              {
+                "Text": "를 켜면 ",
+                "Code": false
+              },
+              {
+                "Text": "foldHubs",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "hubfold.go",
+                "Code": true
+              },
+              {
+                "Text": ")가 수준 규칙 L이 계획에서 고르는 허브로 드는 선을 접고, 허브의 마지막 줄이 종류와 역할 대신 ",
+                "Code": false
+              },
+              {
+                "Text": "N개 상자가 사용",
+                "Code": true
+              },
+              {
+                "Text": "이라 말하며 툴팁이 그 상자들을 이름 댄다. 허브가 되쓰는 쌍, 기록이 낱말을 준 쌍, 모든 연결을 그린 그림의 리드가 타는 쌍, 주 흐름 단계인 허브의 선은 남는다. 접은 쌍은 ",
+                "Code": false
+              },
+              {
+                "Text": "Counted",
+                "Code": true
+              },
+              {
+                "Text": "에 남아 L과 모든 셈이 그대로 읽고 어느 상자의 ",
+                "Code": false
+              },
+              {
+                "Text": "+N",
+                "Code": true
+              },
+              {
+                "Text": "에도 더해지지 않으며, 초점 뷰는 접지 않은 개요가 정한 자리에 상자를 놓는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -32487,7 +32554,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -32591,7 +32658,15 @@
                 "Code": true
               },
               {
-                "Text": " 사본도 이 패키지가 맡는다.",
+                "Text": " 사본도 이 패키지가 맡는다. project.yaml의 ",
+                "Code": false
+              },
+              {
+                "Text": "overview_fold_hubs",
+                "Code": true
+              },
+              {
+                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다.",
                 "Code": false
               }
             ]
@@ -33413,6 +33488,19 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "overview-fold-hubs",
+                "Name": "overview_fold_hubs",
+                "Shape": "bool",
                 "Need": "선택",
                 "Users": [
                   {

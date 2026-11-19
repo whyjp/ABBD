@@ -565,6 +565,10 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// OverviewFoldHubs folds the lines into each hub of the overview, a box
+	// most of the others use as level L reads it, into one line on the hub
+	// that says how many boxes use it. Off by default.
+	OverviewFoldHubs bool `yaml:"overview_fold_hubs,omitempty"`
 	// Language is the BCP-47 tag of the language a person reads the
 	// stored prose in, such as ko. Loading refuses a tag that is no
 	// BCP-47 tag. The zero Language leaves the choice to the OS.
