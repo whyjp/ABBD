@@ -633,8 +633,8 @@ func (l *look) usersAbove() []Breach {
 	both, far := map[[2]int]bool{}, map[[2]int]bool{}
 	// A road draws a mutual line on pieces other lines ride too, so its own
 	// route names its two ends where no wire does.
-	mutual := func(kind string, ends []string) {
-		if kind != kindMutual || len(ends) != 2 {
+	mutual := func(kind string, two bool, ends []string) {
+		if kind != kindMutual && !two || len(ends) != 2 {
 			return
 		}
 		a, okA := l.at[ends[0]]
@@ -644,10 +644,10 @@ func (l *look) usersAbove() []Breach {
 		}
 	}
 	for _, w := range l.v.d.Wires {
-		mutual(w.Kind, w.ends)
+		mutual(w.Kind, w.Both, w.ends)
 	}
 	for _, r := range l.v.d.Routes {
-		mutual(r.Kind, r.ends)
+		mutual(r.Kind, r.Both, r.ends)
 	}
 	for _, r := range l.boxRels {
 		ru, rv := l.row[r[0]], l.row[r[1]]

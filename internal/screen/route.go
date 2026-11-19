@@ -69,6 +69,9 @@ type drawn struct {
 	kind    string
 	// own is the stretch of ink the count stands beside.
 	own [2]pt
+	// both says the path carries a line that reads both ways, folded
+	// (fold.go): it has a head where it leaves its box too.
+	both bool
 }
 
 type pt struct{ x, y int }
@@ -175,9 +178,15 @@ func (l *layout) routeLines(reqs []wireReq) routing {
 	s := builtin{}.route(newRouter(*l, reqs))
 	*l = s.at
 	r := s.r
-	if l.roads {
-		r.confluent(reqs, l.position, len(l.rows), l.apart, l.hooks.onRoads())
+	if !l.roads {
+		return r
 	}
+	// A folded pair rides the roads as the one line it is drawn as.
+	if folded, f, ok := r.fold(); ok {
+		folded.confluent(f.reqs(reqs), l.position, len(l.rows), l.apart, l.hooks.onRoads())
+		return f.unfold(folded)
+	}
+	r.confluent(reqs, l.position, len(l.rows), l.apart, l.hooks.onRoads())
 	return r
 }
 
@@ -410,6 +419,9 @@ type routing struct {
 	joined bool
 	// tracks is the track each crossing took, by gap and owner.
 	tracks map[[3]int]int
+	// rider holds, for each line, the line the router folded it into
+	// (fold.go), or -1; nil where it folded none.
+	rider []int
 }
 
 // layOpts are the modes lay draws a view's lines in, the ones route turns
@@ -619,7 +631,7 @@ func drawnRels(reqs []wireReq) [][2]string {
 	var out [][2]string
 	for _, r := range reqs {
 		out = append(out, [2]string{shape(r.from), shape(r.to)})
-		if r.kind == kindMutual {
+		if r.twoWay() {
 			out = append(out, [2]string{shape(r.to), shape(r.from)})
 		}
 	}
@@ -655,7 +667,7 @@ func wanted(reqs []wireReq) [][2]string {
 	var out [][2]string
 	for _, r := range reqs {
 		out = append(out, [2]string{endID(r.from), endID(r.to)})
-		if r.kind == kindMutual {
+		if r.twoWay() {
 			out = append(out, [2]string{endID(r.to), endID(r.from)})
 		}
 	}

@@ -92,7 +92,7 @@ func inkGraph(s sheet) ink {
 	var raws []raw
 	for _, w := range s.strokes {
 		c := s.inkColour(w.class)
-		both := strings.Contains(" "+w.class+" ", " mutual ")
+		both := strings.Contains(" "+w.class+" ", " mutual ") || strings.Contains(" "+w.class+" ", " both ")
 		for i := 1; i < len(w.pts); i++ {
 			a, b := w.pts[i-1], w.pts[i]
 			if dist(a, b) < 0.5 {
@@ -476,15 +476,25 @@ func trace(s sheet, rels [][2]string) Trace {
 	if s.roads && s.routed {
 		traced = map[[2]string]bool{}
 		t.Bends, t.Jogs, t.Crossings, t.Ways = nil, nil, nil, nil
+		// The two lines of a folded pair share one route, the folded line's
+		// (fold.go): it is one way, traced both ways, once.
+		seen := map[string]bool{}
 		for _, r := range s.routes {
 			if len(r.pts) < 2 {
 				continue
+			}
+			if folded(r.class) {
+				k := fmt.Sprint(r.pts)
+				if seen[k] {
+					continue
+				}
+				seen[k] = true
 			}
 			f, to := shapeOf(s, r.pts[0]), shapeOf(s, r.pts[len(r.pts)-1])
 			if f < 0 || to < 0 {
 				continue
 			}
-			both := strings.Contains(" "+r.class+" ", " mutual ")
+			both := strings.Contains(" "+r.class+" ", " mutual ") || strings.Contains(" "+r.class+" ", " both ")
 			joined := false
 			for _, fi := range strings.Fields(s.shapes[f].id) {
 				for _, ti := range strings.Fields(s.shapes[to].id) {

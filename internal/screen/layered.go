@@ -237,6 +237,12 @@ type tactic struct {
 	// keep the drawing with it only where letting them share roads reads
 	// worse on some total the gate holds a view to (sharedOrApart).
 	apart bool
+	// pairs lets the router fold true reverse pairs into one line each
+	// with a head at each end (fold.go): every pair (foldAll), or only the
+	// lone ones (foldLone). choose and the focus views keep the drawing with
+	// it only where it reads no worse on every total the gate holds a view
+	// to, on the crossings and on the phantom pairs (foldsNoWorse).
+	pairs int
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true},

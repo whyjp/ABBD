@@ -179,7 +179,7 @@ func (d *Drawing) hubLines() {
 			continue
 		}
 		w.Hue = hue
-		if !w.Joins {
+		if !w.Joins || w.folded() {
 			w.Head = shapes[w.Kind] + "-" + hue
 			used[w.Head] = true
 		}

@@ -125,9 +125,7 @@ func elementsOf(d Drawing, k inkMeasure) Elements {
 	}
 	e := Elements{Shapes: len(d.Boxes) + len(chips), Ink: k.runs, Bends: k.bends, Lines: len(d.ways)}
 	for _, w := range d.Wires {
-		if w.Label != nil {
-			e.Words++
-		}
+		e.Words += len(w.Words())
 		if w.Count > 0 {
 			e.Badges++
 		}

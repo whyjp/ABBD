@@ -196,7 +196,8 @@ func (ly *layRun) plan() {
 		ak.key += "|" + r.kind
 		// A line between two modules that use each other reads both ways,
 		// so apart keeps it off the buses of other pairs' lines (rule 18).
-		if o.Apart && r.kind == kindMutual {
+		// A folded pair always rides buses of its own.
+		if r.both || o.Apart && r.kind == kindMutual {
 			dk.key += "|" + place(r.to)
 			ak.key += "|" + place(r.from)
 		}
@@ -1560,7 +1561,7 @@ func (ly *layRun) makeRoom() {
 			o = busOwner(p.arr)
 		}
 		headRoom(p.gaps[k-1], o, r.to, ly.sideOf(p, false))
-		if r.kind == kindMutual {
+		if r.twoWay() {
 			headRoom(p.gaps[0], ly.owner(i, 0), r.from, ly.sideOf(p, true))
 		}
 	}
@@ -1904,6 +1905,7 @@ func (ly *layRun) routing() routing {
 	l, reqs, plans, out, ways, leave, arrive, keys := ly.l, ly.reqs, ly.plans, ly.out, ly.ways, ly.leave, ly.arrive, ly.keys
 	for k := range out {
 		out[k].kind = reqs[out[k].reqs[0]].kind
+		out[k].both = slices.ContainsFunc(out[k].reqs, func(i int) bool { return reqs[i].both })
 	}
 	for i := range reqs {
 		if p := &plans[i]; p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride < len(p.gaps)-1 && p.via < 0 && len(out) > 0 {
