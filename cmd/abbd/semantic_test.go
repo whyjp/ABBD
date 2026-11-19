@@ -304,6 +304,15 @@ func TestUnderstandRefusesALongSummary(t *testing.T) {
 	p.want(1, "the page shows it first", "understand", "MOD-0001", text)
 }
 
+// abbd understand refuses a text that starts with a frontmatter fence,
+// which the page would show as a line of dashes over the summary.
+func TestUnderstandRefusesATextThatStartsWithAFence(t *testing.T) {
+	t.Parallel()
+	p := semanticProject(t)
+	text := p.file(t, "how.md", "---\n\n## Overview\nbilling charges each card.\n")
+	p.want(1, "a frontmatter fence", "understand", "MOD-0001", text)
+}
+
 // status counts the relations that say no via, which the drawing reads as
 // run-time.
 func TestStatusCountsRelationsWithoutAVia(t *testing.T) {
