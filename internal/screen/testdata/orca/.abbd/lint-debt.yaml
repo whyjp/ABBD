@@ -53,6 +53,6 @@ pages:
         dots: 10
         false_joins: 0
         label_repeats: 0
-        labelled: 2 # 4 until every line rested grey: 설정 and 빌드 기능 stood over the flat track above the bottom chips, so they went to the tooltip
+        labelled: 2
         parallel_ink: 0
         two_lane_off: 0
