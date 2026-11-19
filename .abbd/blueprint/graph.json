@@ -2237,6 +2237,7 @@
         "internal/screen/figure.go",
         "internal/screen/flow.go",
         "internal/screen/focus.go",
+        "internal/screen/fold.go",
         "internal/screen/gate.go",
         "internal/screen/graph.go",
         "internal/screen/hop.go",
@@ -24774,6 +24775,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -25267,7 +25269,23 @@
                 "Code": true
               },
               {
-                "Text": " 선 하나를 함께 쓴다. 어느 깊이의 단위에서 나온 관계든 그것을 품은 최상위 단위로 끌어올려진다. sync가 인용을 다시 확인하므로 INFERRED 결합도 그린다. 죽은 것만 빠지고, 어긋난(drifted) 것은 살아 있는 것처럼 그린다. 그려진 간선은 그 아래 관계 중 하나라도 스크립트의 것이면 추출, 아니면 사람이 말한 것, 그것도 아니면 판독으로 친다. 선 시작의 작은 원은 에이전트나 사람의 관계를 표시하고, 둘이 섞인 묶음은 ",
+                "Text": " 선 하나를 함께 쓴다. 어느 뷰에서든 두 상자가 같은 종류, 같은 점선 여부의 선으로 서로를 쓰고 두 선이 상자 자체에서 끝나면 진짜 되돌림 쌍이다. ",
+                "Code": false
+              },
+              {
+                "Text": "fold",
+                "Code": true
+              },
+              {
+                "Text": "는 이를 양 끝에 머리가 있는 선 하나로 접는다. 접힌 선은 제 버스와 도로만 타고, 말은 두 방향 낱말을 함께 적으며, 호버는 두 관계를 함께 밝힌다. ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": "는 게이트가 보는 합계, 교차, 가짜 쌍이 하나도 나빠지지 않을 때만 접은 그림을 남기고, 아니면 다른 선과 잉크를 나누지 않는 쌍만 접어 본다. 어느 깊이의 단위에서 나온 관계든 그것을 품은 최상위 단위로 끌어올려진다. sync가 인용을 다시 확인하므로 INFERRED 결합도 그린다. 죽은 것만 빠지고, 어긋난(drifted) 것은 살아 있는 것처럼 그린다. 그려진 간선은 그 아래 관계 중 하나라도 스크립트의 것이면 추출, 아니면 사람이 말한 것, 그것도 아니면 판독으로 친다. 선 시작의 작은 원은 에이전트나 사람의 관계를 표시하고, 둘이 섞인 묶음은 ",
                 "Code": false
               },
               {
@@ -27815,6 +27833,92 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "fold",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "fold.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "foldable",
+                "Code": true
+              },
+              {
+                "Text": "은 요청 가운데 진짜 되돌림 쌍을 [남는 선, 접히는 선]으로 고르고, 읽는 방향으로 가는 선을 남긴다. ",
+                "Code": false
+              },
+              {
+                "Text": "folding",
+                "Code": true
+              },
+              {
+                "Text": "은 뷰의 선과 놓을 선 사이를 오가며, 접은 요청은 ",
+                "Code": false
+              },
+              {
+                "Text": "wireReq.both",
+                "Code": true
+              },
+              {
+                "Text": "로 양쪽을 읽고 제 버스만 탄다. ",
+                "Code": false
+              },
+              {
+                "Text": "unfold",
+                "Code": true
+              },
+              {
+                "Text": "는 놓은 그림을 뷰의 선으로 되돌려 접힌 선이 남은 선의 길을 거꾸로 따르게 하고, ",
+                "Code": false
+              },
+              {
+                "Text": "routing.rider",
+                "Code": true
+              },
+              {
+                "Text": "가 그 짝을 적는다. 도로는 접은 공간에서 돌고, ",
+                "Code": false
+              },
+              {
+                "Text": "hover",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": "는 두 선에 같은 길, 양 머리, 두 관계를 준다. ",
+                "Code": false
+              },
+              {
+                "Text": "lone",
+                "Code": true
+              },
+              {
+                "Text": "은 제3의 선과 잉크를 나누지 않는 쌍만 남기는 둘째 단계다. 축을 거스르는지는 남은 선의 길만 말하므로 한 획은 한 번만 센다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "route",
                 "Code": true
               },
@@ -28012,6 +28116,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "fold",
+                "Code": true
+              },
+              {
                 "Text": ")마다 복사본 위에 놓아 그 그림을 재므로 레이아웃을 되돌리는 일이 없고, 정책(",
                 "Code": false
               },
@@ -28044,7 +28156,39 @@
                 "Code": true
               },
               {
-                "Text": "가 같은 그림을 다시 그린다. ",
+                "Text": "가 같은 그림을 다시 그린다. 레이아웃이 허락하면(",
+                "Code": false
+              },
+              {
+                "Text": "tactic.pairs",
+                "Code": true
+              },
+              {
+                "Text": ") ",
+                "Code": false
+              },
+              {
+                "Text": "builtin",
+                "Code": true
+              },
+              {
+                "Text": "은 남긴 그림 위에서 진짜 되돌림 쌍을 ",
+                "Code": false
+              },
+              {
+                "Text": "fold",
+                "Code": true
+              },
+              {
+                "Text": "로 접고, 남긴 그림의 액션을 그 뒤에 다시 두어 접지 않은 선은 같은 모드로 놓는다(",
+                "Code": false
+              },
+              {
+                "Text": "fold.go",
+                "Code": true
+              },
+              {
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -28065,6 +28209,14 @@
               },
               {
                 "Text": "roads",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "fold",
                 "Code": true
               },
               {
