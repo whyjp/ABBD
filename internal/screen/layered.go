@@ -239,11 +239,11 @@ type tactic struct {
 	apart bool
 }
 
-var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
+var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true},
 	{seated: true}, {seated: true, median: true}, {seated: true, reversed: true},
 	{laned: true}, {laned: true, median: true}, {laned: true, reversed: true},
-	{laned: true, follow: true}, {laned: true, median: true, follow: true}, {laned: true, reversed: true, follow: true},
-	{loose: true}, {loose: true, median: true}, {loose: true, reversed: true},
+	{laned: true, reversed: true, follow: true},
+	{loose: true, reversed: true},
 	{cover: true}, {loose: true, cover: true}, {loose: true, cover: true, reorder: true},
 	{gather: true}, {gather: true, median: true}}
 
