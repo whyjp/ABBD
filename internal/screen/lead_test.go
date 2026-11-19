@@ -130,8 +130,8 @@ func newTreeFor(t *testing.T) tree {
 	return newTree(units)
 }
 
-// A view past hover's caps has no routes to light its lines again, so it
-// draws its lead but never rests its other lines grey.
+// A view past hover's caps has no routes to light, so it draws its lead
+// but never thins its other lines.
 func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 	t.Parallel()
 	cli, st, gitx := model.ID("MOD-0001"), model.ID("MOD-0041"), model.ID("MOD-0022")
@@ -146,7 +146,7 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 		t.Fatal("a view past the caps draws no lead")
 	}
 	if d.Quiet {
-		t.Error("a view past the caps rests its lines grey with no way to light them")
+		t.Error("a view past the caps thins its lines with no way to light them")
 	}
 }
 

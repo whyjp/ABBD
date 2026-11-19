@@ -187,6 +187,9 @@ func (e env) recordUnit(pos []string) error {
 	if err := kind.Validate(); err != nil {
 		return err
 	}
+	if kind == model.External {
+		return fmt.Errorf("an external library is what a manifest declares, so the extraction reports it: register abbd libs in front of the extraction")
+	}
 	if name == "" {
 		return fmt.Errorf("name the unit")
 	}

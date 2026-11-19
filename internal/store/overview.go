@@ -26,6 +26,7 @@ type Overview struct {
 	Zones   []Part[model.Zone]
 	Lines   []Part[model.Line]
 	Scopes  []Part[model.ScopeMark]
+	Ambient []Part[model.AmbientMark]
 	Caption string
 	File    string
 	Known   bool
@@ -34,14 +35,15 @@ type Overview struct {
 
 // overviewYAML is the overview's frontmatter, its parts as Z and L: the
 // claims alone in a draft, the stamped parts in the stored file.
-type overviewYAML[Z, L, S any] struct {
-	Format int `yaml:"format,omitempty"`
-	Zones  []Z `yaml:"zones,omitempty"`
-	Lines  []L `yaml:"lines,omitempty"`
-	Scope  []S `yaml:"scope,omitempty"`
+type overviewYAML[Z, L, S, A any] struct {
+	Format  int `yaml:"format,omitempty"`
+	Zones   []Z `yaml:"zones,omitempty"`
+	Lines   []L `yaml:"lines,omitempty"`
+	Scope   []S `yaml:"scope,omitempty"`
+	Ambient []A `yaml:"ambient,omitempty"`
 }
 
-type storedOverview = overviewYAML[Part[model.Zone], Part[model.Line], Part[model.ScopeMark]]
+type storedOverview = overviewYAML[Part[model.Zone], Part[model.Line], Part[model.ScopeMark], Part[model.AmbientMark]]
 
 // decodeOverview reads an overview's frontmatter, refusing a key it does not
 // know, so a misspelt field is no part silently dropped.
@@ -77,6 +79,7 @@ func ParseOverviewDraft(b []byte) (Overview, error) {
 	out.Zones = claimsOnly(o.Zones)
 	out.Lines = claimsOnly(o.Lines)
 	out.Scopes = claimsOnly(o.Scope)
+	out.Ambient = claimsOnly(o.Ambient)
 	return out, nil
 }
 
@@ -91,8 +94,8 @@ func claimsOnly[C model.Claim[C]](parts []Part[C]) []Part[C] {
 // OverviewDraft is the stored overview as a draft to edit, without what
 // abbd sets.
 func OverviewDraft(o Overview) ([]byte, error) {
-	var d overviewYAML[model.Zone, model.Line, model.ScopeMark]
-	d.Zones, d.Lines, d.Scope = ClaimsOf(o.Zones), ClaimsOf(o.Lines), ClaimsOf(o.Scopes)
+	var d overviewYAML[model.Zone, model.Line, model.ScopeMark, model.AmbientMark]
+	d.Zones, d.Lines, d.Scope, d.Ambient = ClaimsOf(o.Zones), ClaimsOf(o.Lines), ClaimsOf(o.Scopes), ClaimsOf(o.Ambient)
 	front, err := yaml.Marshal(d)
 	if err != nil {
 		return nil, err
@@ -114,9 +117,12 @@ func SaveOverview(s Store, o Overview) error {
 	if o.Scopes, err = stampParts(s, "scope", o.Scopes); err != nil {
 		return err
 	}
+	if o.Ambient, err = stampParts(s, "ambient", o.Ambient); err != nil {
+		return err
+	}
 	var f storedOverview
 	f.Format = figureFormat
-	f.Zones, f.Lines, f.Scope = plainQuotes(o.Zones), plainQuotes(o.Lines), plainQuotes(o.Scopes)
+	f.Zones, f.Lines, f.Scope, f.Ambient = plainQuotes(o.Zones), plainQuotes(o.Lines), plainQuotes(o.Scopes), plainQuotes(o.Ambient)
 	front, err := yaml.Marshal(f)
 	if err != nil {
 		return err
@@ -146,10 +152,11 @@ func (s Store) LoadOverview() (Overview, error) {
 	if err != nil {
 		return Overview{File: file, Why: "has frontmatter abbd cannot read (" + err.Error() + ")"}, nil
 	}
-	o := Overview{Zones: f.Zones, Lines: f.Lines, Scopes: f.Scope, Caption: CleanText(string(body)), File: file, Known: true}
+	o := Overview{Zones: f.Zones, Lines: f.Lines, Scopes: f.Scope, Ambient: f.Ambient, Caption: CleanText(string(body)), File: file, Known: true}
 	readParts(s, o.Zones)
 	readParts(s, o.Lines)
 	readParts(s, o.Scopes)
+	readParts(s, o.Ambient)
 	return o, nil
 }
 
@@ -167,6 +174,16 @@ func (o Overview) Gaps(units []model.Unit) []OverviewGap {
 	add("zone", model.Zone{}.Kind().Whole(nil, ClaimsOf(o.Zones), units))
 	add("line", model.Line{}.Kind().Whole(nil, ClaimsOf(o.Lines), units))
 	add("scope", model.ScopeMark{}.Kind().Whole(nil, ClaimsOf(o.Scopes), units))
+	add("ambient", model.AmbientMark{}.Kind().Whole(nil, ClaimsOf(o.Ambient), units))
+	// A unit a scope mark says is no part of the product is no foundation of
+	// it either.
+	for i, a := range o.Ambient {
+		for _, s := range o.Scopes {
+			if s.Claim.Unit == a.Claim.Unit {
+				out = append(out, OverviewGap{Part: "ambient", Gap: model.Gap{Text: fmt.Sprintf("%s is marked %s and ambient; a %s is no part of the product, so drop one mark", a.Claim.Unit, s.Claim.Scope, s.Claim.Scope), Parts: []int{i + 1}}})
+			}
+		}
+	}
 	return out
 }
 
