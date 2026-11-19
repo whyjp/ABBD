@@ -39,6 +39,9 @@ func symmetryOf(d Drawing) symmetry {
 			}
 		}
 	}
+	// kids are the doubled centres of the boxes each box uses in the row
+	// right below, each centre once: two lines to one box, or a box both
+	// ways, count it once, and two boxes on one centre give no span.
 	kids := map[string][]int{}
 	for _, u := range d.uses() {
 		p, ok1 := at[u.from]
