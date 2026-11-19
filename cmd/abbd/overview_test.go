@@ -237,7 +237,7 @@ func TestExplainGivesTheStageABoxStandsAtThroughAUnitInsideIt(t *testing.T) {
 	inner := strings.Replace(strings.Replace(chargeStack, "layers:\n", "primary: true\nlayers:\n", 1), "    units: [MOD-0001]", "    units: [DATA-0001]", 1)
 	inner = strings.Replace(inner, `      - {path: billing/charge.go, lines: "4", symbol: Charge, quote: "func Charge() {}"}`, `      - {path: billing/charge.go, lines: "3", quote: "INSERT INTO charges"}`, 1)
 	p.stack(0, "marked stack charge the primary flow", inner)
-	p.want(0, "주 흐름 charge 2/2단계 billing, 안의 DATA-0001로", "explain", "MOD-0001")
+	p.want(0, "주 흐름 charge 2/2단계 billing, 내부 DATA-0001 기준", "explain", "MOD-0001")
 }
 
 // abbd status's help names the overview's parts among what fails --check.

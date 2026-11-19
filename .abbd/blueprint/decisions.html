@@ -299,7 +299,7 @@ svg [data-h="n"] { --c: var(--hn); }
 
 <section id="decisions">
   <h2>결정 목록 <span class="muted" style="font-weight:400;font-size:13px">1개</span></h2>
-  <p class="muted" style="margin:0 0 6px">리더가 읽은 결정입니다. 코드가 무엇을 무엇 대신 골랐는지, 사람이 말한 까닭이 있으면 그것과 함께 둡니다. 이름을 누르면 그 결정이 놓인 단위로 갑니다.</p>
+  <p class="muted" style="margin:0 0 6px">에이전트가 읽은 결정입니다. 코드가 무엇 대신 무엇을 골랐는지 적고, 사람이 말한 이유가 있으면 함께 둡니다. 이름을 누르면 그 결정이 놓인 단위로 갑니다.</p>
   <div class="decision"><h3><a href="MOD-0001.html#n-DATA-0006.decisions.revision-stays">sync state</a> <span class="muted key">DATA-0006 · revision-stays</span></h3><p><code>revision</code> stays the commit where a tree was first synced. A sync whose tree matches the stored fingerprint keeps the stored revision, and only a new tree, or a state without a revision, takes <code>HEAD</code>. Committing <code>.abbd/</code> after a sync moves <code>HEAD</code> without changing the tree, so the next sync writes the same bytes and <code>.abbd/</code> stays clean. A drifted quote dies at the first sync of a later revision, and this keeps one revision from counting as two.</p></div>
 </section>
 <p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>

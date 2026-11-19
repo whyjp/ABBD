@@ -32,9 +32,9 @@ func TestPagesSayWhatEachModuleIsFor(t *testing.T) {
 			}
 		}
 	}
-	contains("MOD-0003.html", "<strong>맡은 것</strong> runs one search over a file", "<strong>왜 있는가</strong> keeps reading apart from matching")
+	contains("MOD-0003.html", "<strong>역할</strong> runs one search over a file", "<strong>목적</strong> keeps reading apart from matching")
 	contains("index.html", "<title>MOD-0003 grep-searcher: runs one search over a file")
-	contains("MOD-0003.html", `class="read" title="판독: `, "기울인 문장은 리더가 읽은 것입니다")
+	contains("MOD-0003.html", `class="read" title="판독: `, "기울인 문장은 에이전트가 읽은 것입니다")
 	contains("contracts.html", "carries matches to a sink")
 }
 
@@ -46,7 +46,7 @@ func TestAModulePageSaysItsStanding(t *testing.T) {
 	units := append(ripgrep(), inside("MOD-0006", "MOD-0003", rel("IF-0002", model.Consumes), gone))
 	in := Input{Units: units, Understandings: map[model.ID]store.Understanding{"MOD-0003": {Unit: "MOD-0003", Digest: "old", Text: "### Overview\nIt searches.\n"}}, Digests: map[model.ID]string{"MOD-0003": "new"}}
 	ps := pages(t, Build(in))
-	if want := `<p class="muted standing">계약 1개를 내놓고 2개를 씁니다. 계약 없이 1곳에 직접 의존합니다. 설명은 코드가 바뀐 뒤 다시 읽히지 않았습니다 <span class="pill STALE">STALE</span>. 근거 1개가 코드에서 사라졌습니다.</p>`; !strings.Contains(ps["MOD-0003.html"], want) {
+	if want := `<p class="muted standing">계약 1개를 제공하고 2개를 씁니다. 계약 없이 1곳에 직접 의존합니다. 코드가 바뀐 뒤 설명을 다시 읽지 않았습니다 <span class="pill STALE">STALE</span>. 근거 1개가 코드에서 사라졌습니다.</p>`; !strings.Contains(ps["MOD-0003.html"], want) {
 		t.Errorf("MOD-0003.html should say %s", want)
 	}
 }
@@ -60,7 +60,7 @@ func TestAReaderClaimSaysWhetherItsEvidenceHolds(t *testing.T) {
 		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "2", Quote: "moved", Status: model.Drifted}}}
 	ps := pages(t, Build(Input{Units: append(ripgrep(), inside("MOD-0006", "MOD-0003", held, moved))}))
 	page := ps["MOD-0003.html"]
-	if !strings.Contains(page, `<span class="muted">근거 유지</span>`) || !strings.Contains(page, `근거 어긋남</span>`) {
+	if !strings.Contains(page, `<span class="muted">근거 그대로</span>`) || !strings.Contains(page, `근거 바뀜</span>`) {
 		t.Errorf("each reader's coupling should say whether its evidence holds")
 	}
 	for f, p := range ps {

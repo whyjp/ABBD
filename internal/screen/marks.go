@@ -621,7 +621,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		}
 		most[i] = !saids[i] && words[i] != "" && allVia(t, w.lines) == ""
 		if ps := said(t, w.lines); len(ps) > 0 {
-			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
+			d.Wires[i].Title += "\n오가는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
 		}
 		if cs := conditions(t, w.lines, false); len(cs) > 0 {
