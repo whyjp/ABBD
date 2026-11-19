@@ -100,7 +100,7 @@ func (l *layout) withHops(reqs []wireReq, hop []bool) routing {
 			if l.pos[q.from.node].X > l.pos[q.to.node].X {
 				a, b = b, a
 			}
-			back[i] = (b.x < a.x) != (q.kind == "provides")
+			back[i] = (b.x < a.x) != (q.kind == kindProvides)
 			ways[i] = []pt{a, b}
 			line := []pt{a, b}
 			r.drawn = append(r.drawn, drawn{D: polyline(line), parts: [][]pt{line}, reqs: []int{i}, starts: []pt{a}, back: back[i], kind: q.kind})

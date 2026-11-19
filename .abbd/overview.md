@@ -10,7 +10,7 @@ zones:
           lines: "8"
           quote: Setup reads code with the abbd skill's reader
       code:
-        plugins/abbd/skills/abbd-setup/SKILL.md#quote-e504c6fb: 6263b86408a1a5a3
+        plugins/abbd/skills/abbd-setup/SKILL.md#quote-e504c6fb: 5fae6a69a4e14a88
     - name: 읽는 쪽
       units:
         - MOD-0017

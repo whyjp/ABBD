@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -299,6 +300,38 @@ func TestLintJSONListsTheLevels(t *testing.T) {
 	}
 	if _, ok := by["MOD-0034 internal/screen"]; !ok {
 		t.Errorf("levels has no MOD-0034 internal/screen: %v", r.Levels)
+	}
+}
+
+// lint reports each view's elements against its own range, in the text and
+// the JSON, and the report alone never fails it.
+func TestLintReportsElementsPerView(t *testing.T) {
+	t.Parallel()
+	_, out := lintAt(t, fixtureRoot("self"), "--json")
+	var r lintReport
+	if err := json.Unmarshal([]byte(out), &r); err != nil {
+		t.Fatal(err)
+	}
+	count, over := 0, 0
+	for _, v := range r.Views {
+		e := v.Elements
+		if e.Count == 0 || e.Min > e.Count || e.Max < e.Min {
+			t.Errorf("%s: elements %+v", v.View, e)
+		}
+		count += e.Count
+		if e.Over {
+			over++
+		}
+	}
+	if r.Totals.Elements.Count != count || len(r.Totals.Elements.Over) != over {
+		t.Errorf("totals %+v, want count %d and %d views over", r.Totals.Elements, count, over)
+	}
+	_, text := lintAt(t, fixtureRoot("self"))
+	if !strings.Contains(text, "lint: elements: "+strconv.Itoa(count)+" in "+strconv.Itoa(len(r.Views))+" views") {
+		t.Errorf("no elements line:\n%s", text)
+	}
+	if n := strings.Count(text, "\n  elements: "); n != len(r.Views) {
+		t.Errorf("%d per-view elements lines, want one for each of %d views", n, len(r.Views))
 	}
 }
 

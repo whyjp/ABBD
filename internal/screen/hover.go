@@ -161,7 +161,7 @@ func (d *Drawing) route(r routing, reqs []wireReq, rels func(int) []string) {
 			src = reqs[i].to.node
 		}
 		ps := straight(way)
-		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[i], Both: reqs[i].kind == "mutual", Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i}), rels: rels(i)}
+		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[i], Both: reqs[i].kind == kindMutual, Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i}), rels: rels(i)}
 		rt.runs = runs(rt.D)
 		if rt.Head == "" {
 			rt.Head = "use"

@@ -677,7 +677,7 @@ func measureBy(s sheet, turns func(route int) bool) Metrics {
 	// a bundle of two of them would join their far ends (rule 18): it is a
 	// bundle of its own, as a straight drop is.
 	straight := func(w stroke) bool {
-		return kindOf(w.class) == "mutual" || len(w.pts) == 2 && (w.pts[0].x == w.pts[1].x || w.pts[0].y == w.pts[1].y) && onBox(w.pts[0]) && onBox(w.pts[1])
+		return kindOf(w.class) == kindMutual || len(w.pts) == 2 && (w.pts[0].x == w.pts[1].x || w.pts[0].y == w.pts[1].y) && onBox(w.pts[0]) && onBox(w.pts[1])
 	}
 	leaving := map[string]map[int][]edgeMeet{}
 	for _, w := range ws {

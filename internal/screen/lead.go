@@ -115,42 +115,50 @@ func (d *Drawing) pin() {
 		at := func(a box) {
 			s.X, s.Y, s.W = a.x, a.y, w
 		}
-		for _, a := range []box{{b.X + b.W + 5, b.Y + 4, w, stayH}, {b.X + b.W - w - 4, b.Y - stayH - 5, w, stayH}, {b.X + 4, b.Y - stayH - 5, w, stayH}, {b.X - w - 5, b.Y + 4, w, stayH}, {b.X + b.W - w - 4, b.Y + b.H + 5, w, stayH}, {b.X + 4, b.Y + b.H + 5, w, stayH}} {
+		for _, a := range []box{{b.X + b.W + stayOff, b.Y + stayIn, w, stayH}, {b.X + b.W - w - stayIn, b.Y - stayH - stayOff, w, stayH}, {b.X + stayIn, b.Y - stayH - stayOff, w, stayH}, {b.X - w - stayOff, b.Y + stayIn, w, stayH}, {b.X + b.W - w - stayIn, b.Y + b.H + stayOff, w, stayH}, {b.X + stayIn, b.Y + b.H + stayOff, w, stayH}} {
 			if d.wordClear(grow(a, inkGap), nil) {
 				at(a)
 				return
 			}
 		}
 		words := b.words()
-		for _, a := range []box{{b.X + b.W - w - 5, b.Y + 5, w, stayH}, {b.X + 5, b.Y + 5, w, stayH}, {b.X + b.W - w - 5, b.Y + b.H - stayH - 5, w, stayH}, {b.X + 5, b.Y + b.H - stayH - 5, w, stayH}} {
+		for _, a := range []box{{b.X + b.W - w - stayOff, b.Y + stayOff, w, stayH}, {b.X + stayOff, b.Y + stayOff, w, stayH}, {b.X + b.W - w - stayOff, b.Y + b.H - stayH - stayOff, w, stayH}, {b.X + stayOff, b.Y + b.H - stayH - stayOff, w, stayH}} {
 			if d.wordClearOf(grow(a, inkGap), words, b.ID) {
 				at(a)
 				return
 			}
 		}
-		for g := 5; g <= stayReach; g += 4 {
-			for _, a := range ring(box{b.X, b.Y, b.W, b.H}, w, g) {
+		for g := stayOff; g <= stayReach; g += ringStep {
+			for _, a := range ring(b.area(), w, g) {
 				if d.wordClear(grow(a, inkGap), nil) {
 					at(a)
 					return
 				}
 			}
 		}
-		at(box{b.X + b.W - w - 4, b.Y - stayH - 5, w, stayH})
+		at(box{b.X + b.W - w - stayIn, b.Y - stayH - stayOff, w, stayH})
 	}
 }
 
-// stayReach is the furthest a stay's pill stands off its box.
-const stayReach = 160
+// stayReach is the furthest a stay's pill stands off its box, stayOff the
+// nearest, and stayIn how far in from a corner it stands along an edge.
+const (
+	stayReach = 160
+	stayOff   = 5
+	stayIn    = 4
+)
+
+// ringStep is how far apart ring tries the places round a box.
+const ringStep = 4
 
 // ring is the places a pill w wide stands g off b: along its top and its
 // bottom edge, then down its right and its left side, every 4px.
 func ring(b box, w, g int) []box {
 	var out []box
-	for x := b.x - w - g; x <= b.x+b.w+g; x += 4 {
+	for x := b.x - w - g; x <= b.x+b.w+g; x += ringStep {
 		out = append(out, box{x, b.y - stayH - g, w, stayH}, box{x, b.y + b.h + g, w, stayH})
 	}
-	for y := b.y - stayH - g; y <= b.y+b.h+g; y += 4 {
+	for y := b.y - stayH - g; y <= b.y+b.h+g; y += ringStep {
 		out = append(out, box{b.x + b.w + g, y, w, stayH}, box{b.x - w - g, y, w, stayH})
 	}
 	return out
@@ -169,10 +177,23 @@ func (b Box) words() []box {
 		if t.Mid {
 			x -= n / 2
 		}
-		out = append(out, box{x, t.Y - 12, n, 15})
+		out = append(out, box{x, t.Y - nameRise, n, nameH})
 	}
 	return out
 }
+
+// A line of a box's words rises nameRise over its baseline and stands
+// nameH tall.
+const (
+	nameRise = 12
+	nameH    = 15
+)
+
+// area is the rectangle a box covers.
+func (b Box) area() box { return box{b.X, b.Y, b.W, b.H} }
+
+// boxMargin is how far a word, a number or a pill keeps off a box's edge.
+const boxMargin = 2
 
 // Hop is one numbered line of the lead: the route of a line the view draws,
 // its arrowheads, where its number sits, and the classes that light it with
@@ -264,7 +285,7 @@ func (d *Drawing) uses() []use {
 	}
 	var out []use
 	for k, r := range d.ways {
-		if r.Kind == "provides" || len(r.ends) != 2 || !boxes[r.ends[0]] || !boxes[r.ends[1]] {
+		if r.Kind == kindProvides || len(r.ends) != 2 || !boxes[r.ends[0]] || !boxes[r.ends[1]] {
 			continue
 		}
 		w := len(slices.Compact(slices.Sorted(slices.Values(r.rels))))
@@ -383,11 +404,11 @@ func leadLines(t tree, flows []flowWalk, ax axis, boxes []model.ID, whole bool, 
 	}
 	var uses []use
 	for k, q := range reqs {
-		if q.kind == "provides" || !on[q.from.node] || !on[q.to.node] || q.from.node == q.to.node {
+		if q.kind == kindProvides || !on[q.from.node] || !on[q.to.node] || q.from.node == q.to.node {
 			continue
 		}
 		w := len(slices.Compact(slices.Sorted(slices.Values(rels(k)))))
-		both := q.kind == "mutual"
+		both := q.kind == kindMutual
 		uses = append(uses, use{from: q.from.node, to: q.to.node, way: k, weight: w, both: both})
 		if both {
 			uses = append(uses, use{from: q.to.node, to: q.from.node, way: k, weight: w, both: true})
@@ -546,17 +567,18 @@ func (d *Drawing) name() {
 			continue
 		}
 		w := textWidth(h.Word, wordPx)
-		spots := []box{{h.X + h.R + 3, h.Y - 7, w, 13}, {h.X - h.R - 3 - w, h.Y - 7, w, 13}, {h.X + 2, h.Y - h.R - 15, w, 13}, {h.X + 2, h.Y + h.R + 2, w, 13}, {h.X - 2 - w, h.Y - h.R - 15, w, 13}, {h.X - 2 - w, h.Y + h.R + 2, w, 13}}
+		over, under := h.Y-h.R-wordGap-wordH, h.Y+h.R+wordGap
+		spots := []box{{h.X + h.R + wordSide, h.Y - wordMid, w, wordH}, {h.X - h.R - wordSide - w, h.Y - wordMid, w, wordH}, {h.X + wordGap, over, w, wordH}, {h.X + wordGap, under, w, wordH}, {h.X - wordGap - w, over, w, wordH}, {h.X - wordGap - w, under, w, wordH}}
 		// Failing those, the word sits right over or under its number,
 		// slid along from centred until it is clear.
 		for s := 0; s <= w/2; s += 2 {
 			for _, x := range []int{h.X - w/2 - s, h.X - w/2 + s} {
-				spots = append(spots, box{x, h.Y - h.R - 15, w, 13}, box{x, h.Y + h.R + 2, w, 13})
+				spots = append(spots, box{x, over, w, wordH}, box{x, under, w, wordH})
 			}
 		}
 		for _, a := range spots {
 			if d.wordClear(a, words) {
-				h.WX, h.WY = a.x, a.y+11
+				h.WX, h.WY = a.x, a.y+wordBase
 				words = append(words, a)
 				break
 			}
@@ -567,8 +589,18 @@ func (d *Drawing) name() {
 	}
 }
 
-// wordPx is the size a step's word sets in beside its number.
-const wordPx = 10
+// wordPx is the size a step's word sets in beside its number. The word
+// stands wordH tall, its baseline wordBase down from its top: wordSide off
+// its number's rim beside it, its middle wordMid over the number's centre,
+// or wordGap off the rim over or under it.
+const (
+	wordPx   = 10
+	wordH    = 13
+	wordBase = 11
+	wordSide = 3
+	wordMid  = 7
+	wordGap  = 2
+)
 
 // wordClear says a step's word set over area meets no box, line, label,
 // number or other step's word, and stands inkGap off every band's title:
@@ -580,7 +612,7 @@ func (d *Drawing) wordClear(area box, words []box) bool {
 // wordClearOf is wordClear inside the box own: it meets no other box.
 func (d *Drawing) wordClearOf(area box, words []box, own string) bool {
 	for _, b := range d.Boxes {
-		if b.ID != own && hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+		if b.ID != own && hit(area, grow(b.area(), boxMargin)) {
 			return false
 		}
 	}
@@ -632,13 +664,13 @@ func (d *Drawing) badge(way, others [][2]pt, taken []pt, arrive bool) (pt, int) 
 	}
 	free := func(p pt, r int) bool {
 		for _, b := range d.Boxes {
-			if hit(box{p.x - r, p.y - r, 2 * r, 2 * r}, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+			if hit(box{p.x - r, p.y - r, 2 * r, 2 * r}, grow(b.area(), boxMargin)) {
 				return false
 			}
 		}
 		here := box{p.x - r - 2, p.y - r - 2, 2*r + 4, 2*r + 4}
 		for _, w := range d.Wires {
-			if w.Label != nil && hit(here, w.Label.area()) || w.Count > 0 && hit(here, box{w.LX - 2, w.LY - 11, 24, 13}) {
+			if w.Label != nil && hit(here, w.Label.area()) || w.Count > 0 && hit(here, countAt(w, countSpot)) {
 				return false
 			}
 		}
@@ -749,8 +781,22 @@ func (d *Drawing) clearOfInk(area box, own [][2]pt) bool {
 
 // countBox is the area a line's ×N count covers.
 func countBox(w Wire) box {
-	return box{w.LX - 2, w.LY - 11, textWidth(fmt.Sprintf("×%d", w.Count), 11) + 4, 13}
+	return countAt(w, textWidth(fmt.Sprintf("×%d", w.Count), 11)+2*countPad)
 }
+
+// countAt is the area a ×N count wide across covers: it stands countPad
+// left of its line's count point and rises countRise over it.
+func countAt(w Wire, wide int) box { return box{w.LX - countPad, w.LY - countRise, wide, countH} }
+
+// A count's area: countPad either side of its text, countRise over its
+// count point, countH tall. countSpot is the width a number or a word keeps
+// clear of any count, whatever its digits.
+const (
+	countPad  = 2
+	countRise = 11
+	countH    = 13
+	countSpot = 24
+)
 
 // badgeClear says a number of radius r at c keeps inkGap from every line
 // of the view that does not run along own, every arrowhead, dot and chip,
@@ -790,24 +836,14 @@ func (d *Drawing) badgeClear(c pt, r int, own [][2]pt) bool {
 func (d *Drawing) onWords(c pt, r int) bool {
 	area := box{c.x - r - 2, c.y - r - 2, 2*r + 4, 2*r + 4}
 	for _, b := range d.Boxes {
-		for _, l := range append(slices.Clone(b.Lines), func() []Text {
-			if b.Sub != nil {
-				return []Text{*b.Sub}
-			}
-			return nil
-		}()...) {
-			w := textWidth(l.S, 13)
-			x := l.X
-			if l.Mid {
-				x -= w / 2
-			}
-			if hit(area, box{x, l.Y - 12, w, 15}) {
+		for _, a := range b.words() {
+			if hit(area, a) {
 				return true
 			}
 		}
 	}
 	for _, w := range d.Wires {
-		if w.Label != nil && hit(area, w.Label.area()) || w.Count > 0 && hit(area, box{w.LX - 2, w.LY - 11, 24, 13}) {
+		if w.Label != nil && hit(area, w.Label.area()) || w.Count > 0 && hit(area, countAt(w, countSpot)) {
 			return true
 		}
 	}

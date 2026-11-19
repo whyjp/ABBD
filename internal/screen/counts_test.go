@@ -42,10 +42,7 @@ func TestOnlyAnUncontestedWordTakesACount(t *testing.T) {
 // own ink or its net's; and a bus of three or more lines that gives up its
 // ×N has that word drawn so.
 func TestABusSaysItsWordOrItsCount(t *testing.T) {
-	t.Cleanup(func() { dropCounts = true })
-	dropCounts = false
-	counted := buildEach(t, fresh)
-	dropCounts = true
+	counted := buildEach(t, func(name string) (Model, error) { return freshWith(name, &hooks{keepCounts: true}) })
 	drawn := buildEach(t, cached)
 	for _, name := range fixtures {
 		loaded, err := store.Open(filepath.Join("testdata", name)).LoadUnits()

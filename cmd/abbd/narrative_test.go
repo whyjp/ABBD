@@ -44,17 +44,20 @@ func TestAPresentStateTextOfShortSectionsReportsNothing(t *testing.T) {
 	p.want(0, "readability: 0 section(s) over 2000 characters, 0 phrase(s)", "status", "--check")
 }
 
-// Both skills that store a text tell the agent what the report checks, at
-// the threshold the report uses.
+// The reader tells the agent what the report checks, at the threshold the
+// report uses, and both skills that store a text send the agent there.
 func TestTheSkillsAskForPresentStateTextsInShortSections(t *testing.T) {
 	t.Parallel()
 	limit := fmt.Sprintf("%d,%03d characters", narrative.MaxSection/1000, narrative.MaxSection%1000)
+	reader := readPlugin(t, "skills", "abbd", "references", "reader.md")
+	for _, want := range []string{"present tense", "issue and PR numbers", "migrated from X", limit, "`###` headings", "Neither fails the check", "refuses only a text whose first section"} {
+		if !strings.Contains(reader, want) {
+			t.Errorf("the reader must say %q", want)
+		}
+	}
 	for _, skill := range []string{"abbd", "abbd-setup"} {
-		text := readPlugin(t, "skills", skill, "SKILL.md")
-		for _, want := range []string{"present tense", "issue and PR numbers", "migrated from X", limit, "`###` headings", "Neither fails the check", "refuses only a text whose first section"} {
-			if !strings.Contains(text, want) {
-				t.Errorf("%s must say %q", skill, want)
-			}
+		if text := readPlugin(t, "skills", skill, "SKILL.md"); !strings.Contains(text, `"What you store"`) {
+			t.Errorf("%s must send the agent to the reader's \"What you store\"", skill)
 		}
 	}
 }

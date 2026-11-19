@@ -217,11 +217,15 @@ func standing(b Box) string {
 		return "허브"
 	case b.Role == "entry":
 		return "진입점"
-	case !coloured(b):
+	case outside(b):
 		return "외부"
 	}
 	return ""
 }
+
+// outside says a box stands outside the project: no hub, no entry, and
+// drawn in no module's colour.
+func outside(b Box) bool { return b.Role != "hub" && b.Role != "entry" && !coloured(b) }
 
 // subtitle sets a box's last line: its kind, and its role. An inside unit
 // has its kind already. A module on the overview takes the line only where
@@ -240,7 +244,7 @@ func (d *Drawing) subtitle(b *Box) {
 	}
 	s := kind
 	switch {
-	case standing(*b) == "외부":
+	case outside(*b):
 		s = r + " · " + kind
 	case r != "":
 		s += " · " + r

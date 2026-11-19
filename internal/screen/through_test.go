@@ -1,6 +1,9 @@
 package screen
 
-import "testing"
+import (
+	"slices"
+	"testing"
+)
 
 // farChain lays out a line from A, in row 0, to Z, in row 2, whose chain
 // the layout set down row 1 at x 1000, past the end of that row's boxes
@@ -65,5 +68,43 @@ func TestADrawingThroughTheGapsIsKeptOnlyWhereTheGateReadsItNoWorse(t *testing.T
 	}
 	if got := pickThrough(0, nil); got != 0 {
 		t.Errorf("through the gaps, unread by lint: kept %d, want the drawing on roads", got)
+	}
+}
+
+// The drawing on roads is judged once on its way through the apart and
+// through stages, whichever of them run, and judging a drawing twice reads
+// it the same: a second judge would only redo the lint.
+func TestTheKeptDrawingOnRoadsIsJudgedOnce(t *testing.T) {
+	judged := map[tactic]int{}
+	choose([]tactic{{}}, func(t tactic, read *cost) (tactic, bool) {
+		read.climbs = t.roads && !t.apart && !t.through
+		read.far, read.strays = 1, true
+		if t.through {
+			read.far = 0
+		}
+		return t, true
+	}, func(t tactic, read *cost) {
+		judged[t]++
+		read.gate = []int{0}
+	})
+	want := []tactic{{}, {roads: true}, {roads: true, apart: true}, {roads: true, through: true}}
+	for _, w := range want {
+		if judged[w] != 1 {
+			t.Errorf("%+v judged %d times, want once", w, judged[w])
+		}
+	}
+	if len(judged) != len(want) {
+		t.Errorf("judged %v, want each of %v once", judged, want)
+	}
+}
+
+func TestJudgingTwiceReadsTheSame(t *testing.T) {
+	m := fixture(t, "self")
+	var once, twice cost
+	once.judge(m.Overview)
+	twice.judge(m.Overview)
+	twice.judge(m.Overview)
+	if !slices.Equal(once.gate, twice.gate) || once.clear != twice.clear || once.hard != twice.hard || once.seen != twice.seen || once.turned != twice.turned {
+		t.Errorf("judged twice: %+v, once: %+v", twice, once)
 	}
 }

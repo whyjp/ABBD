@@ -607,7 +607,7 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 // Every route is inked alike: a line that runs against the reading axis is
 // drawn as any other, so it may share a road with lines that run its way,
 // unless apart keeps such lines on roads of their own.
-func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, apart bool) {
+func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, apart bool, drawn func(routed, ways [][]pt)) {
 	ink, plan, lead, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
 	dest, src, to, from := make([]int, len(reqs)), make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
@@ -718,16 +718,12 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, 
 		cost = v.cost(ways)
 	}
 	ways = r.twoLanes(ways, v)
-	if roadsDrawn != nil {
-		roadsDrawn(r.ways, ways)
+	if drawn != nil {
+		drawn(r.ways, ways)
 	}
 	r.ways = ways
 	r.drawn = roads(ways, ink, reqs, r.back)
 }
-
-// roadsDrawn, when a test sets it, sees each view's routes as routed and
-// as the roads leave them.
-var roadsDrawn func(routed, ways [][]pt)
 
 // step finds the first move that reads better than cost, in order: runs
 // onto a neighbour beside them, longest shared stretch first, then forks

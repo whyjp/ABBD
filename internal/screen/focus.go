@@ -149,6 +149,7 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) [
 	var out []Focus
 	for _, m := range o.modules {
 		f := planScoped(units, m, centres(full), tactic{roads: true}, nil, nil, nil, o.scope)
+		f.hooks = o.hooks
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)

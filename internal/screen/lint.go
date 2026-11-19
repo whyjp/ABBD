@@ -187,6 +187,10 @@ type ViewLint struct {
 	View     string   `json:"view"`
 	Breaches []Breach `json:"breaches"`
 	Totals   Totals   `json:"totals"`
+	// Elements is a diagnostic lint reports and never gates on, read from
+	// the ink lintView measures.
+	Elements Elements `json:"elements"`
+	ink      inkMeasure
 }
 
 // The thresholds of the criteria. They are this file's own constants, as
@@ -205,25 +209,47 @@ const (
 	laneStep = 4.0
 )
 
+// The criteria's IDs, as a breach and the totals name them.
+const (
+	critUsersAbove     = "P1"
+	critSiblingsInARow = "P2"
+	critBends          = "B1"
+	critJogs           = "B2"
+	critTurnBacks      = "B3"
+	critDoubles        = "B4"
+	critSplits         = "J1"
+	critDots           = "J2"
+	critPhantoms       = "J3"
+	critHubsCentred    = "H1"
+	critHubsOneTrunk   = "H2"
+	critSourcesOnTop   = "O1"
+	critSinksAtBottom  = "O2"
+	critClimbs         = "O3"
+	critStagesInOrder  = "O4"
+	critChipsOver      = "F1"
+	critRules          = "R"
+	critScreen         = "S"
+)
+
 var criteria = []Criterion{
-	{ID: "P1", Placement: true, Says: "a user stands in a row above what it uses", check: (*look).usersAbove},
-	{ID: "P2", Placement: true, Says: "boxes used by exactly the same places stand in one row", check: (*look).siblingsInARow},
-	{ID: "B1", Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row, 2 for a branch of a fork into the row below", check: (*look).bendsAllowed},
-	{ID: "B2", Says: "no stretch between two turns of a line is shorter than 24px", check: (*look).noJogs},
-	{ID: "B3", Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
-	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
-	{ID: "J1", Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
-	{ID: "J2", Hard: true, Says: "every four-way join, and every T a gap cuts close by, carries a dot (rule 17)", check: (*look).dotted},
-	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins, but where lines ride roads and light whole (rule 18)", check: (*look).noPhantoms},
-	{ID: "H1", Placement: true, Says: "a box used by 3 or more places stands within the span of its users' centres", check: (*look).hubsCentred},
-	{ID: "H2", Placement: true, Says: "the forward lines of one kind into a hub reach it as one trunk", check: (*look).hubsOneTrunk},
-	{ID: "O1", Placement: true, Says: "a box that only uses stands in the top rows", check: (*look).sourcesOnTop},
-	{ID: "O2", Placement: true, Says: "a box that is only used stands in the bottom rows", check: (*look).sinksAtBottom},
-	{ID: "O3", Hard: true, Says: "a line climbs only to close a cycle", check: (*look).climbsCloseCycles},
-	{ID: "O4", Hard: true, Says: "the primary flow's stages stand in order along the view's flow axis: left to right in one row, or down its rows", check: (*look).stagesInOrder},
-	{ID: "F1", Placement: true, Says: "a frame chip stands over or under the boxes its lines reach", check: (*look).chipsOverTheirBoxes},
-	{ID: "R", Hard: true, Says: "rules 1 to 15 and 21 hold, and every relation is traced", check: (*look).rules},
-	{ID: "S", Says: fmt.Sprintf("the drawing fits one screen, %dpx wide and %dpx tall less what its page sets above it", screenW, screenH), check: (*look).fitsOneScreen},
+	{ID: critUsersAbove, Placement: true, Says: "a user stands in a row above what it uses", check: (*look).usersAbove},
+	{ID: critSiblingsInARow, Placement: true, Says: "boxes used by exactly the same places stand in one row", check: (*look).siblingsInARow},
+	{ID: critBends, Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row, 2 for a branch of a fork into the row below", check: (*look).bendsAllowed},
+	{ID: critJogs, Says: "no stretch between two turns of a line is shorter than 24px", check: (*look).noJogs},
+	{ID: critTurnBacks, Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
+	{ID: critDoubles, Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
+	{ID: critSplits, Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
+	{ID: critDots, Hard: true, Says: "every four-way join, and every T a gap cuts close by, carries a dot (rule 17)", check: (*look).dotted},
+	{ID: critPhantoms, Hard: true, Says: "the ink joins no two places that no relation joins, but where lines ride roads and light whole (rule 18)", check: (*look).noPhantoms},
+	{ID: critHubsCentred, Placement: true, Says: "a box used by 3 or more places stands within the span of its users' centres", check: (*look).hubsCentred},
+	{ID: critHubsOneTrunk, Placement: true, Says: "the forward lines of one kind into a hub reach it as one trunk", check: (*look).hubsOneTrunk},
+	{ID: critSourcesOnTop, Placement: true, Says: "a box that only uses stands in the top rows", check: (*look).sourcesOnTop},
+	{ID: critSinksAtBottom, Placement: true, Says: "a box that is only used stands in the bottom rows", check: (*look).sinksAtBottom},
+	{ID: critClimbs, Hard: true, Says: "a line climbs only to close a cycle", check: (*look).climbsCloseCycles},
+	{ID: critStagesInOrder, Hard: true, Says: "the primary flow's stages stand in order along the view's flow axis: left to right in one row, or down its rows", check: (*look).stagesInOrder},
+	{ID: critChipsOver, Placement: true, Says: "a frame chip stands over or under the boxes its lines reach", check: (*look).chipsOverTheirBoxes},
+	{ID: critRules, Hard: true, Says: "rules 1 to 15 and 21 hold, and every relation is traced", check: (*look).rules},
+	{ID: critScreen, Says: fmt.Sprintf("the drawing fits one screen, %dpx wide and %dpx tall less what its page sets above it", screenW, screenH), check: (*look).fitsOneScreen},
 }
 
 // screenW and screenH are the room a drawing has on one screen: a browser
@@ -323,6 +349,7 @@ func Lint(m Model, only string) ([]ViewLint, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", v.name, err)
 		}
+		got.Elements = elementsOf(v.d, got.ink)
 		out = append(out, got)
 	}
 	return out, nil
@@ -348,7 +375,7 @@ func lintView(v view) (ViewLint, error) {
 			if c.Placement {
 				vl.Totals.Placement++
 			}
-			if c.ID == "B3" || c.ID == "B4" {
+			if c.ID == critTurnBacks || c.ID == critDoubles {
 				vl.Totals.Detours += b.Got
 			}
 		}
@@ -361,14 +388,17 @@ func lintView(v view) (ViewLint, error) {
 	for _, w := range t.Ways {
 		vl.Totals.Doglegs += doglegs(w.pts)
 	}
-	for _, ln := range l.lines() {
+	lines := l.lines()
+	for _, ln := range lines {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + vl.Totals.ExcessTurns + stepCrossings*vl.Totals.Steps
 	vl.Totals.Height = v.d.Height
 	vl.Totals.AgainstAxis, vl.Totals.AgainstAxisInk = againstAxis(v.d)
-	vl.Totals.FlowMonotone = vl.Totals.Criteria["O4"]
-	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
+	vl.Totals.FlowMonotone = vl.Totals.Criteria[critStagesInOrder]
+	stretches := inkStretches(s)
+	vl.ink = measureInk(stretches, lines)
+	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(stretches)
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.TwoLaneOff, vl.Totals.OppositeShared = twoLaneOff(s), oppositeShared(s)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
@@ -610,7 +640,7 @@ func (l *look) usersAbove() []Breach {
 	// A road draws a mutual line on pieces other lines ride too, so its own
 	// route names its two ends where no wire does.
 	mutual := func(kind string, ends []string) {
-		if kind != "mutual" || len(ends) != 2 {
+		if kind != kindMutual || len(ends) != 2 {
 			return
 		}
 		a, okA := l.at[ends[0]]

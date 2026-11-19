@@ -45,6 +45,47 @@ type Input struct {
 	// (primary.go) when Project.Cut() is on. Nil leaves the choice to
 	// the stored flows and stacks.
 	Primary map[string]bool
+	// hooks lets a test look inside a build; nil builds as abbd does.
+	hooks *hooks
+}
+
+// hooks are what a test turns to see a build from inside. Its zero value,
+// or none, builds as abbd does.
+type hooks struct {
+	// keepWords keeps every line's word where it has room, though a line
+	// beside it says it, to see which lines have room for their word.
+	keepWords bool
+	// keepCounts keeps every bus's count, to see each bus's count before
+	// counts are traded for words.
+	keepCounts bool
+	// roadsDrawn sees each view's routes as routed and as the roads leave
+	// them.
+	roadsDrawn func(routed, ways [][]pt)
+	// routing sees each view's layout and lines as route starts to lay
+	// them; it must leave the layout as it found it.
+	routing func(l *layout, reqs []wireReq)
+}
+
+// sayOnce says a word a touching line already says is dropped.
+func (h *hooks) sayOnce() bool { return h == nil || !h.keepWords }
+
+// dropCounts says a bus trades its count for the word its lines say.
+func (h *hooks) dropCounts() bool { return h == nil || !h.keepCounts }
+
+// onRouting is what sees each view as route starts to lay it, or nil.
+func (h *hooks) onRouting() func(l *layout, reqs []wireReq) {
+	if h == nil {
+		return nil
+	}
+	return h.routing
+}
+
+// onRoads is what sees the routes on roads, or nil.
+func (h *hooks) onRoads() func(routed, ways [][]pt) {
+	if h == nil {
+		return nil
+	}
+	return h.roadsDrawn
 }
 
 // Load reads the store. It leaves Tree empty: snapshotting the working tree
@@ -231,6 +272,7 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	scope := scopeOf(in)
 	o := planScoped(in.Units, "", nil, tactic{}, ls, fs, nil, scope)
+	o.hooks = in.hooks
 	var c *cut
 	// A project that turned the cut off draws every line, record or not.
 	off := in.Project.OverviewCut != nil && !*in.Project.OverviewCut
@@ -252,6 +294,7 @@ func Build(in Input) Model {
 	overview := func(c *cut) Drawing {
 		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
 			p := planScoped(in.Units, "", nil, t, ls, fs, c, scope)
+			p.hooks = in.hooks
 			if p.layout.idle {
 				return Drawing{}, false
 			}

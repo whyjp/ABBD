@@ -21,6 +21,17 @@ type Dot struct {
 	Hue string `json:"-"`
 }
 
+// The kinds of line a view draws, as a request's and a path's kind name
+// them. A line between two modules that use each other is mutual.
+const (
+	kindContract  = "contract"
+	kindConsumes  = "consumes"
+	kindDependsOn = "depends_on"
+	kindBypass    = "bypass"
+	kindMutual    = "mutual"
+	kindProvides  = "provides"
+)
+
 // join is where a line of one kind crosses onto a trunk of its kind.
 type join struct {
 	at   pt
@@ -52,8 +63,8 @@ func inkOf(kind string, road bool) string {
 // hue is the ink a kind joins: two modules that use each other are joined
 // as a direct dependency.
 func hue(kind string) string {
-	if kind == "mutual" {
-		return "bypass"
+	if kind == kindMutual {
+		return kindBypass
 	}
 	return kind
 }
