@@ -45,8 +45,7 @@ type Drawing struct {
 	// and Lead the way the view draws bold over them (lead.go).
 	ways []Route
 	Lead *Lead `json:",omitempty"`
-	// Quiet says the view rests its lines grey but for its lead's or its
-	// hub's own (lead.go, dress.go).
+	// Quiet says the view thins every line but its lead's (lead.go).
 	Quiet bool `json:"-"`
 	// Zones are the bands behind the boxes of the groupings the project
 	// shows (zone.go).
@@ -221,8 +220,8 @@ type Wire struct {
 	// Plan says every relation the line stands for arises only in design,
 	// with no call or data at run time, so it is drawn dotted (dress.go).
 	Plan bool `json:"-"`
-	// srcs are the places each of the line's relations leaves, which give
-	// it its colour.
+	// srcs are the places each of the line's relations leaves, which say
+	// where its lines come from (labels, hover).
 	srcs []string
 	// lines are the relations of each line the label speaks for: on the
 	// path that shows a bus's count, the lines it counts, else the path's
