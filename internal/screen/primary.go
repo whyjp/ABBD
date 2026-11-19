@@ -48,7 +48,13 @@ type cut struct {
 	more map[model.ID]int
 	// said are the words a stored overview record gave its chosen lines.
 	said map[pair]string
+	// fold is, for each hub whose incoming lines are folded (hubfold.go), the
+	// boxes that use it.
+	fold map[model.ID][]model.ID
 }
+
+// folds says the cut folds some hub's lines.
+func (c *cut) folds() bool { return c != nil && len(c.fold) > 0 }
 
 // hides says the cut leaves any pair undrawn.
 func (c *cut) hides() bool { return c != nil && len(c.more) > 0 }
@@ -57,10 +63,32 @@ func (c *cut) hides() bool { return c != nil && len(c.more) > 0 }
 // are the stored relations, by relation key, that must be drawn.
 func (o *overview) primary(marked map[string]bool, stacks []layering, flows []flowWalk, recorded map[pair]bool, said map[pair]string) *cut {
 	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
-	rels := map[pair][]string{}
-	contract := map[pair]bool{}
-	var uses []use
-	var ls []pair
+	ls, rels, contract, uses := o.links()
+	if recorded != nil {
+		// A recorded pair no relation joins any more makes the record stale,
+		// and the overview draws as without it.
+		joined := map[pair]bool{}
+		for _, l := range ls {
+			joined[l] = true
+		}
+		for p := range recorded {
+			if !joined[p] {
+				return nil
+			}
+		}
+	}
+	return o.cutOf(ls, rels, contract, uses, marked, stacks, flows, recorded, said, isModule)
+}
+
+// links are the planned overview's links: each pair of places a line would
+// join, in the order a drawing of every pair meets them, the stored
+// relations under each, whether a contract carries it, and the lines such a
+// drawing would draw between modules, as uses, so the lead it would find is
+// found from them (lead.go).
+func (o *overview) links() (ls []pair, rels map[pair][]string, contract map[pair]bool, uses []use) {
+	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
+	rels = map[pair][]string{}
+	contract = map[pair]bool{}
 	add := func(l pair, rs []string) {
 		if _, ok := rels[l]; !ok {
 			ls = append(ls, l)
@@ -101,19 +129,30 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 			add(pairOf(e.From, e.To), o.rels[e.String()])
 		}
 	}
-	if recorded != nil {
-		// A recorded pair no relation joins any more makes the record stale,
-		// and the overview draws as without it.
-		joined := map[pair]bool{}
-		for _, l := range ls {
-			joined[l] = true
-		}
-		for p := range recorded {
-			if !joined[p] {
-				return nil
-			}
-		}
+	return ls, rels, contract, uses
+}
+
+// leadPairs are the pairs the lead a drawing of every link would find rides:
+// the one inferred from the uses, and each stored flow's.
+func (o *overview) leadPairs(uses []use, flows []flowWalk) map[pair]bool {
+	var boxes []Box
+	for _, m := range o.modules {
+		boxes = append(boxes, Box{ID: string(m)})
 	}
+	lead := inferred(boxes, uses)
+	d := Drawing{Boxes: boxes}
+	for _, f := range flows {
+		lead = append(lead, d.followed(o.tree, f, uses)...)
+	}
+	out := map[pair]bool{}
+	for _, h := range lead {
+		out[pairOf(model.ID(h.from), model.ID(h.to))] = true
+	}
+	return out
+}
+
+// cutOf is primary's cut of the links ls, once a record is known current.
+func (o *overview) cutOf(ls []pair, rels map[pair][]string, contract map[pair]bool, uses []use, marked map[string]bool, stacks []layering, flows []flowWalk, recorded map[pair]bool, said map[pair]string, isModule func(model.ID) bool) *cut {
 	if 10*len(ls) <= sparse*len(o.modules) {
 		if recorded == nil {
 			return nil
@@ -136,17 +175,8 @@ func (o *overview) primary(marked map[string]bool, stacks []layering, flows []fl
 			keep[l] = true
 		}
 	}
-	var boxes []Box
-	for _, m := range o.modules {
-		boxes = append(boxes, Box{ID: string(m)})
-	}
-	lead := inferred(boxes, uses)
-	d := Drawing{Boxes: boxes}
-	for _, f := range flows {
-		lead = append(lead, d.followed(o.tree, f, uses)...)
-	}
-	for _, h := range lead {
-		keep[pairOf(model.ID(h.from), model.ID(h.to))] = true
+	for l := range o.leadPairs(uses, flows) {
+		keep[l] = true
 	}
 	box := func(u model.ID) string {
 		if c := o.tree.chain(u); len(c) > 0 && isModule(c[0]) {
