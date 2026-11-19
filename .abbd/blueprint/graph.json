@@ -1392,7 +1392,8 @@
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd",
@@ -6231,13 +6232,13 @@
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 34,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6740,7 +6741,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -8410,7 +8411,7 @@
                 "Code": true
               },
               {
-                "Text": " 줄은 제공자가 셋 이상인 계약에서 개요가 사용자마다 모든 제공자로 잇는 선의 수를 뷰별로 알리고, ",
+                "Text": " 줄은 제공자가 셋 이상인 계약에서 개요가 사용자마다 모든 제공자로 잇는 선의 수를 뷰마다 나열하고, ",
                 "Code": false
               },
               {
@@ -8418,7 +8419,7 @@
                 "Code": true
               },
               {
-                "Text": "의 합계에도 ",
+                "Text": "의 뷰별 합계와 전체 합계에도 ",
                 "Code": false
               },
               {
@@ -22622,7 +22623,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다. 부모 모듈이 있는 계약은 최상위가 아니므로 이 짝짓기에 들지 않고, 그 사용자와 구현자의 관계는 계약을 선언한 부모 모듈과의 간선으로 올라가며, 개요는 그 곁에 ",
+                  "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다. 부모 모듈이 있는 계약은 최상위가 아니므로 이 짝짓기에 들지 않는다. 그 사용자와 구현자의 관계는 계약을 선언한 부모 모듈과의 간선으로 올라가며, 개요는 그 곁에 ",
                   "Code": false
                 },
                 {
@@ -24778,7 +24779,7 @@
                 "Code": true
               },
               {
-                "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다. 부모 모듈이 있는 계약은 최상위가 아니므로 이 짝짓기에 들지 않고, 그 사용자와 구현자의 관계는 계약을 선언한 부모 모듈과의 간선으로 올라가며, 개요는 그 곁에 ",
+                "Text": "를 얻으며, 계약을 제공하는 모듈은 그 계약의 사용자로 그리지 않는다. 부모 모듈이 있는 계약은 최상위가 아니므로 이 짝짓기에 들지 않는다. 그 사용자와 구현자의 관계는 계약을 선언한 부모 모듈과의 간선으로 올라가며, 개요는 그 곁에 ",
                 "Code": false
               },
               {
