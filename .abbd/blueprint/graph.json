@@ -2265,11 +2265,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows what inside a module meets each of its contracts and the other modules",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "draws a module's child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/inside.go inferred",
@@ -7875,7 +7877,15 @@
                 "Code": true
               },
               {
-                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글은 거부한다. 긴 섹션, 역사 문구, 이름도 ID도 대지 않은 안쪽 유닛, 다른 유닛의 경로를 보고한다. status는 표준 라이브러리, 시스템 라이브러리, 저장소 밖 의존성, 시스템이나 도구가 정의한 환경 변수를 절반을 넘게 담은 CFG처럼 프로젝트 자신의 것이 아닌 유닛을 ",
+                "Text": "): understand는 모듈 글을 코드 다이제스트로 찍어 저장하고, TODO 줄, 다른 섹션, 바뀐 코드에 바뀌지 않은 글, 프런트매터 울타리 ",
+                "Code": false
+              },
+              {
+                "Text": "---",
+                "Code": true
+              },
+              {
+                "Text": "로 시작하는 글은 거부한다. 그 울타리는 저장 파일의 것이고, 글 첫머리에 하나 더 있으면 페이지에 대시 줄로 보인다. 긴 섹션, 역사 문구, 이름도 ID도 대지 않은 안쪽 유닛, 다른 유닛의 경로를 보고한다. status는 표준 라이브러리, 시스템 라이브러리, 저장소 밖 의존성, 시스템이나 도구가 정의한 환경 변수를 절반을 넘게 담은 CFG처럼 프로젝트 자신의 것이 아닌 유닛을 ",
                 "Code": false
               },
               {
@@ -23699,15 +23709,6 @@
         "Stale": false,
         "Blocks": [
           {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "---",
-                "Code": false
-              }
-            ]
-          },
-          {
             "Kind": "h",
             "Parts": [
               {
@@ -27182,7 +27183,7 @@
                 "Code": true
               },
               {
-                "Text": ")가 더 가벼운 도로를 남긴다. 그다음 마지막 단계가 ",
+                "Text": ")가 더 가벼운 도로를 남긴다. 그다음 단계가 ",
                 "Code": false
               },
               {
@@ -27254,7 +27255,7 @@
                 "Code": true
               },
               {
-                "Text": "). 다만 선의 첫 구간이나 끝 구간을 쥔 구간, 곧 상자의 스텁은 통째로만 옮겨진다. 쪼개면 한 상자에서 스텁 둘이 나란히 떠나기 때문이다. 다른 옮김이 모두 자리 잡은 뒤 마지막 단계는 ",
+                "Text": "). 다만 선의 첫 구간이나 끝 구간을 쥔 구간, 곧 상자의 스텁은 통째로만 옮겨진다. 쪼개면 한 상자에서 스텁 둘이 나란히 떠나기 때문이다. 다른 옮김이 모두 자리 잡은 뒤 다음 단계는 ",
                 "Code": false
               },
               {
@@ -27270,7 +27271,7 @@
                 "Code": true
               },
               {
-                "Text": "가 갈래의 높이를 점선 여부별로 따로 센다. 그래서 점선 가지가 실선 형제들의 트랙에 아직 오르지 않은 곳에서는 점선 가지가 제 트랙을 지키고 실선 이웃들은 도로에 합류한다. 맨 마지막 ",
+                "Text": "가 갈래의 높이를 점선 여부별로 따로 센다. 그래서 점선 가지가 실선 형제들의 트랙에 아직 오르지 않은 곳에서는 점선 가지가 제 트랙을 지키고 실선 이웃들은 도로에 합류한다. 그다음 ",
                 "Code": false
               },
               {
@@ -27326,7 +27327,7 @@
                 "Code": true
               },
               {
-                "Text": ")가 줄기 하나의 가지를 한 방향씩 모은다. 앞 단계들은 도로 조각을 통째로 옮기는데, 한 조각은 트랙을 양방향으로 달리는 구간을 함께 싣는다. 그래서 한 줄기에서 같은 쪽으로 가는 가지가 반대 방향 선도 실은 트랙으로 서로 다른 높이에서 꺾이면, 통째로 옮기면 반대 방향 선이 한 도로에 오르므로 아무것도 옮겨지지 않았다. ",
+                "Text": ")가 줄기 하나의 가지를 한 방향씩 모은다. 앞 단계들은 도로 조각을 통째로 옮기고, 한 조각은 트랙을 양방향으로 달리는 구간을 함께 싣는다. 그래서 한 줄기에서 같은 쪽으로 가는 가지가 반대 방향 선도 실은 트랙으로 서로 다른 높이에서 꺾이면, 앞 단계들은 그 가지를 옮기지 않는다. 통째로 옮기면 반대 방향 선이 한 도로에 오르기 때문이다. ",
                 "Code": false
               },
               {
@@ -27358,7 +27359,15 @@
                 "Code": true
               },
               {
-                "Text": "). 형제의 더 먼 트랙에 오르면 나갔다 되돌아오기 때문이다. ",
+                "Text": "). 형제의 더 먼 트랙에 오르면 나갔다 되돌아오기 때문이다. 가지는 자기 상자에 더 가까운 형제의 꺾임으로만 옮겨진다(",
+                "Code": false
+              },
+              {
+                "Text": "ownLegShrinks",
+                "Code": true
+              },
+              {
+                "Text": "). 자기 상자에서 더 먼 꺾임으로 옮겨지면 혼자 달리는 다리가 길어져, 줄기를 타고 지나던 상자 행을 혼자 가로지르기 때문이다. ",
                 "Code": false
               },
               {
@@ -27382,7 +27391,7 @@
                 "Code": true
               },
               {
-                "Text": "의 어떤 개수도, 점선 여부별 갈래 수도, lint가 읽는 갈래 높이(",
+                "Text": "의 어떤 개수도, lint가 읽는 갈래 높이(",
                 "Code": false
               },
               {
@@ -27402,11 +27411,67 @@
                 "Code": false
               },
               {
+                "Text": "gather",
+                "Code": true
+              },
+              {
+                "Text": "가 무엇이든 옮긴 그림(",
+                "Code": false
+              },
+              {
+                "Text": "routing.stemmed",
+                "Code": true
+              },
+              {
+                "Text": ")은 ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": "와 초점 뷰가 ",
+                "Code": false
+              },
+              {
+                "Text": "stemless",
+                "Code": true
+              },
+              {
+                "Text": " 전술로 ",
+                "Code": false
+              },
+              {
+                "Text": "gather",
+                "Code": true
+              },
+              {
+                "Text": " 없이 한 번 더 그린다. 그리고 쉬는 그림에서 말이 붙은 선이 모두 제 말을 지키고, 교차, 도그레그, 잉크 조각 수가 늘지 않을 때만 모은 그림을 남긴다(",
+                "Code": false
+              },
+              {
+                "Text": "stemsKept",
+                "Code": true
+              },
+              {
+                "Text": "). 말은 길을 다 놓은 뒤에야 붙으므로 이 판단은 옮김 하나씩이 아니라 뷰 하나 단위다. ",
+                "Code": false
+              },
+              {
                 "Text": "stemroad_test.go",
                 "Code": true
               },
               {
-                "Text": "가 다른 행으로 가는 두 가지를 한 높이에 묶으면서 반대 방향 선은 제 트랙에 남김을 지킨다.",
+                "Text": "는 다른 행으로 가는 두 가지를 한 높이에 묶으면서 반대 방향 선은 제 트랙에 남기는지, 되돌아가는 가지를 묶지 않는지, 자기 상자 쪽으로만 옮기는지, 높이 수를 줄이지 않는 옮김을 버리는지 지킨다. ",
+                "Code": false
+              },
+              {
+                "Text": "stemwords_test.go",
+                "Code": true
+              },
+              {
+                "Text": "는 말을 잃거나 도그레그가 느는 그림을 버리는지 지킨다.",
                 "Code": false
               }
             ]
@@ -27568,7 +27633,7 @@
                 "Code": true
               },
               {
-                "Text": ")가 반대 방향으로 달리는 두 도로 조각을 2차선 도로로 놓는다(#232). 10px 안에 나란히 달리는 두 조각 가운데 하나, 먼저 뒤로 가는 조각이 다른 조각에서 ",
+                "Text": ")가 반대 방향으로 달리는 두 도로 조각을 2차선 도로로 놓는다. 10px 안에 나란히 달리는 두 조각 가운데 하나, 먼저 뒤로 가는 조각이 다른 조각에서 ",
                 "Code": false
               },
               {
