@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -22,7 +23,7 @@ type lintReport struct {
 	Schema   int                `json:"schema"`
 	Criteria []screen.Criterion `json:"criteria"`
 	Views    []screen.ViewLint  `json:"views"`
-	Totals   screen.Totals      `json:"totals"`
+	Totals   lintTotals         `json:"totals"`
 	Ceilings map[string]int     `json:"ceilings,omitempty"`
 	Failures []string           `json:"failures"`
 	// Levels says how each full view stands as a level of abstraction,
@@ -48,6 +49,13 @@ type lintReport struct {
 	// Direction names the plug-point contracts whose relations look
 	// recorded the wrong way round. It advises and never fails the gate.
 	Direction []topology.Reversed `json:"direction,omitempty"`
+}
+
+// lintTotals are the sums over every view, with the element counts beside
+// them, which lint reports and never gates on.
+type lintTotals struct {
+	screen.Totals
+	Elements screen.ElementTotals `json:"elements"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -121,7 +129,7 @@ func (e env) lint(pos []string) error {
 	}
 	every := only == ""
 	r := lintReport{Schema: lintSchema, Criteria: screen.Criteria(), Views: views, Failures: screen.Gate(views, debt, every), Lowerable: screen.Lowerable(views, debt, every)}
-	r.Totals = screen.Sum(views)
+	r.Totals = lintTotals{screen.Sum(views), screen.SumElements(views)}
 	r.Levels = levels
 	for i, l := range r.Levels {
 		if len(l.Advice) > 0 {
@@ -198,10 +206,11 @@ func printLint(e env, r lintReport) {
 		}
 		fmt.Fprintf(e.stdout, "  totals: %s\n", totalsLine(v.Totals))
 	}
-	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals))
+	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals.Totals))
 	if len(r.Ceilings) > 0 {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
+	printElements(e.stdout, r.Views, r.Totals.Elements)
 	if n := len(r.Unphrased); n > 0 {
 		where := "between overview boxes"
 		if r.Chosen {
@@ -337,4 +346,24 @@ func plural(n int, noun string) string {
 		return "1 " + noun
 	}
 	return fmt.Sprintf("%d %ss", n, noun)
+}
+
+// printElements reports how many elements each view asks a reader to take
+// in, against the view's own range, and lists the views past their own
+// warning point. It never fails lint.
+func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals) {
+	fmt.Fprintf(w, "lint: elements: %d in %s, against %d..%d; %s past %d%% of their own range. A view counts its boxes and chips, lines, words at rest and badges; its range runs from its skeleton, the shapes with only the primary flow's lines and numbers, to every line it could draw between its places, drawn apart, each with a word. It never fails lint\n", t.Count, plural(len(views), "view"), t.Min, t.Max, plural(len(t.Over), "view"), screen.WarnShare)
+	shown := 0
+	for _, v := range views {
+		el := v.Elements
+		if !el.Over {
+			continue
+		}
+		if shown == 10 {
+			fmt.Fprintf(w, "  and %d more; abbd lint --json lists them\n", len(t.Over)-shown)
+			break
+		}
+		shown++
+		fmt.Fprintf(w, "  %s: %d in %d..%d (%d%%), warns past %d: %s, %s, %s, %s\n", v.View, el.Count, el.Min, el.Max, *el.Percent, *el.WarnAt, plural(el.Shapes, "shape"), plural(el.Lines, "line"), plural(el.Words, "word"), plural(el.Badges, "badge"))
+	}
 }

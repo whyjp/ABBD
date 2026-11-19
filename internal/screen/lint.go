@@ -182,6 +182,8 @@ type ViewLint struct {
 	View     string   `json:"view"`
 	Breaches []Breach `json:"breaches"`
 	Totals   Totals   `json:"totals"`
+	// Elements is a diagnostic lint reports and never gates on.
+	Elements Elements `json:"elements"`
 }
 
 // The thresholds of the criteria. They are this file's own constants, as
@@ -318,6 +320,7 @@ func Lint(m Model, only string) ([]ViewLint, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", v.name, err)
 		}
+		got.Elements = elementsOf(v.d)
 		out = append(out, got)
 	}
 	return out, nil
