@@ -487,8 +487,11 @@ type overview struct {
 	contracts []model.ID
 	providers map[model.ID][]model.ID
 	users     map[model.ID][]model.ID
-	layout    layout
-	names     map[model.ID][]string
+	// scope is the scope mark of each module the overview record marks as
+	// no part of the product, empty when the record marks none.
+	scope  map[model.ID]string
+	layout layout
+	names  map[model.ID][]string
 	// chipBands are how tall the rows of chips on each module's top and
 	// bottom are (chipBand).
 	chipBands map[model.ID][2]int
@@ -606,7 +609,14 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // the stack's order (tier) on the whole overview, not on a focus view, and
 // within a tier the boxes the stored flows run through in their steps' order.
 func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut) *overview {
-	o := &overview{tree: newTree(units), walks: flows, whole: focus == "", units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
+	return planScoped(units, focus, at, t, stacks, flows, c, nil)
+}
+
+// planScoped is planOverview with the scope marks of the overview record: a
+// module marked as a sample, an artifact or a tool is paired with the
+// consumers of its own scope only, not with the product's (see apart).
+func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut, scope map[model.ID]string) *overview {
+	o := &overview{tree: newTree(units), walks: flows, scope: scope, whole: focus == "", units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
@@ -657,6 +667,9 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		}
 		for _, u := range o.users[c] {
 			for _, p := range targets {
+				if o.apart(u, p) {
+					continue
+				}
 				k := [2]model.ID{u, p}
 				if len(o.carry[k]) == 0 {
 					o.pairs = append(o.pairs, k)
@@ -668,8 +681,8 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 	var hidden []ledge
 	o.unreached = map[model.ID][]model.ID{}
 	for _, c := range o.contracts {
-		if len(o.users[c]) == 0 {
-			for _, p := range o.providers[c] {
+		for _, p := range o.providers[c] {
+			if !slices.ContainsFunc(o.users[c], func(u model.ID) bool { return !o.apart(u, p) }) {
 				o.unreached[p] = append(o.unreached[p], c)
 			}
 		}
@@ -788,6 +801,17 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 	o.layout.top = padY
 	o.layout.recorded = len(hidden) > 0
 	return o
+}
+
+// apart says a consumer u is kept from the provider p of a contract: p is
+// marked as a sample, an artifact or a tool, and u is not of that scope. The
+// pairing meets every consumer of a contract with every provider of it,
+// which holds for the product's own parts and not for a sample that only
+// implements what the product defines. The provider stays in its box, with
+// its own parts and its own scope's consumers.
+func (o *overview) apart(u, p model.ID) bool {
+	s := o.scope[p]
+	return s != "" && o.scope[u] != s
 }
 
 func (o *overview) name(id model.ID) string {

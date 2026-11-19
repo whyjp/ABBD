@@ -6235,7 +6235,6 @@
         "Provides": 34,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6738,7 +6737,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -8074,7 +8073,7 @@
                 "Code": true
               },
               {
-                "Text": ")로 overview의 구역과 고른 선을 확인해 ",
+                "Text": ")로 overview의 구역과 고른 선, scope 표시를 확인해 ",
                 "Code": false
               },
               {
@@ -8082,7 +8081,23 @@
                 "Code": true
               },
               {
-                "Text": "에 저장한다. 고른 선의 끝이 상태에 없는 unit이면 status와 sync가 그 줄 번호와 함께 ",
+                "Text": "에 저장한다. lint는 이름이나 앵커가 샘플, 테스트, 생성 코드처럼 보이는데 scope 표시가 없는 최상위 모듈을 알린다(",
+                "Code": false
+              },
+              {
+                "Text": "unscoped",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/scope.go",
+                "Code": true
+              },
+              {
+                "Text": "). 고른 선의 끝이 상태에 없는 unit이면 status와 sync가 그 줄 번호와 함께 ",
                 "Code": false
               },
               {
@@ -18540,7 +18555,6 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -18713,7 +18727,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -21621,7 +21635,31 @@
                 "Code": true
               },
               {
-                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다. 최상위 계약은 overview가 제공자 상자 위의 칩으로 그리므로, 그 계약을 쓰는 relation은 제공자 상자에 닿는 것으로 센다(",
+                "Text": "로 방향대로 놓인 살아 있는 relation을 찾고, 하나도 없으면 gap을 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "ScopeMark",
+                "Code": true
+              },
+              {
+                "Text": "는 reader가 단위에 붙이는 표시로, 그 단위가 제품이 아니라 샘플, 산출물, 도구임을 코드 인용과 함께 말하며 단위 하나에 한 번만 붙는다(",
+                "Code": false
+              },
+              {
+                "Text": "ScopeNames",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "holdOnce",
+                "Code": true
+              },
+              {
+                "Text": "). 최상위 계약은 overview가 제공자 상자 위의 칩으로 그리므로, 그 계약을 쓰는 relation은 제공자 상자에 닿는 것으로 센다(",
                 "Code": false
               },
               {
@@ -23804,7 +23842,15 @@
                 "Code": true
               },
               {
-                "Text": "으로 옮기며, 아직 그리지는 않는다. ",
+                "Text": "으로 옮기며, 아직 그리지는 않는다. 같은 파일의 ",
+                "Code": false
+              },
+              {
+                "Text": "scopeOf",
+                "Code": true
+              },
+              {
+                "Text": "는 저장된 overview의 scope 표시 가운데 샘플, 산출물, 도구로 읽을 수 있고 낡지 않은 것만 단위별 scope로 모아 개요 계획에 넘기며, 낡았거나 단위가 사라졌거나 모르는 scope인 표시는 표시가 없는 것으로 친다. ",
                 "Code": false
               },
               {
@@ -24086,7 +24132,23 @@
                 "Code": true
               },
               {
-                "Text": " 칩 하나로 접힌다. ",
+                "Text": " 칩 하나로 접힌다. 제공자가 샘플, 산출물, 도구로 표시돼 있으면 그 계약의 사용자 가운데 같은 scope가 아닌 모듈은 그 제공자와 짝짓지 않는다(",
+                "Code": false
+              },
+              {
+                "Text": "apart",
+                "Code": true
+              },
+              {
+                "Text": "). 그 제공자의 상자는 자기 안의 부품과 같은 scope의 사용자와 맺은 선을 그대로 두고, 닿는 사용자가 하나도 없게 된 계약은 ",
+                "Code": false
+              },
+              {
+                "Text": "+N 계약",
+                "Code": true
+              },
+              {
+                "Text": " 칩으로 접힌다. 제품이 싣는 플러그인은 표시를 받지 않으므로 호스트에서 그 플러그인으로 가는 선이 남고, 표시가 없는 개요는 어느 선도 달라지지 않는다. ",
                 "Code": false
               },
               {
@@ -31493,7 +31555,6 @@
         "Provides": 5,
         "Uses": 2,
         "Direct": 5,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -31632,7 +31693,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -32462,7 +32523,23 @@
                 "Code": true
               },
               {
-                "Text": ")로 쓰고 읽는다. 그 파일은 구역과 고른 선만 담고, 모르는 field가 있는 frontmatter는 거부하고, 초안에 ",
+                "Text": ")로 쓰고 읽는다. 그 파일은 구역과 고른 선, 샘플과 산출물과 도구를 가르는 scope 표시를 담고(",
+                "Code": false
+              },
+              {
+                "Text": "Scopes",
+                "Code": true
+              },
+              {
+                "Text": ", 파일에서는 ",
+                "Code": false
+              },
+              {
+                "Text": "scope",
+                "Code": true
+              },
+              {
+                "Text": " 키), 모르는 field가 있는 frontmatter는 거부하고, 초안에 ",
                 "Code": false
               },
               {
