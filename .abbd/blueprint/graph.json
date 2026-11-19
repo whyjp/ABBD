@@ -22412,7 +22412,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -23280,7 +23279,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않고 \"블루프린트\"만 쓴다. ",
+                  "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                   "Code": false
                 },
                 {
@@ -23910,7 +23909,7 @@
       ],
       "Understanding": {
         "Reader": "claude-sonnet-5.5",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -24530,7 +24529,7 @@
                 "Code": true
               },
               {
-                "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않고 \"블루프린트\"만 쓴다. ",
+                "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                 "Code": false
               },
               {
