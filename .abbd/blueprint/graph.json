@@ -2232,7 +2232,6 @@
         "internal/screen/levels.go",
         "internal/screen/lint.go",
         "internal/screen/marks.go",
-        "internal/screen/matrix.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
@@ -6791,7 +6790,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -7804,7 +7803,71 @@
                 "Code": true
               },
               {
-                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다.",
+                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "cycles:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에, 묶음마다 상자 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle overview:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 발견으로 알리고, lint는 모든 전체 뷰의 묶음을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].cycles",
+                "Code": true
+              },
+              {
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "cycles:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에, 묶음마다 상자 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle overview:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 발견으로 알리고, lint는 모든 전체 뷰의 묶음을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].cycles",
+                "Code": true
+              },
+              {
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -23909,7 +23972,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -29131,85 +29194,6 @@
             "Kind": "h",
             "Parts": [
               {
-                "Text": "행렬",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Matrix",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "matrix.go",
-                "Code": true
-              },
-              {
-                "Text": "): 상자들이 빽빽하게, 순환으로 서로 쓰는 전체 뷰(개요와 각 모듈 내부)에 그림은 그대로 두고 그 아래 접힌 표를 덧붙인다(",
-                "Code": false
-              },
-              {
-                "Text": "MatrixRow",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "MatrixCell",
-                "Code": true
-              },
-              {
-                "Text": "). 행과 열은 읽는 순서(줄 위에서 아래, 줄 안에서 왼쪽에서 오른쪽)의 상자이고, 칸은 그 뷰가 그린 선 가운데 행의 상자가 열의 상자를 쓰는 저장된 관계 수다. 레이아웃이 순환으로 본(",
-                "Code": false
-              },
-              {
-                "Text": "axis.cycle",
-                "Code": true
-              },
-              {
-                "Text": ") 두 상자 사이에서 열의 상자가 그린 선을 따라 다시 행의 상자에 닿는 칸은 순환으로 칠한다. 표를 붙일지는 뷰 자신의 범위로 정한다. 상자 n개가 이어진 뷰는 쌍을 n-1개에서 n(n-1)/2개까지 잇는데, 그린 선이 이은 쌍이 그 범위의 3분의 1(",
-                "Code": false
-              },
-              {
-                "Text": "matrixPart",
-                "Code": true
-              },
-              {
-                "Text": ")을 넘고, 상자가 4개(",
-                "Code": false
-              },
-              {
-                "Text": "matrixMin",
-                "Code": true
-              },
-              {
-                "Text": ") 이상이며, 상자의 절반 이상이 그 순환에 있을 때만 붙인다. 표는 자기 스타일을 함께 가진 HTML이라 표가 없는 페이지는 바이트 하나 바뀌지 않는다. ",
-                "Code": false
-              },
-              {
-                "Text": "TestADenseCyclicViewAddsAMatrix",
-                "Code": true
-              },
-              {
-                "Text": "가 조건과 표의 모양을 지킨다.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "h",
-            "Parts": [
-              {
                 "Text": "신선도",
                 "Code": false
               }
@@ -31827,7 +31811,23 @@
                 "Code": true
               },
               {
-                "Text": "를 할당 횟수에, 느슨한 10초 실제 시간 안전판과 함께 묶으며, 그 횟수가 프로세스 전체의 것이므로 병렬로 돌지 않는다.",
+                "Text": "를 할당 횟수에, 느슨한 10초 실제 시간 안전판과 함께 묶으며, 그 횟수가 프로세스 전체의 것이므로 병렬로 돌지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Cycles",
+                "Code": true
+              },
+              {
+                "Text": "는 뷰의 배치가 층을 매긴 그래프에서 서로를 돌아 쓰는 상자 묶음, 곧 상자 둘 이상의 강하게 연결된 요소를 이름으로 내며, 개요의 묶음은 자르기나 기록이 무엇을 빼든 모든 선을 그린 계획에서 읽는다. 순환 의존은 그림이 아니라 코드의 일이므로 발견으로만 알리고 lint를 실패시키지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "OverviewCycles",
+                "Code": true
+              },
+              {
+                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다.",
                 "Code": false
               }
             ]
