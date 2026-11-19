@@ -152,6 +152,17 @@ type Totals struct {
 	// or more providers, meeting each of its users with every provider
 	// (overview.fanout). It shows the exposure; nothing bounds it.
 	Fanout int `json:"fanout"`
+	// LeadHops is the numbered hops of the view's lead (lead.go). Nothing
+	// bounds it.
+	LeadHops int `json:"lead_hops"`
+	// RoadTurns are the turns lines take on ink they share with another
+	// line, Junctions the points on their way where another line joins or
+	// leaves their ink, and BentJunctions the junctions where more lines
+	// turn than run on straight though one does (roadwalk.go). Nothing
+	// bounds them.
+	RoadTurns     int `json:"road_turns"`
+	Junctions     int `json:"junctions"`
+	BentJunctions int `json:"bent_junctions"`
 }
 
 // Sum adds up the totals of several views.
@@ -175,6 +186,8 @@ func Sum(views []ViewLint) Totals {
 		t.Density += o.Density
 		t.Fans, t.Strands = t.Fans+o.Fans, t.Strands+o.Strands
 		t.Fanout += o.Fanout
+		t.LeadHops += o.LeadHops
+		t.RoadTurns, t.Junctions, t.BentJunctions = t.RoadTurns+o.RoadTurns, t.Junctions+o.Junctions, t.BentJunctions+o.BentJunctions
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -193,7 +206,10 @@ type ViewLint struct {
 	// Words is how many of the view's routes say a word at rest and where
 	// each word comes from, a diagnostic lint never gates on (wordfill.go).
 	Words WordFill `json:"words"`
-	ink   inkMeasure
+	// Lead says where the view's lead comes from: the primary flow, a
+	// stored flow, or inferred from its lines; empty for no lead.
+	Lead string `json:"lead,omitempty"`
+	ink  inkMeasure
 }
 
 // The thresholds of the criteria. They are this file's own constants, as
@@ -413,7 +429,41 @@ func lintView(v view) (ViewLint, error) {
 	}
 	vl.Totals.Fans, vl.Totals.Strands = s.fans, len(s.strands)
 	vl.Totals.Fanout = v.d.fanout
+	vl.Lead = leadSource(v.d.Lead)
+	if v.d.Lead != nil {
+		vl.Totals.LeadHops = len(v.d.Lead.Hops)
+	}
+	if s.routed {
+		var rs [][]fpt
+		for _, r := range s.routes {
+			if len(r.pts) >= 2 {
+				rs = append(rs, turns(r.pts))
+			}
+		}
+		w := walkRoads(rs)
+		vl.Totals.RoadTurns, vl.Totals.Junctions, vl.Totals.BentJunctions = w.turns, w.junctions, w.bent
+	}
 	return vl, nil
+}
+
+// The sources of a view's lead, as lint names them.
+const (
+	LeadPrimary  = "primary"
+	LeadStored   = "stored"
+	LeadInferred = "inferred"
+)
+
+// leadSource is where l comes from, "" for no lead.
+func leadSource(l *Lead) string {
+	switch {
+	case l == nil:
+		return ""
+	case l.Primary:
+		return LeadPrimary
+	case l.Key != "":
+		return LeadStored
+	}
+	return LeadInferred
 }
 
 // tees are the points where a traced line's straight drop crosses a flat
