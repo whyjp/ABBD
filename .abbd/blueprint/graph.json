@@ -6824,7 +6824,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -24780,7 +24780,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
