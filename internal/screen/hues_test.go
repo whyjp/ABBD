@@ -262,43 +262,51 @@ func TestABypassWearsItsBoxsColour(t *testing.T) {
 	}
 }
 
-// A line wears the colour of the box it leaves. Ink whose lines leave boxes
-// of different colours wears one of those colours on a road, the colour of
-// its rider that runs furthest on roads, and neutral grey elsewhere (rule 11).
-func TestALineWearsItsBoxsColour(t *testing.T) {
+// Every line rests grey, its head and its dots too, a road several boxes'
+// lines ride included, so no box's colour stands for another box's lines.
+// Each line's route keeps the colour of the box it leaves, which it shows
+// only on hover, and a pointed-at box lights it in that box's own colour
+// (rule 11).
+func TestEveryLineRestsGreyAndLightsInItsBoxsColour(t *testing.T) {
 	t.Parallel()
+	n := hueKey(-1)
+	lit := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
-			if d.Quiet {
-				continue
-			}
 			hue := map[string]string{}
 			for _, b := range d.Boxes {
-				hue[b.ID] = b.Hue
+				hue[string(base(model.ID(b.ID)))] = b.Hue
 			}
 			for _, w := range d.Wires {
-				want, theirs := "", map[string]bool{}
-				for _, n := range w.srcs {
-					c := hue[n]
-					if c == "" {
-						c = hueKey(-1)
-					}
-					theirs[c] = true
-					if want == "" {
-						want = c
-					} else if c != want {
-						want = hueKey(-1)
-					}
+				if w.Hue != n {
+					t.Errorf("%s: a %s line rests in %q", name, w.Kind, w.Hue)
 				}
-				if want == hueKey(-1) && len(w.rides) > 0 && theirs[w.Hue] {
-					continue
+				if !w.Joins && w.Head != "" && !strings.HasSuffix(w.Head, "-"+n) {
+					t.Errorf("%s: a %s line ends in the %q head", name, w.Kind, w.Head)
 				}
-				if want != "" && w.Hue != want {
-					t.Errorf("%s: a %s line wears %q, its boxes %q", name, w.Kind, w.Hue, want)
+			}
+			for _, j := range d.Dots {
+				if j.Hue != n {
+					t.Errorf("%s: a %s dot rests in %q", name, j.Kind, j.Hue)
+				}
+			}
+			for _, r := range d.Routes {
+				want := hue[string(base(model.ID(r.src)))]
+				if want == "" {
+					want = n
+				}
+				if r.Hue != want {
+					t.Errorf("%s: a %s route lights in %q, its box %q", name, r.Kind, r.Hue, want)
+				}
+				if r.Hue != n {
+					lit++
 				}
 			}
 		}
+	}
+	if lit == 0 {
+		t.Error("no route lights in a box's colour")
 	}
 }
 
@@ -334,28 +342,33 @@ func TestALeadQuietsEveryOtherLine(t *testing.T) {
 	}
 }
 
-// A view with a hub and no lead rests every line grey but the hub's own,
-// which wear the hub's colour (dress.go).
-func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
+// A view with a hub and no lead rests every line grey, the hub's own
+// included, and pointing at the hub lights each of its lines in the hub's
+// colour (dress.go, hover.go).
+func TestAHubsLinesLightInItsColourOnlyOnHover(t *testing.T) {
 	t.Parallel()
 	hubs := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
 			f := d.Filled()
-			if d.Lead != nil || f == nil || f.Role != "hub" || !d.Quiet {
+			if d.Lead != nil || f == nil || f.Role != "hub" {
 				continue
 			}
 			hubs++
 			for _, w := range d.Wires {
-				own := true
-				for _, k := range classNumbers(w.Lit, "r") {
-					own = own && slices.Contains(d.Routes[k].ends, f.ID)
+				if w.Hue != hueKey(-1) {
+					t.Errorf("%s: a %s line beside a hub rests in %q", name, w.Kind, w.Hue)
 				}
-				own = own && len(classNumbers(w.Lit, "r")) > 0
-				want := map[bool]string{true: f.Hue, false: hueKey(-1)}[own]
-				if w.Hue != want {
-					t.Errorf("%s: a %s line wears %q, want %q", name, w.Kind, w.Hue, want)
+			}
+			j, ok := d.numbers[string(base(model.ID(f.ID)))]
+			if !ok {
+				t.Fatalf("%s: the hub %s takes no number", name, f.ID)
+			}
+			want := fmt.Sprintf("--k%d:var(--h%s)", j, f.Hue)
+			for _, r := range d.Routes {
+				if slices.Contains(r.at, j) && !strings.Contains(string(r.Vars), want) {
+					t.Errorf("%s: a %s line of the hub does not light in its colour: %s", name, r.Kind, r.Vars)
 				}
 			}
 		}
@@ -419,11 +432,12 @@ func TestAChipsWordsReadOnItsTint(t *testing.T) {
 	}
 }
 
-// A hub's view whose own lines are under half its ink stays in colour:
-// it is not quiet, and each line keeps its box's colour, so it reads at
-// rest. The self overview drawn whole and orca's desktop main are such
-// views; cut, the self overview's hub owns most of what is left.
-func TestABusyHubViewStaysInColour(t *testing.T) {
+// A hub's view whose own lines are under half its ink keeps its lines'
+// weight: it is not quiet. Its lines rest grey like any other's, and their
+// routes still light in at least two boxes' colours on hover. The self
+// overview drawn whole and orca's desktop main are such views; cut, the
+// self overview's hub owns most of what is left.
+func TestABusyHubViewKeepsItsWeight(t *testing.T) {
 	t.Parallel()
 	cases := map[string]string{"self": "", "orca": "MOD-0042"}
 	for name, inside := range cases {
@@ -447,16 +461,21 @@ func TestABusyHubViewStaysInColour(t *testing.T) {
 			t.Fatalf("%s %s: the hub owns %d of %d lines, not under half", name, inside, own, len(d.Wires))
 		}
 		if d.Quiet {
-			t.Errorf("%s %s: a hub owning under half its ink rests the view grey", name, inside)
+			t.Errorf("%s %s: a hub owning under half its ink thins the view", name, inside)
 		}
 		hues := map[string]bool{}
 		for _, w := range d.Wires {
 			if w.Hue != hueKey(-1) {
-				hues[w.Hue] = true
+				t.Errorf("%s %s: a %s line rests in %q", name, inside, w.Kind, w.Hue)
+			}
+		}
+		for _, r := range d.Routes {
+			if r.Hue != hueKey(-1) {
+				hues[r.Hue] = true
 			}
 		}
 		if len(hues) < 2 {
-			t.Errorf("%s %s: its lines show %d colours at rest", name, inside, len(hues))
+			t.Errorf("%s %s: its lines light in %d colours on hover", name, inside, len(hues))
 		}
 	}
 }

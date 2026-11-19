@@ -2,7 +2,6 @@ package screen
 
 import (
 	"fmt"
-	"maps"
 	"math"
 	"slices"
 	"strconv"
@@ -349,12 +348,9 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 		l.Hops = append(l.Hops, hp)
 	}
 	d.Lead = l
-	// A view past hover's caps has no routes to light, so resting its lines
-	// grey would leave no way to see their colours. A lead with no line
-	// leaves every line its colour.
+	// A lead with no line leaves the view's lines as they are.
 	if len(d.Routes) > 0 && len(hops) > 0 {
 		d.quiet()
-		d.unlabelKin()
 	}
 	for i := range d.Boxes {
 		if d.Boxes[i].ID == l.Entry && d.Boxes[i].Hue != "" {
@@ -881,34 +877,18 @@ func tipBox(tip, from pt) box {
 	return b
 }
 
-// quiet draws every line of a view that has a lead in grey, its heads,
-// labels and dots too, a bypass's included, so the lead is the one
-// coloured way. The bypass keeps its open head, and pointing at its ink
-// lights its route in its box's colour, since each route keeps the colour
-// paint gave it. The caller drops the
-// labels the grey leaves over another line's track (unlabelKin).
+// quiet thins every line of a view that has a lead, so the lead is the
+// one bold and coloured way. Every line already rests grey (paint), its
+// heads and dots too; a bypass keeps its open head, and pointing at its ink
+// lights its route in its box's colour.
 func (d *Drawing) quiet() {
 	d.Quiet = true
-	n := hueKey(-1)
-	used := map[string]bool{}
-	for i := range d.Wires {
-		w := &d.Wires[i]
-		w.Hue = n
-		if !w.Joins {
-			w.Head = shapes[w.Kind] + "-" + w.Hue
-			used[w.Head] = true
-		}
-	}
-	for i := range d.Dots {
-		d.Dots[i].Hue = n
-	}
-	d.Heads = slices.Sorted(maps.Keys(used))
 }
 
-// unlabelKin drops a label that, once the view is quiet, stands right over
-// a flat track of another line of its colour, where it would read as that
-// line's. Labels were set while the lines wore their boxes' colours. The
-// words stay in the line's tooltip.
+// unlabelKin drops a label that stands right over a flat track of another
+// line, where it would read as that line's, since every line rests in one
+// grey (paint). Labels were set by the lines' sources, which colour them
+// only on hover. The words stay in the line's tooltip.
 func (d *Drawing) unlabelKin() {
 	for i := range d.Wires {
 		l := d.Wires[i].Label
@@ -917,7 +897,7 @@ func (d *Drawing) unlabelKin() {
 		}
 		lb := l.area()
 		for j, o := range d.Wires {
-			if j == i || o.Hue != d.Wires[i].Hue || o.Net != 0 && o.Net == d.Wires[i].Net {
+			if j == i || o.Net != 0 && o.Net == d.Wires[i].Net {
 				continue
 			}
 			for _, r := range runs(o.D) {

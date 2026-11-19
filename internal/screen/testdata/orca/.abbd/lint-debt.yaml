@@ -30,7 +30,7 @@ pages:
         abreast: 0
         against_axis: 15
         against_axis_ink: 6235
-        colour_switches: 31
+        colour_switches: 0
         combs: 0
         counts: 14
         density: 48
@@ -45,7 +45,7 @@ pages:
         abreast: 202
         against_axis: 5
         against_axis_ink: 1862
-        colour_switches: 43
+        colour_switches: 0
         combs: 0
         counts: 9
         density: 56
@@ -53,6 +53,6 @@ pages:
         dots: 10
         false_joins: 0
         label_repeats: 0
-        labelled: 4
+        labelled: 2 # 4 until every line rested grey: a word over another line's track went to the tooltip (unlabelKin)
         parallel_ink: 0
         two_lane_off: 0

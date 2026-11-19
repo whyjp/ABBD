@@ -382,6 +382,7 @@ func Build(in Input) Model {
 	}
 	for _, d := range m.drawings() {
 		d.dress(o.tree)
+		d.unlabelKin()
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.

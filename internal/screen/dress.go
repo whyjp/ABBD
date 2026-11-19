@@ -2,7 +2,6 @@ package screen
 
 import (
 	"fmt"
-	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -158,34 +157,14 @@ func (d *Drawing) ownLines() int {
 	return n
 }
 
-// hubLines rests a hub's view the way a lead's does, except the hub's own
-// lines: ink every route along which has the hub at one end keeps the
-// hub's colour.
+// hubLines thins a hub's view the way a lead's does. Its lines rest grey
+// like every other (paint), the hub's own included: the filled box marks
+// the hub, and pointing at it lights its lines in its colour.
 func (d *Drawing) hubLines() {
-	f := d.Filled()
-	if f == nil || f.Hue == "" || len(d.Routes) == 0 {
+	if f := d.Filled(); f == nil || f.Hue == "" || len(d.Routes) == 0 {
 		return
 	}
-	hub, hue := f.ID, f.Hue
 	d.quiet()
-	used := map[string]bool{}
-	for _, h := range d.Heads {
-		used[h] = true
-	}
-	for i := range d.Wires {
-		w := &d.Wires[i]
-		ks := classNumbers(w.Lit, "r")
-		if len(ks) == 0 || slices.ContainsFunc(ks, func(k int) bool { return !slices.Contains(d.Routes[k].ends, hub) }) {
-			continue
-		}
-		w.Hue = hue
-		if !w.Joins {
-			w.Head = shapes[w.Kind] + "-" + hue
-			used[w.Head] = true
-		}
-	}
-	d.Heads = slices.Sorted(maps.Keys(used))
-	d.unlabelKin()
 }
 
 // classNumbers are the numbers of the classes in cls that are p and digits.
