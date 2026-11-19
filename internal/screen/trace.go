@@ -48,10 +48,10 @@ func (s sheet) inkColour(class string) string {
 // colour is the kind a stroke's colour shows; a line between two modules
 // that use each other is drawn in the direct-dependency colour.
 func colour(class string) string {
-	if k := kindOf(class); k != "mutual" {
+	if k := kindOf(class); k != kindMutual {
 		return k
 	}
-	return "bypass"
+	return kindBypass
 }
 
 // kindOf is the kind of line a stroke's class names, without the marks

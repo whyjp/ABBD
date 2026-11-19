@@ -40,7 +40,9 @@ type ledge struct{ from, to string }
 type rect struct{ X, Y, W, H int }
 
 type layout struct {
-	pos map[string]rect
+	// hooks are a test's, nil as abbd builds.
+	hooks *hooks
+	pos   map[string]rect
 	// held is the track each crossing took in a drawing route lays this
 	// one against, by gap and owner: no crossing takes a higher one.
 	held map[[3]int]int

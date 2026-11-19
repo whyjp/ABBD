@@ -590,10 +590,7 @@ func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
 // only through other lines. Room is where the word stands when no word is
 // dropped.
 func TestAWordIsDroppedOnlyBesideALineThatSaysIt(t *testing.T) {
-	t.Cleanup(func() { sayOnce = true })
-	sayOnce = false
-	room := buildEach(t, fresh)
-	sayOnce = true
+	room := buildEach(t, func(name string) (Model, error) { return freshWith(name, &hooks{keepWords: true}) })
 	drawn := buildEach(t, cached)
 	for _, name := range fixtures {
 		all := views(room[name])

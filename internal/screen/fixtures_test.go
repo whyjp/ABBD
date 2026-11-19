@@ -45,14 +45,17 @@ func cached(name string) (Model, error) {
 
 // fresh builds a fixture as its .abbd/project.yaml configures it, as abbd
 // sync builds a repository.
-func fresh(name string) (Model, error) {
+func fresh(name string) (Model, error) { return freshWith(name, nil) }
+
+// freshWith is fresh with a test's hooks turned.
+func freshWith(name string, h *hooks) (Model, error) {
 	st := store.Open(filepath.Join("testdata", name))
 	units, err := st.LoadUnits()
 	if err != nil {
 		return Model{}, err
 	}
 	p, err := st.LoadProject()
-	return Build(Input{Units: units, Project: p}), err
+	return Build(Input{Units: units, Project: p, hooks: h}), err
 }
 
 // drawAll is a fixture's model with the overview's density cut switched

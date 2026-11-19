@@ -158,9 +158,9 @@ func (c *cost) judge(d Drawing) {
 			moved++
 		}
 	}
-	c.hard, c.moved, c.crossed, c.gate = t.Hard, moved, t.Crossings, gateTotals(t)
+	c.hard, c.moved, c.crossed, c.gate, c.clear = t.Hard, moved, t.Crossings, gateTotals(t), 0
 	for _, b := range vl.Breaches {
-		if b.Criterion == "B1" && b.Allowed == 0 {
+		if b.Criterion == critBends && b.Allowed == 0 {
 			c.clear++
 		}
 	}
@@ -365,7 +365,9 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		return best
 	}
 	// Where some line climbs, it is drawn again with such lines on roads of
-	// their own, and that is kept where sharing roads reads worse.
+	// their own, and that is kept where sharing roads reads worse. Either
+	// way the drawing kept is judged once, there or below.
+	judged := false
 	if c.climbs {
 		t := bt
 		t.apart = true
@@ -373,6 +375,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		if w, ok := draw(t, &a); ok {
 			judge(v, &c)
 			judge(w, &a)
+			judged = true
 			if !sharedOrApart(c, a) {
 				v, c, bt = w, a, t
 			}
@@ -383,7 +386,9 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		t.through = true
 		var u cost
 		if w, ok := draw(t, &u); ok && u.far < c.far {
-			judge(v, &c)
+			if !judged {
+				judge(v, &c)
+			}
 			judge(w, &u)
 			if len(u.gate) > 0 && len(u.gate) == len(c.gate) && noWorse(u.gate, c.gate) {
 				return w

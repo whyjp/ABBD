@@ -652,6 +652,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		leadLines(t, o.walks, l.axis, boxes, false, reqs, func(i int) []string { return lines[i].rels })
 	}
+	l.hooks = o.hooks
 	routed := l.route(reqs)
 	paths := routed.drawn
 	weighed(read, routed, reqs)
@@ -664,7 +665,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)
 	}
-	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), roads: l.roads, axis: l.axis}
+	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), roads: l.roads, axis: l.axis, hooks: o.hooks}
 	var unwired []port
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)

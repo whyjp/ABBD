@@ -442,7 +442,7 @@ func (d *Drawing) clear(z Zone, in map[string]bool) bool {
 		return false
 	}
 	for _, b := range d.Boxes {
-		if !in[b.ID] && hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+		if !in[b.ID] && hit(area, grow(b.area(), boxMargin)) {
 			return false
 		}
 	}
@@ -467,7 +467,7 @@ func (d *Drawing) crossed(area box) int {
 		if w.Label != nil && hit(area, w.Label.area()) {
 			n += 3
 		}
-		if w.Count > 0 && hit(area, box{w.LX - 2, w.LY - 11, 24, 13}) {
+		if w.Count > 0 && hit(area, countAt(w, countSpot)) {
 			n += 3
 		}
 	}
