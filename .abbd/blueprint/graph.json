@@ -22231,7 +22231,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 10
       },
@@ -23697,7 +23696,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -27302,7 +27301,7 @@
                 "Code": true
               },
               {
-                "Text": "가 짧게 겹치는 두 선을 한 높이에 묶고, 실선 갈래를 가르지 않음을 지킨다. 그 뒤 ",
+                "Text": "가 짧게 겹치는 두 선을 한 높이에 묶고, 실선 갈래를 가르지 않음을 지킨다. 그다음 ",
                 "Code": false
               },
               {
