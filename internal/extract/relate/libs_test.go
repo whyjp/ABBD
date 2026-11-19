@@ -255,11 +255,11 @@ func TestNpmReadsAOneLineManifestAndOnlyRealImports(t *testing.T) {
 		t.Errorf("a one-line package.json declares %+v, want react and lodash on line 1", ds)
 	}
 	var got []string
-	for _, im := range npmImports([]byte("/* import x from 'a' */\nconst s = \"copy from 'b'\";\nimport c from 'c';\n} from 'd';\n")) {
+	for _, im := range npmImports([]byte("/* import x from 'a' */\nconst s = \"copy from 'b'\";\nimport c from 'c';\n} from 'd';\n  b } from 'e';\n")) {
 		got = append(got, im.spec)
 	}
-	if !slices.Equal(got, []string{"c", "d"}) {
-		t.Errorf("imports %q, want c and d", got)
+	if !slices.Equal(got, []string{"c", "d", "e"}) {
+		t.Errorf("imports %q, want c, d and e", got)
 	}
 }
 

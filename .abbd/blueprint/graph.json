@@ -14004,7 +14004,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "는 뺀다), npm은 ",
+                  "Text": "는 뺀다), npm은 블록 주석을 지운 뒤 ",
                   "Code": false
                 },
                 {
@@ -14028,7 +14028,15 @@
                   "Code": true
                 },
                 {
-                  "Text": " 문맥의 지정자만 읽는다.",
+                  "Text": " 문맥과 여러 줄 import를 닫는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "} from",
+                  "Code": true
+                },
+                {
+                  "Text": "의 지정자만 읽는다.",
                   "Code": false
                 }
               ]
@@ -15715,7 +15723,7 @@
                 "Code": true
               },
               {
-                "Text": "는 뺀다), npm은 ",
+                "Text": "는 뺀다), npm은 블록 주석을 지운 뒤 ",
                 "Code": false
               },
               {
@@ -15739,7 +15747,15 @@
                 "Code": true
               },
               {
-                "Text": " 문맥의 지정자만 읽는다.",
+                "Text": " 문맥과 여러 줄 import를 닫는 ",
+                "Code": false
+              },
+              {
+                "Text": "} from",
+                "Code": true
+              },
+              {
+                "Text": "의 지정자만 읽는다.",
                 "Code": false
               }
             ]

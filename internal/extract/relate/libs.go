@@ -475,7 +475,7 @@ func npmSource(p string) bool {
 	return ok && !tsTest(p) && !declarationFile(p)
 }
 
-var npmImport = regexp.MustCompile(`(?:^\s*(?:import|export)\b.*\bfrom\s*|^\s*\}\s*from\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|^\s*import\s+)['"]([^'"]+)['"]`)
+var npmImport = regexp.MustCompile(`(?:^\s*(?:import|export)\b.*\bfrom\s*|\}\s*from\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|^\s*import\s+)['"]([^'"]+)['"]`)
 
 func npmImports(text []byte) []imported {
 	var out []imported
