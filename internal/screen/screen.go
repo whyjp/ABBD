@@ -399,6 +399,9 @@ func Build(in Input) Model {
 	o.linkFigures(&m)
 	m.Primary = o.flow.record()
 	rank(&m)
+	for _, d := range leads {
+		d.Matrix = d.matrix()
+	}
 	return m
 }
 
