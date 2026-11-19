@@ -124,8 +124,8 @@ var shapes = map[string]string{
 }
 
 // warns says a kind is a direct dependency that skips the contract
-// boundary the overview shows. Its line wears the colour of the box it
-// leaves, like any other, and its open head marks it.
+// boundary the overview shows. Its line rests grey like any other, and its
+// open head marks it.
 func warns(kind string) bool { return kind == kindBypass || kind == kindMutual }
 
 // onRoad is how far each route runs on roads, by route number.
@@ -139,11 +139,13 @@ func (d *Drawing) onRoad() map[int]int {
 	return n
 }
 
-// paint colours each box by its unit, each line by the boxes its lines
-// leave, and each dot by the lines through it (rule 11). A line that
-// leaves a frame's chip takes the colour of the box it reaches. Ink whose
-// lines leave boxes of different colours is neutral, a line that skips the
-// contract boundary included.
+// paint colours each box by its unit and rests every line grey, its head
+// and its dots too (rule 11). A box's colour reaches its lines only on
+// hover: each line's route wears the colour of the box it leaves, or of the
+// box it reaches when it leaves only a frame's chip, and a pointed-at box
+// lights its routes in its own colour (hover.go). So a road several boxes'
+// lines ride wears one colour, never one rider's, and the lead is the one
+// coloured way at rest (lead.go).
 func (d *Drawing) paint(hues map[model.ID]int) {
 	colour := func(node string) string {
 		if h, ok := hues[base(model.ID(node))]; ok && node != "" {
@@ -157,33 +159,9 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 		}
 	}
 	used := map[string]bool{}
-	onRoad := d.onRoad()
 	for i := range d.Wires {
 		w := &d.Wires[i]
-		w.Hue = ""
-		for _, n := range w.srcs {
-			if c := colour(n); w.Hue == "" {
-				w.Hue = c
-			} else if c != w.Hue {
-				w.Hue = hueKey(-1)
-			}
-		}
-		// A road whose lines leave boxes of different colours wears the
-		// colour of its rider that runs furthest on roads, so a highway
-		// keeps one colour from piece to piece and that line never turns
-		// grey and back on its way.
-		far, at := -1, -1
-		for _, k := range w.rides {
-			if w.Hue == hueKey(-1) && k < len(d.ways) && onRoad[k] > far {
-				far, at = onRoad[k], k
-			}
-		}
-		if at >= 0 {
-			w.Hue = colour(d.ways[at].src)
-		}
-		if w.Hue == "" {
-			w.Hue = hueKey(-1)
-		}
+		w.Hue = hueKey(-1)
 		if !w.Joins {
 			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
@@ -211,22 +189,8 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 		r.Vars = template.CSS(strings.Join(vars, ";"))
 	}
 	d.Heads = slices.Sorted(maps.Keys(used))
-	for i, dot := range d.Dots {
-		p, got := pt{dot.X, dot.Y}, ""
-		for _, w := range d.Wires {
-			if w.inkKey() != dot.Kind || !through(w.D, p) {
-				continue
-			}
-			if got == "" {
-				got = w.Hue
-			} else if got != w.Hue {
-				got = hueKey(-1)
-			}
-		}
-		if got == "" {
-			got = hueKey(-1)
-		}
-		d.Dots[i].Hue = got
+	for i := range d.Dots {
+		d.Dots[i].Hue = hueKey(-1)
 	}
 }
 
@@ -669,9 +633,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
-	// ink is the unit whose colour paint will give a wire, as far as labels
-	// need it: its one source, or for a road whose lines leave several, the
-	// source of its rider that runs furthest on roads, or none.
+	// ink groups wires for repeated words only: its one source, or for a
+	// road whose lines leave several, the source of its rider that runs
+	// furthest on roads, or none. It is the grouping roads once wore as a
+	// colour, kept so the words said once stay as they were.
 	onRoad := d.onRoad()
 	ink := func(w Wire) string {
 		var one model.ID
@@ -702,8 +667,8 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	var placed []set
 	// repeats says a label at l would say a word already set within
-	// repeatNear of it. With touch, only a word on a line of the same
-	// colour whose ink l's line touches counts, so the word reads for both.
+	// repeatNear of it. With touch, only a word on a line from the same
+	// unit whose ink l's line touches counts, so the word reads for both.
 	// A phrase, or a via word only most of the line's relations name, also
 	// repeats one set anywhere on its track, however far.
 	repeats := func(i int, l Label, touch bool) bool {
@@ -771,10 +736,11 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				// A line's stroke reaches 1.3px off its centre at most. Another
 				// line parallel to g keeps more than twice the label's offset
 				// from it, so the label reads as g's and not the other's. So
-				// does a flat line of g's colour: a word beside a drop right
-				// over such a track reads as the track's.
+				// does any flat line, since every line rests in one grey: a
+				// word beside a drop right over such a track reads as the
+				// track's.
 				room := labelRoom + 1
-				if (o.flat() == g.flat() || o.flat() && kin(i, o.wire)) && !mate(i, o.wire) {
+				if (o.flat() == g.flat() || o.flat()) && !mate(i, o.wire) {
 					room = 2*labelOff + 2
 				}
 				if hit(lb, grow(o.bounds(), room)) {
