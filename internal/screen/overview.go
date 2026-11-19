@@ -335,7 +335,24 @@ func boxTag(u model.Unit) string {
 // and a clause that opens on an article names a thing rather than what it
 // does; either, or a clause that leaves no run of two words or more, gives
 // no gist. The full sentence stays in the box's tooltip.
-func gist(u model.Unit, room int) string {
+func gist(u model.Unit, room int) string { return gistWithin(u, room, 0) }
+
+// sentenceRunes is how many characters at most the first clause takes when
+// overview_sentences widens a box for it: about one short sentence, as the
+// research's variant puts it (24 characters or so).
+const sentenceRunes = 24
+
+// gist is the box's last line as the overview's tactic sets it: cut to
+// sentenceRunes when the project widens boxes for it.
+func (o *overview) gist(u model.Unit, room int) string {
+	if o.sentences {
+		return gistWithin(u, room, sentenceRunes)
+	}
+	return gist(u, room)
+}
+
+// gistWithin is gist cut to at most runes characters, none when runes is 0.
+func gistWithin(u model.Unit, room, runes int) string {
 	f := sentence(u)
 	if f == nil {
 		return ""
@@ -352,7 +369,7 @@ func gist(u model.Unit, room int) string {
 	binds := func(w string) bool { w = strings.ToLower(w); return w == "to" || w == "that" }
 	for n := len(words); n >= 2; n-- {
 		run := strings.Join(words[:n], " ")
-		if (n == len(words) || small(words[n]) && !binds(words[n])) && !small(words[n-1]) && monoWidth(run) <= room {
+		if (n == len(words) || small(words[n]) && !binds(words[n])) && !small(words[n-1]) && monoWidth(run) <= room && (runes == 0 || len([]rune(run)) <= runes) {
 			return run
 		}
 	}
@@ -530,6 +547,9 @@ type overview struct {
 	counted     [][2]string
 	countedRels []string
 	said        map[pair]string
+	// sentences says the overview widens its boxes for their sentences
+	// (tactic.sentences).
+	sentences bool
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -625,7 +645,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 // module marked as a sample, an artifact or a tool is paired with the
 // consumers of its own scope only, not with the product's (see apart).
 func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut, scope map[model.ID]string) *overview {
-	o := &overview{tree: newTree(units), walks: flows, scope: scope, whole: focus == "", units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
+	o := &overview{tree: newTree(units), walks: flows, scope: scope, whole: focus == "", sentences: t.sentences && focus == "", units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
@@ -792,6 +812,11 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	var nodes []lnode
 	for _, m := range o.modules {
 		ls, w := setName(o.name(m), 13, 28, 150, boxMax)
+		if o.sentences {
+			if g := gistWithin(o.units[m], boxMax-16, sentenceRunes); g != "" {
+				w = max(w, min(boxMax, monoWidth(g)+16))
+			}
+		}
 		o.names[m] = ls
 		exits, entries := labels(o.chips[m][0]), labels(o.chips[m][1])
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
@@ -1236,7 +1261,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: o.gist(u, r.W-16), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		bands := o.chipBands[m]
 		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2

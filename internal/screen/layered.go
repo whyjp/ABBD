@@ -175,6 +175,11 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 // that climb. So a unit's view is drawn with every tactic and keeps the
 // drawing that reads best (choose). The overview takes the plain tactic.
 type tactic struct {
+	// sentences widens each module box of the overview to say the first
+	// clause of its sentence on its last line, up to sentenceRunes
+	// characters (overview_sentences). It is the project's choice, set on
+	// every tactic the chooser tries, not a variant of its own.
+	sentences bool
 	// reversed starts every row in reverse.
 	reversed bool
 	// median pulls an item to the weighted median of what it joins, not to
