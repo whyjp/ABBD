@@ -81,12 +81,18 @@ const (
 	// Exec is an execution context: a thread, a worker pool, an event loop,
 	// an async runtime, or the tasks one spawn site starts.
 	Exec Kind = "EXEC"
+	// External is a third-party library the project's manifests declare,
+	// such as a go.mod require, a package.json dependency or a Cargo.toml
+	// dependency: one whole lump, never its code. It anchors the line of
+	// each manifest that declares it, by the library's name as the symbol,
+	// and is only ever the far end of a depends_on.
+	External Kind = "EXT"
 )
 
 var kinds = map[Kind]string{
 	Module: "architecture", Interface: "architecture", Event: "architecture",
 	Data: "architecture", Config: "architecture", Feature: "features",
-	Exec: "architecture",
+	Exec: "architecture", External: "architecture",
 }
 
 // Domain-layer prefixes are reserved and not part of this restart.
@@ -474,6 +480,9 @@ func (u Unit) Validate() error {
 	if len(u.Entries) > 0 && !u.Kind.IsContract() {
 		return fmt.Errorf("%s: only contracts carry entries", u.ID)
 	}
+	if u.Kind == External && len(u.Parents) > 0 {
+		return fmt.Errorf("%s: an external library lies outside the repository, so no module or feature contains it", u.ID)
+	}
 	if u.Run != nil {
 		if u.Kind != Exec {
 			return fmt.Errorf("%s: only an execution context carries a run", u.ID)
@@ -709,8 +718,8 @@ const (
 )
 
 // ends says which kinds of unit each relation kind may join: a module or a
-// feature provides a contract, anything may consume a contract or depend on
-// any unit, a module, a feature or an execution context runs on an execution
+// feature provides a contract, any unit but an external library may consume
+// a contract or depend on any unit, a module, a feature or an execution context runs on an execution
 // context, and a module or an execution context posts to one. Quotes is the
 // fewest evidence items a claim of the kind needs: a posts_to quotes the
 // producer and the consumer.
@@ -719,15 +728,19 @@ var ends = map[RelationKind]struct {
 	quotes   int
 }{
 	Provides:  {from: implementer, to: Kind.IsContract},
-	Consumes:  {from: anyKind, to: Kind.IsContract},
-	DependsOn: {from: anyKind, to: anyKind},
+	Consumes:  {from: ours, to: Kind.IsContract},
+	DependsOn: {from: ours, to: anyKind},
 	RunsOn:    {from: func(k Kind) bool { return implementer(k) || k == Exec }, to: isExec},
 	PostsTo:   {from: func(k Kind) bool { return k == Module || k == Exec }, to: isExec, quotes: 2},
 }
 
 func implementer(k Kind) bool { return k == Module || k == Feature }
 func anyKind(Kind) bool       { return true }
-func isExec(k Kind) bool      { return k == Exec }
+
+// ours is any unit of the project's own code: an external library uses
+// nothing the diagram draws.
+func ours(k Kind) bool   { return k != External }
+func isExec(k Kind) bool { return k == Exec }
 
 // Uses reports whether a relation of kind k runs from a unit that uses the
 // other: it consumes it or depends on it. A provides runs from the unit that
@@ -764,7 +777,7 @@ func (k RelationKind) Joins(from, to Kind) error {
 		return err
 	}
 	if e := ends[k]; !e.from(from) || !e.to(to) {
-		return fmt.Errorf("%s %s %s is not a relation ABBD knows: a module or feature provides a contract, anything consumes a contract or depends_on any unit, a module, feature or EXEC runs_on an EXEC, and a module or EXEC posts_to an EXEC", from, k, to)
+		return fmt.Errorf("%s %s %s is not a relation ABBD knows: a module or feature provides a contract, anything but an external library consumes a contract or depends_on any unit, a module, feature or EXEC runs_on an EXEC, and a module or EXEC posts_to an EXEC", from, k, to)
 	}
 	return nil
 }
