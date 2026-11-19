@@ -480,7 +480,7 @@ func (d *Drawing) crossed(area box) int {
 				n++
 			}
 		}
-		if w.Label != nil && hit(area, w.Label.area()) {
+		if w.wordHits(area) {
 			n += 3
 		}
 		if w.Count > 0 && hit(area, countAt(w, countSpot)) {

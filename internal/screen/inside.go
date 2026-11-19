@@ -760,7 +760,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 				titles = append(titles, title)
 			}
 			if s := p.starts[j]; s != noStart {
-				if ln.origin != "extracted" {
+				// A folded line's start is a head too: its origin stays in
+				// the tooltip rather than stack a mark on the head.
+				if ln.origin != "extracted" && !p.both {
 					w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})
 				}
 				origins[ln.origin] = true
@@ -779,6 +781,8 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
 		w.Net, w.Joins = p.net, p.joins
+		// A folded pair's line has a head where it leaves its box too.
+		w.Both = p.both && slices.ContainsFunc(p.starts, func(s pt) bool { return s != noStart })
 		w.ends = endsOf(reqs, p.reqs)
 		if l.roads {
 			w.rides = p.reqs

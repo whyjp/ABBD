@@ -672,7 +672,7 @@ func (d *Drawing) badge(way, others [][2]pt, taken []pt, arrive bool) (pt, int) 
 		}
 		here := box{p.x - r - 2, p.y - r - 2, 2*r + 4, 2*r + 4}
 		for _, w := range d.Wires {
-			if w.Label != nil && hit(here, w.Label.area()) || w.Count > 0 && hit(here, countAt(w, countSpot)) {
+			if w.wordHits(here) || w.Count > 0 && hit(here, countAt(w, countSpot)) {
 				return false
 			}
 		}
@@ -774,7 +774,7 @@ func (d *Drawing) clearOfInk(area box, own [][2]pt) bool {
 		}
 	}
 	for _, w := range d.Wires {
-		if w.Label != nil && hit(area, w.Label.area()) || w.Count > 0 && hit(area, countBox(w)) {
+		if w.wordHits(area) || w.Count > 0 && hit(area, countBox(w)) {
 			return false
 		}
 	}
@@ -845,7 +845,7 @@ func (d *Drawing) onWords(c pt, r int) bool {
 		}
 	}
 	for _, w := range d.Wires {
-		if w.Label != nil && hit(area, w.Label.area()) || w.Count > 0 && hit(area, countAt(w, countSpot)) {
+		if w.wordHits(area) || w.Count > 0 && hit(area, countAt(w, countSpot)) {
 			return true
 		}
 	}
@@ -897,21 +897,23 @@ func (d *Drawing) quiet() {
 // only on hover. The words stay in the line's tooltip.
 func (d *Drawing) unlabelKin() {
 	for i := range d.Wires {
-		l := d.Wires[i].Label
-		if l == nil {
+		if d.Wires[i].Label == nil {
 			continue
 		}
-		lb := l.area()
-		for j, o := range d.Wires {
-			if j == i || o.Net != 0 && o.Net == d.Wires[i].Net {
-				continue
-			}
-			for _, r := range runs(o.D) {
-				if r[0].y != r[1].y || max(r[0].x, r[1].x) <= lb.x || lb.x+lb.w <= min(r[0].x, r[1].x) {
+		// A folded line's two words stand or go together.
+		for _, l := range d.Wires[i].Words() {
+			lb := l.area()
+			for j, o := range d.Wires {
+				if j == i || o.Net != 0 && o.Net == d.Wires[i].Net {
 					continue
 				}
-				if abs(lb.y+lb.h-r[0].y) <= labelOff+2 || abs(lb.y-r[0].y) <= labelOff+2 {
-					d.Wires[i].Label = nil
+				for _, r := range runs(o.D) {
+					if r[0].y != r[1].y || max(r[0].x, r[1].x) <= lb.x || lb.x+lb.w <= min(r[0].x, r[1].x) {
+						continue
+					}
+					if abs(lb.y+lb.h-r[0].y) <= labelOff+2 || abs(lb.y-r[0].y) <= labelOff+2 {
+						d.Wires[i].Label, d.Wires[i].Far = nil, nil
+					}
 				}
 			}
 		}

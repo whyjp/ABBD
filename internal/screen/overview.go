@@ -216,6 +216,10 @@ type Wire struct {
 	// Label is the word that says how the line's relations arise, set
 	// along its own ink (rule 25).
 	Label *Label `json:",omitempty"`
+	// Far is, on a folded pair's line whose two ways say different words
+	// set apart, the word of the way that arrives at its start, set near
+	// that end; Label then says the other way's, near the line's end.
+	Far *Label `json:",omitempty"`
 	// from is where the word labels sets comes from: the overview record's
 	// chosen line, a relation's phrase, or the via its relations name.
 	from wordFrom
@@ -1417,7 +1421,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			titles = append(titles, merged[i].title)
 		}
 		w := Wire{D: p.D, Kind: p.kind}
-		w.Both = w.Kind == kindMutual && slices.ContainsFunc(p.starts, func(s pt) bool { return s != noStart })
+		w.Both = (w.Kind == kindMutual || p.both) && slices.ContainsFunc(p.starts, func(s pt) bool { return s != noStart })
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			og := o.origin(merged[i].rels)
@@ -1429,7 +1433,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			}
 			origins[og] = true
 			w.Origin = og
-			if og != Badge(model.Extracted) {
+			if og != Badge(model.Extracted) && !p.both {
 				w.Marks = append(w.Marks, Mark{X: p.starts[j].x, Y: p.starts[j].y, Origin: og})
 			}
 		}
@@ -1532,3 +1536,23 @@ func (o *overview) between(a, b model.ID) []string {
 	}
 	return out
 }
+
+// Words are the labels w sets, each once: Label, and Far where set.
+func (w Wire) Words() []Label {
+	var out []Label
+	for _, l := range []*Label{w.Label, w.Far} {
+		if l != nil {
+			out = append(out, *l)
+		}
+	}
+	return out
+}
+
+// wordHits says some word w sets stands on b.
+func (w Wire) wordHits(b box) bool {
+	return slices.ContainsFunc(w.Words(), func(l Label) bool { return hit(b, l.area()) })
+}
+
+// folded says w is a piece of a folded pair's line (fold.go) that leaves
+// a box, so it has a head there even where it ends on other ink.
+func (w Wire) folded() bool { return w.Both && w.Kind != kindMutual }

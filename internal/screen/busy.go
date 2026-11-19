@@ -4,6 +4,7 @@ import (
 	"math"
 	"slices"
 	"sort"
+	"strings"
 )
 
 // besideGap is how near, in px, two stretches of ink of different drawn
@@ -67,13 +68,22 @@ func axisRuns(s sheet) (flat, upright []axisRun) {
 
 // wayOf is the way the lines on stretch p go along it: on a drawing that
 // holds each line's route, the way of every route that runs on it, 0 when
-// they go both ways; else the way its path is drawn.
+// they go both ways; else the way its path is drawn. A folded pair's line
+// (fold.go) goes both ways.
 func wayOf(s sheet, p inkStretch) int {
 	if !s.routed {
 		return int(fsign(p.b.x - p.a.x + p.b.y - p.a.y))
 	}
 	way := 0
 	for _, rt := range s.routes {
+		if folded(rt.class) {
+			for i := 1; i < len(rt.pts); i++ {
+				if collinear(rt.pts[i-1], rt.pts[i], p.a, p.b) {
+					return 0
+				}
+			}
+			continue
+		}
 		for i := 1; i < len(rt.pts); i++ {
 			a, b := rt.pts[i-1], rt.pts[i]
 			if !collinear(a, b, p.a, p.b) {
@@ -189,6 +199,10 @@ func oppositeShared(s sheet) int {
 	}
 	spans := map[track][2][][2]float64{}
 	for _, w := range ws {
+		// A folded pair's line runs both ways by its two heads.
+		if folded(w.class) {
+			continue
+		}
 		for _, p := range stretches(w.pts) {
 			a, b := p[0], p[1]
 			var k track
@@ -509,7 +523,7 @@ const repeatNear = 200
 func labelRepeats(d Drawing) int {
 	at := map[string][]pt{}
 	for _, w := range d.Wires {
-		if l := w.Label; l != nil {
+		for _, l := range w.Words() {
 			at[l.S] = append(at[l.S], pt{l.X, l.Y})
 		}
 	}
@@ -557,4 +571,9 @@ func labelled(d Drawing) int {
 		}
 	}
 	return n
+}
+
+// folded says a stroke or route of class is a folded pair's line (fold.go).
+func folded(class string) bool {
+	return strings.Contains(" "+class+" ", " both ") && !strings.Contains(" "+class+" ", " mutual ")
 }

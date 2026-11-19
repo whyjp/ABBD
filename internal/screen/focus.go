@@ -201,6 +201,24 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
 			ins = alt
 		}
+		// Where two lines are a true reverse pair, the view is drawn again
+		// with each pair folded into one line, kept where that reads no worse.
+		for _, tier := range []int{foldAll, foldLone} {
+			if !foldsAny(ins.Drawing) {
+				break
+			}
+			ft := t
+			ft.pairs = tier
+			if folded, ok := o.inside(scope, units, id, centres(full.Drawing), ft, nil); ok {
+				var c, fc cost
+				c.judge(ins.Drawing)
+				fc.judge(folded.Drawing)
+				if foldsNoWorse(fc, c) {
+					ins, t = folded, ft
+					break
+				}
+			}
+		}
 		// Where some line climbs, the view is drawn again with such lines on
 		// roads of their own, and that is kept where sharing roads reads worse.
 		if slices.ContainsFunc(ins.Drawing.Routes, func(r Route) bool { return r.Back }) {

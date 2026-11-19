@@ -309,7 +309,10 @@ type roadView struct {
 	// drawn dotted where it rides alone, and kinds is each route's kind.
 	// lead, nil where no lead is drawn, says the view's lead rides a route.
 	plan, lead []bool
-	kinds      []string
+	// both says each route is a folded pair's line (fold.go), nil where
+	// none is: its first and last runs ride no road with another route.
+	both  []bool
+	kinds []string
 	// ends are each route's two ends, whose spans its first and last runs
 	// may slide along.
 	ends     [][2]end
@@ -587,6 +590,11 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 		return out
 	}
 	x, y := assets(a), assets(b)
+	// A folded pair's line has a head at each end, so another route on
+	// either of its end runs would read as arriving there too (rule 18).
+	if v.both != nil && a[0] != b[0] && (v.both[a[0]] && len(x) > 0 || v.both[b[0]] && len(y) > 0) {
+		return true
+	}
 	switch {
 	case len(x) == 0 && len(y) == 0:
 		return false
@@ -634,6 +642,17 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, 
 	if apart {
 		for i, b := range r.back {
 			ink[i] = fmt.Sprint(b)
+		}
+	}
+	// A folded pair rides a road of its own: on another line's road its
+	// heads would read as arrivals of that line's places too (rule 18).
+	for i, q := range reqs {
+		if q.both {
+			ink[i] += "|both|" + from[i] + "|" + to[i]
+			if v.both == nil {
+				v.both = make([]bool, len(reqs))
+			}
+			v.both[i] = true
 		}
 	}
 	v = v.grouped()
@@ -1234,7 +1253,7 @@ func road(pts []pt, is []int, ways [][]pt, reqs []wireReq, back []bool) drawn {
 			kind = k
 		}
 	}
-	d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: is, kind: kind, back: !slices.ContainsFunc(is, func(i int) bool { return !back[i] }), road: true}
+	d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: is, kind: kind, back: !slices.ContainsFunc(is, func(i int) bool { return !back[i] }), road: true, both: slices.ContainsFunc(is, func(i int) bool { return reqs[i].both && ways[i][0] == pts[0] })}
 	last := pts[len(pts)-1]
 	arrives := false
 	for _, i := range is {

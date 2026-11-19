@@ -74,6 +74,18 @@ func (l *layout) withHops(reqs []wireReq, hop []bool) routing {
 	for k, i := range at {
 		ways[i], back[i] = r.ways[k], r.back[k]
 	}
+	if r.rider != nil {
+		rider := make([]int, len(reqs))
+		for i := range rider {
+			rider[i] = -1
+		}
+		for k, i := range at {
+			if j := r.rider[k]; j >= 0 {
+				rider[i] = at[j]
+			}
+		}
+		r.rider = rider
+	}
 	pair := map[[2]string][]int{}
 	var pairs [][2]string
 	for i, q := range reqs {

@@ -22,6 +22,9 @@ import (
 type state struct {
 	from layout
 	opts layOpts
+	// fold are the true reverse pairs laid as one line each, as [kept,
+	// rider] (fold.go).
+	fold [][2]int
 	// path is the moves that led here from the router's start.
 	path []move
 }
@@ -33,7 +36,8 @@ type move struct {
 	// On says whether a mode is turned on (apart, share, drops, tweak,
 	// early).
 	On bool `json:"on,omitempty"`
-	// Lines are the lines bend keeps on their buses.
+	// Lines are the lines bend keeps on their buses, or the lines fold
+	// folds into their reverse lines.
 	Lines []int `json:"lines,omitempty"`
 	// Tracks are the tracks hold holds each crossing at or under: gap,
 	// owner, side and track.
@@ -54,6 +58,9 @@ const (
 	// hold holds every crossing at or under the track it took in another
 	// drawing.
 	actHold = "hold"
+	// fold draws each true reverse pair whose line from Lines runs back as
+	// one line with a head at each end (fold.go).
+	actFold = "fold"
 )
 
 // laid is one drawing of a view's lines: the state it was laid from, the
@@ -136,7 +143,7 @@ func newRouter(l layout, reqs []wireReq) *router {
 // call makes move m from st. It says false where the move has nothing to
 // do: straighten moves no chain.
 func (rt *router) call(st state, m move) (state, bool) {
-	next := state{from: st.from, opts: st.opts, path: append(slices.Clone(st.path), m)}
+	next := state{from: st.from, opts: st.opts, fold: st.fold, path: append(slices.Clone(st.path), m)}
 	switch m.Action {
 	case actApart:
 		next.opts.Apart = m.On
@@ -161,6 +168,16 @@ func (rt *router) call(st state, m move) (state, bool) {
 		if len(rt.reqs) > shareMost || !next.from.straighten(rt.reqs) {
 			return st, false
 		}
+	case actFold:
+		next.fold = nil
+		for _, p := range foldable(rt.reqs, readFirst) {
+			if slices.Contains(m.Lines, p[1]) {
+				next.fold = append(next.fold, p)
+			}
+		}
+		if len(next.fold) == 0 {
+			return st, false
+		}
 	case actHold:
 		next.from.held = map[[3]int]int{}
 		for _, t := range m.Tracks {
@@ -175,7 +192,14 @@ func (rt *router) call(st state, m move) (state, bool) {
 // lay lays the lines from st into a drawing, on a copy of its layout.
 func (rt *router) lay(st state) *laid {
 	at := st.from.keep()
-	r := at.lay(rt.reqs, st.opts)
+	var r routing
+	if len(st.fold) > 0 {
+		f := newFolding(rt.reqs, st.fold)
+		at.held = f.held(at.held)
+		r = f.unfold(at.lay(f.reqs(rt.reqs), f.opts(st.opts)))
+	} else {
+		r = at.lay(rt.reqs, st.opts)
+	}
 	at.held = nil
 	s := &laid{state: st, at: at, r: r}
 	t := &routeStep{Path: st.path, Opts: st.opts, Measure: Measure{Shares: r.shares, Dropped: r.dropped, Bent: r.bent, Tweaked: r.tweaked, Joined: r.joined}}
@@ -222,7 +246,10 @@ type policy interface {
 	route(rt *router) *laid
 }
 
-// builtin is the policy routing has always kept. Its choices are the modes
+// builtin is the policy routing has always kept. Where the layout lets it
+// (tactic.pairs), it then folds the true reverse pairs (fold) and makes the
+// kept drawing's moves again after that; choose and the focus views keep
+// the folded drawing only where it reads no worse (foldsNoWorse). Its choices are the modes
 // it lays a view both ways in, outermost first: each way is laid with every
 // later choice made, and the first way is kept unless it leaves another way
 // to try and that reads better. Then, where straighten moves a chain, the
@@ -282,8 +309,32 @@ var choices = []choice{
 }
 
 func (p builtin) route(rt *router) *laid {
-	r := p.choose(rt, rt.start, 0)
-	moved, ok := rt.call(rt.start, move{Action: actStraighten})
+	r := p.plain(rt)
+	if rt.start.from.pairs == foldNone {
+		return r
+	}
+	// The pairs fold on the drawing kept: its moves are made again after
+	// the fold, so lines the fold does not touch keep the modes they were
+	// drawn in. Only the lone tier folds just the pairs whose lines share
+	// no ink with a third line in it.
+	pairs := foldable(rt.reqs, readFirst)
+	if rt.start.from.pairs == foldLone {
+		pairs = lone(pairs, r.r.drawn)
+	}
+	if len(pairs) == 0 {
+		return r
+	}
+	if f, ok := rt.replay(append([]move{{Action: actFold, Lines: riders(pairs)}}, r.path...)); ok {
+		return f
+	}
+	return r
+}
+
+// plain is the drawing builtin keeps with no pair folded.
+func (p builtin) plain(rt *router) *laid {
+	start := rt.start
+	r := p.choose(rt, start, 0)
+	moved, ok := rt.call(start, move{Action: actStraighten})
 	if !ok {
 		return r
 	}
@@ -338,6 +389,15 @@ func (p builtin) way(rt *router, st state, k int, on bool) *laid {
 		next, _ := rt.call(st, move{Action: actBend, Lines: keysOf(bent)})
 		s = p.choose(rt, next, k+1)
 	}
+}
+
+// riders are the lines that fold into others, of pairs.
+func riders(pairs [][2]int) []int {
+	var out []int
+	for _, p := range pairs {
+		out = append(out, p[1])
+	}
+	return out
 }
 
 // tracksOf is tracks as hold takes them, in order.

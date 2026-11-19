@@ -87,8 +87,10 @@ type layout struct {
 	ring bool
 	// idle says the tactic's fold or entry flag changed nothing (arrange).
 	idle bool
-	// counted, roads, through and apart are the tactic's flags.
+	// counted, roads, through and apart are the tactic's flags, and pairs
+	// its tier of folding.
 	counted, roads, through, apart bool
+	pairs                          int
 	// recorded says the drawing is an overview whose stored record hides
 	// some pair, so lines against the flow keep a track clear of lines with
 	// it (lay).
@@ -544,7 +546,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, through: t.through, apart: t.apart, axis: ax}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, through: t.through, apart: t.apart, pairs: t.pairs, axis: ax}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)
@@ -740,7 +742,14 @@ type wireReq struct {
 	kind string
 	plan bool
 	lead bool
+	// both says the line stands for a true reverse pair the router folded
+	// into it (fold.go): it reads both ways, with a head at each end.
+	both bool
 }
+
+// twoWay says the line reads both ways: two modules that use each other
+// directly, or a folded pair.
+func (r wireReq) twoWay() bool { return r.both || r.kind == kindMutual }
 
 func polyline(pts []pt) string {
 	var d strings.Builder

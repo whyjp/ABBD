@@ -54,8 +54,9 @@ func (w weight) beats(o weight) bool {
 type cost struct {
 	touches, breaks, steps, crossings, over2, braid, climb int
 	// hard, seen, turned and crossed are what abbd lint reads from the
-	// drawn view (judge), crossed its crossings.
-	hard, seen, turned, crossed int
+	// drawn view (judge), crossed its crossings, and phantoms the pairs of
+	// places its ink joins that no relation joins, on roads too.
+	hard, seen, turned, crossed, phantoms int
 	// clear counts the lines that turn where their ends stand in one
 	// column with a clear straight drop between (B1 allowing none).
 	clear int
@@ -86,6 +87,9 @@ type cost struct {
 	// climbs says some line runs against the reading axis, so the view may
 	// be drawn with such lines apart (tactic.apart).
 	climbs bool
+	// pairs says some two lines are a true reverse pair, so the view may be
+	// drawn with each pair folded into one line (tactic.pairs).
+	pairs bool
 }
 
 // sharedOrApart says a drawing whose lines that climb share roads with the
@@ -96,7 +100,19 @@ type cost struct {
 // one way opposite on a track or off a two-lane road; this check, not the
 // road cost, keeps such a drawing out. A total read only after painting,
 // such as colour_switches, is not seen.
-func sharedOrApart(c, a cost) bool {
+func sharedOrApart(c, a cost) bool { return readsNoWorse(c, a) }
+
+// foldsNoWorse says a drawing with its true reverse pairs folded, of cost
+// c, reads no worse than the one with them apart, of cost a, as
+// sharedOrApart reads it, and joins no more pairs of places that no
+// relation joins, roads included: folding draws the folded lines on roads
+// of their own, which reroutes the others too.
+func foldsNoWorse(c, a cost) bool { return readsNoWorse(c, a) && c.phantoms <= a.phantoms }
+
+// readsNoWorse says a drawing of cost c reads no worse than one of cost a
+// on every total the gate holds a view to, as judge reads them, and on its
+// crossings.
+func readsNoWorse(c, a cost) bool {
 	return len(c.gate) > 0 && len(c.gate) == len(a.gate) && noWorse(c.gate, a.gate) && c.crossed <= a.crossed
 }
 
@@ -158,7 +174,7 @@ func (c *cost) judge(d Drawing) {
 			moved++
 		}
 	}
-	c.hard, c.moved, c.crossed, c.gate, c.clear = t.Hard, moved, t.Crossings, gateTotals(t), 0
+	c.hard, c.moved, c.crossed, c.gate, c.clear, c.phantoms = t.Hard, moved, t.Crossings, gateTotals(t), 0, t.Phantoms
 	for _, b := range vl.Breaches {
 		if b.Criterion == critBends && b.Allowed == 0 {
 			c.clear++
@@ -185,12 +201,24 @@ func (c cost) beats(o cost) bool {
 
 func costOf(r routing, reqs []wireReq) cost {
 	w := weigh(routing{drawn: r.drawn}, reqs)
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(r.ways), climbs: slices.Contains(r.back, true)}
+	ways := r.ways
+	if r.rider != nil {
+		ways = nil
+		for i, w := range r.ways {
+			if !r.riding(i) {
+				ways = append(ways, w)
+			}
+		}
+	}
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(ways), climbs: slices.Contains(r.back, true), pairs: len(foldable(reqs, readFirst)) > 0}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
 	var pairs []pair
 	for i, pts := range r.ways {
+		if r.riding(i) {
+			continue
+		}
 		k := pair{place(reqs[i].from), place(reqs[i].to)}
 		if old, ok := best[k]; !ok {
 			pairs = append(pairs, k)
@@ -345,7 +373,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		// some count would get it, and that is kept if the checks above pass
 		// it and it reads no worse. Only the kept drawing's roomy is read,
 		// and it was drawn without counted.
-		{actCounted, func(t *tactic) { t.counted = true }, func(c cost) bool { return c.roomy }, nil, true,
+		{actCounted, func(t *tactic) { t.counted = true }, func(_ tactic, c cost) bool { return c.roomy }, nil, true,
 			func(t tactic, kept, c cost) bool {
 				pass := without < 0 || fits(t, c, cs[without], b.crossed)
 				if !t.laned && !t.gather {
@@ -356,24 +384,31 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		// It is drawn once more with its lines on roads, and that is kept. It
 		// keeps every box's row and order; only the gaps between rows grow
 		// or shrink with the tracks the lines take.
-		{actRoads, func(t *tactic) { t.roads = true }, func(cost) bool { return true }, nil, false,
+		{actRoads, func(t *tactic) { t.roads = true }, func(tactic, cost) bool { return true }, nil, false,
 			func(tactic, cost, cost) bool { return true }},
+		// Where two lines are a true reverse pair, it is drawn again with
+		// each such pair folded into one line, and that is kept where it
+		// reads no worse; failing that, with only the lone pairs folded.
+		{actFold, func(t *tactic) { t.pairs = foldAll }, func(t tactic, c cost) bool { return c.pairs && t.pairs == foldNone }, nil, true,
+			func(_ tactic, kept, c cost) bool { return foldsNoWorse(c, kept) }},
+		{actFold, func(t *tactic) { t.pairs = foldLone }, func(t tactic, c cost) bool { return c.pairs && t.pairs == foldNone }, nil, true,
+			func(_ tactic, kept, c cost) bool { return foldsNoWorse(c, kept) }},
 		// Where some line climbs, it is drawn again with such lines on roads
 		// of their own, and that is kept where sharing roads reads worse.
-		{actApart, func(t *tactic) { t.apart = true }, func(c cost) bool { return c.climbs }, nil, true,
+		{actApart, func(t *tactic) { t.apart = true }, func(_ tactic, c cost) bool { return c.climbs }, nil, true,
 			func(_ tactic, shared, apart cost) bool { return !sharedOrApart(shared, apart) }},
 		// Where some line still runs past rule 15's bound along its whole
 		// way, and some line rides a chain set astray (strays), it is drawn
 		// on roads again with such lines passing rows through their gaps,
 		// and that is kept where fewer lines run so far and no total the
 		// gate holds a view to reads worse.
-		{actThrough, func(t *tactic) { t.through = true }, func(c cost) bool { return c.far > 0 && c.strays },
+		{actThrough, func(t *tactic) { t.through = true }, func(_ tactic, c cost) bool { return c.far > 0 && c.strays },
 			func(kept, c cost) bool { return c.far < kept.far }, true,
 			func(_ tactic, kept, c cost) bool {
 				return len(c.gate) > 0 && len(c.gate) == len(kept.gate) && noWorse(c.gate, kept.gate)
 			}},
 	} {
-		if !rd.applies(cur.c) {
+		if !rd.applies(cur.t, cur.c) {
 			continue
 		}
 		t := cur.t
@@ -413,7 +448,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 type redraw struct {
 	action  string
 	turn    func(t *tactic)
-	applies func(c cost) bool
+	applies func(t tactic, c cost) bool
 	worth   func(kept, c cost) bool
 	judges  bool
 	keeps   func(t tactic, kept, c cost) bool
@@ -558,7 +593,11 @@ func weigh(r routing, reqs []wireReq) weight {
 		return true
 	}
 	var w weight
-	for _, pts := range r.ways {
+	// A line folded into its reverse line is that line's ink (fold.go).
+	for i, pts := range r.ways {
+		if r.riding(i) {
+			continue
+		}
 		w.turns += max(0, len(pts)-2)
 		for i := 2; i < len(pts)-1; i++ {
 			if span(pts[i-1], pts[i]) < jogUnder {

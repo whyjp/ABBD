@@ -162,7 +162,7 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		w.Hue = hueKey(-1)
-		if !w.Joins {
+		if !w.Joins || w.folded() {
 			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
 		}
@@ -317,7 +317,7 @@ func heads(paths []drawn) []box {
 		if last := straight(ps[len(ps)-1]); len(last) > 1 && !p.joins {
 			at(last[len(last)-1], last[len(last)-2])
 		}
-		if first := straight(ps[0]); len(first) > 1 && p.kind == kindMutual && p.starts[0] != noStart {
+		if first := straight(ps[0]); len(first) > 1 && (p.kind == kindMutual || p.both) && p.starts[0] != noStart {
 			at(first[0], first[1])
 		}
 	}
@@ -576,8 +576,17 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	inFreed := func(l Label) bool {
 		return slices.ContainsFunc(freed, func(b box) bool { return hit(l.area(), b) })
 	}
+	// A folded pair's line (fold.go) says the word of each of its two ways.
+	// Where they differ, it says both centred, "a · b", or where that does
+	// not stand clear, each beside the end its way arrives at: ends holds
+	// the word of the way that arrives at the line's end, then the one that
+	// arrives at its start.
+	ends := make([][2]string, len(d.Wires))
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
+		if w.folded() && len(w.lines) == 2 {
+			words[i], saids[i], ends[i] = twoWays(t, w.lines)
+		}
 		d.Wires[i].from = fromVia
 		if saids[i] {
 			d.Wires[i].from = fromPhrase
@@ -690,7 +699,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		// A phrase that would repeat a word set nearby gives way to the
 		// line's next phrase, which tells it apart from its neighbours.
 		says := []string{s}
-		if said {
+		if said && ends[i][0] == "" {
 			says = sayings(t, d.Wires[i].lines)
 		}
 		var mine []seg
@@ -837,6 +846,13 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				}
 			}
 		}
+		if got == nil && ends[i][0] != "" {
+			got = d.Wires[i].endWords(i, ends[i], segs, clear, func(l Label) bool { return repeats(i, l, false) })
+			if got != nil {
+				placed = append(placed, set{*d.Wires[i].Far, i, false})
+				taken = append(taken, d.Wires[i].Far.area())
+			}
+		}
 		if got == nil {
 			continue
 		}
@@ -939,4 +955,80 @@ func touching(segs []seg, n int) func(i, j int) bool {
 		}
 	}
 	return func(i, j int) bool { return touch[i*n+j] }
+}
+
+// endWords sets each way's word of folded wire i, of ends (see labels),
+// beside the end its way arrives at: the first word at the wire's last
+// stretch, as Label, the second at its first, as Far. Each stands as near
+// its end as clear lets it, past the head; it is nil, and Far unset, where
+// either word finds no clear spot or would repeat a word set nearby.
+func (w *Wire) endWords(i int, ends [2]string, segs []seg, clear func(g seg, l Label, lo, hi int) bool, repeats func(l Label) bool) *Label {
+	var own []seg
+	for _, g := range segs {
+		if g.wire == i {
+			own = append(own, g)
+		}
+	}
+	if len(own) == 0 {
+		return nil
+	}
+	near := func(s string, g seg, end pt) *Label {
+		tw := textWidth(s, labelPx)
+		half := tw / 2
+		if !g.flat() {
+			half = labelH / 2
+		}
+		lo, hi := g.lo()+labelPad+half, g.hi()-labelPad-half
+		if lo > hi {
+			return nil
+		}
+		// From the end inward, as far as the stretch's middle.
+		from, to, step := hi, (lo+hi)/2, -4
+		if e := end.y; g.flat() && end.x == g.lo() || !g.flat() && e == g.lo() {
+			from, to, step = lo, (lo+hi)/2, 4
+		}
+		for c := from; step < 0 && c >= to || step > 0 && c <= to; c += step {
+			var opts []Label
+			if g.flat() {
+				y := g.a.y
+				opts = []Label{{s, c, y - labelOff - 1, false}, {s, c, y + labelOff + labelH - 1, false}}
+			} else {
+				x, y := g.a.x, c+labelH/2-1
+				opts = []Label{{s, x + labelOff + tw/2 + 1, y, false}, {s, x - labelOff - tw/2 - 1, y, false}}
+			}
+			for _, l := range opts {
+				if !repeats(l) && clear(g, l, c-half, c+half) {
+					return &l
+				}
+			}
+		}
+		return nil
+	}
+	last, first := own[len(own)-1], own[0]
+	a := near(ends[0], last, last.b)
+	if a == nil {
+		return nil
+	}
+	b := near(ends[1], first, first.a)
+	if b == nil || hit(a.area(), b.area()) {
+		return nil
+	}
+	w.Far = b
+	return a
+}
+
+// twoWays is what a folded pair's line (fold.go) says of its two ways,
+// lines holding each way's relations: one word where they say the same
+// or only one says any, else both centred as "a · b", with the two words
+// apart for setting near the ends.
+func twoWays(t tree, lines [][]string) (string, bool, [2]string) {
+	a, sa := word(t, lines[:1])
+	b, sb := word(t, lines[1:])
+	switch {
+	case a == b || b == "":
+		return a, sa, [2]string{}
+	case a == "":
+		return b, sb, [2]string{}
+	}
+	return a + " · " + b, sa && sb, [2]string{a, b}
 }
