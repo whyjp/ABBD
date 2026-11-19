@@ -2239,6 +2239,7 @@
         "internal/screen/primary.go",
         "internal/screen/rank.go",
         "internal/screen/roadindex.go",
+        "internal/screen/roadwalk.go",
         "internal/screen/route.go",
         "internal/screen/router.go",
         "internal/screen/screen.go",
