@@ -45,8 +45,13 @@ var elsewhere = map[string]string{
 }
 
 // unfinished refuses a module's text that holds a section other than
-// textSections, or a TODO line abbd brief left in it.
+// textSections, or a TODO line abbd brief left in it, or that starts with
+// a frontmatter fence: the stored file's fence is abbd's, and one more at
+// the top of the text shows on the page as a line of dashes.
 func unfinished(text string) error {
+	if text == "---" || strings.HasPrefix(text, "---\n") {
+		return fmt.Errorf("the text starts with ---, a frontmatter fence; pass its body only, from ## Overview")
+	}
 	raw := strings.Split(text, "\n")
 	for i, l := range narrative.Lines(text) {
 		t := strings.TrimSpace(raw[i])
