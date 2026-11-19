@@ -18,6 +18,8 @@ func TestAnAmbientMarkIsStoredCheckedAndGiven(t *testing.T) {
 	for _, c := range []struct{ from, to, want string }{
 		{"as: static", "as: shared", `ambient MOD-0001 is "shared"; it is one of global, static, context`},
 		{"unit: MOD-0001\n    as", "unit: DATA-0001\n    as", "DATA-0001 sits inside MOD-0001, which the overview draws as one box; mark MOD-0001"},
+		{"\n---\n\n장부는", "\n  - unit: MOD-0001\n    as: global\n    evidence:\n      - {path: billing/charge.go, lines: \"4\", symbol: Charge, quote: \"func Charge() {}\"}\n---\n\n장부는", "MOD-0001 is named by ambient 1 and by ambient 2"},
+		{"\n---\n\n장부는", "\nscope:\n  - unit: MOD-0001\n    scope: tool\n    evidence:\n      - {path: billing/charge.go, lines: \"4\", symbol: Charge, quote: \"func Charge() {}\"}\n---\n\n장부는", "MOD-0001 is marked tool and ambient"},
 	} {
 		p.overview(1, c.want, strings.Replace(marked, c.from, c.to, 1))
 	}

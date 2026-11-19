@@ -175,6 +175,15 @@ func (o Overview) Gaps(units []model.Unit) []OverviewGap {
 	add("line", model.Line{}.Kind().Whole(nil, ClaimsOf(o.Lines), units))
 	add("scope", model.ScopeMark{}.Kind().Whole(nil, ClaimsOf(o.Scopes), units))
 	add("ambient", model.AmbientMark{}.Kind().Whole(nil, ClaimsOf(o.Ambient), units))
+	// A unit a scope mark says is no part of the product is no foundation of
+	// it either.
+	for i, a := range o.Ambient {
+		for _, s := range o.Scopes {
+			if s.Claim.Unit == a.Claim.Unit {
+				out = append(out, OverviewGap{Part: "ambient", Gap: model.Gap{Text: fmt.Sprintf("%s is marked %s and ambient; a %s is no part of the product, so drop one mark", a.Claim.Unit, s.Claim.Scope, s.Claim.Scope), Parts: []int{i + 1}}})
+			}
+		}
+	}
 	return out
 }
 
