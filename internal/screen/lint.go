@@ -152,6 +152,13 @@ type Totals struct {
 	// or more providers, meeting each of its users with every provider
 	// (overview.fanout). It shows the exposure; nothing bounds it.
 	Fanout int `json:"fanout"`
+	// RowsOff are the rows whose boxes' centres do not stand on one line,
+	// Parents the boxes that use two or more boxes of the row right below,
+	// and OffCentre those that stand off the middle of them by more than a
+	// quarter of their span (symmetry.go). Nothing bounds them.
+	RowsOff   int `json:"rows_off"`
+	Parents   int `json:"parents"`
+	OffCentre int `json:"off_centre"`
 }
 
 // Sum adds up the totals of several views.
@@ -175,6 +182,7 @@ func Sum(views []ViewLint) Totals {
 		t.Density += o.Density
 		t.Fans, t.Strands = t.Fans+o.Fans, t.Strands+o.Strands
 		t.Fanout += o.Fanout
+		t.RowsOff, t.Parents, t.OffCentre = t.RowsOff+o.RowsOff, t.Parents+o.Parents, t.OffCentre+o.OffCentre
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -409,6 +417,8 @@ func lintView(v view) (ViewLint, error) {
 	}
 	vl.Totals.Fans, vl.Totals.Strands = s.fans, len(s.strands)
 	vl.Totals.Fanout = v.d.fanout
+	sy := symmetryOf(v.d)
+	vl.Totals.RowsOff, vl.Totals.Parents, vl.Totals.OffCentre = sy.rowsOff, sy.parents, sy.offCentre
 	return vl, nil
 }
 
