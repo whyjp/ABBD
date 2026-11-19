@@ -190,10 +190,11 @@ func (e env) listViews(m screen.Model) error {
 
 func printLint(e env, r lintReport) {
 	for _, v := range r.Views {
+		fmt.Fprintln(e.stdout, v.View)
+		fmt.Fprintf(e.stdout, "  elements: %s\n", elementsLine(v.Elements))
 		if len(v.Breaches) == 0 {
 			continue
 		}
-		fmt.Fprintln(e.stdout, v.View)
 		for _, b := range v.Breaches {
 			kind := "target"
 			switch {
@@ -352,7 +353,7 @@ func plural(n int, noun string) string {
 // in, against the view's own range, and lists the views past their own
 // warning point. It never fails lint.
 func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals) {
-	fmt.Fprintf(w, "lint: elements: %d in %s, against %d..%d; %s past %d%% of their own range. A view counts its boxes and chips, lines, words at rest and badges; its range runs from its skeleton, the shapes with only the primary flow's lines and numbers, to every line it could draw between its places, drawn apart, each with a word. It never fails lint\n", t.Count, plural(len(views), "view"), t.Min, t.Max, plural(len(t.Over), "view"), screen.WarnShare)
+	fmt.Fprintf(w, "lint: elements: %d in %s, against %d..%d; %s past %d%% of their own range. A view counts its boxes and chips, lines, words at rest and badges; its range runs from its skeleton, the shapes with only the primary flow's lines and numbers, to every line it could draw between its places, drawn apart, each with a word, with the flow's numbers and step words kept, so badges can take a view past 100%%. It never fails lint\n", t.Count, plural(len(views), "view"), t.Min, t.Max, plural(len(t.Over), "view"), screen.WarnShare)
 	shown := 0
 	for _, v := range views {
 		el := v.Elements
@@ -364,6 +365,15 @@ func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals)
 			break
 		}
 		shown++
-		fmt.Fprintf(w, "  %s: %d in %d..%d (%d%%), warns past %d: %s, %s, %s, %s\n", v.View, el.Count, el.Min, el.Max, *el.Percent, *el.WarnAt, plural(el.Shapes, "shape"), plural(el.Lines, "line"), plural(el.Words, "word"), plural(el.Badges, "badge"))
+		fmt.Fprintf(w, "  %s: %s\n", v.View, elementsLine(el))
 	}
+}
+
+// elementsLine is one view's elements, its range and where it stands.
+func elementsLine(el screen.Elements) string {
+	parts := fmt.Sprintf("%s, %s, %s, %s", plural(el.Shapes, "shape"), plural(el.Lines, "line"), plural(el.Words, "word"), plural(el.Badges, "badge"))
+	if el.Percent == nil {
+		return fmt.Sprintf("%d, its skeleton and its every line one number: %s", el.Count, parts)
+	}
+	return fmt.Sprintf("%d in %d..%d (%d%%), warns past %d: %s", el.Count, el.Min, el.Max, *el.Percent, *el.WarnAt, parts)
 }

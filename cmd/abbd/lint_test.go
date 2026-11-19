@@ -330,6 +330,9 @@ func TestLintReportsElementsPerView(t *testing.T) {
 	if !strings.Contains(text, "lint: elements: "+strconv.Itoa(count)+" in "+strconv.Itoa(len(r.Views))+" views") {
 		t.Errorf("no elements line:\n%s", text)
 	}
+	if n := strings.Count(text, "\n  elements: "); n != len(r.Views) {
+		t.Errorf("%d per-view elements lines, want one for each of %d views", n, len(r.Views))
+	}
 }
 
 // This repository's own blueprint keeps the gate its debt file sets.
