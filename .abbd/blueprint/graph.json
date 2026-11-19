@@ -22485,6 +22485,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -23981,7 +23982,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
