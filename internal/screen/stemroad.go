@@ -74,8 +74,8 @@ func (v roadView) spread(ways [][]pt) int {
 	return n
 }
 
-// opposed is how far runs share a track going opposite ways.
-func opposed(ways [][]pt) int {
+// opposed is how far runs share each track going opposite ways.
+func opposed(ways [][]pt) map[track]int {
 	type run struct{ lo, hi, way int }
 	by := map[track][]run{}
 	for _, w := range ways {
@@ -88,8 +88,8 @@ func opposed(ways [][]pt) int {
 			by[t] = append(by[t], run{lo, hi, heading(w[k], w[k+1])})
 		}
 	}
-	n := 0
-	for _, rs := range by {
+	out := map[track]int{}
+	for t, rs := range by {
 		sort.Slice(rs, func(a, b int) bool { return rs[a].lo < rs[b].lo })
 		for a, p := range rs {
 			for _, q := range rs[a+1:] {
@@ -97,18 +97,30 @@ func opposed(ways [][]pt) int {
 					break
 				}
 				if p.way != q.way {
-					n += min(p.hi, q.hi) - q.lo
+					out[t] += min(p.hi, q.hi) - q.lo
 				}
 			}
 		}
 	}
-	return n
+	return out
+}
+
+// opposesMore says some track carries more of opposite lines side by side
+// in now than in was: lines that leave one opposite partner must not find
+// another.
+func opposesMore(was, now map[track]int) bool {
+	for t, n := range now {
+		if n > was[t] {
+			return true
+		}
+	}
+	return false
 }
 
 // gather sets one way's branches of a stem group on one track, by a move
 // of the runs going that way alone that lowers spread and costs nothing
 // else: no roadCost count, d's included, no fork level as the lint reads
-// it and no stretch of opposite lines on one track grows.
+// it and no track's stretch of opposite lines side by side grows.
 func (r *routing) gather(ways [][]pt, v, d roadView, cost roadCost) ([][]pt, bool) {
 	rs := roadRunsBy(ways, v, true)
 	at := runsAt(rs)
@@ -160,7 +172,11 @@ func (r *routing) gather(ways [][]pt, v, d roadView, cost roadCost) ([][]pt, boo
 	}
 	spread, dc, levels, opp := v.spread(ways), d.cost(ways), forkLevelsOf(ways, v), opposed(ways)
 	return r.firstKept(ways, v, cost, moves, false, func(next [][]pt, nc roadCost) bool {
-		return v.spread(next) < spread && cost.withers(nc) && nc.meets <= cost.meets && dc.withers(d.cost(next)) &&
-			forkLevelsOf(next, v) <= levels && opposed(next) <= opp
+		if v.spread(next) >= spread || !cost.withers(nc) || nc.meets > cost.meets || opposesMore(opp, opposed(next)) ||
+			forkLevelsOf(next, v) > levels {
+			return false
+		}
+		dn := d.cost(next)
+		return dc.withers(dn) && dn.meets <= dc.meets
 	})
 }

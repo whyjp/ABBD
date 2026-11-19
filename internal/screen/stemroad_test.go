@@ -35,3 +35,30 @@ func TestBranchesOfAStemTowardDifferentRowsLeaveAtOneHeight(t *testing.T) {
 		t.Errorf("the line from c shares a track with p's lines the other way: %v %v", o, next[1])
 	}
 }
+
+// A branch that leaves an opposite line on its own track does not move onto
+// a track where another line runs the other way: the stretch of opposite
+// lines side by side is weighed on each track, not summed over the view.
+func TestBranchesOfAStemFindNoNewOppositePartner(t *testing.T) {
+	t.Parallel()
+	at := func(lo, hi int) end { return end{node: "box", lo: lo, hi: hi} }
+	ways := [][]pt{
+		{{50, 60}, {50, 100}, {360, 100}, {360, 200}},
+		{{50, 60}, {50, 116}, {600, 116}, {600, 400}},
+		{{300, 60}, {300, 100}, {200, 100}, {200, 200}},
+		{{350, 60}, {350, 116}, {250, 116}, {250, 300}},
+	}
+	v := roadView{
+		style: []string{"0", "0", "0", "0"}, plan: []bool{false, false, false, false}, kinds: []string{"k", "k", "k", "k"},
+		ends: [][2]end{{at(0, 100), at(320, 400)}, {at(0, 100), at(560, 640)}, {at(270, 330), at(160, 240)}, {at(330, 370), at(230, 270)}},
+		from: []string{"p", "p", "c", "e"}, to: []string{"a", "b", "d", "f"}, dest: []int{3, 5, 3, 3}, src: []int{1, 1, 1, 1},
+		position: func(y int) int { return y / 200 },
+	}
+	d := v
+	d.dotting = true
+	v, d = v.grouped(), d.grouped()
+	r := routing{boxes: []box{{0, 0, 100, 60}, {320, 200, 80, 60}, {560, 400, 80, 60}, {270, 0, 60, 60}, {160, 200, 80, 60}, {330, 0, 40, 60}, {230, 300, 40, 60}}}
+	if next, ok := r.gather(ways, v, d, v.cost(ways)); ok {
+		t.Errorf("a line out of p moved onto a track the line from e runs the other way: %v %v", next[0], next[1])
+	}
+}
