@@ -423,7 +423,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		delete(touched, frameTopNode)
 		delete(touched, frameBottomNode)
 	}
-	ax := axis{basis: byDependency, cycle: cyclic(out), flow: fa}
+	ax := axis{basis: byDependency, cycle: cyclic(out), cycles: cycleGroups(out), flow: fa}
 	switch {
 	case fa != nil:
 		ax.basis = byFlow
