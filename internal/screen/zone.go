@@ -315,6 +315,13 @@ func (d *Drawing) band(g group) (Zone, bool) {
 	for _, id := range g.ids {
 		in[id] = true
 	}
+	// A foundation band stands under the whole view, outside any group's
+	// region (hubfold.go).
+	for _, b := range d.Boxes {
+		if b.Ambient {
+			delete(in, b.ID)
+		}
+	}
 	lo, hi := pt{1 << 30, 1 << 30}, pt{-1 << 30, -1 << 30}
 	hues := map[string]int{}
 	for _, b := range d.Boxes {

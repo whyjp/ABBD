@@ -30413,7 +30413,31 @@
                 "Code": true
               },
               {
-                "Text": "에도 더해지지 않으며, 초점 뷰는 접지 않은 개요가 정한 자리에 상자를 놓는다. 양쪽 변에 칩이 있는 접힌 허브는 한 줄 높이를 더 받아 그 마지막 줄이 늘 보인다.",
+                "Text": "에도 더해지지 않으며, 초점 뷰는 접지 않은 개요가 정한 자리에 상자를 놓는다. 양쪽 변에 칩이 있는 접힌 허브는 한 줄 높이를 더 받아 그 마지막 줄이 늘 보인다. ",
+                "Code": false
+              },
+              {
+                "Text": "overview_ambient",
+                "Code": true
+              },
+              {
+                "Text": "를 켜면 overview 기록이 ambient로 표시한 상자는 배치에서 빠져 모든 상자 아래에 그 폭만큼 넓은 기반 띠(",
+                "Code": false
+              },
+              {
+                "Text": "bandRects",
+                "Code": true
+              },
+              {
+                "Text": ")로 서고, 들고 나는 선을 모두 접으며, 마지막 줄이 ",
+                "Code": false
+              },
+              {
+                "Text": "기반 · N개 상자가 사용",
+                "Code": true
+              },
+              {
+                "Text": "이라 말한다. 주 흐름의 단계인 상자는 표시가 있어도 상자로 남는다. 기록의 선이 닿거나 리드가 지나는 상자도 상자로 남고, 띠는 마지막 행 아래 틈 밑에 서며, 그려지는 구역에서 빠지고, 툴팁이 띠가 쓰는 상자도 이름 댄다.",
                 "Code": false
               }
             ]
@@ -34236,7 +34260,15 @@
                 "Code": true
               },
               {
-                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다.",
+                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다. project.yaml의 ",
+                "Code": false
+              },
+              {
+                "Text": "overview_ambient",
+                "Code": true
+              },
+              {
+                "Text": "는 ambient로 표시한 상자를 기반 띠로 그릴지를 나르며 기본은 꺼져 있다.",
                 "Code": false
               }
             ]
@@ -35101,6 +35133,19 @@
                 "Name": "inferred_lead",
                 "Shape": "*bool",
                 "Need": "선택"
+              },
+              {
+                "Key": "overview-ambient",
+                "Name": "overview_ambient",
+                "Shape": "bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
               },
               {
                 "Key": "language",

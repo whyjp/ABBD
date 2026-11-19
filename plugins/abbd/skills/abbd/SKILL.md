@@ -145,7 +145,7 @@ When the human states a purpose, a responsibility or a coupling in the conversat
 - `abbd record relation <FROM> <KIND> <TO> --source <REF>`, for a coupling the code does not show
 - `abbd retract <TARGET> --reason "<why>" --source <REF>`, when the human says a reader's or the supplement's claim is wrong
 
-When the human says the overview has too many lines, or wants every line back, set `overview_cut: true` or `overview_cut: false` in `.abbd/project.yaml` and run `abbd sync`, which redraws it. With it on, the overview draws its main lines and counts the rest as a `+N` on each box that opens the box's own view. Tell the human they can flip it any time. When most of those lines run into one shared layer, `overview_fold_hubs: true` draws none of the lines into each hub level L names and has the hub say how many boxes use it; the hub's focus view still draws them.
+When the human says the overview has too many lines, or wants every line back, set `overview_cut: true` or `overview_cut: false` in `.abbd/project.yaml` and run `abbd sync`, which redraws it. With it on, the overview draws its main lines and counts the rest as a `+N` on each box that opens the box's own view. Tell the human they can flip it any time. When most of those lines run into one shared layer, `overview_fold_hubs: true` draws none of the lines into each hub level L names and has the hub say how many boxes use it; the hub's focus view still draws them. Once the overview record marks a box ambient, `overview_ambient: true` draws it as a foundation band under the other boxes with none of its lines.
 
 ## After work
 

@@ -197,6 +197,9 @@ func (d *Drawing) subtitle(b *Box) {
 	}
 	s := kind
 	switch {
+	case b.Ambient:
+		// A foundation band says it is one, and how many boxes stand on it.
+		s = foundationText(b.UsedBy)
 	case b.UsedBy > 0:
 		// A hub whose lines are folded says how many boxes use it, in place
 		// of its kind and role, since the line stands for its lines.
@@ -207,7 +210,7 @@ func (d *Drawing) subtitle(b *Box) {
 		s += " · " + r
 	}
 	width := subWidth
-	if b.Gist != "" && b.UsedBy == 0 {
+	if b.Gist != "" && b.UsedBy == 0 && !b.Ambient {
 		width = monoWidth
 		if width(s) > b.W-16 {
 			s = kind
