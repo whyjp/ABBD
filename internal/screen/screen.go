@@ -306,6 +306,9 @@ func Build(in Input) Model {
 		})
 	}
 	m.Overview = overview(c)
+	// Which boxes share a cycle is the code's, so it is read off the
+	// overview of every line, whatever lines the cut leaves undrawn.
+	m.Overview.axis.cycles = o.layout.axis.cycles
 	// The focus views seat their boxes where the overview without the
 	// record sets them, so a record changes which lines the overview draws
 	// and not how each box's own view reads.
