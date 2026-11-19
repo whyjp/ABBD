@@ -193,7 +193,7 @@ func (e env) statusLines() error {
 		}
 	}
 	var ks []string
-	for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data, model.Config, model.Feature, model.Exec} {
+	for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data, model.Config, model.Feature, model.Exec, model.External} {
 		if kinds[k] > 0 {
 			ks = append(ks, fmt.Sprintf("%d %s", kinds[k], k))
 		}
