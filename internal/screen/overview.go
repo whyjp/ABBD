@@ -57,6 +57,9 @@ type Drawing struct {
 	roads bool
 	// axis is what its layout ranked the rows by (rank.go).
 	axis axis
+	// fanout is how many of its lines join a user to a provider of a
+	// contract with fanoutProviders or more providers (overview.fanout).
+	fanout int
 }
 
 // Roads says the drawing's lines ride roads, so the page marks it for
@@ -806,6 +809,25 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	return o
 }
 
+// fanoutProviders is how many providers a contract has before lint counts
+// the lines the pairing derives from it.
+const fanoutProviders = 3
+
+// fanout counts the drawn pairs that carry a contract with fanoutProviders
+// or more providers. The pairing meets each user of such a contract with
+// every provider, and a user of an extension point that several modules
+// implement may name none of them, so these lines are the ones to read
+// against the code.
+func (o *overview) fanout() int {
+	n := 0
+	for _, k := range o.pairs {
+		if slices.ContainsFunc(o.carry[k], func(c model.ID) bool { return len(o.providers[c]) >= fanoutProviders }) {
+			n++
+		}
+	}
+	return n
+}
+
 // apart says a consumer u is kept from the provider p of a contract: p is
 // marked as a sample, an artifact or a tool, and u is not of that scope. The
 // pairing meets every consumer of a contract with every provider of it,
@@ -1207,7 +1229,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
