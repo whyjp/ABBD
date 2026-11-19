@@ -270,7 +270,7 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	scope := scopeOf(in)
 	o := planScoped(in.Units, "", nil, tactic{}, ls, fs, nil, scope)
-	o.hooks = in.hooks
+	o.hooks, o.stored = in.hooks, !in.Project.InferLead()
 	var c *cut
 	// A project that turned the cut off draws every line, record or not.
 	off := in.Project.OverviewCut != nil && !*in.Project.OverviewCut
@@ -292,7 +292,7 @@ func Build(in Input) Model {
 	overview := func(c *cut) Drawing {
 		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
 			p := planScoped(in.Units, "", nil, t, ls, fs, c, scope)
-			p.hooks = in.hooks
+			p.hooks, p.stored = in.hooks, o.stored
 			if p.layout.idle {
 				return Drawing{}, false
 			}
@@ -379,7 +379,7 @@ func Build(in Input) Model {
 	}
 	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
 	for i, d := range leads {
-		d.lead(o.tree, fs, i == 0)
+		d.lead(o.tree, fs, i == 0, !o.stored)
 	}
 	for _, d := range m.drawings() {
 		d.dress(o.tree)

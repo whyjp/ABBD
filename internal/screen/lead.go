@@ -300,8 +300,9 @@ func (d *Drawing) uses() []use {
 // holds any, else the one the lines show plainly. On the overview (whole)
 // a stored flow shows even where it leaves its first box once or never:
 // the steps it then runs on its last box are numbered on that box (Stay).
-func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
-	hops, best, stay := d.leadHops(t, flows, d.uses(), whole)
+// infer says a view with no stored flow may draw the lead its lines show.
+func (d *Drawing) lead(t tree, flows []flowWalk, whole, infer bool) {
+	hops, best, stay := d.leadHops(t, flows, d.uses(), whole, infer)
 	var key, title string
 	primary := false
 	if best >= 0 {
@@ -365,10 +366,14 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 // lead the lines show plainly, best -1. A view that lays the primary flow
 // out numbers its stages, whatever stored flow would run further on it. On
 // the overview (whole) a flow with too few hops may still stay on a box.
-// It reads only the boxes and the lines' ends, so it holds before the lines
-// are routed (leadLines).
-func (d *Drawing) leadHops(t tree, flows []flowWalk, uses []use, whole bool) ([]use, int, *Stay) {
+// With no stored flow and infer off, there is no lead. It reads only the
+// boxes and the lines' ends, so it holds before the lines are routed
+// (leadLines).
+func (d *Drawing) leadHops(t tree, flows []flowWalk, uses []use, whole, infer bool) ([]use, int, *Stay) {
 	if len(flows) == 0 {
+		if !infer {
+			return nil, -1, nil
+		}
 		return inferred(d.Boxes, uses), -1, nil
 	}
 	if d.axis.flow != nil && flows[0].primary && len(d.followed(t, flows[0], uses)) >= leadMin {
@@ -391,8 +396,8 @@ func (d *Drawing) leadHops(t tree, flows []flowWalk, uses []use, whole bool) ([]
 // routed: a hop paints its line in solid flow ink at rest, so the roads do
 // not keep a dotted line it rides on a track of its own beside a solid road
 // to show dots the hop covers anyway. boxes are the view's boxes, and rels
-// the stored relations each line stands for.
-func leadLines(t tree, flows []flowWalk, ax axis, boxes []model.ID, whole bool, reqs []wireReq, rels func(int) []string) {
+// the stored relations each line stands for. infer is lead's.
+func leadLines(t tree, flows []flowWalk, ax axis, boxes []model.ID, whole, infer bool, reqs []wireReq, rels func(int) []string) {
 	d := Drawing{axis: ax}
 	on := map[string]bool{}
 	for _, b := range boxes {
@@ -411,7 +416,7 @@ func leadLines(t tree, flows []flowWalk, ax axis, boxes []model.ID, whole bool, 
 			uses = append(uses, use{from: q.to.node, to: q.from.node, way: k, weight: w, both: true})
 		}
 	}
-	if hops, _, stay := d.leadHops(t, flows, uses, whole); len(hops) >= leadMin || stay != nil {
+	if hops, _, stay := d.leadHops(t, flows, uses, whole, infer); len(hops) >= leadMin || stay != nil {
 		for _, h := range hops {
 			reqs[h.way].lead = true
 		}
