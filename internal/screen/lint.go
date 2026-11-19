@@ -155,6 +155,14 @@ type Totals struct {
 	// LeadHops is the numbered hops of the view's lead (lead.go). Nothing
 	// bounds it.
 	LeadHops int `json:"lead_hops"`
+	// RoadTurns are the turns lines take on ink they share with another
+	// line, Junctions the points on their way where another line joins or
+	// leaves their ink, and BentJunctions the junctions where more lines
+	// turn than run on straight though one does (roadwalk.go). Nothing
+	// bounds them.
+	RoadTurns     int `json:"road_turns"`
+	Junctions     int `json:"junctions"`
+	BentJunctions int `json:"bent_junctions"`
 }
 
 // Sum adds up the totals of several views.
@@ -179,6 +187,7 @@ func Sum(views []ViewLint) Totals {
 		t.Fans, t.Strands = t.Fans+o.Fans, t.Strands+o.Strands
 		t.Fanout += o.Fanout
 		t.LeadHops += o.LeadHops
+		t.RoadTurns, t.Junctions, t.BentJunctions = t.RoadTurns+o.RoadTurns, t.Junctions+o.Junctions, t.BentJunctions+o.BentJunctions
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -423,6 +432,16 @@ func lintView(v view) (ViewLint, error) {
 	vl.Lead = leadSource(v.d.Lead)
 	if v.d.Lead != nil {
 		vl.Totals.LeadHops = len(v.d.Lead.Hops)
+	}
+	if s.routed {
+		var rs [][]fpt
+		for _, r := range s.routes {
+			if len(r.pts) >= 2 {
+				rs = append(rs, turns(r.pts))
+			}
+		}
+		w := walkRoads(rs)
+		vl.Totals.RoadTurns, vl.Totals.Junctions, vl.Totals.BentJunctions = w.turns, w.junctions, w.bent
 	}
 	return vl, nil
 }
