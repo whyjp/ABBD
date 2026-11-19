@@ -11,9 +11,10 @@ breaches rose, which break the gate unless their debt records them, and the
 views whose weighed sum rose by more than 8, which need a look by eye. The
 traced bends and the paths that turn more than twice are tie-breakers.
 
-The tables carry no against_axis column and no page bounds, so this script
-cannot check them. TestLintFixtures and abbd lint check the whole gate per
-fixture against its own .abbd/lint-debt.yaml.
+The tables carry no against_axis column (their back column is another
+count) and no page bounds, so this script cannot check them.
+TestLintFixtures and abbd lint check the whole gate per fixture against
+its own .abbd/lint-debt.yaml.
 """
 import csv
 import sys

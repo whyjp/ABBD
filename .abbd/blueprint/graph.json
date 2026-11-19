@@ -859,7 +859,7 @@
       "Signature": "",
       "Purpose": null,
       "Responsibility": {
-        "Value": "setup이 사람에게 묻는 것을 대화에 사람이 있을 때의 언어와 overview 밀도 두 가지로 한정하고, 처음 커밋한 상태를 기준선으로 삼는다.",
+        "Value": "setup이 사람에게 묻는 것을 프로젝트 언어(대화에서 드러나지 않을 때만)와 overview 밀도 두 가지로 한정하고, 대화에 사람이 있을 때만 물으며, 처음 커밋한 상태를 기준선으로 삼는다.",
         "Badge": "inferred"
       },
       "Anchors": [
@@ -5981,7 +5981,7 @@
           "ID": "FEAT-0026",
           "Name": "/abbd-setup stance",
           "Kind": "기능",
-          "Sentence": "setup이 사람에게 묻는 것을 대화에 사람이 있을 때의 언어와 overview 밀도 두 가지로 한정하고, 처음 커밋한 상태를 기준선으로 삼는다.",
+          "Sentence": "setup이 사람에게 묻는 것을 프로젝트 언어(대화에서 드러나지 않을 때만)와 overview 밀도 두 가지로 한정하고, 대화에 사람이 있을 때만 물으며, 처음 커밋한 상태를 기준선으로 삼는다.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
