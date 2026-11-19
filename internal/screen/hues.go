@@ -10,10 +10,11 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// A box's colour names it among the boxes drawn with it, and a line wears
-// the colour of the box it leaves, a line that skips the contract boundary
-// too (rule 11). The colours come from one table, so the page, the checker
-// and the contrast test read the same values.
+// A box's colour names it among the boxes drawn with it. Every line rests
+// in the neutral grey and wears the colour of the box it leaves only while
+// a reader points at it or at a box; the lead alone is coloured at rest
+// (rule 11). The colours come from one table, so the page, the checker and
+// the contrast test read the same values.
 
 // swatch is one colour as the page draws it on a light page and on a dark one.
 type swatch struct{ name, light, dark string }
@@ -33,14 +34,14 @@ var palette = []swatch{
 	{"orchid", "#af2caf", "#d454d4"},
 }
 
-// neutral is the colour of ink whose lines leave boxes of different
-// colours, such as an arrival trunk several places share, and of a line
-// that leaves only a frame's chip and reaches no box.
+// neutral is the colour every line rests in, a road several boxes' lines
+// ride included, and the colour a line that leaves only a frame's chip and
+// reaches no box lights in.
 var neutral = swatch{"neutral", "#5f5b53", "#aca89d"}
 
 // warning is the orange that once marked a line skipping the contract
-// boundary. No line wears it now: a bypass takes its box's colour and its
-// open head marks it. The palette is still held apart from it, so a reader
+// boundary. No line wears it now: a bypass rests grey like any other and
+// its open head marks it. The palette is still held apart from it, so a reader
 // with either common colour vision deficiency never takes a box's colour
 // for that warning.
 var warning = swatch{"orange", "#b93e0a", "#fb923c"}

@@ -107,6 +107,15 @@ func (o *overview) around(f model.ID) {
 		relations = append(relations, cut)
 		ring[cut.From], ring[cut.To] = true, true
 	}
+	// The focus keeps the libraries its module uses, each with its line.
+	var libraries []model.ID
+	for _, e := range o.relations {
+		if e.From == f && e.Kind == model.DependsOn && slices.Contains(o.libraries, e.To) {
+			libraries = append(libraries, e.To)
+			relations = append(relations, e)
+		}
+	}
+	o.libraries = libraries
 	o.pairs, o.carry, o.relations = pairs, carry, relations
 	o.unreached = map[model.ID][]model.ID{f: o.unreached[f]}
 	var modules, contracts []model.ID

@@ -132,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,Zone},zones{name,reasons,units}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {ambient{as,reasons,unit},edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,UsedBy,Zone},zones{name,reasons,units}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -448,7 +448,7 @@
       "Parent": "MOD-0054",
       "Zone": "토폴로지 규칙",
       "Evidence": [
-        "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+        "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
     },
     {
@@ -622,7 +622,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -2241,6 +2242,7 @@
         "internal/screen/graph.go",
         "internal/screen/hop.go",
         "internal/screen/hover.go",
+        "internal/screen/hubfold.go",
         "internal/screen/hues.go",
         "internal/screen/ink.go",
         "internal/screen/inside.go",
@@ -5426,7 +5428,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+      "Quote": "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
     },
     {
       "From": "MOD-0054",
@@ -7655,19 +7657,27 @@
                 "Code": false
               },
               {
-                "Text": "abbd libs",
-                "Code": true
-              },
-              {
-                "Text": "가 더한 ",
-                "Code": false
-              },
-              {
                 "Text": "EXT",
                 "Code": true
               },
               {
-                "Text": "는 아직 어느 뷰에도 그려지지 않고, 단위 목록과 explain, path, impact에만 나온다. 사용법 글이 rust의 ",
+                "Text": "는 이름이 곧 설명이므로 purpose를 요구받지 않고(",
+                "Code": false
+              },
+              {
+                "Text": "undescribed",
+                "Code": true
+              },
+              {
+                "Text": "), lint는 라이브러리로 가는 선에 구절을 요구하지 않는다(",
+                "Code": false
+              },
+              {
+                "Text": "unphrased",
+                "Code": true
+              },
+              {
+                "Text": "). 사용법 글이 rust의 ",
                 "Code": false
               },
               {
@@ -8508,7 +8518,15 @@
                 "Code": true
               },
               {
-                "Text": ")이다. 호출하는 줄을 먼저 보고, 테스트, fixture 디렉터리, 산문 파일, 주석 줄, 함수 정의 줄은 건너뛰며, 파일에 한 번만 있고 두 끝의 코드에 놓인 줄만 고르며, 이름으로 찾았다고 주석에 밝힌다. 출력 전체가 그대로 저장되는 FILE이다. 주 흐름은 그 파일에 따로 두지 않고 주 흐름 stack을 쓴다. status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 주 흐름 단계(그 stack의 layer)와 구역을 프로젝트 언어로 찍는다. 어느 단계도 이름 짓지 않은 상자는 안의 unit을 이름 짓는 첫 단계에 서므로, explain은 그 단계와 그 unit을 찍는다.",
+                "Text": ")이다. 호출하는 줄을 먼저 보고, 테스트, fixture 디렉터리, 산문 파일, 주석 줄, 함수 정의 줄은 건너뛰며, 파일에 한 번만 있고 두 끝의 코드에 놓인 줄만 고르며, 이름으로 찾았다고 주석에 밝힌다. 출력 전체가 그대로 저장되는 FILE이다. 주 흐름은 그 파일에 따로 두지 않고 주 흐름 stack을 쓴다. status는 STALE 파트와 고칠 길(바뀐 코드를 다시 읽거나 지금 state로 다시 그리기)을, evidence는 그 인용을, explain은 유닛이 놓인 주 흐름 단계(그 stack의 layer)와 구역을 프로젝트 언어로 찍는다. 어느 단계도 이름 짓지 않은 상자는 안의 unit을 이름 짓는 첫 단계에 서므로, explain은 그 단계와 그 unit을 찍는다. 초안은 ambient 표시를 ",
+                "Code": false
+              },
+              {
+                "Text": "ambient:",
+                "Code": true
+              },
+              {
+                "Text": " 목록으로 받아 다른 파트와 같은 검사로 받아들이거나 거부하고, status는 그 수를 구역과 선 옆에 센다. 초안의 설명은 ambient 표시가 표시한 상자 자신의 코드 한 줄을 인용해야 한다고 말한다.",
                 "Code": false
               }
             ]
@@ -22796,7 +22814,15 @@
                 "Code": true
               },
               {
-                "Text": "는 인용이 주어진 unit이나 그 안 unit의 코드에 놓이는지 답해, 그 규칙으로 선의 인용을 찾게 한다.",
+                "Text": "는 인용이 주어진 unit이나 그 안 unit의 코드에 놓이는지 답해, 그 규칙으로 선의 인용을 찾게 한다. ",
+                "Code": false
+              },
+              {
+                "Text": "AmbientMark",
+                "Code": true
+              },
+              {
+                "Text": "은 overview 상자 하나를 전역 상태(global), 정적 데이터(static), 매 호출로 건네는 맥락(context) 가운데 하나로 표시하는 기록이다. unit이나 relation을 만들지 않으며, 상자 안의 unit을 이름 지으면 그 상자를 표시하라고 거부되고, 인용이 그 상자의 코드에 없으면 STALE이 된다.",
                 "Code": false
               }
             ]
@@ -24314,7 +24340,127 @@
                   "Code": true
                 },
                 {
-                  "Text": "가 끌어내는 것이다. 단위 목록, ",
+                  "Text": "가 끌어내는 것이다. 외부 라이브러리(",
+                  "Code": false
+                },
+                {
+                  "Text": "EXT",
+                  "Code": true
+                },
+                {
+                  "Text": ")는 개요에서 제품 상자와 구분되는 칩 하나로 서고(",
+                  "Code": false
+                },
+                {
+                  "Text": "libraries",
+                  "Code": true
+                },
+                {
+                  "Text": "), 그것을 쓰는 모듈마다 실선 ",
+                  "Code": false
+                },
+                {
+                  "Text": "depends_on",
+                  "Code": true
+                },
+                {
+                  "Text": " 한 줄이 닿으며, 칩의 hover는 몇 개 상자가 쓰는지 한 줄로 말한다(",
+                  "Code": false
+                },
+                {
+                  "Text": "usedBy",
+                  "Code": true
+                },
+                {
+                  "Text": "). 라이브러리가 그림 상자 수의 4분의 1(",
+                  "Code": false
+                },
+                {
+                  "Text": "libraryRoom",
+                  "Code": true
+                },
+                {
+                  "Text": ")을 넘으면 모두 ",
+                  "Code": false
+                },
+                {
+                  "Text": "libraryFold",
+                  "Code": true
+                },
+                {
+                  "Text": " 칩 하나로 접히고(",
+                  "Code": false
+                },
+                {
+                  "Text": "foldLibraries",
+                  "Code": true
+                },
+                {
+                  "Text": "), 모듈마다 한 줄이 남아 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적으며(",
+                  "Code": false
+                },
+                {
+                  "Text": "reached",
+                  "Code": true
+                },
+                {
+                  "Text": "), ",
+                  "Code": false
+                },
+                {
+                  "Text": "units.html",
+                  "Code": true
+                },
+                {
+                  "Text": "의 행은 라이브러리마다 쓰는 단위를 모두 적고(",
+                  "Code": false
+                },
+                {
+                  "Text": "UnitRow.UsedBy",
+                  "Code": true
+                },
+                {
+                  "Text": "), 범례는 라이브러리가 있을 때만 그 칩을 설명한다(",
+                  "Code": false
+                },
+                {
+                  "Text": "HasLibraries",
+                  "Code": true
+                },
+                {
+                  "Text": "). 초점 뷰는 그 모듈의 라이브러리를 남겨 제 상자 수로 다시 접을지 정하고, 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
+                  "Code": false
+                },
+                {
+                  "Text": "tree.toLibrary",
+                  "Code": true
+                },
+                {
+                  "Text": "), 상자로 가는 bypass 선과 도로를 함께 쓰지 않도록 kind가 ",
+                  "Code": false
+                },
+                {
+                  "Text": "depends_on",
+                  "Code": true
+                },
+                {
+                  "Text": "이고, 칩이 둘 이상이면 ",
+                  "Code": false
+                },
+                {
+                  "Text": "외부 라이브러리",
+                  "Code": true
+                },
+                {
+                  "Text": " 띠에 묶이며, 디렉터리 띠는 라이브러리 칩을 빼고 제품 상자만 센다(",
+                  "Code": false
+                },
+                {
+                  "Text": "countLibraries",
+                  "Code": true
+                },
+                {
+                  "Text": "). 단위 목록, ",
                   "Code": false
                 },
                 {
@@ -24807,7 +24953,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -25211,7 +25357,23 @@
                 "Code": true
               },
               {
-                "Text": "를 import하고, 토폴로지를 쓰지 않으며, 초점 뷰의 쌍둥이를 빼면 저장소에 없는 상자를 그리지 않는다.",
+                "Text": "를 import하고, 토폴로지를 쓰지 않으며, 초점 뷰의 쌍둥이를 빼면 저장소에 없는 상자를 그리지 않는다. graph.json은 overview 기록의 ambient 표시를 ",
+                "Code": false
+              },
+              {
+                "Text": "ambient",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "AmbientView",
+                "Code": true
+              },
+              {
+                "Text": ")로 주며, 표시만으로는 그림이 바뀌지 않는다.",
                 "Code": false
               }
             ]
@@ -25564,7 +25726,127 @@
                 "Code": true
               },
               {
-                "Text": "가 끌어내는 것이다. 단위 목록, ",
+                "Text": "가 끌어내는 것이다. 외부 라이브러리(",
+                "Code": false
+              },
+              {
+                "Text": "EXT",
+                "Code": true
+              },
+              {
+                "Text": ")는 개요에서 제품 상자와 구분되는 칩 하나로 서고(",
+                "Code": false
+              },
+              {
+                "Text": "libraries",
+                "Code": true
+              },
+              {
+                "Text": "), 그것을 쓰는 모듈마다 실선 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " 한 줄이 닿으며, 칩의 hover는 몇 개 상자가 쓰는지 한 줄로 말한다(",
+                "Code": false
+              },
+              {
+                "Text": "usedBy",
+                "Code": true
+              },
+              {
+                "Text": "). 라이브러리가 그림 상자 수의 4분의 1(",
+                "Code": false
+              },
+              {
+                "Text": "libraryRoom",
+                "Code": true
+              },
+              {
+                "Text": ")을 넘으면 모두 ",
+                "Code": false
+              },
+              {
+                "Text": "libraryFold",
+                "Code": true
+              },
+              {
+                "Text": " 칩 하나로 접히고(",
+                "Code": false
+              },
+              {
+                "Text": "foldLibraries",
+                "Code": true
+              },
+              {
+                "Text": "), 모듈마다 한 줄이 남아 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적으며(",
+                "Code": false
+              },
+              {
+                "Text": "reached",
+                "Code": true
+              },
+              {
+                "Text": "), ",
+                "Code": false
+              },
+              {
+                "Text": "units.html",
+                "Code": true
+              },
+              {
+                "Text": "의 행은 라이브러리마다 쓰는 단위를 모두 적고(",
+                "Code": false
+              },
+              {
+                "Text": "UnitRow.UsedBy",
+                "Code": true
+              },
+              {
+                "Text": "), 범례는 라이브러리가 있을 때만 그 칩을 설명한다(",
+                "Code": false
+              },
+              {
+                "Text": "HasLibraries",
+                "Code": true
+              },
+              {
+                "Text": "). 초점 뷰는 그 모듈의 라이브러리를 남겨 제 상자 수로 다시 접을지 정하고, 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
+                "Code": false
+              },
+              {
+                "Text": "tree.toLibrary",
+                "Code": true
+              },
+              {
+                "Text": "), 상자로 가는 bypass 선과 도로를 함께 쓰지 않도록 kind가 ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": "이고, 칩이 둘 이상이면 ",
+                "Code": false
+              },
+              {
+                "Text": "외부 라이브러리",
+                "Code": true
+              },
+              {
+                "Text": " 띠에 묶이며, 디렉터리 띠는 라이브러리 칩을 빼고 제품 상자만 센다(",
+                "Code": false
+              },
+              {
+                "Text": "countLibraries",
+                "Code": true
+              },
+              {
+                "Text": "). 단위 목록, ",
                 "Code": false
               },
               {
@@ -26308,7 +26590,15 @@
                 "Code": true
               },
               {
-                "Text": "는 다른 모든 선, 머리, 점을 회색으로 낮추되 경로는 호버를 위해 색을 지킨다. ",
+                "Text": "는 다른 모든 선을 가늘게 해 주 흐름만 굵게 남긴다. 선, 머리, 점은 이미 ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": "가 모두 회색으로 그렸고, 경로는 호버를 위해 색을 지킨다. ",
                 "Code": false
               },
               {
@@ -26470,15 +26760,7 @@
                 "Code": true
               },
               {
-                "Text": "는 bypass에도 다른 선처럼 떠나는 상자의 색을 주고, 열린 화살촉으로 표시한다(범례가 몇 마디로 그렇게 말한다). 허브의 뷰는 허브 자기 선이 잉크의 절반 이상인 곳에서만 다른 선을 회색으로 낮춘다(",
-                "Code": false
-              },
-              {
-                "Text": "ownLines",
-                "Code": true
-              },
-              {
-                "Text": "). 조용한 뷰는 이제 같은 색 다른 선의 평평한 트랙 위에 서게 된 라벨을 뺀다(",
+                "Text": "는 bypass도 다른 선처럼 회색으로 그리고, 열린 화살촉으로 표시한다(범례가 몇 마디로 그렇게 말한다). 허브의 뷰는 선을 가늘게 하지 않는다. 주 흐름처럼 돋보일 선이 없기 때문이다. 모든 선이 한 회색이므로, 모든 뷰는 다른 선의 평평한 트랙 바로 위에 선 라벨을 뺀다(",
                 "Code": false
               },
               {
@@ -26494,15 +26776,7 @@
                 "Code": true
               },
               {
-                "Text": "을 나른다. 개요의 범례는 ",
-                "Code": false
-              },
-              {
-                "Text": "legendFor",
-                "Code": true
-              },
-              {
-                "Text": "로 ",
+                "Text": "을 나른다. 범례는 bypass를 늘 회색으로 그리고, ",
                 "Code": false
               },
               {
@@ -26510,7 +26784,7 @@
                 "Code": true
               },
               {
-                "Text": "를 읽으므로, 조용한 뷰의 범례는 bypass를 회색으로 그린다.",
+                "Text": "는 견본 선의 굵기와 주 흐름 뷰에서 다른 선을 가늘게 그린다는 한 마디만 정한다.",
                 "Code": false
               }
             ]
@@ -26648,7 +26922,7 @@
                 "Code": true
               },
               {
-                "Text": "은 각 범례를 한 번씩 준다. 공유 범례와 함께 개요 범례, 조용한 색에 대한 한 문장, 그리고 내부 범례 고유의 항목만(",
+                "Text": "은 각 범례를 한 번씩 준다. 공유 범례와 함께 개요 범례, 쉬는 선의 회색에 대한 한 문장, 그리고 내부 범례 고유의 항목만(",
                 "Code": false
               },
               {
@@ -26696,15 +26970,7 @@
                 "Code": true
               },
               {
-                "Text": "와 따로 나른다. 허브의 뷰도 조용하지만, ",
-                "Code": false
-              },
-              {
-                "Text": "hubLines",
-                "Code": true
-              },
-              {
-                "Text": "는 모든 경로의 한쪽 끝이 허브인 잉크를 허브의 색으로 지킨다. ",
+                "Text": "와 따로 나른다. 허브 자기 선도 쉴 때는 회색이고, 허브를 가리킬 때만 허브의 색으로 밝혀진다. ",
                 "Code": false
               },
               {
@@ -29360,7 +29626,7 @@
                 "Code": true
               },
               {
-                "Text": "는 상자마다 그 색을 주어 옅은 색 위에 그 색의 테두리로 그리고, 각 선을 그 선들이 떠나는 상자의 색으로 그린다. 타는 것들이 서로 다른 색 상자를 떠나는 도로는 도로 위를 가장 멀리 달리는 것의 색으로 그리므로, 고속도로는 조각마다 한 색을 지킨다. 그리고 종류를 말하는 모양의 화살촉을 준다. 계약 경계를 건너뛰는 직접 의존도 떠나는 상자의 색을 입고, 열린 화살촉이 그것을 표시한다. ",
+                "Text": "는 상자마다 그 색을 주어 옅은 색 위에 그 색의 테두리로 그리고, 모든 선과 머리와 점은 쉴 때 한 회색으로 그린다. 상자의 색은 경로에만 남아, 상자나 선을 가리킬 때 그 선이 떠나는 상자의 색으로 보인다. 여러 상자의 선이 타는 도로도 어느 한 구성원의 색으로 덮지 않고 같은 회색 하나로 그리며, 쉴 때 색을 쓰는 선은 동작 흐름을 보여 주는 주 흐름뿐이다. 그리고 종류를 말하는 모양의 화살촉을 준다. 계약 경계를 건너뛰는 직접 의존도 회색이고, 열린 화살촉이 그것을 표시한다. ",
                 "Code": false
               },
               {
@@ -29462,15 +29728,7 @@
                 "Code": true
               },
               {
-                "Text": "(200px)보다 멀리 두고, 다음에 다른 선 위의 같은 낱말 가까이 서게 허락한다. 자기 잉크에 직접 닿는 선(한 조각이 다른 쪽 위에서 끝나는 선)이고 ",
-                "Code": false
-              },
-              {
-                "Text": "paint",
-                "Code": true
-              },
-              {
-                "Text": "가 같은 단위의 색을 주는 선(도로는 가장 멀리 타는 것의 색)이 이미 가까이서 그 낱말을 말하면 빼 버린다(",
+                "Text": "(200px)보다 멀리 두고, 다음에 다른 선 위의 같은 낱말 가까이 서게 허락한다. 자기 잉크에 직접 닿는 선(한 조각이 다른 쪽 위에서 끝나는 선)이고 같은 단위를 떠나는 선(도로는 가장 멀리 타는 것의 출발지)이 이미 가까이서 그 낱말을 말하면 빼 버린다(",
                 "Code": false
               },
               {
@@ -29943,6 +30201,68 @@
               },
               {
                 "Text": "), 모듈의 초점 뷰는 기록 없는 개요가 정한 자리에 상자를 놓는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "허브 접기",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "overview_fold_hubs",
+                "Code": true
+              },
+              {
+                "Text": "를 켜면 ",
+                "Code": false
+              },
+              {
+                "Text": "foldHubs",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "hubfold.go",
+                "Code": true
+              },
+              {
+                "Text": ")가 수준 규칙 L이 계획에서 고르는 허브로 드는 선을 접고, 허브의 마지막 줄이 종류와 역할 대신 ",
+                "Code": false
+              },
+              {
+                "Text": "N개 상자가 사용",
+                "Code": true
+              },
+              {
+                "Text": "이라 말하며 툴팁이 그 상자들을 이름 댄다. 허브가 되쓰는 쌍, 기록이 낱말을 준 쌍, 모든 연결을 그린 그림의 리드가 타는 쌍, 주 흐름 단계인 허브의 선은 남는다. 접은 쌍은 ",
+                "Code": false
+              },
+              {
+                "Text": "Counted",
+                "Code": true
+              },
+              {
+                "Text": "에 남아 L과 모든 셈이 그대로 읽고 어느 상자의 ",
+                "Code": false
+              },
+              {
+                "Text": "+N",
+                "Code": true
+              },
+              {
+                "Text": "에도 더해지지 않으며, 초점 뷰는 접지 않은 개요가 정한 자리에 상자를 놓는다. 양쪽 변에 칩이 있는 접힌 허브는 한 줄 높이를 더 받아 그 마지막 줄이 늘 보인다.",
                 "Code": false
               }
             ]
@@ -33637,7 +33957,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -33757,7 +34077,15 @@
                 "Code": true
               },
               {
-                "Text": " 사본도 이 패키지가 맡는다.",
+                "Text": " 사본도 이 패키지가 맡는다. project.yaml의 ",
+                "Code": false
+              },
+              {
+                "Text": "overview_fold_hubs",
+                "Code": true
+              },
+              {
+                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다.",
                 "Code": false
               }
             ]
@@ -34532,7 +34860,23 @@
                 "Code": true
               },
               {
-                "Text": "가 주는 stack이다.",
+                "Text": "가 주는 stack이다. overview 파일은 ",
+                "Code": false
+              },
+              {
+                "Text": "ambient",
+                "Code": true
+              },
+              {
+                "Text": " 목록도 다른 파트처럼 인용 주변으로 stamp해 저장하고 읽는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Overview.Gaps",
+                "Code": true
+              },
+              {
+                "Text": "는 scope 표시가 제품이 아니라고 한 unit에 ambient 표시가 함께 있으면 그 표시를 틈으로 낸다.",
                 "Code": false
               }
             ]
@@ -34579,6 +34923,19 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "overview-fold-hubs",
+                "Name": "overview_fold_hubs",
+                "Shape": "bool",
                 "Need": "선택",
                 "Users": [
                   {
@@ -37944,7 +38301,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+            "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
           ]
         }
       ],

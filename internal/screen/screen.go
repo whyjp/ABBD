@@ -200,6 +200,8 @@ type UnitRow struct {
 	// Rank is where the unit's box stands on the overview, for a unit the
 	// overview draws.
 	Rank *Rank `json:",omitempty"`
+	// UsedBy names the units that depend on an external library.
+	UsedBy []string `json:",omitempty"`
 }
 
 type Model struct {
@@ -223,6 +225,8 @@ type Model struct {
 	// for it, with their words.
 	Zones []ZoneView
 	Lines []ChosenLine
+	// Ambient are the boxes the overview record marks ambient, with how.
+	Ambient []AmbientView
 	// Name and Purpose are the project's, and Parts its top-level modules
 	// and every feature with the one line each says of itself, which the
 	// overview opens with.
@@ -244,7 +248,7 @@ type Model struct {
 func Build(in Input) Model {
 	m := Model{Extract: in.Project.Extract}
 	ov := readOverview(in)
-	m.Zones, m.Lines = ov.zones, ov.lines
+	m.Zones, m.Lines, m.Ambient = ov.zones, ov.lines, ov.ambient
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
@@ -256,6 +260,7 @@ func Build(in Input) Model {
 		}
 		m.Units = append(m.Units, row)
 	}
+	usedBy(m.Units, in.Units)
 	m.Edges = lines(in.Units)
 	m.Decisions = decisions(in)
 	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
@@ -286,6 +291,10 @@ func Build(in Input) Model {
 	if c == nil && in.Project.Cut() {
 		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
+	unfolded := c
+	if in.Project.OverviewFoldHubs {
+		c = o.foldHubs(c, fs)
+	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
@@ -311,15 +320,19 @@ func Build(in Input) Model {
 	// The focus views seat their boxes where the overview without the
 	// record sets them, so a record changes which lines the overview draws
 	// and not how each box's own view reads.
+	// Folded hubs leave every box where the overview without the fold
+	// sets it, for the same reason.
 	seats := m.Overview
-	if c.hides() && c.said != nil {
+	if unfolded.hides() && unfolded.said != nil {
 		var plain *cut
 		if in.Project.Cut() {
 			plain = o.primary(in.Primary, ls, fs, nil, nil)
 		}
 		seats = overview(plain)
+	} else if c.folds() {
+		seats = overview(unfolded)
 	}
-	m.Focus = o.overviewFocus(in.Units, seats, c.hides())
+	m.Focus = o.overviewFocus(in.Units, seats, c.hides() || c.folds())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
@@ -383,6 +396,7 @@ func Build(in Input) Model {
 	}
 	for _, d := range m.drawings() {
 		d.dress(o.tree)
+		d.unlabelKin()
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.
@@ -548,4 +562,33 @@ func parts(units []model.Unit) []Part {
 		}
 	}
 	return append(mods, feats...)
+}
+
+// usedBy names on each external library's row the units that depend on it,
+// so the list keeps every use the overview folds into one line or one chip.
+func usedBy(rows []UnitRow, units []model.Unit) {
+	at := map[string]int{}
+	for i, r := range rows {
+		if r.Kind == string(model.External) {
+			at[r.ID] = i
+		}
+	}
+	if len(at) == 0 {
+		return
+	}
+	for _, u := range model.Present(units) {
+		seen := map[int]bool{}
+		for _, r := range u.Relations {
+			if i, ok := at[string(r.To)]; ok && !r.Dead && !seen[i] {
+				seen[i] = true
+				rows[i].UsedBy = append(rows[i].UsedBy, u.Name.Value)
+			}
+		}
+	}
+}
+
+// HasLibraries says the model holds an external library, so the legend
+// says how one is drawn.
+func (m Model) HasLibraries() bool {
+	return slices.ContainsFunc(m.Units, func(r UnitRow) bool { return r.Kind == string(model.External) })
 }

@@ -45,8 +45,7 @@ type Drawing struct {
 	// and Lead the way the view draws bold over them (lead.go).
 	ways []Route
 	Lead *Lead `json:",omitempty"`
-	// Quiet says the view rests its lines grey but for its lead's or its
-	// hub's own (lead.go, dress.go).
+	// Quiet says the view thins every line but its lead's (lead.go).
 	Quiet bool `json:"-"`
 	// Zones are the bands behind the boxes of the groupings the project
 	// shows (zone.go).
@@ -125,6 +124,9 @@ type Box struct {
 	// of drawing, and MoreHref the focus view that draws them all.
 	More     int    `json:",omitempty"`
 	MoreHref string `json:",omitempty"`
+	// UsedBy is how many boxes use a hub whose incoming lines the overview
+	// folds into its last line (hubfold.go), 0 for every other box.
+	UsedBy int `json:"-"`
 }
 
 // MoreW is how wide the pill counting a box's undrawn links is, MoreX and
@@ -221,8 +223,8 @@ type Wire struct {
 	// Plan says every relation the line stands for arises only in design,
 	// with no call or data at run time, so it is drawn dotted (dress.go).
 	Plan bool `json:"-"`
-	// srcs are the places each of the line's relations leaves, which give
-	// it its colour.
+	// srcs are the places each of the line's relations leaves, which say
+	// where its lines come from (labels, hover).
 	srcs []string
 	// lines are the relations of each line the label speaks for: on the
 	// path that shows a bus's count, the lines it counts, else the path's
@@ -318,7 +320,7 @@ const (
 func kindWord(k model.Kind) string {
 	return map[model.Kind]string{
 		model.Module: "모듈", model.Interface: "인터페이스", model.Event: "이벤트",
-		model.Data: "데이터", model.Config: "설정", model.Feature: "기능", model.Exec: "실행",
+		model.Data: "데이터", model.Config: "설정", model.Feature: "기능", model.Exec: "실행", model.External: "외부 라이브러리",
 	}[k]
 }
 
@@ -497,6 +499,13 @@ type overview struct {
 	relations []model.Edge
 	modules   []model.ID
 	contracts []model.ID
+	// libraries are the external libraries a drawn module depends on, each
+	// one chip of its own that a line from each module that uses it reaches.
+	libraries []model.ID
+	// libUsers counts the boxes of the whole overview that use each library.
+	libUsers map[model.ID]int
+	// libNames are the libraries the fold chip stands for, when they fold.
+	libNames  []string
 	providers map[model.ID][]model.ID
 	users     map[model.ID][]model.ID
 	// scope is the scope mark of each module the overview record marks as
@@ -536,6 +545,9 @@ type overview struct {
 	counted     [][2]string
 	countedRels []string
 	said        map[pair]string
+	// fold is the boxes that use each hub whose lines the overview folds
+	// (hubfold.go).
+	fold map[model.ID][]model.ID
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -649,6 +661,19 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 			o.contracts = append(o.contracts, id)
 		}
 	}
+	o.libUsers = map[model.ID]int{}
+	for _, e := range o.relations {
+		if e.Kind == model.DependsOn && isModule[e.From] && o.units[e.To].Kind == model.External {
+			if o.libUsers[e.To] == 0 {
+				o.libraries = append(o.libraries, e.To)
+			}
+			o.libUsers[e.To]++
+		}
+	}
+	slices.Sort(o.libraries)
+	if focus == "" {
+		o.foldLibraries(len(o.modules))
+	}
 	add := func(m map[model.ID][]model.ID, k, v model.ID) {
 		if !slices.Contains(m[k], v) {
 			m[k] = append(m[k], v)
@@ -704,6 +729,8 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	}
 	if focus != "" {
 		o.around(focus)
+		// A focus view weighs its own libraries against its own boxes.
+		o.foldLibraries(len(o.modules))
 		for _, id := range o.modules {
 			isModule[id] = true
 		}
@@ -731,6 +758,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		})
 		o.more = c.more
 		o.said = c.said
+		o.fold = c.fold
 		if c.said == nil {
 			hidden = nil
 		}
@@ -767,7 +795,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		return out
 	}
 	for _, e := range o.relations {
-		if e.Kind == model.DependsOn && isModule[e.From] && isModule[e.To] {
+		if e.Kind == model.DependsOn && isModule[e.From] && (isModule[e.To] || slices.Contains(o.libraries, e.To)) {
 			edges = append(edges, ledge{string(e.From), string(e.To)})
 		}
 	}
@@ -803,7 +831,13 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
+		h := boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow
+		if len(o.fold[m]) > 0 && len(exits) > 0 && len(entries) > 0 {
+			// A folded hub's last line stands for its lines, so chips on
+			// both edges never leave it out for want of room (dress.go).
+			h += nameLine
+		}
+		nodes = append(nodes, lnode{id: string(m), w: w, h: h, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
@@ -811,6 +845,11 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 			o.names[c] = ls
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
+	}
+	for _, x := range o.libraries {
+		ls, w := setName(o.name(x), chipPx, 16, 40, chipMax+16)
+		o.names[x] = ls
+		nodes = append(nodes, lnode{id: string(x), w: w, h: chipH + 12 + (len(ls)-1)*14})
 	}
 	o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
@@ -1131,6 +1170,15 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		specs = append(specs, wireSpec{kind: kindBypass, title: fmt.Sprintf("%s → %s: 계약을 거치지 않는 직접 의존", o.name(e.From), o.name(e.To)), from: e.From, to: e.To, rels: o.rels[e.String()]})
 	}
+	for _, e := range o.relations {
+		if e.Kind == model.DependsOn && isModule(e.From) && slices.Contains(o.libraries, e.To) {
+			title := fmt.Sprintf("%s → %s: 외부 라이브러리를 씁니다", o.name(e.From), o.name(e.To))
+			if e.To == libraryFold {
+				title = fmt.Sprintf("%s → %s: 쓰는 라이브러리 %s", o.name(e.From), o.name(e.To), strings.Join(o.reached(o.rels[e.String()]), ", "))
+			}
+			specs = append(specs, wireSpec{kind: kindDependsOn, title: title, from: e.From, to: e.To, rels: o.rels[e.String()]})
+		}
+	}
 
 	chips := func() map[string]Port {
 		at := map[string]Port{}
@@ -1224,7 +1272,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind, plan: o.tree.planOnly(s.rels)})
 	}
 	if o.whole {
-		boxes := slices.Clone(o.modules)
+		boxes := slices.Concat(o.modules, o.libraries)
 		for _, c := range o.contracts {
 			if _, ok := l.pos[string(c)]; ok {
 				boxes = append(boxes, c)
@@ -1258,6 +1306,14 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		if n := o.more[m]; n > 0 {
 			b.More, b.MoreHref = n, "#"+focusID("", m)
+		}
+		if us := o.fold[m]; len(us) > 0 {
+			b.UsedBy = len(us)
+			var names []string
+			for _, u := range us {
+				names = append(names, o.name(u))
+			}
+			b.Title += "\n" + usedByText(len(us)) + ": " + strings.Join(names, ", ") + ". 선은 접어 그렸고, 이 상자의 초점 뷰가 모두 그립니다"
 		}
 		if base(m) != m {
 			b.Title += "\n" + twinNote
@@ -1298,6 +1354,18 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			}
 			d.Boxes = append(d.Boxes, b)
 		}
+	}
+	for _, x := range o.libraries {
+		r := l.pos[string(x)]
+		b := Box{ID: string(x), Name: o.name(x), Kind: string(model.External), Class: "loose design external", X: r.X, Y: r.Y, W: r.W, H: r.H, Title: fmt.Sprintf("%s: 외부 라이브러리. %s", o.name(x), o.usedBy(x))}
+		if x == libraryFold {
+			b.Title = fmt.Sprintf("%s: %s. %s", o.name(x), strings.Join(o.libNames, ", "), o.usedBy(x))
+		}
+		ls := o.names[x]
+		for i, s := range ls {
+			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: r.Y + r.H/2 + 4 - (len(ls)-1)*7 + i*14, Mid: true})
+		}
+		d.Boxes = append(d.Boxes, b)
 	}
 	for _, m := range o.modules {
 		for side, cs := range o.chips[m] {
@@ -1357,6 +1425,67 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d
+}
+
+// libraryFold is the chip that stands for every external library when the
+// overview has more than its boxes can carry one chip each.
+const libraryFold model.ID = "EXT-0000"
+
+// libraryRoom is how many libraries a view of boxes draws one chip each: a
+// quarter of its boxes, and at least one. Past it every library folds into
+// one chip, so the libraries never outnumber what the product's own boxes
+// say.
+func libraryRoom(boxes int) int { return max(1, boxes/4) }
+
+// foldLibraries folds every library into the one libraryFold chip when there
+// are more than libraryRoom of boxes. Each module that uses any of them keeps
+// one line to the chip, and the line and the chip still name each library
+// and carry each stored relation for the hover and the lists.
+func (o *overview) foldLibraries(boxes int) {
+	if len(o.libraries) <= libraryRoom(boxes) {
+		return
+	}
+	folded := o.libraries
+	var names []string
+	for _, x := range folded {
+		names = append(names, o.name(x))
+	}
+	users := map[model.ID]bool{}
+	var relations []model.Edge
+	for _, e := range o.relations {
+		if e.Kind != model.DependsOn || !slices.Contains(folded, e.To) {
+			relations = append(relations, e)
+			continue
+		}
+		f := model.Edge{From: e.From, To: libraryFold, Kind: e.Kind}
+		if !users[e.From] {
+			users[e.From] = true
+			relations = append(relations, f)
+		}
+		o.rels[f.String()] = append(o.rels[f.String()], o.rels[e.String()]...)
+	}
+	slices.SortFunc(relations, func(a, b model.Edge) int { return strings.Compare(a.String(), b.String()) })
+	o.relations = relations
+	o.units[libraryFold] = model.Unit{ID: libraryFold, Kind: model.External, Name: model.Said(model.Script, fmt.Sprintf("외부 라이브러리 %d개", len(folded)))}
+	o.libraries = []model.ID{libraryFold}
+	o.libUsers = map[model.ID]int{libraryFold: len(users)}
+	o.libNames = names
+}
+
+// reached names the units the stored relations reach, each once, in order.
+func (o *overview) reached(rels []string) []string {
+	var out []string
+	for _, r := range rels {
+		if e, err := model.ParseEdge(r); err == nil && !slices.Contains(out, o.name(e.To)) {
+			out = append(out, o.name(e.To))
+		}
+	}
+	return out
+}
+
+// usedBy says in one line how many boxes of the overview use a library.
+func (o *overview) usedBy(x model.ID) string {
+	return fmt.Sprintf("%d개 상자가 사용", o.libUsers[x])
 }
 
 // viewOf is the link to the view that shows id's inside, when it has one.
