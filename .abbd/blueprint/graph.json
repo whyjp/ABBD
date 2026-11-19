@@ -739,7 +739,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Checks the blueprint against the swarm's account, installs the CLAUDE.md block, commits, and hands ongoing work to the abbd skill.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -839,7 +840,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "For each top-level module, reads it with the bundled reader and stores its Overview and Key Concepts with the reader's name.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -1418,6 +1420,7 @@
         "cmd/abbd/record.go",
         "cmd/abbd/relate.go",
         "cmd/abbd/review.go",
+        "cmd/abbd/scope.go",
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
         "cmd/abbd/stack.go",
@@ -2089,11 +2092,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model",
@@ -2400,11 +2405,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store",
@@ -6228,6 +6235,7 @@
         "Provides": 34,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6730,7 +6738,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -18520,16 +18528,19 @@
       "Name": "internal/model",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -18702,7 +18713,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -31430,16 +31441,19 @@
       "Name": "internal/store",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 5,
         "Uses": 2,
         "Direct": 5,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -31578,7 +31592,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",

@@ -1,7 +1,7 @@
-revision: c3c381d231788363ef87062e125b2d2df2e65d08
-fingerprint: e0dddfdc9ef393c6f3552285bfa24d2202a7d6c6
-blueprint: 26cee7b57db70b0a919dc9e62ff2953c720ac8a6d463da27f6b94ab1ea9f870b
-rendered: 7b2b9222eb090d35304eb765519ccf51c1910038c5510a73edb7d2136ac3e7f1
+revision: ""
+fingerprint: ""
+blueprint: 952b25bc25b513e0fffe5d59cadd5bc59b695ef3be32b346bd8ca8a4bad30264
+rendered: a61e6470a5c5b678f1522fe86a93fc237903ed2b6d5e357d3881c6d8d86748de
 high_water:
     CFG: 3
     DATA: 24
