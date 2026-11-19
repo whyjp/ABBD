@@ -70,7 +70,7 @@ func systemLook(u model.Unit) string {
 				sys++
 			}
 		}
-		if sys*2 >= len(u.Entries) {
+		if sys*2 > len(u.Entries) {
 			return fmt.Sprintf("%d of its %d entries are variables the system or the toolchain defines", sys, len(u.Entries))
 		}
 	}

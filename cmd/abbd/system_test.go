@@ -35,6 +35,7 @@ func TestSystemLookNamesTheStandardLibraryAndTheSystemEnvironment(t *testing.T) 
 		"toolchain variables":       {env("CARGO_MANIFEST_DIR", "OUT_DIR"), true},
 		"the project's own":         {env("VECTOR_CONFIG", "VECTOR_LOG", "HOME"), false},
 		"one variable is no signal": {env("PATH"), false},
+		"one of two is no majority": {env("HOME", "VECTOR_LOG"), false},
 		"own module named runtime":  {unit(model.Module, "runtime", "src/runtime/mod.rs"), false},
 		"own module named core":     {unit(model.Module, "core", "src/core/a.go"), false},
 		"anchor named like a lib":   {unit(model.Module, "vendorish", "src/node_modules_cache/a.go"), false},
