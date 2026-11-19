@@ -326,3 +326,37 @@ func TestAStayPillKeepsOffEveryLine(t *testing.T) {
 		}
 	}
 }
+
+// A view with no stored flow draws the lead its lines show, unless the
+// project turns inferred leads off: then no view of the self fixture, which
+// stores no flow, draws a lead, and lint reads every view's lead as none.
+func TestInferredLeadsTurnOff(t *testing.T) {
+	t.Parallel()
+	units, err := store.Open(filepath.Join("testdata", "self")).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	inferred := func(p store.Project) (n int, sources []string) {
+		m := Build(Input{Units: units, Project: p})
+		vs, err := Lint(m, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, v := range vs {
+			if v.Lead != "" {
+				sources = append(sources, v.View+" "+v.Lead)
+			}
+			if v.Lead == LeadInferred {
+				n++
+			}
+		}
+		return n, sources
+	}
+	if n, _ := inferred(store.Project{}); n == 0 {
+		t.Fatal("no view of the self fixture infers its lead; the test needs one")
+	}
+	off := false
+	if _, got := inferred(store.Project{InferredLead: &off}); len(got) > 0 {
+		t.Errorf("with inferred_lead false, views still draw a lead: %v", got)
+	}
+}
