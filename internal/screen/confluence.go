@@ -691,7 +691,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	// road where they turned onto its stem at different heights and setting
 	// them level costs nothing else.
 	for n, cost := 0, v.cost(ways); n < roadMoves; n++ {
-		next, ok := r.level(ways, v, cost)
+		next, ok := r.level(ways, v, d, cost)
 		if !ok {
 			break
 		}
@@ -810,7 +810,7 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 	} else {
 		moves = append(moves, stairs...)
 	}
-	return r.firstKept(ways, v, cost, moves, wide, func(nc roadCost) bool { return nc.better(cost) })
+	return r.firstKept(ways, v, cost, moves, wide, func(_ [][]pt, nc roadCost) bool { return nc.better(cost) })
 }
 
 // roadMove moves a run of road to at; gain orders the merges, the longest
@@ -864,16 +864,21 @@ func (v roadView) forkMoves(ways [][]pt, rs []straightRun, at map[[2]int]int, la
 
 // level sets lines into one place from one row on one flat road where
 // they turn onto its stem at different heights, a fork read from its other
-// end, by a move that costs nothing else.
-func (r *routing) level(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
+// end, by a move that costs nothing else, d's counts too: a route's flat
+// run toward its stem may be its flat run off its first stem as well, and
+// d counts those forks apart by dotting, as the pass before set them.
+func (r *routing) level(ways [][]pt, v, d roadView, cost roadCost) ([][]pt, bool) {
 	rs := roadRuns(ways, v)
 	moves := v.forkMoves(ways, rs, runsAt(rs), true)
-	return r.firstKept(ways, v, cost, moves, false, func(nc roadCost) bool { return nc.meets < cost.meets && cost.withers(nc) })
+	dc := d.cost(ways)
+	return r.firstKept(ways, v, cost, moves, false, func(next [][]pt, nc roadCost) bool {
+		return nc.meets < cost.meets && cost.withers(nc) && dc.withers(d.cost(next))
+	})
 }
 
 // firstKept is the routes after the first of moves that leaves every route
 // it moves reading as a line and that gains says reads better than cost.
-func (r *routing) firstKept(ways [][]pt, v roadView, cost roadCost, moves []roadMove, wide bool, gains func(roadCost) bool) ([][]pt, bool) {
+func (r *routing) firstKept(ways [][]pt, v roadView, cost roadCost, moves []roadMove, wide bool, gains func([][]pt, roadCost) bool) ([][]pt, bool) {
 	var x *roadIndex
 	shapes := make([]*routeShape, len(ways))
 	for _, m := range moves {
@@ -911,7 +916,7 @@ func (r *routing) firstKept(ways [][]pt, v roadView, cost roadCost, moves []road
 		if !ok || wide && nc.beside > cost.beside {
 			continue
 		}
-		if was, now := ch.endMixes(); now <= was && gains(nc) {
+		if was, now := ch.endMixes(); now <= was && gains(next, nc) {
 			return next, true
 		}
 	}

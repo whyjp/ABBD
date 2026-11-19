@@ -27,4 +27,9 @@ func TestLinesIntoOnePlaceTurnOntoItsStemAtOneHeight(t *testing.T) {
 	if ya, yb := a[len(a)-2].y, b[len(b)-2].y; ya != yb {
 		t.Errorf("the lines into t turn onto its stem at y=%d and y=%d, want one height: %v %v", ya, yb, a, b)
 	}
+	for _, w := range [][]pt{a, b} {
+		if end := w[len(w)-1]; end != (pt{360, 200}) || w[len(w)-2].x != 360 {
+			t.Errorf("a line into t leaves its stem at x=360: %v", w)
+		}
+	}
 }

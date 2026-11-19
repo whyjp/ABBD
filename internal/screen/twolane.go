@@ -155,8 +155,9 @@ func (r *routing) keepsLanes(ways [][]pt, run straightRun, at int, x *roadIndex,
 // forkLevelsOf counts, as the lint's forkLevels reads them, the flat tracks
 // past the first that a fork's branches turn onto: the lines of one kind
 // between one place and two or more places of one row, leaving it or
-// arriving at it, each by the flat run nearest that place. roadCost counts
-// only forks that leave, by style, so a move may split an arrival.
+// arriving at it, each by the flat run nearest that place. roadCost holds
+// a move to the forks that leave, by style; it counts arrivals as meets,
+// which only the last pass levels, so a move may split an arrival.
 func forkLevelsOf(ways [][]pt, v roadView) int {
 	type key struct {
 		place, kind string
