@@ -63,6 +63,18 @@ func TestElementsWarnAtAShareOfEachViewsOwnRange(t *testing.T) {
 	}
 }
 
+// Merging three worded lines into one bundle keeps the three lines, drops
+// two of the three words and adds one ×3: one element fewer.
+func TestElementsOfAMergedBundle(t *testing.T) {
+	t.Parallel()
+	apart := Drawing{Boxes: make([]Box, 3), ways: make([]Route, 3), Wires: []Wire{{Label: &Label{S: "a"}}, {Label: &Label{S: "b"}}, {Label: &Label{S: "c"}}}}
+	merged := Drawing{Boxes: make([]Box, 3), ways: make([]Route, 3), Wires: []Wire{{Label: &Label{S: "a"}, Count: 3}}}
+	a, m := elementsOf(apart), elementsOf(merged)
+	if a.Lines != m.Lines || a.Count != 9 || m.Count != 8 {
+		t.Fatalf("apart %+v merged %+v, want the same 3 lines and 9 then 8 elements", a, m)
+	}
+}
+
 // A view whose skeleton is all it could draw has no range to stand in, so
 // it has no share and no warning point, and its JSON still encodes.
 func TestElementsOfAViewWithNoRange(t *testing.T) {
