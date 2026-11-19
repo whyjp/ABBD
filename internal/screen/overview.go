@@ -14,6 +14,8 @@ import (
 
 // Drawing is one SVG picture: the overview of modules, or one module's inside.
 type Drawing struct {
+	// hooks are a test's, nil as abbd builds.
+	hooks         *hooks
 	Width, Height int
 	Boxes         []Box
 	Ports         []Port
@@ -479,6 +481,8 @@ func chipsWidth(labels []string) int { return chipRowWidth(shorten(labels)) }
 // quote every time; a dead one, whose quote is gone, is not. A module's
 // inside never moves a box.
 type overview struct {
+	// hooks are a test's, nil as abbd builds.
+	hooks     *hooks
 	tree      tree
 	units     map[model.ID]model.Unit
 	relations []model.Edge
@@ -1058,7 +1062,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			titles = append(titles, fmt.Sprintf("%s → %s: %s 계약을 거쳐 씁니다", o.name(u), o.name(p), o.name(c)))
 			rels = append(rels, o.between(u, c)...)
 		}
-		specs = append(specs, wireSpec{kind: "contract", title: strings.Join(titles, "; "), from: u, to: p, fromKey: in, toKey: out, rels: rels})
+		specs = append(specs, wireSpec{kind: kindContract, title: strings.Join(titles, "; "), from: u, to: p, fromKey: in, toKey: out, rels: rels})
 	}
 	// Chips sit in the order of what their lines lead to; the chip of
 	// contracts no line reaches sits last.
@@ -1094,7 +1098,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if e.Kind != model.DependsOn || !isModule(e.From) || !isModule(e.To) || covered(e.From, e.To) {
 			continue
 		}
-		specs = append(specs, wireSpec{kind: "bypass", title: fmt.Sprintf("%s → %s: 계약을 거치지 않는 직접 의존", o.name(e.From), o.name(e.To)), from: e.From, to: e.To, rels: o.rels[e.String()]})
+		specs = append(specs, wireSpec{kind: kindBypass, title: fmt.Sprintf("%s → %s: 계약을 거치지 않는 직접 의존", o.name(e.From), o.name(e.To)), from: e.From, to: e.To, rels: o.rels[e.String()]})
 	}
 
 	chips := func() map[string]Port {
@@ -1114,7 +1118,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 
 	var merged []wireSpec
 	for _, s := range specs {
-		if s.kind == "contract" {
+		if s.kind == kindContract {
 			s.rels = append(s.rels, carried[[2]model.ID{s.from, s.to}]...)
 		}
 		merged = append(merged, s)
@@ -1130,7 +1134,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	}
 	bypasses := map[[2]model.ID]int{}
 	for i, s := range merged {
-		if s.kind == "bypass" {
+		if s.kind == kindBypass {
 			bypasses[[2]model.ID{s.from, s.to}] = i
 		}
 	}
@@ -1144,14 +1148,14 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	gone := map[int]bool{}
 	for i, s := range merged {
 		j, ok := bypasses[[2]model.ID{s.to, s.from}]
-		if s.kind != "bypass" || !ok || gone[i] || gone[j] || staged(s.from, s.to) {
+		if s.kind != kindBypass || !ok || gone[i] || gone[j] || staged(s.from, s.to) {
 			continue
 		}
 		keep, drop := i, j
 		if !before(s.from, s.to) {
 			keep, drop = j, i
 		}
-		merged[keep].kind = "mutual"
+		merged[keep].kind = kindMutual
 		merged[keep].title += "\n" + merged[drop].title
 		merged[keep].rels = append(merged[keep].rels, merged[drop].rels...)
 		gone[drop] = true
@@ -1197,12 +1201,13 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		leadLines(o.tree, o.walks, l.axis, boxes, true, reqs, func(i int) []string { return merged[i].rels })
 	}
+	l.hooks = o.hooks
 	routed := l.route(reqs)
 	o.read = costOf(routed, reqs)
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
@@ -1285,7 +1290,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			titles = append(titles, merged[i].title)
 		}
 		w := Wire{D: p.D, Kind: p.kind}
-		w.Both = w.Kind == "mutual" && slices.ContainsFunc(p.starts, func(s pt) bool { return s != noStart })
+		w.Both = w.Kind == kindMutual && slices.ContainsFunc(p.starts, func(s pt) bool { return s != noStart })
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			og := o.origin(merged[i].rels)

@@ -5012,7 +5012,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/page.html \"svg path.bypass { stroke: var(--bypass)\""
+      "Quote": "internal/screen/overview.go \"specs = append(specs, wireSpec{kind: kindBypass\""
     },
     {
       "From": "MOD-0038",
@@ -22387,7 +22387,7 @@
         "Uses": 12,
         "Direct": 6,
         "StaleNotes": 0,
-        "Dead": 10
+        "Dead": 8
       },
       "Units": [
         {
@@ -23850,7 +23850,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -30342,11 +30341,27 @@
                 "Code": true
               },
               {
-                "Text": "는 자르지 않은 개요와 internal/gitx의 초점 뷰 모두에서 internal/gitx로 드는 여섯 선을 저마다 되돌기 하나로 묶는다. 그 테스트들은 병렬로 돌고, 패키지 스위치를 바꾸는 두 테스트(",
+                "Text": "는 자르지 않은 개요와 internal/gitx의 초점 뷰 모두에서 internal/gitx로 드는 여섯 선을 저마다 되돌기 하나로 묶는다. 그 테스트들은 병렬로 돌고, 빌드 안을 들여다보는 세 테스트는 패키지 스위치 대신 ",
                 "Code": false
               },
               {
-                "Text": "sayOnce",
+                "Text": "Input.hooks",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "keepWords",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "keepCounts",
                 "Code": true
               },
               {
@@ -30358,7 +30373,15 @@
                 "Code": true
               },
               {
-                "Text": ")는 직렬로 머물며 ",
+                "Text": ")를 넘기는 ",
+                "Code": false
+              },
+              {
+                "Text": "freshWith",
+                "Code": true
+              },
+              {
+                "Text": "로 ",
                 "Code": false
               },
               {
@@ -30366,7 +30389,7 @@
                 "Code": true
               },
               {
-                "Text": "로 넷을 한꺼번에 짓는다. ",
+                "Text": "가 넷을 한꺼번에 짓게 한다. 훅이 없으면 abbd가 짓는 그대로다. ",
                 "Code": false
               },
               {
@@ -31832,9 +31855,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/page.html \"svg path.bypass { stroke: var(--bypass)\"",
-            "internal/screen/overview.go \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
-            "internal/screen/screen.go \"return \\\"#m-\\\" + string(id)\"",
+            "internal/screen/overview.go \"specs = append(specs, wireSpec{kind: kindBypass\"",
             "internal/screen/page.html \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
           ]
         },

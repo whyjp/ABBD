@@ -91,7 +91,7 @@ func TestAClimbJoinsARoadRunningItsWay(t *testing.T) {
 			back:  []bool{true, false},
 			boxes: []box{{0, 0, 100, 60}, {270, 0, 60, 60}, {320, 200, 200, 60}},
 		}
-		r.confluent(reqs, func(y int) int { return y / 100 }, 2, c.apart)
+		r.confluent(reqs, func(y int) int { return y / 100 }, 2, c.apart, nil)
 		a, b := r.ways[0], r.ways[1]
 		if joined := a[len(a)-2].y == b[len(b)-2].y; joined != c.joined {
 			t.Errorf("%s: the two lines into t on one road %v, want %v: %v %v", c.name, joined, c.joined, a, b)

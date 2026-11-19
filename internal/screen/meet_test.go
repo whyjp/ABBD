@@ -22,7 +22,7 @@ func TestLinesIntoOnePlaceTurnOntoItsStemAtOneHeight(t *testing.T) {
 		back:  []bool{false, false},
 		boxes: []box{{0, 0, 100, 60}, {270, 0, 60, 60}, {320, 200, 200, 60}},
 	}
-	r.confluent(reqs, func(y int) int { return y / 100 }, 2, false)
+	r.confluent(reqs, func(y int) int { return y / 100 }, 2, false, nil)
 	a, b := r.ways[0], r.ways[1]
 	if ya, yb := a[len(a)-2].y, b[len(b)-2].y; ya != yb {
 		t.Errorf("the lines into t turn onto its stem at y=%d and y=%d, want one height: %v %v", ya, yb, a, b)

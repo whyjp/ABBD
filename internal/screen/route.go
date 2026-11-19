@@ -186,7 +186,7 @@ func (l *layout) routeLines(reqs []wireReq) routing {
 	}
 	*l = after
 	if l.roads {
-		r.confluent(reqs, l.position, len(l.rows), l.apart)
+		r.confluent(reqs, l.position, len(l.rows), l.apart, l.hooks.onRoads())
 	}
 	return r
 }
@@ -382,7 +382,7 @@ func (l *layout) strays(reqs []wireReq, chainOf []int) bool {
 func bundlesPairs(reqs []wireReq) bool {
 	far := map[string]string{}
 	for _, r := range reqs {
-		if r.kind != "mutual" {
+		if r.kind != kindMutual {
 			continue
 		}
 		for _, e := range [][2]string{{place(r.from), place(r.to)}, {place(r.to), place(r.from)}} {
@@ -602,7 +602,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		ak.key += "|" + r.kind
 		// A line between two modules that use each other reads both ways,
 		// so apart keeps it off the buses of other pairs' lines (rule 18).
-		if apart && r.kind == "mutual" {
+		if apart && r.kind == kindMutual {
 			dk.key += "|" + place(r.to)
 			ak.key += "|" + place(r.from)
 		}
@@ -1632,7 +1632,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		if p.same {
 			against = p.tx < p.fx
 		}
-		return against != (reqs[i].kind == "provides")
+		return against != (reqs[i].kind == kindProvides)
 	}
 	type span struct {
 		lo, hi      int
@@ -1867,7 +1867,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			o = busOwner(p.arr)
 		}
 		headRoom(p.gaps[k-1], o, r.to, sideOf(p, false))
-		if r.kind == "mutual" {
+		if r.kind == kindMutual {
 			headRoom(p.gaps[0], owner(i, 0), r.from, sideOf(p, true))
 		}
 	}
@@ -2412,7 +2412,7 @@ func drawnRels(reqs []wireReq) [][2]string {
 	var out [][2]string
 	for _, r := range reqs {
 		out = append(out, [2]string{shape(r.from), shape(r.to)})
-		if r.kind == "mutual" {
+		if r.kind == kindMutual {
 			out = append(out, [2]string{shape(r.to), shape(r.from)})
 		}
 	}
@@ -2448,7 +2448,7 @@ func wanted(reqs []wireReq) [][2]string {
 	var out [][2]string
 	for _, r := range reqs {
 		out = append(out, [2]string{endID(r.from), endID(r.to)})
-		if r.kind == "mutual" {
+		if r.kind == kindMutual {
 			out = append(out, [2]string{endID(r.to), endID(r.from)})
 		}
 	}

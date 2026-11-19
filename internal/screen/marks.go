@@ -118,15 +118,15 @@ func (d *Drawing) mark(paths []drawn, reqs []wireReq, t tree) {
 // a use through a contract, an open one for a direct dependency, and a
 // hollow one for a unit that provides a contract.
 var shapes = map[string]string{
-	"contract": "use", "consumes": "use",
-	"depends_on": "dep", "bypass": "dep", "mutual": "dep",
-	"provides": "impl",
+	kindContract: "use", kindConsumes: "use",
+	kindDependsOn: "dep", kindBypass: "dep", kindMutual: "dep",
+	kindProvides: "impl",
 }
 
 // warns says a kind is a direct dependency that skips the contract
 // boundary the overview shows. Its line wears the colour of the box it
 // leaves, like any other, and its open head marks it.
-func warns(kind string) bool { return kind == "bypass" || kind == "mutual" }
+func warns(kind string) bool { return kind == kindBypass || kind == kindMutual }
 
 // onRoad is how far each route runs on roads, by route number.
 func (d *Drawing) onRoad() map[int]int {
@@ -353,7 +353,7 @@ func heads(paths []drawn) []box {
 		if last := straight(ps[len(ps)-1]); len(last) > 1 && !p.joins {
 			at(last[len(last)-1], last[len(last)-2])
 		}
-		if first := straight(ps[0]); len(first) > 1 && p.kind == "mutual" && p.starts[0] != noStart {
+		if first := straight(ps[0]); len(first) > 1 && p.kind == kindMutual && p.starts[0] != noStart {
 			at(first[0], first[1])
 		}
 	}
@@ -566,7 +566,7 @@ func grow(b box, n int) box { return box{b.x - n, b.y - n, b.w + 2*n, b.h + 2*n}
 func (d *Drawing) marked(heads []box) []box {
 	var out []box
 	for _, b := range d.Boxes {
-		out = append(out, box{b.X, b.Y, b.W, b.H})
+		out = append(out, b.area())
 	}
 	for _, p := range d.Ports {
 		out = append(out, box{p.X, p.RectY(), p.W, p.H})
@@ -635,7 +635,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		}
 		// A bus shows its count only from three lines (rule 22), and says
 		// instead the word every one of its lines says, once it is set.
-		if dropCounts && w.Count > 1 && (w.Count < 3 || everyUnit(t, w.lines, words[i], saids[i])) {
+		if d.hooks.dropCounts() && w.Count > 1 && (w.Count < 3 || everyUnit(t, w.lines, words[i], saids[i])) {
 			freed = append(freed, countBox(w))
 			if w.Count >= 3 {
 				held[i] = owed{w.Count, w.LX, w.LY, -1}
@@ -707,7 +707,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			if p.l.S != l.S {
 				return false
 			}
-			return (l.Said || most[i]) && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || p.freed || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
+			return (l.Said || most[i]) && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || p.freed || d.hooks.sayOnce() && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
 		})
 	}
 	done := map[int]bool{}
@@ -954,14 +954,6 @@ func tracks(ws []Wire, touches func(i, j int) bool) func(i int) int {
 	}
 	return find
 }
-
-// sayOnce turns the drop on; a test turns it off to see which lines have
-// room for their word.
-var sayOnce = true
-
-// dropCounts turns on the trade of counts for words; a test turns it off to
-// see each bus's count.
-var dropCounts = true
 
 // touching says, of two wires, whether their ink touches: a piece of one
 // ends on a piece of the other, as a branch ends on its trunk, and not where

@@ -47,7 +47,7 @@ var gated = []struct {
 	{"two_lane_off", func(t Totals) int { return t.TwoLaneOff }, func(int) int { return 0 }},
 	{"opposite_shared", func(t Totals) int { return t.OppositeShared }, func(int) int { return 0 }},
 	// overflow is how many views pass one screen (S).
-	{"overflow", func(t Totals) int { return t.Criteria["S"] }, func(int) int { return 0 }},
+	{"overflow", func(t Totals) int { return t.Criteria[critScreen] }, func(int) int { return 0 }},
 }
 
 // paged are the totals of one page the debt file may bound, by the names it
@@ -83,7 +83,7 @@ var paged = []struct {
 	// false joins are J3's breaches, ink a reader takes at rest for a
 	// coupling no relation makes. A page bound keeps a record from taking
 	// them on as debt.
-	{"false_joins", func(t Totals) int { return t.Criteria["J3"] }, false},
+	{"false_joins", func(t Totals) int { return t.Criteria[critPhantoms] }, false},
 	// lines against the axis are ones a reader follows backward, against
 	// the order the view is read in.
 	{"against_axis", func(t Totals) int { return t.AgainstAxis }, false},

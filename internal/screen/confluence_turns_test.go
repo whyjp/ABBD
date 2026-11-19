@@ -12,7 +12,7 @@ import (
 func TestARoadAddsNoTurnToARoute(t *testing.T) {
 	var mu sync.Mutex
 	views, gained := 0, 0
-	roadsDrawn = func(routed, ways [][]pt) {
+	seen := func(routed, ways [][]pt) {
 		mu.Lock()
 		defer mu.Unlock()
 		views++
@@ -23,8 +23,7 @@ func TestARoadAddsNoTurnToARoute(t *testing.T) {
 			}
 		}
 	}
-	defer func() { roadsDrawn = nil }()
-	buildEach(t, fresh)
+	buildEach(t, func(name string) (Model, error) { return freshWith(name, &hooks{roadsDrawn: seen}) })
 	if views == 0 {
 		t.Fatal("no view was drawn on roads")
 	}
