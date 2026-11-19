@@ -573,4 +573,6 @@ func labelled(d Drawing) int {
 }
 
 // folded says a stroke or route of class is a folded pair's line (fold.go).
-func folded(class string) bool { return strings.Contains(" "+class+" ", " both ") && !strings.Contains(" "+class+" ", " mutual ") }
+func folded(class string) bool {
+	return strings.Contains(" "+class+" ", " both ") && !strings.Contains(" "+class+" ", " mutual ")
+}

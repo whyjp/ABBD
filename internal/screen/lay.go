@@ -416,7 +416,7 @@ func (ly *layRun) arrivalBuses() {
 		fed := -1
 		is = slices.DeleteFunc(ly.free(is), func(i int) bool { return shareOf[i] >= 0 })
 		for _, i := range is {
-			if b, ok := fedBy[place(reqs[i].to)+"|"+reqs[i].kind]; ok && !plans[i].up {
+			if b, ok := fedBy[place(reqs[i].to)+"|"+reqs[i].kind]; ok && !plans[i].up && !reqs[i].both {
 				fed = b
 			}
 		}
@@ -1691,6 +1691,11 @@ func (ly *layRun) drawOwn() {
 		}
 		d := polyline(pts)
 		key := fmt.Sprint(d, reqs[i].kind, joins, ly.back(i))
+		// A folded pair's line shares no path: its heads would stand on
+		// another line's ink (fold.go).
+		if reqs[i].both {
+			key += fmt.Sprint("|both", i)
+		}
 		if o, ok := own[key]; ok {
 			out[o].reqs, out[o].starts = append(out[o].reqs, i), append(out[o].starts, st)
 			continue

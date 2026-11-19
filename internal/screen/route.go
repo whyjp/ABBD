@@ -488,7 +488,8 @@ func share(reqs []wireReq, arrive map[slotKey][]int) ([]int, [][]int) {
 	var ts []target
 	for _, k := range sortedKeys(arrive) {
 		is := arrive[k]
-		if k.side > 0 || reqs[is[0]].to.node == "" {
+		// A folded pair's line rides no bus but its own (fold.go).
+		if k.side > 0 || reqs[is[0]].to.node == "" || reqs[is[0]].both {
 			continue
 		}
 		t := target{reqs[is[0]].kind, map[string]int{}, is}
@@ -586,7 +587,7 @@ func gather(reqs []wireReq, arrive map[slotKey][]int, shared bool) [][]int {
 		}
 		joined := false
 		for _, h := range groups {
-			if shared || to.node == "" || reqs[h.members[0]].to.node == "" || h.row != g.row || h.way != g.way || h.kind != g.kind {
+			if shared || to.node == "" || reqs[h.members[0]].to.node == "" || h.row != g.row || h.way != g.way || h.kind != g.kind || reqs[is[0]].both || reqs[h.members[0]].both {
 				continue
 			}
 			if maps.Equal(g.from, h.from) {

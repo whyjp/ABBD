@@ -5,6 +5,8 @@ import (
 	"strings"
 	"sync"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // Only two lines between the same two boxes, one each way, of one kind and
@@ -88,43 +90,62 @@ func TestAFoldedPairIsOneLineOfItsOwn(t *testing.T) {
 	}
 }
 
-// On every page a fixture draws, a folded line has a head at each end, as
-// one path or as pieces, carries both lines' relations when pointed at,
-// and no origin mark stands under its start head.
+// Two units that use each other directly, inside a module, are drawn as
+// one folded line: a head at each end, both relations in its tooltip and
+// lit when pointed at, no origin mark under its start head, and lint traces
+// both relations along it and finds no phantom pair.
 func TestAFoldedLineHeadsBothEndsAndLightsBoth(t *testing.T) {
-	ms := buildEach(t, fresh)
+	units := []model.Unit{
+		called("MOD-0001", "app"),
+		inside("MOD-0002", "MOD-0001", rel("MOD-0003", model.DependsOn)),
+		inside("MOD-0003", "MOD-0001", rel("MOD-0002", model.DependsOn), rel("MOD-0004", model.DependsOn)),
+		inside("MOD-0004", "MOD-0001"),
+	}
+	m := build(units)
+	if len(m.Insides) != 1 {
+		t.Fatalf("app's view is missing: %+v", m.Insides)
+	}
+	d := m.Insides[0].Drawing
 	n := 0
-	for name, m := range ms {
-		for _, d := range m.drawings() {
-			for k, r := range d.Routes {
-				if !r.Both || r.Kind == kindMutual {
-					continue
-				}
-				n++
-				if len(r.Tips) != 2 {
-					t.Errorf("%s: folded route %d has %d heads", name, k, len(r.Tips))
-				}
-				lit := false
-				for _, w := range d.Wires {
-					if !slices.Contains(w.rides, k) {
-						continue
-					}
-					lit = true
-					if w.folded() && len(w.Marks) > 0 {
-						t.Errorf("%s: an origin mark stands on folded line %q", name, w.Title)
-					}
-					if len(w.lines) < 2 && !strings.Contains(w.Title, "\n") {
-						t.Errorf("%s: folded line %q names one relation", name, w.Title)
-					}
-				}
-				if !lit {
-					t.Errorf("%s: no ink lights folded route %d", name, k)
-				}
+	for k, r := range d.Routes {
+		if !r.Both || r.Kind == kindMutual {
+			continue
+		}
+		n++
+		if len(r.Tips) != 2 || len(r.rels) != 2 {
+			t.Errorf("folded route %d has %d heads and %d relations", k, len(r.Tips), len(r.rels))
+		}
+		lit := false
+		for _, w := range d.Wires {
+			if !slices.Contains(w.rides, k) {
+				continue
+			}
+			lit = true
+			if w.folded() && len(w.Marks) > 0 {
+				t.Errorf("an origin mark stands on folded line %q", w.Title)
+			}
+			if strings.Count(w.Title, "depends_on") < 2 {
+				t.Errorf("folded line %q names one relation", w.Title)
 			}
 		}
+		if !lit {
+			t.Errorf("no ink lights folded route %d", k)
+		}
 	}
-	if n == 0 {
-		t.Skip("no fixture page keeps a folded line")
+	if n != 2 {
+		t.Fatalf("%d folded routes, want the pair's two", n)
+	}
+	vl, err := lintView(view{d: d, budget: insideWidth, room: screenH})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if vl.Totals.Phantoms != 0 || vl.Totals.OppositeShared != 0 || vl.Totals.TwoLaneOff != 0 {
+		t.Errorf("the folded view reads phantoms %d, opposite_shared %d, two_lane_off %d", vl.Totals.Phantoms, vl.Totals.OppositeShared, vl.Totals.TwoLaneOff)
+	}
+	for _, b := range vl.Breaches {
+		if b.Hard {
+			t.Errorf("the folded view breaks %s: %s", b.Criterion, b.Text)
+		}
 	}
 }
 
