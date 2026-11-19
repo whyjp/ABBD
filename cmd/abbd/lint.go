@@ -234,6 +234,15 @@ func printLint(e env, r lintReport) {
 			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
 		}
 	}
+	if r.Totals.Fanout > 0 {
+		var by []string
+		for _, v := range r.Views {
+			if v.Totals.Fanout > 0 {
+				by = append(by, fmt.Sprintf("%s %d", v.View, v.Totals.Fanout))
+			}
+		}
+		fmt.Fprintf(e.stdout, "lint: fanout: lines that join each user of a contract with three or more providers to every provider, by view: %s; a user of an extension point may name none of its implementers, so read these lines against the code\n", strings.Join(by, ", "))
+	}
 	printProse(e.stdout, r.Prose, r.Language)
 	if len(r.Undescribed) > 0 {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))

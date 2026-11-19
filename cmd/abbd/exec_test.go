@@ -92,6 +92,31 @@ func TestDiffNamesAChangedRunAndARunTimeRelationThatWent(t *testing.T) {
 	}
 }
 
+// Lint counts the lines the overview derives from a trait with no parent
+// that three plug-ins implement, by view, and still passes.
+func TestLintCountsTheFanoutOfAContractWithThreeProviders(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("host/api.rs", "pub trait Handler { fn handle(&self); }\n")
+	for _, d := range []string{"a", "b", "c"} {
+		p.code(d+"/lib.rs", "x\n")
+	}
+	p.extract(`{"units":[
+ {"key":"host","kind":"MOD","name":"dispatcher","anchors":[{"path":"host"}]},
+ {"key":"a","kind":"MOD","name":"plugin a","anchors":[{"path":"a"}]},
+ {"key":"b","kind":"MOD","name":"plugin b","anchors":[{"path":"b"}]},
+ {"key":"c","kind":"MOD","name":"plugin c","anchors":[{"path":"c"}]},
+ {"key":"api","kind":"IF","name":"trait Handler","anchors":[{"path":"host/api.rs"}],"signature":"pub trait Handler"}],
+ "relations":[{"from":"host","to":"api","kind":"consumes","via":"trait"},
+ {"from":"a","to":"api","kind":"provides","via":"trait"},{"from":"b","to":"api","kind":"provides","via":"trait"},{"from":"c","to":"api","kind":"provides","via":"trait"}]}`)
+	p.setup(0, "synced", "--", exe)
+	code, out := lintAt(t, p.root)
+	contains(t, out, "lint: fanout: lines that join each user of a contract with three or more providers to every provider, by view: overview 3;")
+	if code != exitOK {
+		t.Errorf("the fanout count failed lint, exit %d:\n%s", code, out)
+	}
+}
+
 // Lint names a plug-point contract whose one provider looks like the host
 // that calls through it, and still passes.
 func TestLintAdvisesOnAPlugPointRecordedTheWrongWayRound(t *testing.T) {

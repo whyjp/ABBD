@@ -148,6 +148,10 @@ type Totals struct {
 	// departures; nothing bounds them.
 	Fans    int `json:"fans"`
 	Strands int `json:"strands"`
+	// Fanout is the lines the overview derives from a contract with three
+	// or more providers, meeting each of its users with every provider
+	// (overview.fanout). It shows the exposure; nothing bounds it.
+	Fanout int `json:"fanout"`
 }
 
 // Sum adds up the totals of several views.
@@ -170,6 +174,7 @@ func Sum(views []ViewLint) Totals {
 		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
 		t.Density += o.Density
 		t.Fans, t.Strands = t.Fans+o.Fans, t.Strands+o.Strands
+		t.Fanout += o.Fanout
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -403,6 +408,7 @@ func lintView(v view) (ViewLint, error) {
 		vl.Totals.Density = 10 * len(v.d.ways) / n
 	}
 	vl.Totals.Fans, vl.Totals.Strands = s.fans, len(s.strands)
+	vl.Totals.Fanout = v.d.fanout
 	return vl, nil
 }
 
