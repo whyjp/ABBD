@@ -61,6 +61,9 @@ type hooks struct {
 	// roadsDrawn sees each view's routes as routed and as the roads leave
 	// them.
 	roadsDrawn func(routed, ways [][]pt)
+	// routing sees each view's layout and lines as route starts to lay
+	// them; it must leave the layout as it found it.
+	routing func(l *layout, reqs []wireReq)
 }
 
 // sayOnce says a word a touching line already says is dropped.
@@ -68,6 +71,14 @@ func (h *hooks) sayOnce() bool { return h == nil || !h.keepWords }
 
 // dropCounts says a bus trades its count for the word its lines say.
 func (h *hooks) dropCounts() bool { return h == nil || !h.keepCounts }
+
+// onRouting is what sees each view as route starts to lay it, or nil.
+func (h *hooks) onRouting() func(l *layout, reqs []wireReq) {
+	if h == nil {
+		return nil
+	}
+	return h.routing
+}
 
 // onRoads is what sees the routes on roads, or nil.
 func (h *hooks) onRoads() func(routed, ways [][]pt) {
