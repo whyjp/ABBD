@@ -64,9 +64,13 @@ var ecosystems = []ecosystem{
 	{name: "cargo", manifest: "Cargo.toml", declares: cargoDeclares, source: rustLibSource, imports: rustImports},
 }
 
-// libsSkipped are directories that hold dependencies, build output or test
-// data, whose manifests and code are not the project's own.
-var libsSkipped = map[string]bool{"testdata": true, "target": true}
+// libsSkipped are directories that hold dependencies, vendored copies or
+// test data, whose manifests and code are not the project's own. A target
+// directory is skipped only beside a Cargo.toml, where cargo builds into it.
+var libsSkipped = map[string]bool{
+	"node_modules": true, "vendor": true, "vendored": true, "third_party": true, "thirdparty": true,
+	"testdata": true, "venv": true, "site-packages": true, "__pycache__": true,
+}
 
 // Libraries adds to doc each third-party library a go.mod, package.json or
 // Cargo.toml under root declares, as one EXT unit anchored at each line that
@@ -92,14 +96,21 @@ func Libraries(root string, doc extract.Doc) (extract.Doc, []string, error) {
 	o := index(mods)
 	manifests := map[string][]string{}
 	sources := map[string][]string{}
+	var notes []string
 	err = filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
 		r, _ := filepath.Rel(root, p)
 		r = filepath.ToSlash(r)
+		if err != nil {
+			// What it may not read is left out, and said.
+			notes = append(notes, fmt.Sprintf("libs: %s was not read: %v", r, err))
+			if d != nil && d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
 		if d.IsDir() {
-			if p != root && (strings.HasPrefix(d.Name(), ".") || scriptVendored[strings.ToLower(d.Name())] || libsSkipped[strings.ToLower(d.Name())]) {
+			name := strings.ToLower(d.Name())
+			if p != root && (strings.HasPrefix(d.Name(), ".") || libsSkipped[name] || name == "target" && isFile(filepath.Join(filepath.Dir(p), "Cargo.toml"))) {
 				return filepath.SkipDir
 			}
 			return nil
@@ -124,7 +135,6 @@ func Libraries(root string, doc extract.Doc) (extract.Doc, []string, error) {
 	type lib struct{ eco, name string }
 	sites := map[lib]map[string][]site{}
 	anchors := map[lib][]string{}
-	var notes []string
 	for _, e := range ecosystems {
 		local := localsOf(e.name, manifests[e.name], read)
 		var unused []string
@@ -426,11 +436,17 @@ func npmDeclares(text []byte, local localNames) []declaration {
 			if local.modules[name] || strings.HasPrefix(v, "workspace:") || strings.HasPrefix(v, "file:") || strings.HasPrefix(v, "link:") || strings.HasPrefix(v, "portal:") {
 				continue
 			}
+			// The line that declares it, else the first that names it, as a
+			// section written on one line has it.
 			line := 0
-			for i := max(at, 0); i < len(lines); i++ {
+			for i := max(at, 0); i < len(lines) && line == 0; i++ {
 				if jsonKey(lines[i]) == name {
 					line = i + 1
-					break
+				}
+			}
+			for i := max(at, 0); i < len(lines) && line == 0; i++ {
+				if strings.Contains(lines[i], strconv.Quote(name)) {
+					line = i + 1
 				}
 			}
 			if line > 0 && !slices.ContainsFunc(out, func(d declaration) bool { return d.name == name }) {
@@ -459,7 +475,7 @@ func npmSource(p string) bool {
 	return ok && !tsTest(p) && !declarationFile(p)
 }
 
-var npmImport = regexp.MustCompile(`(?:\bfrom\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|^\s*import\s+)['"]([^'"]+)['"]`)
+var npmImport = regexp.MustCompile(`(?:^\s*(?:import|export)\b.*\bfrom\s*|^\s*\}\s*from\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|^\s*import\s+)['"]([^'"]+)['"]`)
 
 func npmImports(text []byte) []imported {
 	var out []imported
@@ -470,7 +486,7 @@ func npmImports(text []byte) []imported {
 		if t := strings.TrimSpace(line); strings.HasPrefix(t, "//") || strings.HasPrefix(t, "*") {
 			continue
 		}
-		for _, m := range npmImport.FindAllStringSubmatch(line, -1) {
+		for _, m := range npmImport.FindAllStringSubmatch(stripBlock(line), -1) {
 			s := m[1]
 			if strings.HasPrefix(s, ".") || strings.HasPrefix(s, "/") || strings.HasPrefix(s, "node:") {
 				continue
@@ -492,11 +508,21 @@ func (t tomlLine) str() string { return strings.Trim(strings.TrimSpace(t.value),
 
 // inline is a key's string value in an inline table value, or "".
 func (t tomlLine) inline(key string) string {
-	m := regexp.MustCompile(`(?:^|[{,\s])` + regexp.QuoteMeta(key) + `\s*=\s*("[^"]*"|'[^']*'|true|false)`).FindStringSubmatch(t.value)
+	m := tomlInline[key].FindStringSubmatch(t.value)
 	if m == nil {
 		return ""
 	}
 	return strings.Trim(m[1], `"'`)
+}
+
+// tomlInline reads the keys of a dependency's inline table that say where
+// it comes from.
+var tomlInline = map[string]*regexp.Regexp{}
+
+func init() {
+	for _, k := range []string{"path", "workspace", "package"} {
+		tomlInline[k] = regexp.MustCompile(`(?:^|[{,\s])` + k + `\s*=\s*("[^"]*"|'[^']*'|true|false)`)
+	}
 }
 
 // tomlLines reads the key lines of a TOML file, each under its table. It
@@ -642,21 +668,73 @@ func cargoDeclares(text []byte, local localNames) []declaration {
 
 func rustLibSource(p string) bool { return strings.HasSuffix(p, ".rs") && !rustTest(p) }
 
-var rustPath = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\s*::|\b(?:use|extern\s+crate)\s+([A-Za-z_][A-Za-z0-9_]*)\b`)
+// rustPath reads the crate a path starts with: a name followed by :: that
+// no :: or name runs into, as serde::Serialize or #[tokio::main], and the
+// crate a use or extern crate names whole.
+var rustPath = regexp.MustCompile(`(?:^|[^:\w])([A-Za-z_][A-Za-z0-9_]*)\s*::|\b(?:use|extern\s+crate)\s+([A-Za-z_][A-Za-z0-9_]*)\b`)
 
-// rustImports reads each crate name a line of Rust names a path through, as
-// serde::Serialize, use tokio; or #[tokio::main]. Names the code does not
-// declare as a dependency, such as std or self, match nothing.
+// rustLocal are the path roots that name the crate's own code.
+var rustLocal = map[string]bool{"crate": true, "self": true, "super": true, "Self": true}
+
+// rustImports reads each crate name a line of Rust starts a path with, its
+// strings and its comment left out. Names the code does not declare as a
+// dependency, such as std, match nothing.
 func rustImports(text []byte) []imported {
 	var out []imported
 	for i, line := range strings.Split(string(text), "\n") {
-		t := strings.TrimSpace(line)
-		if strings.HasPrefix(t, "//") || strings.HasPrefix(t, "*") {
+		t := strings.TrimSpace(codeOnly(line))
+		if strings.HasPrefix(t, "*") {
 			continue
 		}
-		for _, m := range rustPath.FindAllStringSubmatch(line, -1) {
-			out = append(out, imported{cmp.Or(m[1], m[2]), i + 1})
+		for _, m := range rustPath.FindAllStringSubmatch(t, -1) {
+			if name := cmp.Or(m[1], m[2]); !rustLocal[name] {
+				out = append(out, imported{name, i + 1})
+			}
 		}
 	}
 	return out
+}
+
+// codeOnly is a line of C-like code without its string literals and its
+// trailing // comment.
+func codeOnly(line string) string {
+	var b strings.Builder
+	var quote rune
+	escaped := false
+	rs := []rune(line)
+	for i := 0; i < len(rs); i++ {
+		c := rs[i]
+		switch {
+		case quote != 0:
+			if escaped {
+				escaped = false
+			} else if c == '\\' {
+				escaped = true
+			} else if c == quote {
+				quote = 0
+			}
+		case c == '"':
+			quote = c
+		case c == '/' && i+1 < len(rs) && rs[i+1] == '/':
+			return b.String()
+		default:
+			b.WriteRune(c)
+		}
+	}
+	return b.String()
+}
+
+// stripBlock is a line without the /* */ comments it opens and closes.
+func stripBlock(line string) string {
+	for {
+		i := strings.Index(line, "/*")
+		if i < 0 {
+			return line
+		}
+		j := strings.Index(line[i+2:], "*/")
+		if j < 0 {
+			return line[:i]
+		}
+		line = line[:i] + line[i+2+j+2:]
+	}
 }
