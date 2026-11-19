@@ -248,6 +248,7 @@ func printLint(e env, r lintReport) {
 		}
 		fmt.Fprintf(e.stdout, "lint: fanout: lines that join each user of a contract with three or more providers to every provider, by view: %s; a user of an extension point may name none of its implementers, so read these lines against the code\n", strings.Join(by, ", "))
 	}
+	printLeads(e.stdout, r.Views)
 	printProse(e.stdout, r.Prose, r.Language)
 	if len(r.Undescribed) > 0 {
 		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
@@ -428,4 +429,21 @@ func elementsLine(el screen.Elements) string {
 		return fmt.Sprintf("%d, its skeleton and its every line one number: %s", el.Count, parts)
 	}
 	return fmt.Sprintf("%d in %d..%d (%d%%), warns past %d: %s", el.Count, el.Min, el.Max, *el.Percent, *el.WarnAt, parts)
+}
+
+// printLeads says where the views' leads come from when some view infers
+// its lead from its lines: how many follow the primary flow, a stored flow,
+// or their lines, and how many hops the inferred ones number.
+func printLeads(w io.Writer, views []screen.ViewLint) {
+	n, hops := map[string]int{}, 0
+	for _, v := range views {
+		n[v.Lead]++
+		if v.Lead == screen.LeadInferred {
+			hops += v.Totals.LeadHops
+		}
+	}
+	if n[screen.LeadInferred] == 0 {
+		return
+	}
+	fmt.Fprintf(w, "lint: leads: %d follow the primary flow, %d a stored flow, %d are inferred from their lines with %s; inferred_lead: false in .abbd/project.yaml numbers the primary flow and stored flows only\n", n[screen.LeadPrimary], n[screen.LeadStored], n[screen.LeadInferred], plural(hops, "hop"))
 }

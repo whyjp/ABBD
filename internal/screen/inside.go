@@ -650,7 +650,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		for _, u := range inner {
 			boxes = append(boxes, u.ID)
 		}
-		leadLines(t, o.walks, l.axis, boxes, false, reqs, func(i int) []string { return lines[i].rels })
+		leadLines(t, o.walks, l.axis, boxes, false, !o.stored, reqs, func(i int) []string { return lines[i].rels })
 	}
 	l.hooks = o.hooks
 	routed := l.route(reqs)
