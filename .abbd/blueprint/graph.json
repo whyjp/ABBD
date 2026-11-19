@@ -2250,6 +2250,7 @@
         "internal/screen/tree.go",
         "internal/screen/twolane.go",
         "internal/screen/weigh.go",
+        "internal/screen/wordfill.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
       ],
@@ -6790,7 +6791,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -7803,7 +7804,79 @@
                 "Code": true
               },
               {
-                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다.",
+                "Text": "라 부르고, 모듈 하나를 볼 때는 그 모듈의 ID를 제목에 쓴다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "cycles:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에, 묶음마다 상자 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle overview:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 발견으로 알리고, lint는 모든 전체 뷰의 묶음을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].cycles",
+                "Code": true
+              },
+              {
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "cycles:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에, 묶음마다 상자 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle overview:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 발견으로 알리고, lint는 모든 전체 뷰의 묶음을 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].cycles",
+                "Code": true
+              },
+              {
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. lint는 ",
+                "Code": false
+              },
+              {
+                "Text": "lint: words:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 개요와 모든 뷰가 정지 화면에서 말을 단 경로의 비율과 그 말의 출처를 알리며, 이 줄도 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -22412,7 +22485,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -23280,7 +23352,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                  "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                   "Code": false
                 },
                 {
@@ -23909,7 +23981,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "claude-opus-5.5",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -24529,7 +24602,7 @@
                 "Code": true
               },
               {
-                "Text": "는 project.yaml에 이름이 없으면 프로젝트를 ABBD라 부르고, 체크아웃 폴더 이름을 따르지 않는다. ",
+                "Text": "는 project.yaml에 이름이 없으면 이름을 채우지 않아, 페이지는 ABBD의 이름도 체크아웃 폴더 이름도 달지 않으며 \"블루프린트\"만 쓴다. ",
                 "Code": false
               },
               {
@@ -25377,15 +25450,7 @@
                 "Code": true
               },
               {
-                "Text": "는 다른 모든 선을 가늘게 해 주 흐름만 굵게 남긴다. 선, 머리, 점은 이미 ",
-                "Code": false
-              },
-              {
-                "Text": "paint",
-                "Code": true
-              },
-              {
-                "Text": "가 모두 회색으로 그렸고, 경로는 호버를 위해 색을 지킨다. ",
+                "Text": "는 다른 모든 선, 머리, 점을 회색으로 낮추되 경로는 호버를 위해 색을 지킨다. ",
                 "Code": false
               },
               {
@@ -25547,7 +25612,15 @@
                 "Code": true
               },
               {
-                "Text": "는 bypass도 다른 선처럼 회색으로 그리고, 열린 화살촉으로 표시한다(범례가 몇 마디로 그렇게 말한다). 허브의 뷰는 선을 가늘게 하지 않는다. 주 흐름처럼 돋보일 선이 없기 때문이다. 모든 선이 한 회색이므로, 모든 뷰는 다른 선의 평평한 트랙 바로 위에 선 라벨을 뺀다(",
+                "Text": "는 bypass에도 다른 선처럼 떠나는 상자의 색을 주고, 열린 화살촉으로 표시한다(범례가 몇 마디로 그렇게 말한다). 허브의 뷰는 허브 자기 선이 잉크의 절반 이상인 곳에서만 다른 선을 회색으로 낮춘다(",
+                "Code": false
+              },
+              {
+                "Text": "ownLines",
+                "Code": true
+              },
+              {
+                "Text": "). 조용한 뷰는 이제 같은 색 다른 선의 평평한 트랙 위에 서게 된 라벨을 뺀다(",
                 "Code": false
               },
               {
@@ -25563,7 +25636,15 @@
                 "Code": true
               },
               {
-                "Text": "을 나른다. 범례는 bypass를 늘 회색으로 그리고, ",
+                "Text": "을 나른다. 개요의 범례는 ",
+                "Code": false
+              },
+              {
+                "Text": "legendFor",
+                "Code": true
+              },
+              {
+                "Text": "로 ",
                 "Code": false
               },
               {
@@ -25571,7 +25652,7 @@
                 "Code": true
               },
               {
-                "Text": "는 견본 선의 굵기만 정한다.",
+                "Text": "를 읽으므로, 조용한 뷰의 범례는 bypass를 회색으로 그린다.",
                 "Code": false
               }
             ]
@@ -25709,7 +25790,7 @@
                 "Code": true
               },
               {
-                "Text": "은 각 범례를 한 번씩 준다. 공유 범례와 함께 개요 범례, 쉬는 선의 회색에 대한 한 문장, 그리고 내부 범례 고유의 항목만(",
+                "Text": "은 각 범례를 한 번씩 준다. 공유 범례와 함께 개요 범례, 조용한 색에 대한 한 문장, 그리고 내부 범례 고유의 항목만(",
                 "Code": false
               },
               {
@@ -25757,7 +25838,15 @@
                 "Code": true
               },
               {
-                "Text": "와 따로 나른다. 허브 자기 선도 쉴 때는 회색이고, 허브를 가리킬 때만 허브의 색으로 밝혀진다. ",
+                "Text": "와 따로 나른다. 허브의 뷰도 조용하지만, ",
+                "Code": false
+              },
+              {
+                "Text": "hubLines",
+                "Code": true
+              },
+              {
+                "Text": "는 모든 경로의 한쪽 끝이 허브인 잉크를 허브의 색으로 지킨다. ",
                 "Code": false
               },
               {
@@ -28413,7 +28502,7 @@
                 "Code": true
               },
               {
-                "Text": "는 상자마다 그 색을 주어 옅은 색 위에 그 색의 테두리로 그리고, 모든 선과 머리와 점은 쉴 때 한 회색으로 그린다. 상자의 색은 경로에만 남아, 상자나 선을 가리킬 때 그 선이 떠나는 상자의 색으로 보인다. 여러 상자의 선이 타는 도로도 어느 한 구성원의 색으로 덮지 않고 같은 회색 하나로 그리며, 쉴 때 색을 쓰는 선은 동작 흐름을 보여 주는 주 흐름뿐이다. 그리고 종류를 말하는 모양의 화살촉을 준다. 계약 경계를 건너뛰는 직접 의존도 회색이고, 열린 화살촉이 그것을 표시한다. ",
+                "Text": "는 상자마다 그 색을 주어 옅은 색 위에 그 색의 테두리로 그리고, 각 선을 그 선들이 떠나는 상자의 색으로 그린다. 타는 것들이 서로 다른 색 상자를 떠나는 도로는 도로 위를 가장 멀리 달리는 것의 색으로 그리므로, 고속도로는 조각마다 한 색을 지킨다. 그리고 종류를 말하는 모양의 화살촉을 준다. 계약 경계를 건너뛰는 직접 의존도 떠나는 상자의 색을 입고, 열린 화살촉이 그것을 표시한다. ",
                 "Code": false
               },
               {
@@ -28515,7 +28604,15 @@
                 "Code": true
               },
               {
-                "Text": "(200px)보다 멀리 두고, 다음에 다른 선 위의 같은 낱말 가까이 서게 허락한다. 자기 잉크에 직접 닿는 선(한 조각이 다른 쪽 위에서 끝나는 선)이고 같은 단위를 떠나는 선(도로는 가장 멀리 타는 것의 출발지)이 이미 가까이서 그 낱말을 말하면 빼 버린다(",
+                "Text": "(200px)보다 멀리 두고, 다음에 다른 선 위의 같은 낱말 가까이 서게 허락한다. 자기 잉크에 직접 닿는 선(한 조각이 다른 쪽 위에서 끝나는 선)이고 ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": "가 같은 단위의 색을 주는 선(도로는 가장 멀리 타는 것의 색)이 이미 가까이서 그 낱말을 말하면 빼 버린다(",
                 "Code": false
               },
               {
@@ -31723,7 +31820,79 @@
                 "Code": true
               },
               {
-                "Text": "를 할당 횟수에, 느슨한 10초 실제 시간 안전판과 함께 묶으며, 그 횟수가 프로세스 전체의 것이므로 병렬로 돌지 않는다.",
+                "Text": "를 할당 횟수에, 느슨한 10초 실제 시간 안전판과 함께 묶으며, 그 횟수가 프로세스 전체의 것이므로 병렬로 돌지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Cycles",
+                "Code": true
+              },
+              {
+                "Text": "는 뷰의 배치가 층을 매긴 그래프에서 서로를 돌아 쓰는 상자 묶음, 곧 상자 둘 이상의 강하게 연결된 요소를 이름으로 내며, 개요의 묶음은 자르기나 기록이 무엇을 빼든 모든 선을 그린 계획에서 읽는다. 순환 의존은 그림이 아니라 코드의 일이므로 발견으로만 알리고 lint를 실패시키지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "OverviewCycles",
+                "Code": true
+              },
+              {
+                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다. ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "wordfill.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 정지 화면에서 말이 붙은 경로를 세고, 그 말이 개요 기록의 낱말, 관계의 구절, via 가운데 어디서 왔는지(",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": "가 정하는 ",
+                "Code": false
+              },
+              {
+                "Text": "Wire.from",
+                "Code": true
+              },
+              {
+                "Text": ")와, 기록이 낱말을 준 상자 쌍 가운데 그려진 경로에 그 낱말이 붙은 수를 진단으로만 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "speaksFor",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "labelled",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "이 함께 쓰는, 말이 붙은 선이 경로를 대변하는지 읽는 한 술어다.",
                 "Code": false
               }
             ]

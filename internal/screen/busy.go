@@ -539,16 +539,20 @@ func labelRepeats(d Drawing) int {
 	return n
 }
 
+// speaksFor says the labelled wire w speaks for route k, r: it rides the
+// route or carries one of its relations.
+func speaksFor(w Wire, k int, r Route) bool {
+	return w.Label != nil && (slices.Contains(w.rides, k) || slices.ContainsFunc(w.lines, func(l []string) bool {
+		return slices.ContainsFunc(l, func(rel string) bool { return slices.Contains(r.rels, rel) })
+	}))
+}
+
 // labelled counts the routes a reader finds a word on at rest: a route is
 // labelled when a labelled wire rides it or carries one of its relations.
 func labelled(d Drawing) int {
 	n := 0
 	for k, r := range d.ways {
-		if slices.ContainsFunc(d.Wires, func(w Wire) bool {
-			return w.Label != nil && (slices.Contains(w.rides, k) || slices.ContainsFunc(w.lines, func(l []string) bool {
-				return slices.ContainsFunc(l, func(rel string) bool { return slices.Contains(r.rels, rel) })
-			}))
-		}) {
+		if slices.ContainsFunc(d.Wires, func(w Wire) bool { return speaksFor(w, k, r) }) {
 			n++
 		}
 	}
