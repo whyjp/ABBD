@@ -2310,7 +2310,7 @@
         {
           "path": "internal/screen/overview.go",
           "lines": "474",
-          "quote": "specs = append(specs, wireSpec{kind: \"bypass\""
+          "quote": "specs = append(specs, wireSpec{kind: kindBypass"
         },
         {
           "path": "internal/screen/screen.go",
