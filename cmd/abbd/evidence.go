@@ -200,6 +200,7 @@ func (e env) statusLines() error {
 	}
 	fmt.Fprintln(e.stdout, "units:", strings.Join(ks, ", "))
 	fmt.Fprintln(e.stdout, described(in.Units))
+	statusSystem(e.stdout, in.Units)
 	fmt.Fprintf(e.stdout, "relations: %d EXTRACTED, %d USER_STATED, %d INFERRED, %d dead\n",
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	// The drawing dots a line whose relations arise only in design, which
