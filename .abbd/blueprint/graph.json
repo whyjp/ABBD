@@ -2247,6 +2247,7 @@
         "internal/screen/stack.go",
         "internal/screen/stages.go",
         "internal/screen/standing.go",
+        "internal/screen/symmetry.go",
         "internal/screen/table.go",
         "internal/screen/trace.go",
         "internal/screen/tree.go",
@@ -31744,6 +31745,76 @@
               },
               {
                 "Text": "TestRoadWalkCountsMerges",
+                "Code": true
+              },
+              {
+                "Text": "가 그 셈을 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "대칭",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "symmetry.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "symmetryOf",
+                "Code": true
+              },
+              {
+                "Text": "는 그림이 얼마나 가지런한지 잰다. 상자가 둘 이상인 줄 가운데 상자 중심이 한 가로선에 서지 않는 줄(",
+                "Code": false
+              },
+              {
+                "Text": "rows_off",
+                "Code": true
+              },
+              {
+                "Text": "), 바로 아랫줄의 상자를 둘 이상 쓰는 상자(",
+                "Code": false
+              },
+              {
+                "Text": "parents",
+                "Code": true
+              },
+              {
+                "Text": "), 그리고 그 가운데 제 중심이 그 상자들 중심의 가운데에서 그 중심들이 덮는 폭의 4분의 1보다 더 벗어난 상자(",
+                "Code": false
+              },
+              {
+                "Text": "off_centre",
+                "Code": true
+              },
+              {
+                "Text": ")를 센다. 벗어남의 한도는 상자마다 그 상자들 중심이 덮는 폭에 비례한다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "가 이 셋을 뷰의 합계에 넣고, 관문은 어느 것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestSymmetryReadsCentresAndRows",
                 "Code": true
               },
               {
