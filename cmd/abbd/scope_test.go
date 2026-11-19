@@ -66,6 +66,7 @@ func TestUnscopedNamesBoxesThatLookLikeSamplesAndTestsUntilTheyAreMarked(t *test
 	marks := store.Overview{Scopes: []store.Part[model.ScopeMark]{
 		{Claim: model.ScopeMark{Unit: "MOD-0002", Scope: model.ScopeSample}},
 		{Claim: model.ScopeMark{Unit: "MOD-0003", Scope: model.ScopeSample}},
+		{Claim: model.ScopeMark{Unit: "MOD-0008", Scope: model.ScopeTool}},
 	}}
 	if got := unscoped(units, marks); len(got) != 0 {
 		t.Errorf("marked boxes are still named: %q", got)
