@@ -1,21 +1,39 @@
 """Total the lint tables that ABBD_LINT_FIXTURES writes, and hold each later
-table to the gate of docs/blueprint-svg.md against the first.
+table to the gate of docs/blueprint-svg.md ("What a change is weighed by")
+against the first.
 
     python compare.py base baseline.tsv try try.tsv
 
-For each later table it says whether the weighed sum stays at or under the
-first table's and the placement debt rises by at most 2% of it. It lists
-the views whose hard breaches rose, which break the gate unless their debt
-records them, and the views whose weighed sum rose by more than 8, which
-need a look by eye. The traced bends and the paths that turn more than
-twice are tie-breakers. The gate itself is checked per fixture by
-TestLintFixtures and abbd lint.
+For each later table it checks every ceiling of the gate whose column both
+tables carry: each such total stays at or under the first table's, and the
+placement debt rises by at most 2% of it. It lists the views whose hard
+breaches rose, which break the gate unless their debt records them, and the
+views whose weighed sum rose by more than 8, which need a look by eye. The
+traced bends and the paths that turn more than twice are tie-breakers.
+
+The tables carry no against_axis column (their back column is another
+count) and no page bounds, so this script cannot check them.
+TestLintFixtures and abbd lint check the whole gate per fixture against
+its own .abbd/lint-debt.yaml.
 """
 import csv
 import sys
 
 LOOK = 8
 TIES = ["traced_bends", "paths_over2"]
+# The ceilings of internal/screen/gate.go, by table column, with the slack
+# each may pass by as a divisor of the base total (0 for none). overflow is
+# the views that break S, so its column is S.
+CEILINGS = [
+    ("weighed", "weighed", 0),
+    ("tees", "tees", 0),
+    ("excess_turns", "excess_turns", 0),
+    ("placement", "placement", 50),
+    ("detours", "detours", 0),
+    ("two_lane_off", "two_lane_off", 0),
+    ("opposite_shared", "opposite_shared", 0),
+    ("overflow", "S", 0),
+]
 
 
 def load(path):
@@ -37,11 +55,15 @@ for name, t in zip(names[1:], tables[1:]):
     missing = [v for v in base if v not in t]
     if missing:
         sys.exit(f"{name} lacks {', '.join(missing)}")
-    w0, w1 = total(base, "weighed"), total(t, "weighed")
-    p0, p1 = total(base, "placement"), total(t, "placement")
     print(f"\n{names[0]} to {name}:")
-    print(f"weighed {w0} -> {w1}, {'kept' if w1 <= w0 else 'broken'}")
-    print(f"placement {p0} -> {p1}, at most {p0 + p0 // 50}, {'kept' if p1 <= p0 + p0 // 50 else 'broken'}")
+    have = set(next(iter(base.values()))) & set(next(iter(t.values())))
+    for label, col, rise in CEILINGS:
+        if col not in have:
+            print(f"{label}: not in both tables, not checked")
+            continue
+        b0, b1 = total(base, col), total(t, col)
+        most = b0 + (b0 // rise if rise else 0)
+        print(f"{label} {b0} -> {b1}, at most {most}, {'kept' if b1 <= most else 'broken'}")
     print("tie-breakers " + ", ".join(f"{c} {total(base, c)} -> {total(t, c)}" for c in TIES))
     harder = [f"{v}\thard {r['hard']} -> {t[v]['hard']}" for v, r in base.items() if int(t[v]["hard"]) > int(r["hard"])]
     print(f"\n{len(harder)} views with more hard breaches:")
