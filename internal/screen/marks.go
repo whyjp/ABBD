@@ -614,9 +614,11 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
+		d.Wires[i].from = map[bool]wordFrom{true: fromPhrase, false: fromVia}[saids[i]]
 		if len(w.ends) == 2 {
 			if s := d.said[pairOf(model.ID(w.ends[0]), model.ID(w.ends[1]))]; s != "" {
 				words[i], saids[i] = s, false
+				d.Wires[i].from = fromRecord
 			}
 		}
 		most[i] = !saids[i] && words[i] != "" && allVia(t, w.lines) == ""
