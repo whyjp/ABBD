@@ -229,7 +229,8 @@ func Build(in Input) Model {
 	// what it joins (choose). The screen it fits is what the page leaves
 	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
-	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
+	scope := scopeOf(in)
+	o := planScoped(in.Units, "", nil, tactic{}, ls, fs, nil, scope)
 	var c *cut
 	// A project that turned the cut off draws every line, record or not.
 	off := in.Project.OverviewCut != nil && !*in.Project.OverviewCut
@@ -250,7 +251,7 @@ func Build(in Input) Model {
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
 	overview := func(c *cut) Drawing {
 		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
-			p := planOverview(in.Units, "", nil, t, ls, fs, c)
+			p := planScoped(in.Units, "", nil, t, ls, fs, c, scope)
 			if p.layout.idle {
 				return Drawing{}, false
 			}
