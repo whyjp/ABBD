@@ -23,3 +23,23 @@ func TestRoadWalkCountsTurnsAndJunctions(t *testing.T) {
 		t.Errorf("lines meeting end to end: %+v, want nothing", got)
 	}
 }
+
+// Lines that come in from either side and merge onto one trunk pass a
+// junction where they meet, though their shared ink starts there for both;
+// the junction bends the road once more lines come in from one side than
+// from straight behind.
+func TestRoadWalkCountsMerges(t *testing.T) {
+	t.Parallel()
+	left := []fpt{{-50, 0}, {0, 0}, {0, 100}}
+	right := []fpt{{50, 0}, {0, 0}, {0, 100}}
+	down := []fpt{{0, -50}, {0, 100}}
+	if got := walkRoads([][]fpt{left, right}); got.junctions != 2 || got.bent != 0 {
+		t.Errorf("two lines merging from either side: %+v, want 2 junctions, none bent", got)
+	}
+	if got := walkRoads([][]fpt{left, right, down}); got.junctions != 3 || got.bent != 0 {
+		t.Errorf("one from each side and one straight: %+v, want 3 junctions, none bent", got)
+	}
+	if got := walkRoads([][]fpt{left, left, right, down}); got.junctions != 4 || got.bent != 1 {
+		t.Errorf("two from the left and one straight: %+v, want 4 junctions, 1 bent", got)
+	}
+}

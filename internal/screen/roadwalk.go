@@ -10,22 +10,24 @@ import (
 // through a junction is followed best). So lint reads, on the routes of a
 // drawing that holds them, how often each line turns while it rides ink it
 // shares with another line, and how many junctions it passes: points on its
-// way where another line joins or leaves its ink. It also counts the bent
-// junctions, where more of the lines through a junction turn there than run
-// on straight, though one runs on: the road a reader follows bends, and a
+// way, away from its two ends, where another line joins or leaves its ink.
+// A junction counts once for each line that passes it. It also counts the
+// bent junctions, once each, where of the lines that come in one way more
+// go out one other way than run on straight, though one runs on, or the
+// same read from where they go out: the road a reader follows bends, and a
 // lone line runs on. Nothing bounds them; they are diagnostics.
 
 // roadWalk is what walking every route of a drawing finds.
 type roadWalk struct {
 	// turns is each route's turns on shared ink, junctions the junctions it
-	// passes, and bent the junctions where more lines turn than run on.
+	// passes, and bent the junctions that bend the road.
 	turns, junctions, bent int
 	// bentAt are the bent junctions.
 	bentAt []fpt
 }
 
-// walkLeg is one straight stretch of a route: vertical or not, at its x or y,
-// over lo..hi.
+// walkLeg is one straight stretch of a route: vertical or not, at its x or
+// y, over lo..hi.
 type walkLeg struct {
 	vertical bool
 	at       float64
@@ -40,6 +42,29 @@ func stretchOf(a, b fpt) (walkLeg, bool) {
 		return walkLeg{false, a.y, math.Min(a.x, b.x), math.Max(a.x, b.x)}, true
 	}
 	return walkLeg{}, false
+}
+
+// along is where p stands along the stretch, and across how far off its
+// line.
+func (a walkLeg) along(p fpt) float64 {
+	if a.vertical {
+		return p.y
+	}
+	return p.x
+}
+
+func (a walkLeg) across(p fpt) float64 {
+	if a.vertical {
+		return math.Abs(p.x - a.at)
+	}
+	return math.Abs(p.y - a.at)
+}
+
+func (a walkLeg) point(v float64) fpt {
+	if a.vertical {
+		return fpt{a.at, v}
+	}
+	return fpt{v, a.at}
 }
 
 // shareMin is the least two collinear stretches overlap before they read as
@@ -57,7 +82,7 @@ func walkRoads(rs [][]fpt) roadWalk {
 			}
 		}
 	}
-	// shared says another route than i runs along a on [lo, hi].
+	// sharedOn says another route than i runs along a on [lo, hi].
 	sharedOn := func(i int, a walkLeg, lo, hi float64) bool {
 		for j, ss := range stretches {
 			if j == i {
@@ -71,60 +96,49 @@ func walkRoads(rs [][]fpt) roadWalk {
 		}
 		return false
 	}
-	pointOf := func(a walkLeg, v float64) fpt {
-		if a.vertical {
-			return fpt{a.at, v}
-		}
-		return fpt{v, a.at}
-	}
 	key := func(p fpt) [2]int { return [2]int{int(math.Round(p.x)), int(math.Round(p.y))} }
-	// ways[p] are the ways the routes through junction p come in and go
-	// out there.
+	// wayAt is how route i comes into p and goes out of it, false where p
+	// is no point of its way between its ends.
+	wayAt := func(i int, p fpt) ([2]fpt, bool) {
+		ts := rs[i]
+		for k := 1; k < len(ts)-1; k++ {
+			if dist(ts[k], p) < 0.75 {
+				return [2]fpt{dirOf(ts[k-1], ts[k]), dirOf(ts[k], ts[k+1])}, true
+			}
+		}
+		for k := 1; k < len(ts); k++ {
+			if a, ok := stretchOf(ts[k-1], ts[k]); ok && a.across(p) < 0.75 && a.along(p) > a.lo && a.along(p) < a.hi {
+				d := dirOf(ts[k-1], ts[k])
+				return [2]fpt{d, d}, true
+			}
+		}
+		return [2]fpt{}, false
+	}
+	// ways[p] are the ways the routes through junction p come in and go out
+	// there.
 	ways := map[[2]int][][2]fpt{}
 	for i, r := range rs {
-		ts := turns(r)
-		if len(ts) < 2 {
+		if len(r) < 2 {
 			continue
-		}
-		// wayAt is how the route comes into p and goes out of it.
-		wayAt := func(p [2]int) [2]fpt {
-			for k := 1; k < len(ts)-1; k++ {
-				if key(ts[k]) == p {
-					return [2]fpt{dirOf(ts[k-1], ts[k]), dirOf(ts[k], ts[k+1])}
-				}
-			}
-			for k := 1; k < len(ts); k++ {
-				q := fpt{float64(p[0]), float64(p[1])}
-				if a, ok := stretchOf(ts[k-1], ts[k]); ok {
-					if v := map[bool]float64{true: q.y, false: q.x}[a.vertical]; math.Abs(map[bool]float64{true: q.x, false: q.y}[a.vertical]-a.at) < 1 && v >= a.lo && v <= a.hi {
-						d := dirOf(ts[k-1], ts[k])
-						return [2]fpt{d, d}
-					}
-				}
-			}
-			return [2]fpt{}
 		}
 		// A turn rides the road where the stretch into it or out of it is
 		// shared right at the turn.
-		for k := 1; k < len(ts)-1; k++ {
-			in, ok1 := stretchOf(ts[k-1], ts[k])
-			out, ok2 := stretchOf(ts[k], ts[k+1])
-			v := func(a walkLeg, p fpt) float64 {
-				if a.vertical {
-					return p.y
-				}
-				return p.x
-			}
-			on := ok1 && sharedOn(i, in, math.Max(in.lo, v(in, ts[k])-shareMin), math.Min(in.hi, v(in, ts[k])+shareMin))
-			on = on || ok2 && sharedOn(i, out, math.Max(out.lo, v(out, ts[k])-shareMin), math.Min(out.hi, v(out, ts[k])+shareMin))
+		for k := 1; k < len(r)-1; k++ {
+			in, ok1 := stretchOf(r[k-1], r[k])
+			out, ok2 := stretchOf(r[k], r[k+1])
+			on := ok1 && sharedOn(i, in, math.Max(in.lo, in.along(r[k])-shareMin), math.Min(in.hi, in.along(r[k])+shareMin))
+			on = on || ok2 && sharedOn(i, out, math.Max(out.lo, out.along(r[k])-shareMin), math.Min(out.hi, out.along(r[k])+shareMin))
 			if on {
 				w.turns++
 			}
 		}
 		// The junctions are the points along the route, away from its two
-		// ends, where another route's shared ink starts or stops.
+		// ends, where another route's shared ink starts or stops: inside the
+		// route's stretch, or at its end where the other runs on past it, or
+		// where both start or stop there but come in, or go out, different
+		// ways, as two lines from either side that merge onto one trunk.
 		first, last := key(r[0]), key(r[len(r)-1])
-		seen := map[[2]int]bool{}
+		seen := map[[2]int]fpt{}
 		for _, a := range stretches[i] {
 			for j, ss := range stretches {
 				if j == i {
@@ -139,21 +153,25 @@ func walkRoads(rs [][]fpt) roadWalk {
 						continue
 					}
 					for _, v := range []float64{lo, hi} {
-						// Where the other route's ink and this one's both
-						// end, they part at a turn of neither: no junction.
-						if v > a.lo && v < a.hi || v == a.lo && (v > b.lo) || v == a.hi && (v < b.hi) {
-							p := key(pointOf(a, v))
-							if p != first && p != last && !seen[p] {
-								seen[p] = true
-							}
+						p := a.point(v)
+						joins := v > a.lo && v < a.hi || v == a.lo && v > b.lo || v == a.hi && v < b.hi
+						if !joins {
+							wi, oki := wayAt(i, p)
+							wj, okj := wayAt(j, p)
+							joins = oki && okj && wi != wj
+						}
+						if k := key(p); joins && k != first && k != last {
+							seen[k] = p
 						}
 					}
 				}
 			}
 		}
-		for p := range seen {
-			w.junctions++
-			ways[p] = append(ways[p], wayAt(p))
+		for k, p := range seen {
+			if wa, ok := wayAt(i, p); ok {
+				w.junctions++
+				ways[k] = append(ways[k], wa)
+			}
 		}
 	}
 	ps := make([][2]int, 0, len(ways))
