@@ -565,6 +565,10 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
+	// OverviewSentences widens each module box of the overview so its last
+	// line says the first clause of the module's sentence, up to about 24
+	// characters, where the box's own width leaves no room. Off by default.
+	OverviewSentences bool `yaml:"overview_sentences,omitempty"`
 	// Language is the BCP-47 tag of the language a person reads the
 	// stored prose in, such as ko. Loading refuses a tag that is no
 	// BCP-47 tag. The zero Language leaves the choice to the OS.

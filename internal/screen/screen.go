@@ -291,6 +291,7 @@ func Build(in Input) Model {
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
 	overview := func(c *cut) Drawing {
 		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+			t.sentences = in.Project.OverviewSentences
 			p := planScoped(in.Units, "", nil, t, ls, fs, c, scope)
 			p.hooks = in.hooks
 			if p.layout.idle {
