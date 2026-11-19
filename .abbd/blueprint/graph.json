@@ -2232,6 +2232,7 @@
         "internal/screen/levels.go",
         "internal/screen/lint.go",
         "internal/screen/marks.go",
+        "internal/screen/matrix.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
@@ -2250,6 +2251,7 @@
         "internal/screen/tree.go",
         "internal/screen/twolane.go",
         "internal/screen/weigh.go",
+        "internal/screen/wordfill.go",
         "internal/screen/words.go",
         "internal/screen/zone.go"
       ],
@@ -7871,7 +7873,15 @@
                 "Code": true
               },
               {
-                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다.",
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. lint는 ",
+                "Code": false
+              },
+              {
+                "Text": "lint: words:",
+                "Code": true
+              },
+              {
+                "Text": " 줄에 개요와 모든 뷰가 정지 화면에서 말을 단 경로의 비율과 그 말의 출처를 알리며, 이 줄도 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -29284,6 +29294,85 @@
             "Kind": "h",
             "Parts": [
               {
+                "Text": "행렬",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Matrix",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "matrix.go",
+                "Code": true
+              },
+              {
+                "Text": "): 상자들이 빽빽하게, 순환으로 서로 쓰는 전체 뷰(개요와 각 모듈 내부)에 그림은 그대로 두고 그 아래 접힌 표를 덧붙인다(",
+                "Code": false
+              },
+              {
+                "Text": "MatrixRow",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "MatrixCell",
+                "Code": true
+              },
+              {
+                "Text": "). 행과 열은 읽는 순서(줄 위에서 아래, 줄 안에서 왼쪽에서 오른쪽)의 상자이고, 칸은 그 뷰가 그린 선 가운데 행의 상자가 열의 상자를 쓰는 저장된 관계 수다. 레이아웃이 순환으로 본(",
+                "Code": false
+              },
+              {
+                "Text": "axis.cycle",
+                "Code": true
+              },
+              {
+                "Text": ") 두 상자 사이에서 열의 상자가 그린 선을 따라 다시 행의 상자에 닿는 칸은 순환으로 칠한다. 표를 붙일지는 뷰 자신의 범위로 정한다. 상자 n개가 이어진 뷰는 쌍을 n-1개에서 n(n-1)/2개까지 잇는데, 그린 선이 이은 쌍이 그 범위의 3분의 1(",
+                "Code": false
+              },
+              {
+                "Text": "matrixPart",
+                "Code": true
+              },
+              {
+                "Text": ")을 넘고, 상자가 4개(",
+                "Code": false
+              },
+              {
+                "Text": "matrixMin",
+                "Code": true
+              },
+              {
+                "Text": ") 이상이며, 상자의 절반 이상이 그 순환에 있을 때만 붙인다. 표는 자기 스타일을 함께 가진 HTML이라 표가 없는 페이지는 바이트 하나 바뀌지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestADenseCyclicViewAddsAMatrix",
+                "Code": true
+              },
+              {
+                "Text": "가 조건과 표의 모양을 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
                 "Text": "신선도",
                 "Code": false
               }
@@ -31917,7 +32006,63 @@
                 "Code": true
               },
               {
-                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다.",
+                "Text": "는 어떤 뷰의 경로도 잡지 않고 개요만 계획해 status가 같은 묶음을 말하게 한다. ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "wordfill.go",
+                "Code": true
+              },
+              {
+                "Text": ")은 정지 화면에서 말이 붙은 경로를 세고, 그 말이 개요 기록의 낱말, 관계의 구절, via 가운데 어디서 왔는지(",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": "가 정하는 ",
+                "Code": false
+              },
+              {
+                "Text": "Wire.from",
+                "Code": true
+              },
+              {
+                "Text": ")와, 기록이 낱말을 준 상자 쌍 가운데 그려진 경로에 그 낱말이 붙은 수를 진단으로만 낸다. ",
+                "Code": false
+              },
+              {
+                "Text": "speaksFor",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "labelled",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": "이 함께 쓰는, 말이 붙은 선이 경로를 대변하는지 읽는 한 술어다.",
                 "Code": false
               }
             ]

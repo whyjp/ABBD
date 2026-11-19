@@ -56,6 +56,7 @@ type lintReport struct {
 type lintTotals struct {
 	screen.Totals
 	Elements screen.ElementTotals `json:"elements"`
+	Words    screen.WordFill      `json:"words"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -129,7 +130,10 @@ func (e env) lint(pos []string) error {
 	}
 	every := only == ""
 	r := lintReport{Schema: lintSchema, Criteria: screen.Criteria(), Views: views, Failures: screen.Gate(views, debt, every), Lowerable: screen.Lowerable(views, debt, every)}
-	r.Totals = lintTotals{screen.Sum(views), screen.SumElements(views)}
+	r.Totals = lintTotals{screen.Sum(views), screen.SumElements(views), screen.WordFill{}}
+	for _, v := range views {
+		r.Totals.Words = r.Totals.Words.Add(v.Words)
+	}
 	r.Levels = levels
 	for i, l := range r.Levels {
 		if len(l.Advice) > 0 {
@@ -212,6 +216,7 @@ func printLint(e env, r lintReport) {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	printElements(e.stdout, r.Views, r.Totals.Elements)
+	printWords(e.stdout, r.Views, r.Totals.Words)
 	if n := len(r.Unphrased); n > 0 {
 		where := "between overview boxes"
 		if r.Chosen {
@@ -387,6 +392,35 @@ func printElements(w io.Writer, views []screen.ViewLint, t screen.ElementTotals)
 		fmt.Fprintf(w, "  %s: %s\n", v.View, elementsLine(el))
 	}
 }
+
+// printWords reports how many routes say a word at rest and where each
+// word comes from: on the overview, with what its record's words add, and
+// over every view. It never fails lint.
+func printWords(w io.Writer, views []screen.ViewLint, t screen.WordFill) {
+	for _, v := range views {
+		if v.View != "overview" || v.Words.Routes == 0 {
+			continue
+		}
+		f := v.Words
+		fmt.Fprintf(w, "lint: words: the overview says a word on %s at rest (%s), %d by the overview record's words, %d by phrases and %d by vias", fill(f), percent(f), f.Record, f.Phrase, f.Via)
+		if f.RecordPairs > 0 {
+			fmt.Fprintf(w, "; of the %s the record gives a word, %d label a drawn route", plural(f.RecordPairs, "pair"), f.RecordSaid)
+		} else {
+			fmt.Fprint(w, "; the overview record gives no line a word")
+		}
+		fmt.Fprintln(w, ". It never fails lint")
+	}
+	if t.Routes > 0 {
+		fmt.Fprintf(w, "lint: words: every view says a word on %s at rest (%s), %d by the record, %d by phrases, %d by vias\n", fill(t), percent(t), t.Record, t.Phrase, t.Via)
+	}
+}
+
+func fill(f screen.WordFill) string {
+	return fmt.Sprintf("%d of %s", f.Labelled, plural(f.Routes, "route"))
+}
+
+// percent is the share of routes labelled, rounded down.
+func percent(f screen.WordFill) string { return fmt.Sprintf("%d%%", 100*f.Labelled/f.Routes) }
 
 // elementsLine is one view's elements, its range and where it stands.
 func elementsLine(el screen.Elements) string {
