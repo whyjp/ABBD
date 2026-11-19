@@ -158,11 +158,23 @@ func TestTheOverviewOpensWithTheProject(t *testing.T) {
 	contains("MOD-0003.html", "<title>grep-searcher · ripgrep 블루프린트</title>")
 }
 
-// With no name written, every page says ABBD, never the checkout's folder,
-// and the overview says where to write the purpose.
-func TestAnUnnamedProjectSaysABBD(t *testing.T) {
-	ps := pages(t, Build(Input{Units: ripgrep(), Project: store.Project{Name: "ABBD"}}))
-	if !strings.Contains(ps["index.html"], "<h1>ABBD</h1>") || !strings.Contains(ps["index.html"], "<code>purpose</code>에 한 문단으로") {
-		t.Errorf("an unnamed project's overview should say ABBD and where its purpose goes")
+// With no name written, no page carries one, not ABBD's and not the
+// checkout's folder, and the overview says where to write the purpose.
+func TestAnUnnamedProjectCarriesNoName(t *testing.T) {
+	ps := pages(t, Build(Input{Units: ripgrep()}))
+	idx := ps["index.html"]
+	if strings.Contains(idx, "ABBD") && !strings.Contains(idx, "<code>purpose</code>") {
+		t.Errorf("an unnamed project's overview should not say ABBD")
+	}
+	for name, p := range ps {
+		if strings.Contains(p, " 블루프린트</title>") && strings.Contains(p, "ABBD 블루프린트") {
+			t.Errorf("%s names ABBD in a project that has no name", name)
+		}
+	}
+	if !strings.Contains(idx, "<h1>블루프린트</h1>") || !strings.Contains(idx, "<code>purpose</code>에 한 문단으로") {
+		t.Errorf("an unnamed project's overview should say 블루프린트 and where its purpose goes")
+	}
+	if !strings.Contains(ps["MOD-0003.html"], "<title>grep-searcher · 블루프린트</title>") {
+		t.Errorf("an unnamed project's page title should hold only the page and 블루프린트")
 	}
 }
