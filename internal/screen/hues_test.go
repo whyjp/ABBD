@@ -229,11 +229,10 @@ func TestJoinedBoxesWearDifferentColours(t *testing.T) {
 	}
 }
 
-// A direct dependency that skips the contract boundary wears the colour
-// of the box it leaves, like every other line, so a view where most lines
-// are such dependencies still tells its lines apart at rest; its open head
-// says what it is. No line or dot wears the warning colour.
-func TestABypassWearsItsBoxsColour(t *testing.T) {
+// A direct dependency that skips the contract boundary rests grey like
+// every other line, and its open head says what it is. No line or dot
+// wears the warning colour.
+func TestABypassKeepsItsOpenHeadAndNoWarning(t *testing.T) {
 	t.Parallel()
 	bypasses := 0
 	for _, name := range fixtures {
@@ -432,12 +431,11 @@ func TestAChipsWordsReadOnItsTint(t *testing.T) {
 	}
 }
 
-// A hub's view whose own lines are under half its ink keeps its lines'
-// weight: it is not quiet. Its lines rest grey like any other's, and their
-// routes still light in at least two boxes' colours on hover. The self
-// overview drawn whole and orca's desktop main are such views; cut, the
-// self overview's hub owns most of what is left.
-func TestABusyHubViewKeepsItsWeight(t *testing.T) {
+// A hub's view keeps its lines' weight: it is not quiet, since no lead
+// stands out over them. Its lines rest grey like any other's, and their
+// routes light in at least two boxes' colours on hover. The self overview
+// drawn whole and orca's desktop main are such views.
+func TestAHubViewKeepsItsWeight(t *testing.T) {
 	t.Parallel()
 	cases := map[string]string{"self": "", "orca": "MOD-0042"}
 	for name, inside := range cases {
@@ -457,11 +455,8 @@ func TestABusyHubViewKeepsItsWeight(t *testing.T) {
 		if f == nil || f.Role != "hub" {
 			t.Fatalf("%s %s: no hub to test", name, inside)
 		}
-		if own := d.ownLines(); 2*own >= len(d.Wires) {
-			t.Fatalf("%s %s: the hub owns %d of %d lines, not under half", name, inside, own, len(d.Wires))
-		}
 		if d.Quiet {
-			t.Errorf("%s %s: a hub owning under half its ink thins the view", name, inside)
+			t.Errorf("%s %s: a hub's view thins its lines", name, inside)
 		}
 		hues := map[string]bool{}
 		for _, w := range d.Wires {

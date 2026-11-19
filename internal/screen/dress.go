@@ -87,8 +87,11 @@ func (d *Drawing) dress(t tree) {
 		w := &d.Wires[i]
 		w.Plan = t.planOnly(w.Rels) && long[find(i)] >= planMin
 	}
-	if d.Lead == nil && d.hub() && 2*d.ownLines() >= len(d.Wires) {
-		d.hubLines()
+	// A hub's view fills its hub and keeps its lines' weight: its lines
+	// rest grey like every other (paint), the hub's own included, and
+	// pointing at the hub lights them in its colour.
+	if d.Lead == nil {
+		d.hub()
 	}
 	for i := range d.Boxes {
 		d.subtitle(&d.Boxes[i])
@@ -136,35 +139,6 @@ func (d *Drawing) hub() bool {
 	}
 	d.Boxes[top].Role = "hub"
 	return true
-}
-
-// ownLines counts the ink whose every route has the view's filled box at
-// one end: the lines a hub's view keeps in colour. A hub's view rests the
-// rest grey only when those are half its ink at least, so the view still
-// reads at rest; otherwise every line keeps its own box's colour.
-func (d *Drawing) ownLines() int {
-	f := d.Filled()
-	if f == nil {
-		return 0
-	}
-	n := 0
-	for _, w := range d.Wires {
-		ks := classNumbers(w.Lit, "r")
-		if len(ks) > 0 && !slices.ContainsFunc(ks, func(k int) bool { return k >= len(d.Routes) || !slices.Contains(d.Routes[k].ends, f.ID) }) {
-			n++
-		}
-	}
-	return n
-}
-
-// hubLines thins a hub's view the way a lead's does. Its lines rest grey
-// like every other (paint), the hub's own included: the filled box marks
-// the hub, and pointing at it lights its lines in its colour.
-func (d *Drawing) hubLines() {
-	if f := d.Filled(); f == nil || f.Hue == "" || len(d.Routes) == 0 {
-		return
-	}
-	d.quiet()
 }
 
 // classNumbers are the numbers of the classes in cls that are p and digits.

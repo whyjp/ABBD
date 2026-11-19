@@ -44,8 +44,8 @@ pages:
         doglegs: 5
         dots: 0
         false_joins: 0
-        label_repeats: 3
-        labelled: 6 # 7 until every line rested grey: a word over another line's track went to the tooltip (unlabelKin)
+        label_repeats: 4
+        labelled: 7
         parallel_ink: 0
         two_lane_off: 0
     overview:

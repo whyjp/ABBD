@@ -628,7 +628,8 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
-	// ink is the unit a wire's lines come from, as far as labels need it:
+	// ink is the unit a wire's lines come from, the colour they light in on
+	// hover, as far as labels need it:
 	// its one source, or for a road whose lines leave several, the source
 	// of its rider that runs furthest on roads, or none.
 	onRoad := d.onRoad()
@@ -661,8 +662,8 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	var placed []set
 	// repeats says a label at l would say a word already set within
-	// repeatNear of it. With touch, only a word on a line of the same
-	// colour whose ink l's line touches counts, so the word reads for both.
+	// repeatNear of it. With touch, only a word on a line from the same
+	// unit whose ink l's line touches counts, so the word reads for both.
 	// A phrase, or a via word only most of the line's relations name, also
 	// repeats one set anywhere on its track, however far.
 	repeats := func(i int, l Label, touch bool) bool {
@@ -730,10 +731,11 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				// A line's stroke reaches 1.3px off its centre at most. Another
 				// line parallel to g keeps more than twice the label's offset
 				// from it, so the label reads as g's and not the other's. So
-				// does a flat line of g's colour: a word beside a drop right
-				// over such a track reads as the track's.
+				// does any flat line, since every line rests in one grey: a
+				// word beside a drop right over such a track reads as the
+				// track's.
 				room := labelRoom + 1
-				if (o.flat() == g.flat() || o.flat() && kin(i, o.wire)) && !mate(i, o.wire) {
+				if (o.flat() == g.flat() || o.flat()) && !mate(i, o.wire) {
 					room = 2*labelOff + 2
 				}
 				if hit(lb, grow(o.bounds(), room)) {

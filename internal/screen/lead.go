@@ -348,7 +348,8 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 		l.Hops = append(l.Hops, hp)
 	}
 	d.Lead = l
-	// A lead with no line leaves the view's lines as they are.
+	// A lead with no line, or a view with no routes to light, keeps its
+	// lines' weight.
 	if len(d.Routes) > 0 && len(hops) > 0 {
 		d.quiet()
 	}
