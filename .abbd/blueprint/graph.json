@@ -23852,6 +23852,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -26443,7 +26444,7 @@
                 "Code": true
               },
               {
-                "Text": "로 잰다. 각 정렬은 두 번 그린다. 넓게 그릴 때는 ",
+                "Text": "로 잰다. 평범한 정렬은 두 번, median과 reversed 정렬은 넓게만 그린다. 넓게 그릴 때는 ",
                 "Code": false
               },
               {
