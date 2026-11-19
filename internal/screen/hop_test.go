@@ -61,7 +61,7 @@ func TestNeighbouringStagesJoinByAStraightHop(t *testing.T) {
 	}
 	for _, r := range rs {
 		if r.Both || r.Back != (r.src == "MOD-0005") {
-			t.Errorf("the line from %s: both %v back %v; want one head, dashed only against stage order", r.src, r.Both, r.Back)
+			t.Errorf("the line from %s: both %v back %v; want one head, and back only against stage order", r.src, r.Both, r.Back)
 		}
 	}
 	// config and sources stand apart, topology between them: theirs is no hop.
@@ -104,7 +104,7 @@ func TestASpineKeepsOneBundlePerPlaceAndDirection(t *testing.T) {
 // The checker reads a hop between two boxes' facing sides as a bundle of
 // its own, as it does a straight drop, and two lines of one kind and
 // dotting that leave a box's edge at one point as one stub, whatever ink
-// each runs on past it. A dashed line that leaves a solid one's stub is a
+// each runs on past it. A dotted line that leaves a solid one's stub is a
 // split.
 func TestTheCheckerReadsSideHopsAndSharedStubs(t *testing.T) {
 	split := func(body string) (int, int) {
@@ -121,7 +121,7 @@ func TestTheCheckerReadsSideHopsAndSharedStubs(t *testing.T) {
 		return m.Split, m.SplitIn
 	}
 	hop := `<path class="w depends_on" d="M120 36 L160 36"><title>a</title></path>
-<path class="w depends_on back" d="M160 46 L120 46"><title>b</title></path>
+<path class="w depends_on" d="M160 46 L120 46"><title>b</title></path>
 <path class="w depends_on" d="M70 60 L70 100 L60 100 L60 200"><title>c</title></path>
 <path class="w depends_on" d="M200 60 L200 120 L80 120 L80 200"><title>d</title></path>
 `
@@ -135,13 +135,13 @@ func TestTheCheckerReadsSideHopsAndSharedStubs(t *testing.T) {
 		t.Errorf("two lines from one point of one edge: %d split, want one stub", out)
 	}
 	mixed := `<path class="w depends_on" d="M70 60 L70 120 L200 120 L200 200"><title>a</title></path>
-<path class="w depends_on back" d="M70 60 L70 140 L210 140 L210 60"><title>b</title></path>
+<path class="w depends_on plan" d="M70 60 L70 140 L210 140 L210 60"><title>b</title></path>
 `
 	if out, _ := split(mixed); out != 1 {
-		t.Errorf("a dashed line from a solid line's stub: %d split, want 1", out)
+		t.Errorf("a dotted line from a solid line's stub: %d split, want 1", out)
 	}
 	apart := `<path class="w depends_on" d="M60 60 L60 120 L200 120 L200 200"><title>a</title></path>
-<path class="w depends_on back" d="M80 60 L80 140 L210 140 L210 60"><title>b</title></path>
+<path class="w depends_on plan" d="M80 60 L80 140 L210 140 L210 60"><title>b</title></path>
 `
 	if out, _ := split(apart); out != 1 {
 		t.Errorf("two lines from two points of one edge: %d split, want 1", out)

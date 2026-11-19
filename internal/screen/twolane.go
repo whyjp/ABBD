@@ -1,5 +1,7 @@
 package screen
 
+import "slices"
+
 // Lines that run opposite ways side by side read at rest as one line drawn
 // twice (#232). They are drawn as a two-lane road instead: each keeps to
 // its own right, as traffic does, and the two lanes stand twoLaneGap apart,
@@ -45,6 +47,11 @@ func runWay(ways [][]pt, r straightRun) int {
 		way = h
 	}
 	return way
+}
+
+// climbs says every route on run r runs against the reading axis.
+func (v roadView) climbs(r straightRun) bool {
+	return v.back != nil && !slices.ContainsFunc(r.segs, func(s [2]int) bool { return !v.back[s[0]] })
 }
 
 // twoLanes sets each pair of pieces of road that run opposite ways side by
@@ -94,7 +101,7 @@ func (r *routing) twoLane(ways [][]pt, v roadView, tried map[[4]int]bool) ([][]p
 				{b, a.at + twoLaneGap*rightOf(b.vertical, way[j])}, {a, b.at + twoLaneGap*rightOf(a.vertical, way[i])},
 				{b, a.at + sign(d)*twoLaneApart}, {a, b.at - sign(d)*twoLaneApart},
 			}
-			if a.style == "true" && b.style != "true" {
+			if v.climbs(a) && !v.climbs(b) {
 				moves[0], moves[1], moves[2], moves[3] = moves[1], moves[0], moves[3], moves[2]
 			}
 			for _, m := range moves {

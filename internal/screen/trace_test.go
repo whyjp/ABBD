@@ -47,11 +47,11 @@ func TestTraceEveryRealDrawing(t *testing.T) {
 			}
 			t.Logf("%s %s: %s", name, v.name, got)
 			logJogs(t, got)
-			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside, ms.Crossings, ms.Bends, ms.Back, ms.BackLength, ms.Length, ms.MaxDetour, ms.Braid, over2(got.Bends), ms.Width, sum(got.Bends), steps(got)))
+			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside, ms.Crossings, ms.Bends, ms.Back, ms.Length, ms.MaxDetour, ms.Braid, over2(got.Bends), ms.Width, sum(got.Bends), steps(got)))
 		}
 	}
 	if f := os.Getenv("ABBD_METRICS"); f != "" {
-		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\tcrossings\tbends\tback\tback_ink\tink\tmax_detour\tbraid\tpaths_over2\twidth\ttraced_bends\tsteps\n"
+		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\tcrossings\tbends\tback\tink\tmax_detour\tbraid\tpaths_over2\twidth\ttraced_bends\tsteps\n"
 		if err := os.WriteFile(f, []byte(head+strings.Join(rows, "\n")+"\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}

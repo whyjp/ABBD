@@ -48,11 +48,10 @@ var warning = swatch{"orange", "#b93e0a", "#fb923c"}
 // warnKey names the warning colour the way the page's classes do.
 const warnKey = "b"
 
-// backMix is how much of its own colour a climbing line keeps, mixed with
-// the page (rule 13), and tintMix how much of its colour a box's fill
-// takes, mixed with the panel: enough to name the box beside its border,
-// little enough that a zone's band still reads behind it.
-const backMix, tintMix = 70, 5
+// tintMix is how much of its colour a box's fill takes, mixed with the
+// panel: enough to name the box beside its border, little enough that a
+// zone's band still reads behind it.
+const tintMix = 5
 
 // hueKey names a palette index the way the page's classes do: its index,
 // or n for neutral.

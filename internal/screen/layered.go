@@ -232,6 +232,11 @@ type tactic struct {
 	// passes a full row in its gaps rather than round the row's end. choose
 	// tries it on the drawing it keeps on roads.
 	through bool
+	// apart keeps the lines that run against the reading axis on roads of
+	// their own, apart from the other lines. choose and the focus views
+	// keep the drawing with it only where letting them share roads reads
+	// worse on some total the gate holds a view to (sharedOrApart).
+	apart bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},

@@ -41,10 +41,14 @@ func TestTheRoadIndexWeighsChangesAsAWholeRecount(t *testing.T) {
 		styles := []string{"0", "1", "2"}[:1+r.Intn(3)]
 		places := []string{"a", "b", "c", "d"}[:1+r.Intn(4)]
 		v := roadView{position: func(y int) int { return y / 16 }}
+		climbs := r.Intn(2) == 0
 		ways := make([][]pt, nr)
 		for i := range ways {
 			ways[i] = randomRoute(r, grid, step)
 			v.style = append(v.style, styles[r.Intn(len(styles))])
+			if climbs {
+				v.back = append(v.back, r.Intn(3) == 0)
+			}
 			v.plan = append(v.plan, r.Intn(3) == 0)
 			v.kinds = append(v.kinds, []string{"k", "j"}[r.Intn(2)])
 			var e [2]end
@@ -162,7 +166,36 @@ func (v roadView) fullCost(ways [][]pt) roadCost {
 		}
 	}
 	c.crossings = len(seen)
+	c.clash += v.fullOpposed(ways)
 	return c
+}
+
+// fullOpposed sums, over every pair of runs on one track of a route that
+// climbs and one of its style that does not, how far they run over each
+// other opposite ways or dotted differently.
+func (v roadView) fullOpposed(ways [][]pt) int {
+	n := 0
+	for i := range ways {
+		for j := range ways {
+			if v.back == nil || !v.back[i] || v.back[j] || v.style[i] != v.style[j] {
+				continue
+			}
+			for a := 1; a < len(ways[i]); a++ {
+				for b := 1; b < len(ways[j]); b++ {
+					p, q, r, s := ways[i][a-1], ways[i][a], ways[j][b-1], ways[j][b]
+					if p == q || r == s || p.x != q.x && p.y != q.y || r.x != s.x && r.y != s.y {
+						continue
+					}
+					v1, at1, lo1, hi1 := runOf(p, q)
+					v2, at2, lo2, hi2 := runOf(r, s)
+					if o := min(hi1, hi2) - max(lo1, lo2); v1 == v2 && at1 == at2 && o > 0 && (heading(p, q) != heading(r, s) || v.plan[i] != v.plan[j]) {
+						n += o
+					}
+				}
+			}
+		}
+	}
+	return n
 }
 func (v roadView) fullCombs(ways [][]pt) int {
 	at := map[stub][]int{}

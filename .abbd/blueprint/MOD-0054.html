@@ -131,7 +131,7 @@ svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
 svg path.w.joins { marker-end: none; }
-svg path.w.plan:not(.back) { stroke-dasharray: 0.5 3.5; stroke-linecap: round; stroke-width: 2; }
+svg path.w.plan { stroke-dasharray: 0.5 3.5; stroke-linecap: round; stroke-width: 2; }
 svg.quiet path.w { stroke-width: 1.2; }
 svg.quiet path.w.provides, svg.quiet path.w.bypass, svg.quiet path.w.mutual { stroke-width: 1.5; }
 svg g.hop path.hop-way { fill: none; stroke: var(--c); stroke-width: 3.2; stroke-linejoin: round; }
@@ -140,13 +140,10 @@ svg g.badge text { fill: var(--lead-ink); font: 700 10.5px system-ui, sans-serif
 svg g.badge.small text { font-size: 8.5px; }
 svg g.badge text.step { fill: var(--c); font: 600 10px system-ui, sans-serif; text-anchor: start; }
 svg g.hop, svg g.badge { transition: opacity .12s; }
-svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
-svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
 svg g.route { opacity: 0; pointer-events: none; transition: opacity .12s; }
 svg g.route path.way { fill: none; stroke: var(--c); stroke-width: 3; }
-svg g.route.back path.way { stroke-dasharray: 6 4; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
@@ -320,10 +317,10 @@ svg:has(.w.r1:hover) .r1:not(.w){opacity:1}
 <defs><marker id="m-impl-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--h0); stroke-width: 1.4"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 <rect class="frame" x="6" y="18" width="400" height="128" rx="8"/>
 
-<path class="w consumes e1 e3 r1" d="M309 38 L309 70" data-origin="inferred" data-net="1" data-h="1" marker-end="url(#m-use-1)"><title>internal/screen consumes boxes in one view (via data), 판독</title></path><circle class="origin inferred e1 e3 r1" cx="309" cy="38" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e1 e3 r1" data-h="1" x="331" y="58" text-anchor="middle">데이터</text><path class="w provides back e0 e2 r0" d="M107 38 L107 62" data-origin="inferred" data-net="2" data-h="0" marker-end="url(#m-impl-0)"><title>internal/model provides first anchor is a module&#39;s directory (via data), 판독</title></path><circle class="origin inferred e0 e2 r0" cx="107" cy="38" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle>
+<path class="w provides e0 e2 r0" d="M107 38 L107 62" data-origin="inferred" data-net="1" data-h="0" marker-end="url(#m-impl-0)"><title>internal/model provides first anchor is a module&#39;s directory (via data), 판독</title></path><circle class="origin inferred e0 e2 r0" cx="107" cy="38" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w consumes e1 e3 r1" d="M309 38 L309 70" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-use-1)"><title>internal/screen consumes boxes in one view (via data), 판독</title></path><circle class="origin inferred e1 e3 r1" cx="309" cy="38" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e1 e3 r1" data-h="1" x="331" y="58" text-anchor="middle">데이터</text>
 
 
-<g class="route provides back e0 e2 r0" data-h="0" style="--k0:var(--h0);--k2:var(--h0)"><path class="way" d="M107 38 L107 62"/><use href="#t-impl" transform="translate(107 62) rotate(90)"/></g><g class="route consumes e1 e3 r1" data-h="1" style="--k1:var(--h1);--k3:var(--h1)"><path class="way" d="M309 38 L309 70"/><use href="#t-use" transform="translate(309 70) rotate(90)"/></g>
+<g class="route provides e0 e2 r0" data-h="0" style="--k0:var(--h0);--k2:var(--h0)"><path class="way" d="M107 38 L107 62"/><use href="#t-impl" transform="translate(107 62) rotate(90)"/></g><g class="route consumes e1 e3 r1" data-h="1" style="--k1:var(--h1);--k3:var(--h1)"><path class="way" d="M309 38 L309 70"/><use href="#t-use" transform="translate(309 70) rotate(90)"/></g>
 <g class="box inner p0 n0 n2" data-id="DATA-0017" data-h="0"><title>DATA-0017 first anchor is a module&#39;s directory: the group fallback reads a module&#39;s home directory from its first anchor, which holds only because anchors sort by path#symbol so a directory comes before the files in it</title><rect x="24" y="62" width="166" height="60" rx="4"/><text class="name" x="32" y="81">first anchor is a</text><text class="name" x="32" y="97">module&#39;s directory</text><text class="sub" x="32" y="114">데이터</text></g><g class="box inner p1 n1 n3" data-id="DATA-0022" data-h="1"><title>DATA-0022 boxes in one view: what counts as a box in a view against the group budget; group leaves top-level contracts out, while the screen draws a contract no module provides as a loose box</title><rect x="230" y="70" width="158" height="44" rx="4"/><text class="name" x="238" y="89">boxes in one view</text><text class="sub" x="238" y="106">데이터</text></g>
 <a href="MOD-0030.html"><g class="port other exit p2 n0 n2" data-id="port|MOD-0030true"><title>계약 없이 internal/model와 이어진 곳</title><rect x="83" y="21" width="49" height="17" rx="3"/><text class="chip" x="83" dx="4" y="21" dy="12.5">model</text></g></a><a href="MOD-0034.html"><g class="port other exit p3 n1 n3" data-id="port|MOD-0034true"><title>계약 없이 internal/screen와 이어진 곳</title><rect x="282" y="21" width="54" height="17" rx="3"/><text class="chip" x="282" dx="4" y="21" dy="12.5">screen</text></g></a>
 

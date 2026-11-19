@@ -15,34 +15,10 @@ import (
 type Dot struct {
 	X, Y int
 	Kind string
-	// Back says only climbing lines meet there, so the dot is drawn as
-	// faint as they are.
-	Back bool `json:",omitempty"`
 	// Lit are the classes that light the dot with its lines (hover.go),
 	// and Hue the palette key it is drawn in.
 	Lit string `json:"-"`
 	Hue string `json:"-"`
-}
-
-// faint marks the dots that only climbing lines meet at.
-func faint(dots []Dot, out []drawn) []Dot {
-	for i, d := range dots {
-		p, any, all := pt{d.X, d.Y}, false, true
-		for _, w := range out {
-			if inkOf(w.kind, w.road) != d.Kind {
-				continue
-			}
-			for _, part := range w.parts {
-				for j := 1; j < len(part); j++ {
-					if on(p, part[j-1], part[j]) {
-						any, all = true, all && w.back
-					}
-				}
-			}
-		}
-		dots[i].Back = any && all
-	}
-	return dots
 }
 
 // join is where a line of one kind crosses onto a trunk of its kind.

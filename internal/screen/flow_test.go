@@ -2,6 +2,7 @@ package screen
 
 import (
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -42,7 +43,7 @@ func TestLinesIntoOneBoxShareATrunk(t *testing.T) {
 
 // A cycle is drawn in the view of the unit that really holds it: the
 // drawing makes no box that the state lacks, and the line that closes the
-// cycle climbs, dashed.
+// cycle climbs, drawn as any line of its kind.
 func TestACycleStaysInItsContainersView(t *testing.T) {
 	units := []model.Unit{
 		called("MOD-0001", "app"),
@@ -84,12 +85,72 @@ func TestACycleStaysInItsContainersView(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if mt := measure(s); mt.Back != 1 || mt.BackPlain != 0 {
-		t.Errorf("the line that closes the cycle should climb dashed, and only it: %s", mt)
+	if mt := measure(s); mt.Back != 1 {
+		t.Errorf("the line that closes the cycle should climb, and only it: %s", mt)
+	}
+	// Which way a line runs along the layout is an accident of the layout,
+	// not a meaning, so the climbing line wears its kind's marks only.
+	marks := map[bool]map[string]bool{}
+	for _, w := range s.strokes {
+		up := w.pts[len(w.pts)-1].y < w.pts[0].y
+		var own []string
+		for _, c := range strings.Fields(w.class) {
+			if !lightClass.MatchString(c) {
+				own = append(own, c)
+			}
+		}
+		if marks[up] == nil {
+			marks[up] = map[string]bool{}
+		}
+		marks[up][strings.Join(own, " ")] = true
+	}
+	if len(marks[true]) == 0 || len(marks[false]) == 0 {
+		t.Fatalf("want lines both up and down in app's view: %v", marks)
+	}
+	for m := range marks[true] {
+		if !marks[false][m] {
+			t.Errorf("the climbing line is drawn as %q, which no line running down wears: %v", m, marks[false])
+		}
 	}
 }
 
-// A line that climbs is counted as running back, and must be drawn dashed;
+// No key, the card in a view's corner or the legend below it, names a line
+// by the way it runs along the layout, on a page that draws a cycle.
+func TestNoKeyNamesALineByTheWayItRuns(t *testing.T) {
+	m := build([]model.Unit{
+		called("MOD-0001", "app"),
+		inside("MOD-0002", "MOD-0001", rel("MOD-0003", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		inside("MOD-0003", "MOD-0001", rel("MOD-0004", model.DependsOn)),
+		inside("MOD-0004", "MOD-0001", rel("MOD-0002", model.DependsOn)),
+		inside("MOD-0005", "MOD-0001", rel("MOD-0006", model.DependsOn)),
+		inside("MOD-0006", "MOD-0001"),
+	})
+	for _, d := range m.drawings() {
+		if c := d.Card; c != nil {
+			for _, it := range c.Items {
+				if it.Kind == "back" {
+					t.Errorf("a card lists %q", it.Text)
+				}
+			}
+		}
+	}
+	pages, err := Pages(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, b := range pages {
+		for _, no := range []string{"되돌아", "stroke-dasharray:6 4", "stroke-dasharray: 6 4"} {
+			if strings.Contains(string(b), no) {
+				t.Errorf("%s shows %q", name, no)
+			}
+		}
+	}
+}
+
+// lightClass is a class that only lights a line on hover.
+var lightClass = regexp.MustCompile(`^[er]\d+$`)
+
+// A line that climbs is counted as running back, whatever marks it wears;
 // a line that provides a contract reads from the contract down to its unit.
 func TestTheCheckerCountsLinesThatClimb(t *testing.T) {
 	sheet := func(class string, y1, y2 int) Metrics {
@@ -102,11 +163,8 @@ func TestTheCheckerCountsLinesThatClimb(t *testing.T) {
 	if m := sheet("depends_on", 60, 200); m.Forward != 1 || m.Back != 0 {
 		t.Errorf("a line down is forward: %s", m)
 	}
-	if m := sheet("depends_on", 200, 60); m.Back != 1 || m.BackPlain != 1 {
-		t.Errorf("a line up drawn solid is a plain back line: %s", m)
-	}
-	if m := sheet("depends_on back", 200, 60); m.Back != 1 || m.BackPlain != 0 {
-		t.Errorf("a line up drawn dashed is a marked back line: %s", m)
+	if m := sheet("depends_on", 200, 60); m.Back != 1 {
+		t.Errorf("a line up is a back line: %s", m)
 	}
 	if m := sheet("provides", 200, 60); m.Forward != 1 || m.Back != 0 {
 		t.Errorf("a unit providing the contract above it reads forward: %s", m)

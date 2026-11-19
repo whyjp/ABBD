@@ -70,19 +70,23 @@ func TestASplitStandsNextToItsDestinations(t *testing.T) {
 	}
 }
 
-// A hub's dashed lines that climb to it are rule 13's, so H2 counts only
-// the bundles of its forward lines.
+// A hub's lines that climb to it are rule 13's, so H2 counts only the
+// bundles of its forward lines. The page draws a climb as any other line,
+// so H2 reads it from the drawing's routes.
 func TestClimbingLinesAreNotAHubsTrunk(t *testing.T) {
 	boxes := []string{"U 0 0 40 20", "V 60 0 40 20", "W 120 0 40 20", "H 60 100 40 20"}
 	rels := [][2]string{{"U", "H"}, {"V", "H"}, {"W", "H"}}
-	body := func(third string) string {
-		return `<path class="w contract" data-net="1" d="M20 20 V60 H70 V100"/><path class="w contract" data-net="1" d="M80 20 V100"/>` +
-			`<path class="w contract` + third + `" data-net="2" d="M140 20 V140 H90 V120"/>`
+	body := `<path class="w contract r0" data-net="1" d="M20 20 V60 H70 V100"/><path class="w contract r1" data-net="1" d="M80 20 V100"/>` +
+		`<path class="w contract r2" data-net="2" d="M140 20 V140 H90 V120"/>`
+	look := func(climbs bool) *look {
+		l := lookAt(t, boxes, body, rels)
+		l.v.d.Routes = []Route{{}, {}, {Back: climbs}}
+		return l
 	}
-	if got := lookAt(t, boxes, body(" back"), rels).hubsOneTrunk(); len(got) != 0 {
+	if got := look(true).hubsOneTrunk(); len(got) != 0 {
 		t.Fatalf("%+v; want the climbing line left out", got)
 	}
-	if got := lookAt(t, boxes, body(""), rels).hubsOneTrunk(); len(got) != 1 || got[0].Got != 2 {
+	if got := look(false).hubsOneTrunk(); len(got) != 1 || got[0].Got != 2 {
 		t.Fatalf("%+v; want two bundles of forward lines reported", got)
 	}
 }
