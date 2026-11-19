@@ -163,6 +163,13 @@ type Totals struct {
 	RoadTurns     int `json:"road_turns"`
 	Junctions     int `json:"junctions"`
 	BentJunctions int `json:"bent_junctions"`
+	// RowsOff are the rows whose boxes' centres do not stand on one line,
+	// Parents the boxes that use two or more boxes of the row right below,
+	// and OffCentre those that stand off the middle of them by more than a
+	// quarter of their span (symmetry.go). Nothing bounds them.
+	RowsOff   int `json:"rows_off"`
+	Parents   int `json:"parents"`
+	OffCentre int `json:"off_centre"`
 }
 
 // Sum adds up the totals of several views.
@@ -188,6 +195,7 @@ func Sum(views []ViewLint) Totals {
 		t.Fanout += o.Fanout
 		t.LeadHops += o.LeadHops
 		t.RoadTurns, t.Junctions, t.BentJunctions = t.RoadTurns+o.RoadTurns, t.Junctions+o.Junctions, t.BentJunctions+o.BentJunctions
+		t.RowsOff, t.Parents, t.OffCentre = t.RowsOff+o.RowsOff, t.Parents+o.Parents, t.OffCentre+o.OffCentre
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -443,6 +451,8 @@ func lintView(v view) (ViewLint, error) {
 		w := walkRoads(rs)
 		vl.Totals.RoadTurns, vl.Totals.Junctions, vl.Totals.BentJunctions = w.turns, w.junctions, w.bent
 	}
+	sy := symmetryOf(v.d)
+	vl.Totals.RowsOff, vl.Totals.Parents, vl.Totals.OffCentre = sy.rowsOff, sy.parents, sy.offCentre
 	return vl, nil
 }
 
