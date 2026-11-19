@@ -2238,6 +2238,7 @@
         "internal/screen/primary.go",
         "internal/screen/rank.go",
         "internal/screen/roadindex.go",
+        "internal/screen/roadwalk.go",
         "internal/screen/route.go",
         "internal/screen/router.go",
         "internal/screen/screen.go",
@@ -23972,7 +23973,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "pstack poteto-mode 0.15.36",
         "Stale": false,
         "Blocks": [
           {
@@ -31458,6 +31459,76 @@
               },
               {
                 "Text": ")는 각 ×N을 규칙 22에 묶는다. 한 구간에 닿는 거리 안에, 다음으로 가까운 구간에서 떨어져, 다른 어느 와이어보다 자기 와이어의 잉크에 더 가까이 있어야 한다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "도로 걷기",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "roadwalk.go",
+                "Code": true
+              },
+              {
+                "Text": "는 경로를 가진 그림에서 선이 다른 선과 함께 쓰는 잉크 위에서 꺾인 횟수(",
+                "Code": false
+              },
+              {
+                "Text": "road_turns",
+                "Code": true
+              },
+              {
+                "Text": "), 제 길의 두 끝을 뺀 곳에서 다른 선이 그 잉크에 들어오거나 떠나는 갈림점 수(",
+                "Code": false
+              },
+              {
+                "Text": "junctions",
+                "Code": true
+              },
+              {
+                "Text": "), 그리고 한쪽에서 들어온 선 가운데 곧게 가는 선이 있는데도 다른 한쪽으로 꺾는 선이 더 많은 갈림점, 또는 나가는 쪽에서 같은 식으로 읽은 갈림점 수(",
+                "Code": false
+              },
+              {
+                "Text": "bent_junctions",
+                "Code": true
+              },
+              {
+                "Text": ")를 ",
+                "Code": false
+              },
+              {
+                "Text": "walkRoads",
+                "Code": true
+              },
+              {
+                "Text": "로 센다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "가 이 셋을 뷰의 합계에 넣고, 관문은 어느 것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestRoadWalkCountsTurnsAndJunctions",
+                "Code": true
+              },
+              {
+                "Text": "가 그 셈을 지킨다.",
                 "Code": false
               }
             ]
