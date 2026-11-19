@@ -127,6 +127,9 @@ type Box struct {
 	// UsedBy is how many boxes use a hub whose incoming lines the overview
 	// folds into its last line (hubfold.go), 0 for every other box.
 	UsedBy int `json:"-"`
+	// Ambient says the box is an ambient one drawn as a foundation band under
+	// the others (hubfold.go).
+	Ambient bool `json:"-"`
 }
 
 // MoreW is how wide the pill counting a box's undrawn links is, MoreX and
@@ -541,6 +544,9 @@ type overview struct {
 	// fold is the boxes that use each hub whose lines the overview folds
 	// (hubfold.go).
 	fold map[model.ID][]model.ID
+	// band are the ambient boxes drawn as a foundation band under the rest
+	// (hubfold.go), out of the layout.
+	band map[model.ID]bool
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -736,7 +742,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		})
 		o.more = c.more
 		o.said = c.said
-		o.fold = c.fold
+		o.fold, o.band = c.fold, c.band
 		if c.said == nil {
 			hidden = nil
 		}
@@ -759,7 +765,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		}
 	}
 	for _, m := range o.modules {
-		if cs := o.unreached[m]; len(cs) > 0 {
+		if cs := o.unreached[m]; len(cs) > 0 && !o.band[m] {
 			ch := o.chipFor(m, cs, true)
 			ch.key, ch.label = fmt.Sprint(m, "+"), fmt.Sprintf("+%d\u00a0계약", len(cs))
 			put(m, 0, ch)
@@ -804,6 +810,10 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	var nodes []lnode
 	for _, m := range o.modules {
 		ls, w := setName(o.name(m), 13, 28, 150, boxMax)
+		if o.band[m] {
+			o.names[m] = ls
+			continue
+		}
 		o.names[m] = ls
 		exits, entries := labels(o.chips[m][0]), labels(o.chips[m][1])
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
@@ -1251,8 +1261,12 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	at = chips()
 
 	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
+	bandAt := o.bandRects(l)
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
+		if br, ok := bandAt[m]; ok {
+			r = br
+		}
 		u := o.units[m]
 		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
@@ -1290,6 +1304,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			} else {
 				b.Title += ". 누르면 이 모듈을 중심으로 봅니다"
 			}
+		}
+		if _, ok := bandAt[m]; ok {
+			b.Ambient = true
+			d.Height = max(d.Height, r.Y+r.H+padY)
 		}
 		d.Boxes = append(d.Boxes, b)
 	}

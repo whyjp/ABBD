@@ -51,10 +51,13 @@ type cut struct {
 	// fold is, for each hub whose incoming lines are folded (hubfold.go), the
 	// boxes that use it.
 	fold map[model.ID][]model.ID
+	// band are the boxes the overview record marks ambient, drawn as a
+	// foundation band under the others, every line of theirs folded.
+	band map[model.ID]bool
 }
 
 // folds says the cut folds some hub's lines.
-func (c *cut) folds() bool { return c != nil && len(c.fold) > 0 }
+func (c *cut) folds() bool { return c != nil && (len(c.fold) > 0 || len(c.band) > 0) }
 
 // hides says the cut leaves any pair undrawn.
 func (c *cut) hides() bool { return c != nil && len(c.more) > 0 }

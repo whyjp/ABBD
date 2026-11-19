@@ -90,6 +90,26 @@ func readOverview(in Input) chosen {
 	return c
 }
 
+// ambientOf is each unit the overview record marks ambient, when the project
+// draws ambient boxes as a foundation band (overview_ambient). A mark that
+// is stale or names a unit that is gone counts as no mark.
+func ambientOf(in Input) map[model.ID]bool {
+	if !in.Project.OverviewAmbient || !in.Overview.Known {
+		return nil
+	}
+	var out map[model.ID]bool
+	for _, p := range in.Overview.Ambient {
+		if len(p.Why(in.Units)) > 0 {
+			continue
+		}
+		if out == nil {
+			out = map[model.ID]bool{}
+		}
+		out[p.Claim.Unit] = true
+	}
+	return out
+}
+
 // scopeOf is the scope of each unit the overview record marks as a sample, an
 // artifact or a tool. A mark that is stale, names a unit that is gone or
 // names no known scope counts as no mark.

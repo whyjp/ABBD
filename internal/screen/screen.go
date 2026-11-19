@@ -289,8 +289,8 @@ func Build(in Input) Model {
 		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
 	unfolded := c
-	if in.Project.OverviewFoldHubs {
-		c = o.foldHubs(c, fs)
+	if amb := ambientOf(in); in.Project.OverviewFoldHubs || len(amb) > 0 {
+		c = o.foldHubs(c, fs, in.Project.OverviewFoldHubs, amb)
 	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
