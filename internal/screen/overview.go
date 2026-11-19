@@ -801,7 +801,13 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
+		h := boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow
+		if len(o.fold[m]) > 0 && len(exits) > 0 && len(entries) > 0 {
+			// A folded hub's last line stands for its lines, so chips on
+			// both edges never leave it out for want of room (dress.go).
+			h += nameLine
+		}
+		nodes = append(nodes, lnode{id: string(m), w: w, h: h, tier: tiers[string(m)], step: steps[string(m)], stage: stages[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {

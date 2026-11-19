@@ -75,3 +75,20 @@ func TestFoldedHubsSayHowManyBoxesUseThem(t *testing.T) {
 		t.Error("a folded overview gives each box a focus view that draws every line")
 	}
 }
+
+// Every folded hub says how many boxes use it, on every fixture.
+func TestEveryFoldedHubSaysItsUsers(t *testing.T) {
+	t.Parallel()
+	for _, name := range []string{"pstack", "ripgrep", "self", "orca"} {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		m := Build(Input{Units: units, Project: store.Project{OverviewFoldHubs: true}})
+		for _, b := range m.Overview.Boxes {
+			if b.UsedBy > 0 && (b.Sub == nil || b.Sub.S != usedByText(b.UsedBy)) {
+				t.Errorf("%s: folded hub %s says %+v", name, b.Name, b.Sub)
+			}
+		}
+	}
+}
