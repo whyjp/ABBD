@@ -21,6 +21,9 @@ type tree struct {
 	// whens are the conditions relations hold under, by key, each with the
 	// origin of a lower claim that gives it.
 	whens map[string]phrase
+	// toLibrary marks the relations that reach an external library. A line
+	// to a library is drawn plain like any use, never dotted as design only.
+	toLibrary map[string]bool
 }
 
 // phrase is a live note's words and the origin of whoever wrote them.
@@ -50,6 +53,14 @@ func newTree(units []model.Unit) tree {
 			}
 			if n, ok := livePhrase(u, r.Kind, r.To); ok {
 				t.phrases[key(u.ID, r.Kind, r.To)] = phrase{n.Text, n.Writer.Origin()}
+			}
+		}
+	}
+	t.toLibrary = map[string]bool{}
+	for _, u := range t.units {
+		for _, r := range u.Relations {
+			if t.units[r.To].Kind == model.External {
+				t.toLibrary[key(u.ID, r.Kind, r.To)] = true
 			}
 		}
 	}

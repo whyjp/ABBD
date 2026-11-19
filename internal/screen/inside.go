@@ -238,7 +238,10 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	for _, x := range inner {
 		for _, s := range t.sources(x.ID) {
 			for _, r := range model.SortRelations(t.units[s].Relations) {
-				if _, ok := t.units[r.To]; !ok || r.Dead {
+				// A library is drawn on the overview and its focus views,
+				// and listed with the units that use it; an inside view
+				// draws the module's own parts.
+				if u, ok := t.units[r.To]; !ok || r.Dead || u.Kind == model.External {
 					continue
 				}
 				ln := line{from: x.ID, to: r.To, kind: r.Kind, origin: Badge(r.Origin), via: r.Via}

@@ -64,7 +64,9 @@ func unphrased(units []model.Unit, d screen.Drawing, chosen []model.Line) []stri
 			}
 			seen[r] = true
 			e, err := model.ParseEdge(r)
-			if err != nil {
+			// A line to an external library says its use by the library's
+			// name, so it wants no phrase.
+			if err != nil || byID[e.To].Kind == model.External {
 				continue
 			}
 			p := pair{box(e.From), box(e.To)}

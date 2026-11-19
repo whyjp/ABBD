@@ -348,11 +348,12 @@ func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, st
 func described(units []model.Unit) string { return describedLine(undescribed(units)) }
 
 // undescribed is every present unit, each drawn as a box on its parent's page or
-// the overview, that records neither a purpose nor a responsibility.
+// the overview, that records neither a purpose nor a responsibility. An
+// external library is described by its name, so it is never one.
 func undescribed(units []model.Unit) []model.ID {
 	var out []model.ID
 	for _, u := range model.Present(units) {
-		if !hasValue(u.Purpose) && !hasValue(u.Responsibility) {
+		if u.Kind != model.External && !hasValue(u.Purpose) && !hasValue(u.Responsibility) {
 			out = append(out, u.ID)
 		}
 	}
