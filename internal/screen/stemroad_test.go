@@ -22,7 +22,7 @@ func TestBranchesOfAStemTowardDifferentRowsLeaveAtOneHeight(t *testing.T) {
 	}
 	v = v.grouped()
 	r := routing{boxes: []box{{0, 0, 100, 60}, {320, 200, 80, 60}, {560, 400, 80, 60}, {270, 0, 60, 60}, {160, 200, 80, 60}}}
-	next, ok := r.gather(ways, v, v.cost(ways))
+	next, ok := r.gatherStems(ways, v, v.cost(ways))
 	if !ok {
 		t.Fatalf("the lines out of p stay at y=100 and y=116")
 	}
@@ -54,7 +54,7 @@ func TestBranchesOfAStemFindNoNewOppositePartner(t *testing.T) {
 	}
 	v = v.grouped()
 	r := routing{boxes: []box{{0, 0, 100, 60}, {320, 200, 80, 60}, {560, 400, 80, 60}, {270, 0, 60, 60}, {160, 200, 80, 60}, {330, 0, 40, 60}, {230, 300, 40, 60}}}
-	if next, ok := r.gather(ways, v, v.cost(ways)); ok {
+	if next, ok := r.gatherStems(ways, v, v.cost(ways)); ok {
 		t.Errorf("a line out of p moved onto a track the line from e runs the other way: %v %v", next[0], next[1])
 	}
 }
@@ -83,7 +83,7 @@ func TestABranchThatTurnsBackKeepsItsOwnTrack(t *testing.T) {
 	}
 	r, v := stemCase(ways, [][2][2]int{{{0, 100}, {320, 400}}, {{0, 100}, {560, 640}}}, []string{"p", "p"}, []string{"a", "b"}, []int{3, 1},
 		[]bool{false, false}, []box{{0, 0, 100, 60}, {320, 200, 80, 60}, {560, 0, 80, 60}})
-	if next, ok := r.gather(ways, v, v.cost(ways)); ok {
+	if next, ok := r.gatherStems(ways, v, v.cost(ways)); ok {
 		t.Errorf("the line back up to b was gathered with the line down to a: %v %v", next[0], next[1])
 	}
 }
@@ -99,7 +99,7 @@ func TestABranchGathersOnlyTowardItsOwnBox(t *testing.T) {
 	}
 	r, v := stemCase(ways, [][2][2]int{{{0, 100}, {560, 640}}, {{0, 100}, {320, 400}}}, []string{"p", "p"}, []string{"b", "a"}, []int{5, 3},
 		[]bool{false, false}, []box{{0, 0, 100, 60}, {560, 400, 80, 60}, {320, 200, 80, 60}})
-	next, ok := r.gather(ways, v, v.cost(ways))
+	next, ok := r.gatherStems(ways, v, v.cost(ways))
 	if !ok {
 		t.Fatalf("the lines out of p stay at y=116 and y=100")
 	}
@@ -142,7 +142,27 @@ func TestABranchMovesOnlyWhereTheStemTurnsAtFewerHeights(t *testing.T) {
 	}
 	r, v := stemCase(ways, [][2][2]int{{{0, 1000}, {260, 340}}, {{0, 1000}, {410, 490}}, {{0, 1000}, {860, 940}}}, []string{"p", "p", "p"}, []string{"a", "b", "c"},
 		[]int{3, 3, 3}, []bool{false, false, false}, []box{{0, 0, 1000, 60}, {260, 200, 80, 60}, {410, 200, 80, 60}, {860, 200, 80, 60}})
-	if next, ok := r.gather(ways, v, v.cost(ways)); ok {
+	if next, ok := r.gatherStems(ways, v, v.cost(ways)); ok {
 		t.Errorf("a line out of p moved while the stem still turns at y=100 and y=116: %v %v %v", next[0], next[1], next[2])
+	}
+}
+
+// Lines into one place from one row turn onto its stem at one height only
+// by the move that shortens a line's own leg from its box: the line that
+// turns lower rises onto the higher turn, nearer the box it leaves.
+func TestALineIntoAStemGathersOnlyTowardItsOwnBox(t *testing.T) {
+	t.Parallel()
+	ways := [][]pt{
+		{{50, 60}, {50, 300}, {500, 300}, {500, 400}},
+		{{200, 60}, {200, 316}, {500, 316}, {500, 400}},
+	}
+	r, v := stemCase(ways, [][2][2]int{{{0, 100}, {460, 540}}, {{150, 250}, {460, 540}}}, []string{"s", "u"}, []string{"q", "q"}, []int{5, 5},
+		[]bool{false, false}, []box{{0, 0, 100, 60}, {150, 0, 100, 60}, {460, 400, 80, 60}})
+	next, ok := r.gatherStems(ways, v, v.cost(ways))
+	if !ok {
+		t.Fatalf("the lines into q stay at y=300 and y=316")
+	}
+	if a, b := next[0][1].y, next[1][1].y; a != 300 || b != 300 {
+		t.Errorf("the lines into q turn onto its stem at y=%d and y=%d, want both at y=300, the turn nearer their boxes", a, b)
 	}
 }

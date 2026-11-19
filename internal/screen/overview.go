@@ -52,7 +52,7 @@ type Drawing struct {
 	// Card is the key the drawing keeps in a free corner (card.go).
 	Card *Card `json:",omitempty"`
 	// roads says its lines ride roads (confluence.go), and stemmed that
-	// gather moved some branch of a stem on them (stemroad.go).
+	// gatherStems moved some branch of a stem on them (stemroad.go).
 	roads, stemmed bool
 	// axis is what its layout ranked the rows by (rank.go).
 	axis axis

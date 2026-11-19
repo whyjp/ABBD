@@ -233,8 +233,9 @@ type tactic struct {
 	// tries it on the drawing it keeps on roads.
 	through bool
 	// stemless keeps a stem's branches where the roads leave them, with no
-	// gather (stemroad.go). choose and the focus views draw a view on roads
-	// so where gathering costs a line the word it says at rest.
+	// gatherStems (stemroad.go). choose and the focus views redraw a view
+	// with it where gatherStems moved a branch, and keep that unless the
+	// gathered drawing reads no worse at rest (stemsKept).
 	stemless bool
 }
 

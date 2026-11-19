@@ -9,7 +9,7 @@ import "sort"
 // different heights on tracks that also carry lines the other way: moving
 // the whole track would set opposite lines on one road, so those passes
 // leave them.
-// gather moves only the runs going one way, onto a sibling's height, and
+// gatherStems moves only the runs going one way, onto a sibling's height, and
 // keeps a move only where it costs nothing else.
 
 // stemKey is the group of routes whose branches gather: those that leave
@@ -60,6 +60,9 @@ func goesOn(w []pt, last bool) bool {
 // of boxes it passed on the stem before.
 func ownLegShrinks(w []pt, last bool, from, to int) bool {
 	n := len(w)
+	if n < 4 {
+		return false
+	}
 	if last {
 		return sign(to-from) == sign(w[n-4].y-w[n-3].y)
 	}
@@ -132,12 +135,12 @@ func opposesMore(was, now map[track]int) bool {
 	return false
 }
 
-// gather sets one way's branches of a stem group on one track, by a move
+// gatherStems sets one way's branches of a stem group on one track, by a move
 // of the runs going that way alone that sets a branch on a sibling's turn
 // nearer its own box (ownLegShrinks), lowers spread and costs nothing
 // else: no roadCost count, no fork level as the lint reads it and no
 // track's stretch of opposite lines side by side grows.
-func (r *routing) gather(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
+func (r *routing) gatherStems(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	rs := roadRunsBy(ways, v, true)
 	at := runsAt(rs)
 	type turn struct{ route, y int }

@@ -73,7 +73,7 @@ type cost struct {
 	// strays says the through tactic would set some line off its chain, so
 	// drawing with it would draw something else.
 	strays bool
-	// stemmed says gather moved a branch of a stem in the drawing, so it
+	// stemmed says gatherStems moved a branch of a stem in the drawing, so it
 	// draws otherwise stemless.
 	stemmed bool
 	// words says, of each route, whether a reader finds a word on it at
@@ -348,31 +348,43 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	// and that is kept where fewer lines run so far and no total the gate
 	// holds a view to reads worse. It keeps every box's row and order; only
 	// the gaps between rows grow or shrink with the tracks the lines take.
+	// Each drawing on roads where gatherStems moved a branch of a stem is drawn
+	// again stemless, and the stemless one is kept unless the gathered one
+	// reads no worse at rest (stemsKept).
+	stems := func(t tactic, v T, c cost) (tactic, T, cost) {
+		if !c.stemmed {
+			return t, v, c
+		}
+		s := t
+		s.stemless = true
+		var u cost
+		w, ok := draw(s, &u)
+		if !ok {
+			return t, v, c
+		}
+		judge(v, &c)
+		judge(w, &u)
+		if stemsKept(c, u) {
+			return t, v, c
+		}
+		return s, w, u
+	}
 	bt.roads = true
 	var c cost
 	v, ok := draw(bt, &c)
 	if !ok {
 		return best
 	}
-	// Where gather moved a branch of a stem, the drawing keeps it only if
-	// every line that says a word at rest without it still says one.
-	if c.stemmed {
-		t := bt
-		t.stemless = true
-		var u cost
-		if w, ok := draw(t, &u); ok {
-			judge(v, &c)
-			judge(w, &u)
-			if !stemsKept(c, u) {
-				v, c, bt = w, u, t
-			}
-		}
-	}
+	bt, v, c = stems(bt, v, c)
 	if c.far > 0 && c.strays {
 		t := bt
 		t.through = true
 		var u cost
-		if w, ok := draw(t, &u); ok && u.far < c.far {
+		w, ok := draw(t, &u)
+		if ok {
+			_, w, u = stems(t, w, u)
+		}
+		if ok && u.far < c.far {
 			judge(v, &c)
 			judge(w, &u)
 			if len(u.gate) > 0 && len(u.gate) == len(c.gate) && noWorse(u.gate, c.gate) {
@@ -383,7 +395,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	return v
 }
 
-// stemsKept says a drawing of cost c, where gather moved branches of a
+// stemsKept says a drawing of cost c, where gatherStems moved branches of a
 // stem, reads at rest no worse than the one of cost u drawn stemless: every
 // line that says a word in it still says one, and it crosses, doglegs and
 // breaks its ink no more.

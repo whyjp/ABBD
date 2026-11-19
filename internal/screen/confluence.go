@@ -705,7 +705,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, 
 	// track, moved apart from the lines the other way that share theirs,
 	// unless the view is drawn stemless.
 	for n, cost := 0, v.cost(ways); stems && n < roadMoves; n++ {
-		next, ok := r.gather(ways, v, cost)
+		next, ok := r.gatherStems(ways, v, cost)
 		if !ok {
 			break
 		}

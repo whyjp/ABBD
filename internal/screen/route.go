@@ -507,7 +507,7 @@ type routing struct {
 	roomy bool
 	// strays says the through tactic would set some line off its chain.
 	strays bool
-	// stemmed says gather moved some branch of a stem (stemroad.go).
+	// stemmed says gatherStems moved some branch of a stem (stemroad.go).
 	stemmed bool
 	// bent are the lines lay took off their buses to drop straight that
 	// do not stand straight.

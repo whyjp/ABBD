@@ -38,3 +38,36 @@ func TestChooseKeepsGatheredBranchesOnlyWhereTheyReadNoWorse(t *testing.T) {
 		}
 	}
 }
+
+// The drawing choose draws again with lines passing rows through their gaps
+// is held to the same check: gathered there, it keeps its gathering only
+// where every word stays.
+func TestChooseHoldsTheThroughDrawingToTheWordsToo(t *testing.T) {
+	t.Parallel()
+	name := func(tc tactic) string {
+		n := map[bool]string{false: "roads", true: "through"}[tc.through]
+		if tc.stemless {
+			return n + "-stemless"
+		}
+		return n
+	}
+	draw := func(tc tactic, read *cost) (string, bool) {
+		if !tc.roads {
+			return "plain", true
+		}
+		read.stemmed, read.strays = !tc.stemless, true
+		if !tc.through {
+			read.far = 1
+		}
+		return name(tc), true
+	}
+	judge := func(v string, read *cost) {
+		read.words, read.rest, read.gate = []bool{true, true}, []int{1, 1, 1}, []int{0}
+		if v == "through" {
+			read.words = []bool{true, false}
+		}
+	}
+	if got := choose([]tactic{{}}, draw, judge); got != "through-stemless" {
+		t.Errorf("choose kept the %s drawing, want through-stemless: gathered, the through drawing loses a word", got)
+	}
+}

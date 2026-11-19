@@ -210,7 +210,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 	return out
 }
 
-// stemmedReads says drawing d, where gather moved branches of a stem, reads
+// stemmedReads says drawing d, where gatherStems moved branches of a stem, reads
 // at rest no worse than bare, the same view drawn stemless (stemsKept).
 func stemmedReads(d, bare Drawing) bool {
 	var c, u cost
