@@ -36,8 +36,8 @@ func TestElementsCountWhatAReaderSeesAtRest(t *testing.T) {
 	if e.Flow != 2 || e.Possible != 5 || e.Min != 9 || e.Max != 18 {
 		t.Fatalf("got %+v, want flow 2, 5 possible lines, range 9..18", e)
 	}
-	if e.Percent == nil || *e.Percent != 66 || *e.WarnAt != 15 || e.Over {
-		t.Fatalf("got %+v, want 66%% of the range and a warning past 15, not reached", e)
+	if e.Percent == nil || *e.Percent != 67 || *e.WarnAt != 15 || e.Over {
+		t.Fatalf("got %+v, want 67%% of the range and a warning past 15, not reached", e)
 	}
 }
 
@@ -55,6 +55,11 @@ func TestElementsWarnAtAShareOfEachViewsOwnRange(t *testing.T) {
 	}
 	if te.Over || be.Over || be.Count != 70 {
 		t.Fatalf("tiny %+v big %+v: neither passes its own point, though big holds 70 elements", te, be)
+	}
+	// One word on tiny's line takes it one element past its point.
+	tiny.Wires = []Wire{{Label: &Label{S: "data"}}}
+	if te = elementsOf(tiny); te.Count != 4 || !te.Over || *te.Percent != 100 {
+		t.Fatalf("worded tiny %+v, want 4 elements at 100%%, past its point", te)
 	}
 }
 

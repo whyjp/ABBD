@@ -33,7 +33,8 @@ type Elements struct {
 	Flow     int `json:"flow"`
 	Min      int `json:"min"`
 	Max      int `json:"max"`
-	// Percent and WarnAt are left out where Min and Max are one number.
+	// Percent, rounded up so that a view past WarnShare never reads at it,
+	// and WarnAt are left out where Min and Max are one number.
 	Percent *int `json:"percent,omitempty"`
 	WarnAt  *int `json:"warn_at,omitempty"`
 	Over    bool `json:"over"`
@@ -42,8 +43,7 @@ type Elements struct {
 // WarnShare is the share of a view's own range, in percent, past which its
 // count is reported: a view passes it when 100*(Count-Min) > WarnShare*span.
 // A view with no lead that draws every line it could and gives half of them
-// a word stands there; a lead puts that drawing a little lower. It is
-// chosen, not measured.
+// a word stands there. It is chosen, not measured.
 const WarnShare = 75
 
 // elementsOf counts d's elements and its range.
@@ -92,7 +92,7 @@ func elementsOf(d Drawing) Elements {
 	e.Min = e.Shapes + e.Flow + numbers
 	e.Max = e.Shapes + 2*e.Possible + numbers + steps
 	if span := e.Max - e.Min; span > 0 {
-		p := 100 * (e.Count - e.Min) / span
+		p := (100*(e.Count-e.Min) + span - 1) / span
 		w := e.Min + span*WarnShare/100
 		e.Percent, e.WarnAt, e.Over = &p, &w, e.Count > w
 	}
