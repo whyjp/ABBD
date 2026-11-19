@@ -32,30 +32,17 @@ func scopeWordIn(s string) string {
 
 // unscoped names each top-level module the overview draws that is named or
 // placed like samples, examples, tests or generated code and carries no
-// scope mark in the overview record, nor sits inside a marked unit. The
+// scope mark in the overview record,. The
 // overview draws a box for the product's parts, and a reader marks what is
 // not the product with its scope so whoever draws it can tell the two apart.
 func unscoped(units []model.Unit, o store.Overview) []string {
-	present := map[model.ID]model.Unit{}
-	for _, u := range model.Present(units) {
-		present[u.ID] = u
-	}
 	marked := map[model.ID]bool{}
 	for _, m := range o.Scopes {
 		marked[m.Claim.Unit] = true
 	}
-	covered := func(id model.ID) bool {
-		for seen := map[model.ID]bool{}; id != "" && !seen[id]; id = present[id].Parent {
-			if marked[id] {
-				return true
-			}
-			seen[id] = true
-		}
-		return false
-	}
 	var out []string
 	for _, u := range model.Present(units) {
-		if u.Kind != model.Module || u.Parent != "" || covered(u.ID) {
+		if u.Kind != model.Module || u.Parent != "" || marked[u.ID] {
 			continue
 		}
 		why := ""

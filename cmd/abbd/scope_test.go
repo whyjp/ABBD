@@ -156,3 +156,15 @@ func TestLintAsksAScopeMarkOfAnExamplesBox(t *testing.T) {
 		t.Errorf("a clean report names no scope: %s", out.String())
 	}
 }
+
+// An overview that holds only scope marks still prints them in its draft.
+func TestAScopeOnlyOverviewKeepsItsMarksInTheDraft(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.code(".abbd/project.yaml", p.read("project.yaml")+"language: ko\n")
+	only := "---\nscope:\n  - unit: MOD-0002\n    scope: sample\n    evidence:\n      - {path: ledger/book.go, lines: \"6\", symbol: Post, quote: \"func Post() {}\"}\n---\n"
+	p.overview(0, "1 scope marks", only)
+	if out := p.want(0, "scope: sample", "overview"); !strings.Contains(out, "unit: MOD-0002") {
+		t.Errorf("the draft keeps the mark: %s", out)
+	}
+}

@@ -37,7 +37,11 @@ func (e env) overview(args []string) error {
 	if err := store.SaveOverview(e.st, o); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "stored the overview: %d zones, %d lines, each part stamped with the lines around the quotes it cites; its primary flow is the stack marked primary\n", len(o.Zones), len(o.Lines))
+	marks := ""
+	if len(o.Scopes) > 0 {
+		marks = fmt.Sprintf(", %d scope marks", len(o.Scopes))
+	}
+	fmt.Fprintf(e.stdout, "stored the overview: %d zones, %d lines%s, each part stamped with the lines around the quotes it cites; its primary flow is the stack marked primary\n", len(o.Zones), len(o.Lines), marks)
 	return nil
 }
 

@@ -47,8 +47,8 @@ func (e env) overviewDraft() error {
 		return err
 	}
 	front, caption, _ := strings.Cut(strings.TrimPrefix(string(b), "---\n"), "---\n")
-	if len(prev.Zones)+len(prev.Lines) == 0 {
-		front = "zones: []\nlines: []\n"
+	if len(prev.Zones)+len(prev.Lines)+len(prev.Scopes) == 0 {
+		front = "zones: []\nlines: []\nscope: []\n"
 	}
 	var w strings.Builder
 	w.WriteString("---\n")
