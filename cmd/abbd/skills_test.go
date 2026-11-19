@@ -429,3 +429,35 @@ func TestAKindFromANewerAbbdNamesTheBinaryAsTheCause(t *testing.T) {
 	p.code(".abbd/architecture/MOD-0001.md", strings.Replace(p.read("architecture/MOD-0001.md"), "kind: MOD", "kind: NEWKIND", 1))
 	p.want(1, `unknown kind "NEWKIND": a newer abbd wrote this state, so run that abbd`, "status")
 }
+
+// The skills leave out only the standard library and the system: a
+// third-party library is one EXT unit abbd libs reads from the manifest, and
+// no reader records it, its modules or its calls.
+func TestSkillsDrawAThirdPartyLibraryAsOneUnit(t *testing.T) {
+	t.Parallel()
+	setup := readPlugin(t, "skills", "abbd-setup", "SKILL.md")
+	reader := readPlugin(t, "skills", "abbd", "references", "reader.md")
+	for name, text := range map[string]string{"abbd-setup": setup, "reader.md": reader} {
+		for _, gone := range []string{"ubiquitous third-party libraries", "A relation exists only between the project's own units"} {
+			if strings.Contains(text, gone) {
+				t.Errorf("%s still says %q, leaving third-party libraries out with the system", name, gone)
+			}
+		}
+		for _, want := range []string{"one `EXT` unit", "`abbd libs`", "one `depends_on`"} {
+			if !strings.Contains(text, want) {
+				t.Errorf("%s must say a third-party library is %s", name, want)
+			}
+		}
+	}
+	if !strings.Contains(reader, "never record the library, its modules or its calls yourself") {
+		t.Errorf("the reader must say it never records a library itself")
+	}
+	if !strings.Contains(setup, "abbd setup -- abbd libs -- ") {
+		t.Errorf("abbd-setup must show abbd libs registered in front of the extraction")
+	}
+	for _, want := range []string{"`library:`", "`system:`"} {
+		if !strings.Contains(setup, want) {
+			t.Errorf("abbd-setup must name the %s report of abbd status", want)
+		}
+	}
+}
