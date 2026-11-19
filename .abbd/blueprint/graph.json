@@ -34390,7 +34390,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → script argv, name, purpose, drawing switches"
+              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치"
             },
             {
               "N": 4,
@@ -37608,7 +37608,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → script argv, name, purpose, drawing switches",
+              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",

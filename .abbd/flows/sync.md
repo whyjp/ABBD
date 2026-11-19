@@ -3,7 +3,7 @@ question: What does abbd sync do, in order?
 format: 1
 steps:
     - unit: MOD-0041
-      does: LoadProject() reads project.yaml → script argv, name, purpose, drawing switches
+      does: LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치
       fails: stops when project.yaml names no script; run abbd setup first
       calls:
         - CFG-0002
