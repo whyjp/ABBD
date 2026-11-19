@@ -192,7 +192,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 			ins = alt
 		}
 		d := ins.Drawing
-		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
+		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+" 내부", id, d))
 	}
 	return out
 }

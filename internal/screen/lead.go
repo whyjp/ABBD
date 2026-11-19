@@ -288,7 +288,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 		key, title = flows[best].key, flows[best].question
 		primary = flows[best].primary
 	} else {
-		title = "주 흐름 (추정): 아무도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감"
+		title = "주 흐름 (추정): 아무도 쓰지 않는 유일한 상자에서 시작해, 관계가 가장 많은 선을 따라감"
 	}
 	if len(hops) < leadMin && stay == nil {
 		return

@@ -190,7 +190,7 @@ func (e env) warnOverviewLines(units []model.Unit, o store.Overview) {
 // overviewWords are the words explain prints for a unit's place in the
 // overview, by the project's language: Korean, else English.
 var overviewWords = map[bool]struct{ stage, through, zone string }{
-	true:  {"주 흐름 %s %d/%d단계 %s", ", 안의 %s로", "구역 %s"},
+	true:  {"주 흐름 %s %d/%d단계 %s", ", 내부 %s 기준", "구역 %s"},
 	false: {"primary flow %s, stage %d of %d: %s", ", through %s inside it", "zone: %s"},
 }
 

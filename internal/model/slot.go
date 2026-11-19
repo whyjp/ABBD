@@ -25,7 +25,7 @@ var Slots = []Slot{
 	{Name: "states", Title: "상태"},
 	{Name: "decisions", Title: "결정", Keyed: true},
 	{Name: "constraints", Title: "제약과 불변식", Keyed: true},
-	{Name: "relations", Title: "관계의 까닭", Keyed: true},
+	{Name: "relations", Title: "관계의 이유", Keyed: true},
 	{Name: "wire_sample", Title: "전송 예시"},
 	{Name: "entries", Title: "항목", Keyed: true},
 }

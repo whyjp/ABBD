@@ -41,13 +41,13 @@ func (d *Drawing) card() {
 		items = append(items, CardItem{Kind: "fill", Text: map[string]string{"entry": "채운 상자: 진입점", "hub": "채운 상자: 허브"}[f.Role], Hue: f.Hue})
 	}
 	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return warns(w.Kind) }) {
-		items = append(items, CardItem{Kind: "bypass", Text: "직접 의존, 열린 머리"})
+		items = append(items, CardItem{Kind: "bypass", Text: "직접 의존, 열린 화살촉"})
 	}
 	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan && !w.Back }) {
 		items = append(items, CardItem{Kind: "plan", Text: "설계로만 이어짐"})
 	}
 	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Back }) {
-		items = append(items, CardItem{Kind: "back", Text: "거슬러 오르는 선"})
+		items = append(items, CardItem{Kind: "back", Text: "되돌아가는 선"})
 	}
 	if slices.ContainsFunc(d.Boxes, func(b Box) bool { return b.More > 0 }) {
 		items = append(items, CardItem{Kind: "more", Text: "줄인 선, 누르면 모두"})

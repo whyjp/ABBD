@@ -24,7 +24,7 @@ func TestAReaderNamesWhatCrossesAnEdgeTheScriptRead(t *testing.T) {
 	contains(t, p.want(0, "", "explain", "MOD-0002"), `MOD-0001 billing (extracted; phrase "charge post", inferred)`)
 	if page := p.read("blueprint/index.html"); !strings.Contains(page, ">charge post</text>") {
 		t.Errorf("the overview does not draw the phrase beside the line")
-	} else if !strings.Contains(page, "건너는 것: charge post (판독)") {
+	} else if !strings.Contains(page, "오가는 것: charge post (판독)") {
 		t.Errorf("the line's tooltip does not say the phrase is a reader's")
 	}
 	if g := p.read("blueprint/graph.json"); !strings.Contains(g, `"Phrase": "charge post",`) || !strings.Contains(g, `"PhraseOrigin": "INFERRED"`) {

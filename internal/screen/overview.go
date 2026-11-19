@@ -1231,7 +1231,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if h := href(m); h != "" {
 			b.Href = h
 			if strings.HasPrefix(h, "#m-") {
-				b.Title += ". 누르면 이 모듈의 안을 봅니다"
+				b.Title += ". 누르면 이 모듈 내부를 봅니다"
 			} else {
 				b.Title += ". 누르면 이 모듈을 중심으로 봅니다"
 			}

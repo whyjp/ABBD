@@ -190,7 +190,7 @@ func TestASentenceGoesStaleWithItsCode(t *testing.T) {
 	if md := p.read("architecture/MOD-0001.md"); !strings.Contains(md, "takes payments\n    writer: supplement\n    digest: ") {
 		t.Fatalf("the purpose should be stamped with its module's code:\n%s", md)
 	}
-	stale := `왜 있는가</strong> takes payments <span class="pill`
+	stale := `목적</strong> takes payments <span class="pill`
 	if page := p.read("blueprint/MOD-0001.html"); !strings.Contains(page, stale) || strings.Contains(page, "이 문장을 쓴 뒤") {
 		t.Fatalf("a fresh sentence reads without STALE")
 	}
@@ -214,7 +214,7 @@ func TestAReaderRewritesTheSentenceWithTheText(t *testing.T) {
 	text := p.file(t, "t.md", "### Overview\nbilling charges cards and retries.\n")
 	p.want(0, `responsibility of MOD-0001 is now "charges cards, retrying a failure"`, "understand", "MOD-0001", text, "--sentence", "charges cards, retrying a failure")
 	p.want(0, "", "sync")
-	_, role, _ := strings.Cut(p.read("blueprint/MOD-0001.html"), "<strong>맡은 것</strong>")
+	_, role, _ := strings.Cut(p.read("blueprint/MOD-0001.html"), "<strong>역할</strong>")
 	role, _, _ = strings.Cut(role, "</p>")
 	if !strings.Contains(role, "charges cards, retrying a failure") || strings.Contains(role, "STALE") {
 		t.Errorf("the rewritten sentence should read fresh: %s", role)

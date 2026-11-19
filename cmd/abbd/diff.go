@@ -100,11 +100,11 @@ body.compare{margin:16px;max-width:100vw;overflow-x:hidden}
 .compare .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .compare .side{overflow:auto;border:1px solid var(--line);border-radius:6px;padding:6px}
 .compare .side svg{max-width:100%;height:auto}</style></head><body class="compare">
-<h1>{{.Of}}: {{.Base}}와 지금</h1>
+<h1>{{.Of}}: {{.Base}}와 현재</h1>
 <p>{{.Summary}}</p>
-<p class="muted">청사진은 언제나 지금의 상태만 그립니다. 이 비교는 그 밖에 따로 둡니다. <a href="{{.NowPage}}">지금의 페이지</a>{{if .BasePage}} · <a href="{{.BasePage}}">그때의 페이지</a>{{end}}</p>
-<div class="pair"><div><h2>{{.Base}}</h2><div class="side">{{if .Before}}{{.Before}}{{else}}<p>그때의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div>
-<div><h2>지금</h2><div class="side">{{if .Now}}{{.Now}}{{else}}<p>지금의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div></div>
+<p class="muted">청사진은 늘 현재 상태만 그립니다. 비교는 청사진 밖에 따로 둡니다. <a href="{{.NowPage}}">현재 페이지</a>{{if .BasePage}} · <a href="{{.BasePage}}">기준 페이지</a>{{end}}</p>
+<div class="pair"><div><h2>{{.Base}}</h2><div class="side">{{if .Before}}{{.Before}}{{else}}<p>기준 시점의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div>
+<div><h2>현재</h2><div class="side">{{if .Now}}{{.Now}}{{else}}<p>현재 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div></div>
 <details><summary>바뀐 것 {{.Count}}줄</summary><pre>{{.Lines}}</pre></details>
 {{if .WordCount}}<details><summary>바뀐 글 {{.WordCount}}줄</summary><pre>{{.Words}}</pre></details>{{end}}
 </body></html>
@@ -151,7 +151,7 @@ func summary(d topology.Diff) string {
 	add(len(d.RunsAdded), "실행 관계 추가")
 	add(len(d.RunsRemoved), "실행 관계 제거")
 	add(len(d.InferredAdded), "판독한 결합 추가")
-	add(len(d.InferredDead), "근거가 죽은 결합")
+	add(len(d.InferredDead), "근거가 사라진 결합")
 	if len(parts) == 0 {
 		return "토폴로지에는 바뀐 것이 없습니다."
 	}

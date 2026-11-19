@@ -55,7 +55,7 @@ var labels = map[string]string{
 
 // tips say what each origin word means; the page shows them on hover.
 var tips = map[string]string{
-	"inferred":  "에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함",
+	"inferred":  "에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함",
 	"stated":    "사람이 말한 것",
 	"extracted": "프로젝트의 추출 스크립트가 코드에서 읽음",
 }

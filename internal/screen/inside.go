@@ -203,7 +203,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			contract(o2, exit)
 			return o2, exit
 		}
-		addPort(port{id: o2, exit: exit, label: map[bool]string{true: "← ", false: "→ "}[exit] + lastPart(o.name(o2)), title: fmt.Sprintf("계약 없이 %s와 닿는 곳", o.name(o2)), cls: "other", unit: o2})
+		addPort(port{id: o2, exit: exit, label: map[bool]string{true: "← ", false: "→ "}[exit] + lastPart(o.name(o2)), title: fmt.Sprintf("계약 없이 %s와 이어진 곳", o.name(o2)), cls: "other", unit: o2})
 		return o2, exit
 	}
 	// say is the tooltip line of one line, its via included.
@@ -370,7 +370,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			for _, id := range who[c] {
 				full = append(full, o.name(id))
 			}
-			p := port{id: c.id, exit: c.exit, label: gatheredLabel(map[bool]string{true: "← ", false: "→ "}[c.exit], who[c], o.name), title: fmt.Sprintf("계약 없이 %s와 닿는 곳", strings.Join(full, ", ")), cls: "other"}
+			p := port{id: c.id, exit: c.exit, label: gatheredLabel(map[bool]string{true: "← ", false: "→ "}[c.exit], who[c], o.name), title: fmt.Sprintf("계약 없이 %s와 이어진 곳", strings.Join(full, ", ")), cls: "other"}
 			if len(who[c]) == 1 {
 				p.unit = who[c][0]
 			}
