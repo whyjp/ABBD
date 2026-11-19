@@ -182,7 +182,9 @@ func hubs(boxes []Box, part map[string]bool, users map[string]map[string]bool) m
 // OverviewCycles are the groups of the overview's boxes that use each other
 // round a cycle, by name, read off the graph the overview's layout ranks
 // with every line drawn, as Levels gives them for the overview. It plans
-// the overview alone, without routing any view, so abbd status can say it.
+// the overview alone, without routing any view, so abbd status can say it;
+// Build reads the same groups off the plan it already made. Each group's
+// names are in name order.
 func OverviewCycles(in Input) [][]string {
 	o := planScoped(in.Units, "", nil, tactic{}, layerings(in), walks(in), nil, scopeOf(in))
 	var out [][]string
@@ -191,6 +193,7 @@ func OverviewCycles(in Input) [][]string {
 		for _, id := range c {
 			g = append(g, o.name(model.ID(id)))
 		}
+		slices.Sort(g)
 		out = append(out, g)
 	}
 	return out
@@ -214,6 +217,7 @@ func cycleNames(d Drawing) [][]string {
 			}
 		}
 		if len(g) > 1 {
+			slices.Sort(g)
 			out = append(out, g)
 		}
 	}

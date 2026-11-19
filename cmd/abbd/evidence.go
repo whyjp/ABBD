@@ -282,10 +282,10 @@ func (e env) statusLines() error {
 
 // statusCycles says how many cycles of uses the overview's boxes close, and
 // each one, as a finding about the code: it never makes the state behind,
-// since only a change to the code ends a cycle. abbd lint names those on
-// each module's page.
+// since only a change to the code ends a cycle. abbd lint names those of
+// every full view.
 func statusCycles(w io.Writer, cycles [][]string) {
-	fmt.Fprintf(w, "cycles: %d on the overview; abbd lint names those on each module's page\n", len(cycles))
+	fmt.Fprintf(w, "cycles: %d on the overview; abbd lint names those of every full view\n", len(cycles))
 	for _, c := range cycles {
 		fmt.Fprintf(w, "cycle overview: %s\n", cycleLine(c))
 	}

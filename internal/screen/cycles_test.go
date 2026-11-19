@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // Boxes that use each other round a cycle are a finding about the code:
@@ -57,5 +58,38 @@ func TestAViewWithoutACycleNamesNone(t *testing.T) {
 	}
 	if got := OverviewCycles(in); got != nil {
 		t.Errorf("OverviewCycles = %v, want none", got)
+	}
+}
+
+// The overview's cycles are the code's: a cut or a record that leaves a
+// line of the cycle undrawn still leaves Levels and OverviewCycles naming
+// the same group.
+func TestTheOverviewsCyclesHoldWhateverItDraws(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "api", rel("MOD-0002", model.DependsOn), rel("MOD-0004", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		called("MOD-0002", "core", rel("MOD-0003", model.DependsOn), rel("MOD-0004", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		called("MOD-0003", "store", rel("MOD-0001", model.DependsOn), rel("MOD-0004", model.DependsOn), rel("MOD-0005", model.DependsOn)),
+		called("MOD-0004", "cli", rel("MOD-0005", model.DependsOn)),
+		called("MOD-0005", "log"),
+	}
+	on := true
+	var rec store.Overview
+	rec.Known = true
+	rec.Lines = []store.Part[model.Line]{{Claim: model.Line{From: "MOD-0001", To: "MOD-0002", Word: "calls"}}}
+	want := [][]string{{"api", "core", "store"}}
+	for name, in := range map[string]Input{
+		"cut":    {Units: units, Project: store.Project{OverviewCut: &on}},
+		"record": {Units: units, Overview: rec},
+	} {
+		m := Build(in)
+		if got := Levels(m)[0].Cycles; !reflect.DeepEqual(got, want) {
+			t.Errorf("%s: the overview's level names %v, want %v", name, got, want)
+		}
+		if got := OverviewCycles(in); !reflect.DeepEqual(got, want) {
+			t.Errorf("%s: OverviewCycles = %v, want %v", name, got, want)
+		}
+		if len(m.Overview.Counted) == 0 {
+			t.Errorf("%s: the overview draws every line, so the test checks nothing", name)
+		}
 	}
 }
