@@ -48,7 +48,8 @@ type MatrixRow struct {
 
 // MatrixCell is how many stored relations the row's box uses the column's
 // by, 0 for none. Self marks the diagonal and Loop a use the column's box
-// reaches back, so the two stand on one cycle. Title says it in words.
+// reaches back along the drawn lines, between two boxes the layout found on
+// a cycle, so the two stand on one cycle. Title says it in words.
 type MatrixCell struct {
 	N     int
 	Self  bool
@@ -126,7 +127,7 @@ func (d *Drawing) matrix() *Matrix {
 		for j, c := range m.Heads {
 			cell := MatrixCell{N: count[i][j], Self: i == j}
 			if cell.N > 0 {
-				cell.Loop = reach[j][i]
+				cell.Loop = reach[j][i] && h.Loop && c.Loop
 				cell.Title = fmt.Sprintf("%s → %s: 관계 %d개", h.Name, c.Name, cell.N)
 				if cell.Loop {
 					cell.Title += ", 서로 이어지는 순환 의존"

@@ -39,6 +39,13 @@ func TestADenseCyclicViewAddsAMatrix(t *testing.T) {
 				}
 			}
 		}
+		var page bytes.Buffer
+		if err := site.ExecuteTemplate(&page, "matrix", m.Overview.Matrix); err != nil {
+			t.Fatal(err)
+		}
+		if (m.Overview.Matrix == nil) != (page.Len() == 0) {
+			t.Errorf("%s: the overview's matrix part is %d bytes for matrix %v", name, page.Len(), m.Overview.Matrix != nil)
+		}
 		for _, f := range m.Focus {
 			if f.Drawing.Matrix != nil {
 				t.Errorf("%s: focus view %s carries a matrix", name, f.ID)
@@ -68,5 +75,7 @@ func TestADenseCyclicViewAddsAMatrix(t *testing.T) {
 	if d.matrix() != nil {
 		t.Error("a four-box ring, the fewest pairs a joined view has, gets a matrix")
 	}
-	t.Logf("%d fixture views carry a matrix", seen)
+	if seen == 0 {
+		t.Error("no fixture view carries a matrix; the checks above ran on none")
+	}
 }
