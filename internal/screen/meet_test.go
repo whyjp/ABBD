@@ -50,8 +50,8 @@ func TestLevellingWhereLinesMeetKeepsTheirSolidForkWhole(t *testing.T) {
 	}
 	v := roadView{
 		style: []string{"0", "0", "0", "0"}, plan: []bool{false, false, true, false}, kinds: []string{"k", "k", "k", "k"},
-		ends:  [][2]end{{at(0, 100), at(320, 400)}, {at(0, 100), at(-240, -160)}, {at(0, 100), at(600, 680)}, {at(150, 210), at(320, 400)}},
-		from:  []string{"p", "p", "p", "q"}, to: []string{"t", "u", "w", "t"}, dest: []int{3, 3, 3, 3}, src: []int{1, 1, 1, 1},
+		ends: [][2]end{{at(0, 100), at(320, 400)}, {at(0, 100), at(-240, -160)}, {at(0, 100), at(600, 680)}, {at(150, 210), at(320, 400)}},
+		from: []string{"p", "p", "p", "q"}, to: []string{"t", "u", "w", "t"}, dest: []int{3, 3, 3, 3}, src: []int{1, 1, 1, 1},
 		position: func(y int) int { return y / 100 },
 	}
 	d := v
