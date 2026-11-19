@@ -301,6 +301,10 @@ func (c *roadCost) forkAt(last bool) *int {
 // of the place it reaches, and the position of a height on the page.
 type roadView struct {
 	style []string
+	// back says each route runs against the reading axis, nil where none
+	// does. Such a route of one style with one that does not shares a road
+	// only where the two run the same way (opposed).
+	back []bool
 	// plan says each route's relations all arise only in design, so it is
 	// drawn dotted where it rides alone, and kinds is each route's kind.
 	// lead, nil where no lead is drawn, says the view's lead rides a route.
@@ -600,7 +604,10 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 }
 
 // confluent moves the routes onto shared roads and draws the road.
-func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
+// Every route is inked alike: a line that runs against the reading axis is
+// drawn as any other, so it may share a road with lines that run its way,
+// unless apart keeps such lines on roads of their own.
+func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, apart bool) {
 	ink, plan, lead, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
 	dest, src, to, from := make([]int, len(reqs)), make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
@@ -608,7 +615,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		if q.from.node != "" {
 			from[i] = "node|" + q.from.node
 		}
-		ink[i], plan[i], lead[i], kinds[i] = fmt.Sprint(r.back[i]), q.plan, q.lead, q.kind
+		plan[i], lead[i], kinds[i] = q.plan, q.lead, q.kind
 		dest[i] = min(max(2*q.to.row+1, -1), 2*rows+1)
 		src[i] = min(max(2*q.from.row+1, -1), 2*rows+1)
 	}
@@ -620,7 +627,16 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for i, w := range r.ways {
 		ways[i] = straight(w)
 	}
-	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, src: src, position: position}.grouped()
+	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, src: src, position: position}
+	if slices.Contains(r.back, true) {
+		v.back = r.back
+	}
+	if apart {
+		for i, b := range r.back {
+			ink[i] = fmt.Sprint(b)
+		}
+	}
+	v = v.grouped()
 	routed := ways
 	settle := func(stairsFirst bool) ([][]pt, roadCost) {
 		ways, cost := routed, v.cost(routed)
@@ -1219,7 +1235,7 @@ func road(pts []pt, is []int, ways [][]pt, reqs []wireReq, back []bool) drawn {
 			kind = k
 		}
 	}
-	d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: is, kind: kind, back: back[is[0]], road: true}
+	d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: is, kind: kind, back: !slices.ContainsFunc(is, func(i int) bool { return !back[i] }), road: true}
 	last := pts[len(pts)-1]
 	arrives := false
 	for _, i := range is {
