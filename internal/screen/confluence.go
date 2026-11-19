@@ -281,6 +281,19 @@ func boxed(w []pt, boxes []box, limit int) int {
 // their ends, and the forks whose branches leave at different heights.
 type roadCost struct {
 	crossings, turns, beside, clash, near, far, forks, tees, unseen, combs int
+	// meets are the routes into one place from one row that turn onto
+	// their stem at another height than their siblings: a fork read from
+	// its other end, which level alone weighs.
+	meets int
+}
+
+// forkAt is the count a fork group adds to: forks where its routes leave
+// one place, meets where they reach one.
+func (c *roadCost) forkAt(last bool) *int {
+	if last {
+		return &c.meets
+	}
+	return &c.forks
 }
 
 // roadView is what confluent weighs routes against: each route's style and
@@ -297,15 +310,21 @@ type roadView struct {
 	// may slide along.
 	ends     [][2]end
 	from, to []string
-	dest     []int
-	position func(y int) int
+	// dest and src are the row positions of the places each route reaches
+	// and leaves.
+	dest, src []int
+	position  func(y int) int
 	// forkGroups are the routes of one style from one place into one row,
-	// and of one dotting too when dotting is set, since a dotted branch need
-	// not share its solid siblings' track; fromGroups are those from one
-	// place, each in order, with the group each route is in.
+	// and those into one place from one row, which meet it as a fork read
+	// from its other end; forkLast says which a group is. A group holds
+	// routes of one dotting too when dotting is set, since a dotted branch
+	// need not share its solid siblings' track. fromGroups are the routes
+	// from one place, each in order, with the groups each route is in.
 	forkGroups, fromGroups [][]int
+	forkLast               []bool
 	dotting                bool
-	forkOf, fromOf         []int
+	forkOf                 [][2]int
+	fromOf                 []int
 }
 
 // dotted says route i shows dotted at rest, so its dots must show
@@ -315,22 +334,19 @@ func (v roadView) dotted(i int) bool { return v.plan[i] && (v.lead == nil || !v.
 
 // grouped is v with its routes grouped.
 func (v roadView) grouped() roadView {
-	type fork struct {
-		style, from string
-		plan        bool
-		dest        int
-	}
 	forks, froms := map[fork]int{}, map[string]int{}
-	v.forkOf, v.fromOf = make([]int, len(v.style)), make([]int, len(v.style))
+	v.forkOf, v.fromOf = make([][2]int, len(v.style)), make([]int, len(v.style))
 	for i := range v.style {
-		f := fork{v.style[i], v.from[i], v.dotting && v.plan[i], v.dest[i]}
-		g, ok := forks[f]
-		if !ok {
-			g = len(v.forkGroups)
-			forks[f] = g
-			v.forkGroups = append(v.forkGroups, nil)
+		for end, last := range []bool{false, true} {
+			f := v.forkKey(i, last, v.dotting)
+			g, ok := forks[f]
+			if !ok {
+				g = len(v.forkGroups)
+				forks[f] = g
+				v.forkGroups, v.forkLast = append(v.forkGroups, nil), append(v.forkLast, last)
+			}
+			v.forkOf[i][end], v.forkGroups[g] = g, append(v.forkGroups[g], i)
 		}
-		v.forkOf[i], v.forkGroups[g] = g, append(v.forkGroups[g], i)
 		h, ok := froms[v.from[i]]
 		if !ok {
 			h = len(v.fromGroups)
@@ -405,30 +421,74 @@ func (v roadView) combed(ways [][]pt, a, b straightRun) bool {
 	return false
 }
 
-// forks are pairs of routes that leave one place for boxes in one row and
-// turn off their stem onto flat runs at different heights, as forkLevels
-// reads them, by route. byDotting pairs only routes of one dotting, as
-// roadCost counts forks when v.dotting is set; the moves still try to put a
-// branch of either dotting onto its siblings' track.
-func (v roadView) forks(ways [][]pt, byDotting bool) [][2]int {
-	type fork struct {
-		style, from string
-		plan        bool
-		dest        int
+// fork is the group a route's departure, or its arrival when last is set,
+// is in: routes of one style from one place into one row, or into one
+// place from one row, and of one dotting when plan is told apart.
+type fork struct {
+	style, place string
+	plan, last   bool
+	row          int
+}
+
+func (v roadView) forkKey(i int, last, byDotting bool) fork {
+	if last {
+		return fork{v.style[i], v.to[i], byDotting && v.plan[i], true, v.src[i]}
 	}
-	first := map[fork]int{}
-	var out [][2]int
-	for i, w := range ways {
-		if len(w) < 3 || w[0].x != w[1].x {
-			continue
-		}
-		f := fork{v.style[i], v.from[i], byDotting && v.plan[i], v.dest[i]}
-		j, ok := first[f]
-		switch {
-		case !ok:
-			first[f] = i
-		case ways[j][1].y != w[1].y:
-			out = append(out, [2]int{j, i})
+	return fork{v.style[i], v.from[i], byDotting && v.plan[i], false, v.dest[i]}
+}
+
+// turnOff is the height at which route w turns off its stem onto a flat
+// run, the stem being its first run, or its last when last is set, where
+// that run stands upright. side is the way the flat run comes in to a last
+// stem, -1 from the right or 1 from the left, and 0 at a first one: lines
+// that reach a stem from either side ride no flat road together, so only
+// those from one side need one height.
+func turnOff(w []pt, last bool) (y, side int, ok bool) {
+	n := len(w)
+	switch {
+	case n < 3:
+		return 0, 0, false
+	case last:
+		return w[n-2].y, sign(w[n-2].x - w[n-3].x), w[n-1].x == w[n-2].x
+	}
+	return w[1].y, 0, w[0].x == w[1].x
+}
+
+// forkPair is two routes of one fork, at the end last says, that turn off
+// their stem at different heights.
+type forkPair struct {
+	a, b int
+	last bool
+}
+
+// forks are pairs of routes that leave one place for boxes in one row, or
+// reach one place from boxes in one row, and turn off their stem onto flat
+// runs at different heights, as forkLevels reads them, by route. byDotting
+// pairs only routes of one dotting, as roadCost counts forks when v.dotting
+// is set; the moves still try to put a branch of either dotting onto its
+// siblings' track.
+func (v roadView) forks(ways [][]pt, byDotting bool) []forkPair {
+	type sided struct {
+		fork
+		side int
+	}
+	first := map[sided]int{}
+	var out []forkPair
+	for _, last := range []bool{false, true} {
+		for i, w := range ways {
+			y, side, ok := turnOff(w, last)
+			if !ok {
+				continue
+			}
+			f := sided{v.forkKey(i, last, byDotting), side}
+			j, ok := first[f]
+			if !ok {
+				first[f] = i
+				continue
+			}
+			if z, _, _ := turnOff(ways[j], last); z != y {
+				out = append(out, forkPair{j, i, last})
+			}
 		}
 	}
 	return out
@@ -542,7 +602,7 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 // confluent moves the routes onto shared roads and draws the road.
 func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
 	ink, plan, lead, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
-	dest, to, from := make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
+	dest, src, to, from := make([]int, len(reqs)), make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
 		to[i], from[i] = place(q.to), place(q.from)
 		if q.from.node != "" {
@@ -550,6 +610,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		}
 		ink[i], plan[i], lead[i], kinds[i] = fmt.Sprint(r.back[i]), q.plan, q.lead, q.kind
 		dest[i] = min(max(2*q.to.row+1, -1), 2*rows+1)
+		src[i] = min(max(2*q.from.row+1, -1), 2*rows+1)
 	}
 	ends := make([][2]end, len(reqs))
 	for i, q := range reqs {
@@ -559,7 +620,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for i, w := range r.ways {
 		ways[i] = straight(w)
 	}
-	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, position: position}.grouped()
+	v := roadView{style: ink, plan: plan, lead: lead, kinds: kinds, ends: ends, from: from, to: to, dest: dest, src: src, position: position}.grouped()
 	routed := ways
 	settle := func(stairsFirst bool) ([][]pt, roadCost) {
 		ways, cost := routed, v.cost(routed)
@@ -613,7 +674,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	// join a road their dotted sibling may not ride, where no move of a
 	// whole fork has set the dotted branch on their track already.
 	d := v
-	d.dotting, d.forkGroups, d.fromGroups = true, nil, nil
+	d.dotting, d.forkGroups, d.forkLast, d.fromGroups = true, nil, nil, nil
 	d = d.grouped()
 	for n, cost := 0, d.cost(ways); n < roadMoves; n++ {
 		next, ok := r.step(ways, d, cost, false)
@@ -625,6 +686,20 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 			ways[i] = straight(ways[i])
 		}
 		cost = d.cost(ways)
+	}
+	// Last of all, lines into one place from one row come in on one flat
+	// road where they turned onto its stem at different heights and setting
+	// them level costs nothing else.
+	for n, cost := 0, v.cost(ways); n < roadMoves; n++ {
+		next, ok := r.level(ways, v, cost)
+		if !ok {
+			break
+		}
+		ways = next
+		for i := range ways {
+			ways[i] = straight(ways[i])
+		}
+		cost = v.cost(ways)
 	}
 	ways = r.twoLanes(ways, v)
 	if roadsDrawn != nil {
@@ -654,10 +729,6 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost, stairsFirst bool)
 // of long runs of one kind from past roadRoom.
 func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wide bool) ([][]pt, bool) {
 	rs := roadRuns(ways, v)
-	type move struct {
-		run      straightRun
-		at, gain int
-	}
 	// near calls f with each run of run i's style and direction that lies
 	// within reach of it, in order: roadRuns sorts the runs so, and a run
 	// may move only that far.
@@ -676,7 +747,7 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 	if wide {
 		reach = roadReach
 	}
-	var moves []move
+	var moves []roadMove
 	for i, a := range rs {
 		near(i, reach, func(b straightRun) {
 			if !a.moves(b.at) {
@@ -688,7 +759,7 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 					return
 				}
 				if o >= roadMeet && v.joins(ways, a, b) {
-					moves = append(moves, move{a, b.at, o})
+					moves = append(moves, roadMove{a, b.at, o})
 				}
 			}
 			try(a)
@@ -697,30 +768,9 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 			}
 		})
 	}
-	// at is the piece of road each route run lies on.
-	at := map[[2]int]int{}
-	for k, run := range rs {
-		for _, s := range run.segs {
-			at[s] = k
-		}
-	}
-	// A fork: lines of one place into one row that turn off their stem at
-	// different heights. Moving one's first turn onto another's puts the
-	// branches on one track.
-	for _, f := range v.forks(ways, false) {
-		if wide {
-			break
-		}
-		a, b := at[[2]int{f[0], 1}], at[[2]int{f[1], 1}]
-		if !v.joins(ways, rs[a], rs[b]) {
-			continue
-		}
-		if rs[a].moves(rs[b].at) {
-			moves = append(moves, move{rs[a], rs[b].at, 0})
-		}
-		if rs[b].moves(rs[a].at) {
-			moves = append(moves, move{rs[b], rs[a].at, 0})
-		}
+	at := runsAt(rs)
+	if !wide {
+		moves = append(moves, v.forkMoves(ways, rs, at, false)...)
 	}
 	// A comb: stubs of one place, kind and way that leave or reach it apart.
 	// Moving one stub onto another brings the lines out as one stem.
@@ -730,13 +780,13 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 		}
 		near(i, combGap, func(b straightRun) {
 			if a.moves(b.at) && v.combed(ways, a, b) && v.joins(ways, a, b) {
-				moves = append(moves, move{a, b.at, 0})
+				moves = append(moves, roadMove{a, b.at, 0})
 			}
 		})
 	}
 	// A stair: a run, a short step across, and a run on past it the same
 	// way. Moving either run onto the other takes out the step.
-	var stairs []move
+	var stairs []roadMove
 	for i, w := range ways {
 		if wide {
 			break
@@ -747,10 +797,10 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 				continue
 			}
 			if rs[a].moves(rs[b].at) {
-				stairs = append(stairs, move{rs[a], rs[b].at, 0})
+				stairs = append(stairs, roadMove{rs[a], rs[b].at, 0})
 			}
 			if rs[b].moves(rs[a].at) {
-				stairs = append(stairs, move{rs[b], rs[a].at, 0})
+				stairs = append(stairs, roadMove{rs[b], rs[a].at, 0})
 			}
 		}
 	}
@@ -760,6 +810,70 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 	} else {
 		moves = append(moves, stairs...)
 	}
+	return r.firstKept(ways, v, cost, moves, wide, func(nc roadCost) bool { return nc.better(cost) })
+}
+
+// roadMove moves a run of road to at; gain orders the merges, the longest
+// shared stretch first.
+type roadMove struct {
+	run      straightRun
+	at, gain int
+}
+
+// runsAt is the piece of road each route run lies on.
+func runsAt(rs []straightRun) map[[2]int]int {
+	at := map[[2]int]int{}
+	for k, run := range rs {
+		for _, s := range run.segs {
+			at[s] = k
+		}
+	}
+	return at
+}
+
+// forkMoves are the moves that set a fork's branches on one track: lines
+// of one place into one row that turn off their stem at different heights,
+// or, when last is set, lines into one place from one row that turn onto
+// it so. Moving one's flat run onto another's puts the branches on one
+// track.
+func (v roadView) forkMoves(ways [][]pt, rs []straightRun, at map[[2]int]int, last bool) []roadMove {
+	var out []roadMove
+	for _, f := range v.forks(ways, false) {
+		if f.last != last {
+			continue
+		}
+		flat := func(i int) [2]int {
+			if last {
+				return [2]int{i, len(ways[i]) - 3}
+			}
+			return [2]int{i, 1}
+		}
+		a, b := at[flat(f.a)], at[flat(f.b)]
+		if !v.joins(ways, rs[a], rs[b]) {
+			continue
+		}
+		if rs[a].moves(rs[b].at) {
+			out = append(out, roadMove{rs[a], rs[b].at, 0})
+		}
+		if rs[b].moves(rs[a].at) {
+			out = append(out, roadMove{rs[b], rs[a].at, 0})
+		}
+	}
+	return out
+}
+
+// level sets lines into one place from one row on one flat road where
+// they turn onto its stem at different heights, a fork read from its other
+// end, by a move that costs nothing else.
+func (r *routing) level(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
+	rs := roadRuns(ways, v)
+	moves := v.forkMoves(ways, rs, runsAt(rs), true)
+	return r.firstKept(ways, v, cost, moves, false, func(nc roadCost) bool { return nc.meets < cost.meets && cost.withers(nc) })
+}
+
+// firstKept is the routes after the first of moves that leaves every route
+// it moves reading as a line and that gains says reads better than cost.
+func (r *routing) firstKept(ways [][]pt, v roadView, cost roadCost, moves []roadMove, wide bool, gains func(roadCost) bool) ([][]pt, bool) {
 	var x *roadIndex
 	shapes := make([]*routeShape, len(ways))
 	for _, m := range moves {
@@ -797,7 +911,7 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 		if !ok || wide && nc.beside > cost.beside {
 			continue
 		}
-		if was, now := ch.endMixes(); now <= was && nc.better(cost) {
+		if was, now := ch.endMixes(); now <= was && gains(nc) {
 			return next, true
 		}
 	}

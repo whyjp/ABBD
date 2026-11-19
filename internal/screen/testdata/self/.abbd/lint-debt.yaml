@@ -13,7 +13,7 @@ ceilings:
     placement: 40
     tees: 4
     two_lane_off: 66
-    weighed: 345
+    weighed: 344
 debt:
     MOD-0030 internal/model:
         R: 1
@@ -41,7 +41,7 @@ pages:
         combs: 0
         counts: 1
         density: 15
-        doglegs: 8
+        doglegs: 5
         dots: 0
         false_joins: 0
         label_repeats: 4

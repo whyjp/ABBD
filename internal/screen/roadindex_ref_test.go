@@ -20,7 +20,7 @@ func TestATeeCountsOnARouteFoldedOverItsColumn(t *testing.T) {
 		{{48, 12}, {-24, 12}},
 	}
 	v := roadView{style: []string{"0", "0"}, plan: []bool{false, false}, kinds: []string{"k", "k"},
-		ends: make([][2]end, 2), from: []string{"a", "a"}, to: []string{"b", "c"}, dest: []int{1, 2},
+		ends: make([][2]end, 2), from: []string{"a", "a"}, to: []string{"b", "c"}, dest: []int{1, 2}, src: []int{0, 0},
 		position: func(y int) int { return y / 16 }}.grouped()
 	if got := newRoadIndex(v, ways).cost.tees; got != 1 {
 		t.Errorf("route %v crossed at y=12 from the same place made %d tees, want 1", ways[0], got)
@@ -33,7 +33,7 @@ func TestATeeCountsOnARouteFoldedOverItsColumn(t *testing.T) {
 // early is one the recount refuses too.
 func TestTheRoadIndexWeighsChangesAsAWholeRecount(t *testing.T) {
 	r := rand.New(rand.NewSource(237))
-	limitless := roadCost{1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30}
+	limitless := roadCost{1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30, 1 << 30}
 	for trial := range 2000 {
 		nr := 2 + r.Intn(10)
 		grid := 3 + r.Intn(6)
@@ -57,6 +57,7 @@ func TestTheRoadIndexWeighsChangesAsAWholeRecount(t *testing.T) {
 			v.from = append(v.from, places[r.Intn(len(places))])
 			v.to = append(v.to, places[r.Intn(len(places))])
 			v.dest = append(v.dest, r.Intn(5))
+			v.src = append(v.src, r.Intn(5))
 		}
 		v = v.grouped()
 		x := newRoadIndex(v, ways)
@@ -127,7 +128,10 @@ func randomRoute(r *rand.Rand, grid, step int) []pt {
 }
 
 func (v roadView) fullCost(ways [][]pt) roadCost {
-	c := roadCost{far: v.fullFarSplits(ways), forks: len(v.forks(ways, v.dotting)), tees: v.fullTees(ways), unseen: v.fullUnseen(ways), combs: v.fullCombs(ways)}
+	c := roadCost{far: v.fullFarSplits(ways), tees: v.fullTees(ways), unseen: v.fullUnseen(ways), combs: v.fullCombs(ways)}
+	for _, f := range v.forks(ways, v.dotting) {
+		*c.forkAt(f.last)++
+	}
 	for _, w := range ways {
 		c.turns += max(0, len(straight(w))-2)
 	}

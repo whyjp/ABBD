@@ -17,7 +17,7 @@ func TestADottedBranchLetsItsSolidNeighboursJoinARoad(t *testing.T) {
 	v := roadView{
 		dotting: true, style: []string{"0", "0", "0"}, plan: []bool{false, false, true}, kinds: []string{"k", "k", "k"},
 		ends: [][2]end{{box(80, 120), box(580, 620)}, {box(280, 320), box(480, 520)}, {box(280, 320), box(130, 170)}},
-		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3},
+		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3}, src: []int{1, 1, 1},
 		position: func(y int) int { return y / 16 },
 	}.grouped()
 	ways = settled(ways, v)
@@ -42,7 +42,7 @@ func TestADottedLineALeadRidesJoinsTheSolidRoad(t *testing.T) {
 	v := roadView{
 		dotting: true, style: []string{"0", "0", "0"}, plan: []bool{false, false, true}, lead: []bool{false, false, true}, kinds: []string{"k", "k", "k"},
 		ends: [][2]end{{box(80, 120), box(580, 620)}, {box(280, 320), box(480, 520)}, {box(280, 320), box(130, 170)}},
-		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3},
+		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3}, src: []int{1, 1, 1},
 		position: func(y int) int { return y / 16 },
 	}.grouped()
 	ways = settled(ways, v)
@@ -64,7 +64,7 @@ func TestAMixedStubStaysWhole(t *testing.T) {
 	v := roadView{
 		style: []string{"0", "0", "0"}, plan: []bool{false, false, true}, kinds: []string{"k", "k", "k"},
 		ends: [][2]end{{box(288, 328), box(580, 620)}, {box(280, 320), box(480, 520)}, {box(280, 320), box(130, 170)}},
-		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3},
+		from: []string{"a", "s", "s"}, to: []string{"x", "y", "z"}, dest: []int{3, 3, 3}, src: []int{1, 1, 1},
 		position: func(y int) int { return y / 16 },
 	}.grouped()
 	ways = settled(ways, v)

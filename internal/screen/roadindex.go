@@ -304,16 +304,19 @@ func throughAt(p pt, ways [][]pt, legs ...[]leg) []pass {
 }
 
 // forkCount counts the routes of one fork group that turn off their stem
-// at another height than the group's first.
-func forkCount(group []int, ways [][]pt) int {
-	first, n := -1, 0
+// at another height than the group's first from their side, at the end
+// last says.
+func forkCount(group []int, ways [][]pt, last bool) int {
+	var first [3]*int
+	n := 0
 	for _, i := range group {
-		if w := ways[i]; len(w) >= 3 && w[0].x == w[1].x {
-			if first < 0 {
-				first = i
-			} else if ways[first][1].y != w[1].y {
-				n++
-			}
+		y, side, ok := turnOff(ways[i], last)
+		switch {
+		case !ok:
+		case first[side+1] == nil:
+			first[side+1] = &y
+		case y != *first[side+1]:
+			n++
 		}
 	}
 	return n
@@ -463,10 +466,10 @@ func newRoadIndex(v roadView, ways [][]pt) *roadIndex {
 		x.far[p] = v.farAt(p, ps, throughAt(p, ways, x.lines[onTrack(true, p.x)], x.lines[onTrack(false, p.y)]))
 		c.far += x.far[p]
 	}
-	for _, g := range v.forkGroups {
-		n := forkCount(g, ways)
+	for k, g := range v.forkGroups {
+		n := forkCount(g, ways, v.forkLast[k])
 		x.forks = append(x.forks, n)
-		c.forks += n
+		*c.forkAt(v.forkLast[k]) += n
 	}
 	for _, g := range v.fromGroups {
 		ps := teesIn(g, ways)
@@ -576,10 +579,10 @@ func (ch *change) costWithin(limit roadCost) (roadCost, bool) {
 	}
 	forks, froms := map[int]bool{}, map[int]bool{}
 	for _, i := range ts {
-		forks[v.forkOf[i]], froms[v.fromOf[i]] = true, true
+		forks[v.forkOf[i][0]], forks[v.forkOf[i][1]], froms[v.fromOf[i]] = true, true, true
 	}
 	for g := range forks {
-		c.forks += forkCount(v.forkGroups[g], next) - x.forks[g]
+		*c.forkAt(v.forkLast[g]) += forkCount(v.forkGroups[g], next, v.forkLast[g]) - x.forks[g]
 	}
 	if c.forks > limit.forks {
 		return c, false

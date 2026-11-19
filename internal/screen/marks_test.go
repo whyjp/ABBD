@@ -631,9 +631,9 @@ func TestAPlainViaWordStaysInTheTooltip(t *testing.T) {
 		if v.name != "MOD-0041 internal/store" {
 			continue
 		}
-		at := slices.IndexFunc(v.d.Wires, func(w Wire) bool { return w.D == "M556 98 L710 98" })
+		at := slices.IndexFunc(v.d.Wires, func(w Wire) bool { return w.D == "M556 98 L618 98" })
 		if at < 0 {
-			t.Fatal("MOD-0041 draws no line M556 98 L710 98")
+			t.Fatal("MOD-0041 draws no line M556 98 L618 98")
 		}
 		w := v.d.Wires[at]
 		if w.Label != nil || !strings.HasSuffix(w.Title, "\nvia 호출") {
