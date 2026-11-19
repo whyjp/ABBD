@@ -123,6 +123,11 @@ func holder(units []model.Unit, root, p string) (model.Unit, bool) {
 		if u.Name.Value == p {
 			return model.Unit{}, false
 		}
+		// A library anchors the line of a manifest that declares it, and
+		// holds none of the manifest's other words.
+		if u.Kind == model.External {
+			continue
+		}
 		for _, a := range u.Anchors {
 			if (a.Path == p || strings.HasPrefix(p, a.Path+"/")) && (len(a.Path) > depth || len(a.Path) == depth && u.Kind.Holds() && !best.Kind.Holds()) {
 				best, depth = u, len(a.Path)

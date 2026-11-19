@@ -64,6 +64,17 @@ abbd relate RELATER[=DIR] [RELATER[=DIR]] [-DNAME=VALUE...] [--root DIR] [-- EXT
                                      depends_on between units whose code it read, and adds a
                                      provides or consumes only where the extraction has none;
                                      register it as abbd setup -- abbd relate go -- EXTRACT-ARGV
+abbd libs [--root DIR] [-- EXTRACT-ARGV...]
+                                     print the extraction that EXTRACT-ARGV prints, or stdin,
+                                     with each third-party library a go.mod, package.json or
+                                     Cargo.toml declares as one EXT unit anchored at its
+                                     declaring line, and one depends_on, via import, from each
+                                     module that imports it, else from the module that holds the
+                                     manifest; dev, test and indirect dependencies and the
+                                     repository's own packages are left out, the standard
+                                     library is never one, and a library no module uses is named
+                                     on stderr; register it as
+                                     abbd setup -- abbd libs -- abbd relate go -- EXTRACT-ARGV
 abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
                                      which tells any assistant to ask the blueprint first
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
@@ -409,6 +420,7 @@ var commands = map[string]command{
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"extract":         {flags: []string{"root"}, pos: []int{1, 2}, run: func(e env, pos []string) error { return e.extractBundled(pos) }},
 	"relate":          {flags: []string{"root"}, pos: []int{1, 2}, dashArgv: true, run: func(e env, pos []string) error { return e.relateExtraction(pos) }},
+	"libs":            {flags: []string{"root"}, pos: []int{0}, dashArgv: true, run: func(e env, _ []string) error { return e.libraries() }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"brief":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.brief(pos[0]) }},

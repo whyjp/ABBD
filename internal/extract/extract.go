@@ -146,6 +146,12 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if foreignParents && len(u.Entries) > 0 {
 			return Result{}, fmt.Errorf("supplement unit %q lists entries; entries are what the code spells, so the extraction script reports them", u.Name.Value)
 		}
+		if foreignParents && u.Kind == model.External {
+			return Result{}, fmt.Errorf("supplement unit %q is an external library; a manifest declares it, so the extraction reports it (abbd libs)", u.Name.Value)
+		}
+		if u.Kind == model.External && u.Parent != "" {
+			return Result{}, fmt.Errorf("unit %q: an external library lies outside the repository, so no module or feature contains it", u.Name.Value)
+		}
 	}
 	for _, u := range units {
 		k, ok := kinds[u.Parent]
