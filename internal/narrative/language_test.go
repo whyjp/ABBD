@@ -27,7 +27,7 @@ func TestReadsInJudgesProseAndLeavesCodePathsAndQuotesOut(t *testing.T) {
 			t.Errorf("ReadsIn(%q, Hangul) = %v (share %.2f of %d letters), want %v", text, got, s, n, want)
 		}
 	}
-	if ReadsIn("동기화는 상태를 저장하고 청사진을 다시 그린다.", []*unicode.RangeTable{unicode.Latin}) {
+	if ReadsIn("동기화는 상태를 저장하고 블루프린트를 다시 그린다.", []*unicode.RangeTable{unicode.Latin}) {
 		t.Error("Latin reads a Korean sentence")
 	}
 	if s, n := Share("lint는 3개 view를 본다.", ko); n != 4 || s != 1 {

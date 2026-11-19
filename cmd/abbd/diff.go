@@ -102,9 +102,9 @@ body.compare{margin:16px;max-width:100vw;overflow-x:hidden}
 .compare .side svg{max-width:100%;height:auto}</style></head><body class="compare">
 <h1>{{.Of}}: {{.Base}}와 현재</h1>
 <p>{{.Summary}}</p>
-<p class="muted">청사진은 늘 현재 상태만 그립니다. 비교는 청사진 밖에 따로 둡니다. <a href="{{.NowPage}}">현재 페이지</a>{{if .BasePage}} · <a href="{{.BasePage}}">기준 페이지</a>{{end}}</p>
-<div class="pair"><div><h2>{{.Base}}</h2><div class="side">{{if .Before}}{{.Before}}{{else}}<p>기준 시점의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div>
-<div><h2>현재</h2><div class="side">{{if .Now}}{{.Now}}{{else}}<p>현재 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div></div>
+<p class="muted">블루프린트는 늘 현재 상태만 그립니다. 비교는 그 밖에 따로 둡니다. <a href="{{.NowPage}}">현재 페이지</a>{{if .BasePage}} · <a href="{{.BasePage}}">기준 페이지</a>{{end}}</p>
+<div class="pair"><div><h2>{{.Base}}</h2><div class="side">{{if .Before}}{{.Before}}{{else}}<p>기준 시점의 블루프린트에는 이 그림이 없습니다.</p>{{end}}</div></div>
+<div><h2>현재</h2><div class="side">{{if .Now}}{{.Now}}{{else}}<p>현재 블루프린트에는 이 그림이 없습니다.</p>{{end}}</div></div></div>
 <details><summary>바뀐 것 {{.Count}}줄</summary><pre>{{.Lines}}</pre></details>
 {{if .WordCount}}<details><summary>바뀐 글 {{.WordCount}}줄</summary><pre>{{.Words}}</pre></details>{{end}}
 </body></html>
@@ -183,7 +183,7 @@ func (e env) comparePage(base string, at store.Store, d topology.Diff, words []w
 			return "", err
 		}
 	}
-	name, of := "index.html", "청사진"
+	name, of := "index.html", "블루프린트"
 	if e.unit != "" {
 		name, of = e.unit+".html", e.unit
 	}

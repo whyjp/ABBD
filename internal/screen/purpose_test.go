@@ -155,7 +155,7 @@ func TestTheOverviewOpensWithTheProject(t *testing.T) {
 		}
 	}
 	contains("index.html", "<h1>ripgrep</h1>", "ripgrep searches directories for a regex.", "주요 부분", ">FEAT-0001</a>", "searches compressed files")
-	contains("MOD-0003.html", "<title>grep-searcher · ripgrep 청사진</title>")
+	contains("MOD-0003.html", "<title>grep-searcher · ripgrep 블루프린트</title>")
 }
 
 // With no name written, every page says ABBD, never the checkout's folder,

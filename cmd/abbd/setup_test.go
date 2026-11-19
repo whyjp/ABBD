@@ -278,7 +278,7 @@ func TestSetupKeepsTheProjectWrittenBeforeIt(t *testing.T) {
 	if !strings.Contains(y, "name: billing app") || !strings.Contains(y, "language: en") {
 		t.Fatalf("setup dropped what project.yaml said:\n%s", y)
 	}
-	if html := p.read("blueprint/index.html"); !strings.Contains(html, "billing app 청사진</title>") {
+	if html := p.read("blueprint/index.html"); !strings.Contains(html, "billing app 블루프린트</title>") {
 		t.Fatalf("the first blueprint is not titled with the project's name")
 	}
 }
