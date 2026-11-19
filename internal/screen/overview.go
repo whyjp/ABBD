@@ -520,6 +520,9 @@ type overview struct {
 	// the plan draws the overview, not a focus view, which has no lead.
 	walks []flowWalk
 	whole bool
+	// stored says only stored flows lead a view: none is inferred from the
+	// lines (store.Project.InferLead).
+	stored bool
 	// more are the links each box counts instead of drawing (primary.go),
 	// counted the pairs of places they join and countedRels the stored
 	// relations they stand for.
@@ -1221,7 +1224,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 				boxes = append(boxes, c)
 			}
 		}
-		leadLines(o.tree, o.walks, l.axis, boxes, true, reqs, func(i int) []string { return merged[i].rels })
+		leadLines(o.tree, o.walks, l.axis, boxes, true, !o.stored, reqs, func(i int) []string { return merged[i].rels })
 	}
 	l.hooks = o.hooks
 	routed := l.route(reqs)

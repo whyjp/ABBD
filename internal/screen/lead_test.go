@@ -141,7 +141,7 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 	}
 	d := withFigures(t, []model.ID{cli, st, gitx}, nil, nil).Overview
 	d.Lead, d.Quiet, d.Routes = nil, false, nil
-	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}}, false)
+	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}}, false, true)
 	if d.Lead == nil {
 		t.Fatal("a view past the caps draws no lead")
 	}
