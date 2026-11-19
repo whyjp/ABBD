@@ -8559,7 +8559,7 @@
                 "Code": true
               },
               {
-                "Text": "으로 남긴다. 이 줄도 관문을 실패시키지 않는다. 어떤 뷰가 주 흐름을 선에서 추정하면 ",
+                "Text": "으로 남긴다. 어떤 뷰가 리드를 선에서 추정하면 ",
                 "Code": false
               },
               {
@@ -8575,7 +8575,7 @@
                 "Code": true
               },
               {
-                "Text": ")이 주 흐름, 저장된 흐름, 추정을 따르는 뷰의 수와 추정한 홉 수를 알리고, ",
+                "Text": ")이 주 흐름, 저장된 흐름, 선에서 추정한 리드를 따르는 뷰의 수와 추정한 홉 수를 알리고, ",
                 "Code": false
               },
               {
@@ -8599,7 +8599,7 @@
                 "Code": true
               },
               {
-                "Text": "로 준다. 이 줄도 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
+                "Text": "로 준다. 두 줄 모두 관문을 실패시키지 않는다. 글 출력은 뷰마다 ",
                 "Code": false
               },
               {
@@ -22470,6 +22470,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -23967,7 +23968,7 @@
       ],
       "Understanding": {
         "Reader": "pstack poteto-mode 0.15.36",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
