@@ -267,10 +267,11 @@ func hoverCSS(shapes, routes int) string {
 	for j := range shapes {
 		on := fmt.Sprintf("svg:has(.p%d:hover,:focus-visible>.p%d)", j, j)
 		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin,.badge).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
-		fmt.Fprintf(&b, "%s .route.e%d{opacity:1;--c:var(--k%d)}\n", on, j, j)
+		fmt.Fprintf(&b, "%s :is(.route,.badge).e%d{opacity:1;--c:var(--k%d)}\n", on, j, j)
 	}
 	for k := range routes {
 		fmt.Fprintf(&b, "svg:has(.w.r%d:hover) .r%d:not(.w){opacity:1}\n", k, k)
+		fmt.Fprintf(&b, "svg:has(.w.r%d:hover) .badge.r%d{--c:var(--rc)}\n", k, k)
 	}
 	b.WriteString("}\n")
 	return b.String()
