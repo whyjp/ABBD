@@ -445,5 +445,5 @@ func printLeads(w io.Writer, views []screen.ViewLint) {
 	if n[screen.LeadInferred] == 0 {
 		return
 	}
-	fmt.Fprintf(w, "lint: leads: %d follow the primary flow, %d a stored flow, %d are inferred from their lines with %s; inferred_lead: false in .abbd/project.yaml numbers the primary flow and stored flows only\n", n[screen.LeadPrimary], n[screen.LeadStored], n[screen.LeadInferred], plural(hops, "hop"))
+	fmt.Fprintf(w, "lint: leads: %d follow the primary flow, %d a stored flow, %d are inferred from their lines with %s; set by inferred_lead: true in .abbd/project.yaml; without it only the primary flow and stored flows are numbered\n", n[screen.LeadPrimary], n[screen.LeadStored], n[screen.LeadInferred], plural(hops, "hop"))
 }
