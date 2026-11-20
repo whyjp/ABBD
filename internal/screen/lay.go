@@ -196,8 +196,15 @@ func (ly *layRun) plan() {
 		ak.key += "|" + r.kind
 		// A line between two modules that use each other reads both ways,
 		// so apart keeps it off the buses of other pairs' lines (rule 18).
-		// A folded pair always rides buses of its own.
-		if r.both || o.Apart && r.kind == kindMutual {
+		// A folded pair rides buses of its own, but in a fanning view
+		// (tactic.fan) folded pairs of one kind and dotting that meet one
+		// box share its slot there, a fan of lines that each read both
+		// ways, and no slot of a line that reads one way.
+		switch {
+		case r.both && l.fan:
+			dk.key += fmt.Sprint("|both|", r.plan)
+			ak.key += fmt.Sprint("|both|", r.plan)
+		case r.both || o.Apart && r.kind == kindMutual:
 			dk.key += "|" + place(r.to)
 			ak.key += "|" + place(r.from)
 		}

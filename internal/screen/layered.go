@@ -251,6 +251,15 @@ type tactic struct {
 	// straight across rather than down. choose and the focus views keep the
 	// drawing with it only where it reads no worse (foldsNoWorse).
 	beside bool
+	// fan lets folded pairs of one kind and dotting that meet one box share
+	// its slot and roads there, a fan of lines that each read both ways, as
+	// lines into one box share a bus (lay, confluent). The focus views keep
+	// the drawing with it only where it reads no worse (foldsNoWorse).
+	fan bool
+	// near seats a focus view's boxes on both sides of the focus in the
+	// ring row next to the focus when that row wraps (nearFirst). The focus
+	// views keep the drawing with it only where it reads no worse.
+	near bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true},
