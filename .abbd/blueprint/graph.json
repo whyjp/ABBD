@@ -6337,6 +6337,7 @@
         "Provides": 35,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6839,7 +6840,7 @@
       ],
       "Understanding": {
         "Reader": "claude-opus-5.5",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
