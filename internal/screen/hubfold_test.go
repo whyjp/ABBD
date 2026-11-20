@@ -113,10 +113,16 @@ func TestARecordLineOnAUtilityKeepsAllItsLines(t *testing.T) {
 // reaches it.
 func TestEveryFoldedBoxFoldsAllItsLines(t *testing.T) {
 	t.Parallel()
-	for _, name := range []string{"pstack", "ripgrep", "self", "orca"} {
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-		if err != nil {
-			t.Fatal(err)
+	folded := 0
+	// bandUnits is the case where a band surely stands; the fixtures add
+	// pstack's bands under a record.
+	for _, name := range []string{"bands", "pstack", "ripgrep", "self", "orca"} {
+		units := bandUnits()
+		if name != "bands" {
+			var err error
+			if units, err = store.Open(filepath.Join("testdata", name)).LoadUnits(); err != nil {
+				t.Fatal(err)
+			}
 		}
 		for _, rec := range []store.Overview{{}, recordOf(units)} {
 			m := Build(Input{Units: units, Overview: rec})
@@ -124,6 +130,7 @@ func TestEveryFoldedBoxFoldsAllItsLines(t *testing.T) {
 				if b.UsedBy == 0 {
 					continue
 				}
+				folded++
 				if !b.Ambient || b.Sub == nil || b.Sub.S != foundationText(b.UsedBy) {
 					t.Errorf("%s: %s folds its lines and says %+v, band %v", name, b.Name, b.Sub, b.Ambient)
 				}
@@ -144,6 +151,9 @@ func TestEveryFoldedBoxFoldsAllItsLines(t *testing.T) {
 				}
 			}
 		}
+	}
+	if folded < 2 {
+		t.Errorf("only %d boxes fold their lines over every case, so the test reads too little", folded)
 	}
 }
 
