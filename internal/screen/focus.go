@@ -201,7 +201,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
 			ins = alt
 		}
-		// Where two lines are a true reverse pair, the view is drawn again
+		// Where two lines are a mutual pair, the view is drawn again
 		// with each pair folded into one line, kept where that reads no worse.
 		for _, tier := range []int{foldAll, foldLone} {
 			if !foldsAny(ins.Drawing) {

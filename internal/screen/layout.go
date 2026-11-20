@@ -742,7 +742,7 @@ type wireReq struct {
 	kind string
 	plan bool
 	lead bool
-	// both says the line stands for a true reverse pair the router folded
+	// both says the line stands for a mutual pair the router folded
 	// into it (fold.go): it reads both ways, with a head at each end.
 	both bool
 }

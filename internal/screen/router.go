@@ -22,7 +22,7 @@ import (
 type state struct {
 	from layout
 	opts layOpts
-	// fold are the true reverse pairs laid as one line each, as [kept,
+	// fold are the mutual pairs laid as one line each, as [kept,
 	// rider] (fold.go).
 	fold [][2]int
 	// path is the moves that led here from the router's start.
@@ -58,7 +58,7 @@ const (
 	// hold holds every crossing at or under the track it took in another
 	// drawing.
 	actHold = "hold"
-	// fold draws each true reverse pair whose line from Lines runs back as
+	// fold draws each mutual pair whose line from Lines runs back as
 	// one line with a head at each end (fold.go).
 	actFold = "fold"
 )
@@ -247,7 +247,7 @@ type policy interface {
 }
 
 // builtin is the policy routing has always kept. Where the layout lets it
-// (tactic.pairs), it then folds the true reverse pairs (fold) and makes the
+// (tactic.pairs), it then folds the mutual pairs (fold) and makes the
 // kept drawing's moves again after that; choose and the focus views keep
 // the folded drawing only where it reads no worse (foldsNoWorse). Its choices are the modes
 // it lays a view both ways in, outermost first: each way is laid with every

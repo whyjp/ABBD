@@ -10,7 +10,7 @@ import (
 )
 
 // Only two lines between the same two boxes, one each way, of one kind and
-// one dotting, both ending on the boxes themselves, are a true reverse pair.
+// one dotting, both ending on the boxes themselves, are a mutual pair.
 // The line that runs the way the eye reads is kept.
 func TestOnlyATrueReversePairFolds(t *testing.T) {
 	box := func(id string, row int) end { return end{node: id, row: row, lo: 0, hi: 100, key: id} }
@@ -54,7 +54,7 @@ func TestAFoldedPairIsOneLineOfItsOwn(t *testing.T) {
 		mu.Lock()
 		defer mu.Unlock()
 		if r.rider == nil {
-			t.Errorf("a view with %d true reverse pairs folds none", len(foldable(reqs, readFirst)))
+			t.Errorf("a view with %d mutual pairs folds none", len(foldable(reqs, readFirst)))
 			return
 		}
 		for j, k := range r.rider {
