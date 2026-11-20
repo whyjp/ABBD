@@ -32,7 +32,7 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			plain := drawAll(t, name).Overview
-			if slices.ContainsFunc(plain.Boxes, func(b Box) bool { return b.More > 0 }) {
+			if len(plain.Undrawn) > 0 {
 				t.Error("the overview counts lines with the cut switched off")
 			}
 			m := fixture(t, name)
@@ -55,12 +55,11 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 				if joined[b.ID] && !kept[b.ID] {
 					t.Errorf("box %s is drawn with no line", b.ID)
 				}
-				if b.More == 0 {
-					continue
-				}
+			}
+			for _, u := range d.Undrawn {
 				counted++
-				if !slices.ContainsFunc(m.Focus, func(f Focus) bool { return "#"+f.ID == b.MoreHref }) {
-					t.Errorf("box %s counts %d lines, and its count opens %q, no focus view", b.ID, b.More, b.MoreHref)
+				if !slices.ContainsFunc(m.Focus, func(f Focus) bool { return "#"+f.ID == u.Href }) {
+					t.Errorf("box %s lists %d undrawn lines, and its list opens %q, no focus view", u.Name, len(u.With), u.Href)
 				}
 			}
 			if counted == 0 {
@@ -164,10 +163,8 @@ func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
 		m := fixture(t, name)
 		drawn := rels(m.Overview)
 		pill := map[string]string{}
-		for _, b := range m.Overview.Boxes {
-			if b.More > 0 {
-				pill[b.ID] = b.MoreHref
-			}
+		for id, u := range undrawnOwners(m.Overview) {
+			pill[id] = u.Href
 		}
 		focus := map[string]map[string]bool{}
 		for _, f := range m.Focus {

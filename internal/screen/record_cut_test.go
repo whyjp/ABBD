@@ -51,10 +51,7 @@ func TestTheOverviewDrawsTheLinesTheRecordChose(t *testing.T) {
 			t.Errorf("chosen pair %v is not drawn", p)
 		}
 	}
-	more := map[string]int{}
-	for _, b := range m.Overview.Boxes {
-		more[b.ID] = b.More
-	}
+	listed := undrawnPairs(m.Overview)
 	for p := range plain {
 		if chosen[p] {
 			continue
@@ -62,10 +59,8 @@ func TestTheOverviewDrawsTheLinesTheRecordChose(t *testing.T) {
 		if got[p] {
 			t.Errorf("pair %v was not chosen and is drawn", p)
 		}
-		for _, id := range p {
-			if more[string(id)] == 0 {
-				t.Errorf("box %s hides a pair and counts none", id)
-			}
+		if !listed[p] {
+			t.Errorf("pair %v is hidden and the list of undrawn lines does not name it", p)
 		}
 		for i, id := range p {
 			other := p[1-i]

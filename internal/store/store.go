@@ -561,8 +561,8 @@ type Project struct {
 	Name    string `yaml:"name,omitempty"`
 	Purpose string `yaml:"purpose,omitempty"`
 	// OverviewCut turns on the overview's density cut: a dense overview
-	// draws its primary links and counts the rest on a +N pill per box
-	// that opens the box's focus view. Off by default. Nil says the human
+	// draws its primary links and lists the rest under the picture, each
+	// pair once, with a link to the focus view of the box that draws it. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
 	// OverviewFoldHubs folds the lines into each hub of the overview, a box

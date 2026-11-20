@@ -28,7 +28,7 @@ type Elements struct {
 	// once. Ink is the straight stretches of drawn ink, and Bends how many
 	// of them start at a turn of the stretch before. Words are the labels
 	// at rest, on lines and beside the lead's hops. Badges are the ×N on
-	// bundles, the +N pills on boxes, the lead's hop numbers and its stay
+	// bundles, the lead's hop numbers and its stay
 	// pill.
 	Shapes int `json:"shapes"`
 	Ink    int `json:"ink"`
@@ -127,11 +127,6 @@ func elementsOf(d Drawing, k inkMeasure) Elements {
 	for _, w := range d.Wires {
 		e.Words += len(w.Words())
 		if w.Count > 0 {
-			e.Badges++
-		}
-	}
-	for _, b := range d.Boxes {
-		if b.More > 0 {
 			e.Badges++
 		}
 	}
