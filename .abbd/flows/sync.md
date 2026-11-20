@@ -3,25 +3,25 @@ question: What does abbd sync do, in order?
 format: 1
 steps:
     - unit: MOD-0041
-      does: LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치
+      does: LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 언어, 그리기 스위치
       fails: stops when project.yaml names no script; run abbd setup first
       calls:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "595"
+          lines: "599"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "561"
+          lines: "573"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "565"
+          lines: "577"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
-        internal/store/store.go#quote-ac7ade60: 738cd123f9a9d4b4
+        internal/store/store.go#quote-ac7ade60: 4b989d9168f666c6
     - unit: MOD-0004
       does: runScript(argv) → 루트에서 돌린 스크립트의 stdout, argv의 abbd는 지금 도는 바이너리
       fails: 스크립트가 0이 아닌 값으로 끝나면 멈추고 그 stderr를 찍는다
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "568"
+          lines: "580"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "711"
+          lines: "723"
           symbol: runScript
           quote: cmd := exec.Command(name, argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "123"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "572"
+          lines: "584"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -71,7 +71,7 @@ steps:
           lines: "326"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "641"
+          lines: "653"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "113"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "653"
+          lines: "665"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "322"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "662"
+          lines: "674"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "672"
+          lines: "684"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -132,7 +132,7 @@ steps:
           lines: "76"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "666"
+          lines: "678"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -146,7 +146,7 @@ steps:
           lines: "245"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "676"
+          lines: "688"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -160,7 +160,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "677"
+          lines: "689"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -203,7 +203,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "532"
+          lines: "544"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
@@ -377,6 +377,23 @@ retired:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
         internal/store/store.go#quote-ac7ade60: 384e6d146d0e2fc6
+    - unit: MOD-0041
+      does: LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치
+      fails: stops when project.yaml names no script; run abbd setup first
+      evidence:
+        - path: internal/store/store.go
+          lines: "599"
+          quote: return p, readYAML(s.path("project.yaml"), &p)
+        - path: cmd/abbd/main.go
+          lines: "561"
+          quote: p, err := e.st.LoadProject()
+        - path: cmd/abbd/main.go
+          lines: "565"
+          quote: if len(p.Extract) == 0 {
+      code:
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
+        internal/store/store.go#quote-ac7ade60: 738cd123f9a9d4b4
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.
