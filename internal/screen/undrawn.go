@@ -20,35 +20,30 @@ type LeftOut struct {
 }
 
 // undrawn lists the pairs o counts instead of drawing. A pair hangs off the
-// hub that folds it (hubfold.go), else off the end that has more undrawn
-// pairs, the first by ID when they tie, so the busiest boxes come first and
-// no pair is listed twice.
+// box that uses the other, which is the box whose focus view draws the line
+// with the contracts it carries, and off the hub that folds it
+// (hubfold.go) where one does. No pair is listed twice, and the boxes with
+// most pairs come first.
 func (o *overview) undrawn() []LeftOut {
-	pairs := map[[2]string]bool{}
-	deg := map[string]int{}
+	seen := map[[2]string]bool{}
+	var pairs [][2]string
 	for _, c := range o.counted {
 		k := [2]string{min(c[0], c[1]), max(c[0], c[1])}
-		if k[0] == k[1] || pairs[k] {
-			continue
+		if k[0] != k[1] && !seen[k] {
+			seen[k] = true
+			pairs = append(pairs, c)
 		}
-		pairs[k] = true
-		deg[k[0]]++
-		deg[k[1]]++
 	}
 	folds := func(hub, user string) bool {
 		return slices.Contains(o.fold[model.ID(hub)], model.ID(user))
 	}
 	own := map[string][]string{}
-	for k := range pairs {
-		a, b := k[0], k[1]
-		switch {
-		case folds(a, b) && !folds(b, a):
-		case folds(b, a) && !folds(a, b):
-			a, b = b, a
-		case deg[b] > deg[a]:
-			a, b = b, a
+	for _, c := range pairs {
+		owner, other := c[0], c[1]
+		if folds(other, owner) && !folds(owner, other) {
+			owner, other = other, owner
 		}
-		own[a] = append(own[a], b)
+		own[owner] = append(own[owner], other)
 	}
 	var out []LeftOut
 	for id, with := range own {
