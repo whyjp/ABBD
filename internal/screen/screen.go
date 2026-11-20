@@ -227,6 +227,14 @@ type Model struct {
 	Lines []ChosenLine
 	// Ambient are the boxes the overview record marks ambient, with how.
 	Ambient []AmbientView
+	// Common are the overview's common modules, each classified as one that
+	// affects the logic or a utility (common.go), and Libraries the
+	// third-party libraries two boxes or more share.
+	Common    []CommonView
+	Libraries []SharedLibrary
+	// seats is the overview drawing the focus views seat their boxes by:
+	// the overview itself, or the one without the record's cut or the band.
+	seats Drawing
 	// Name and Purpose are the project's, and Parts its top-level modules
 	// and every feature with the one line each says of itself, which the
 	// overview opens with.
@@ -292,7 +300,9 @@ func Build(in Input) Model {
 		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
 	unfolded := c
-	if amb := ambientOf(in); in.Project.OverviewFoldHubs || len(amb) > 0 {
+	m.Common, m.Libraries = o.commons()
+	common := commonByUnit(m.Common)
+	if amb := bandOf(m.Common); in.Project.OverviewFoldHubs || len(amb) > 0 {
 		c = o.foldHubs(c, fs, in.Project.OverviewFoldHubs, amb)
 	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
@@ -301,7 +311,7 @@ func Build(in Input) Model {
 	overview := func(c *cut) Drawing {
 		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
 			p := planScoped(in.Units, "", nil, t, ls, fs, c, scope)
-			p.hooks, p.stored = in.hooks, o.stored
+			p.hooks, p.stored, p.common = in.hooks, o.stored, common
 			if p.layout.idle {
 				return Drawing{}, false
 			}
@@ -314,6 +324,23 @@ func Build(in Input) Model {
 		})
 	}
 	m.Overview = overview(c)
+	// A band takes its lines off the page, and with them any word they
+	// carry at rest. Where that would leave the overview fewer lines with a
+	// word than it draws without the band, the utilities stay boxes: a
+	// tidier drawing is not worth a word a reader loses.
+	if c != nil && len(c.band) > 0 {
+		// Only the bands go: a hub the project folds stays folded.
+		bare := unfolded
+		if in.Project.OverviewFoldHubs {
+			bare = o.foldHubs(unfolded, fs, true, nil)
+		}
+		if plain := overview(bare); wordFill(m.Overview).Labelled < wordFill(plain).Labelled {
+			c, m.Overview = bare, plain
+		}
+	}
+	for i := range m.Common {
+		m.Common[i].Band = slices.ContainsFunc(m.Overview.Boxes, func(b Box) bool { return b.ID == m.Common[i].Unit && b.Ambient })
+	}
 	// Which boxes share a cycle is the code's, so it is read off the
 	// overview of every line, whatever lines the cut leaves undrawn.
 	m.Overview.axis.cycles = o.layout.axis.cycles
@@ -332,6 +359,7 @@ func Build(in Input) Model {
 	} else if c.folds() {
 		seats = overview(unfolded)
 	}
+	m.seats = seats
 	m.Focus = o.overviewFocus(in.Units, seats, c.hides() || c.folds())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {

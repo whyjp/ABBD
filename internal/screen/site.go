@@ -45,6 +45,9 @@ type page struct {
 	Contracts []ContractRow
 	// Paged are the units that have a page of their own.
 	Paged map[string]bool
+	// Commons and Libraries are what the common modules' page lists.
+	Commons   []CommonCard
+	Libraries []LibraryRow
 }
 
 // NavItem is one module in the nav's tree, at its depth below the top.
@@ -125,6 +128,12 @@ func Pages(m Model) (map[string][]byte, error) {
 	for i := range m.Tables {
 		p := withPage(shared, m.Tables[i].ID+".html", m.Tables[i].Question, "tablepage", m.Tables[i].ID)
 		p.Table = &m.Tables[i]
+		pages = append(pages, p)
+	}
+	if len(m.Common) > 0 || len(m.Libraries) > 0 {
+		p := withPage(shared, CommonFile, "공통 모듈", "commonpage", "common")
+		ref := refFor(m)
+		p.Commons, p.Libraries = commonCards(m, ref), libraryRows(m, ref)
 		pages = append(pages, p)
 	}
 	pages = append(pages,
@@ -249,16 +258,7 @@ func nameOf(m Model, id string) string {
 // contractRows lists every contract by kind and name, with the module
 // that owns it and the live relations that provide and use it.
 func contractRows(m Model) []ContractRow {
-	pages := map[string]bool{}
-	for _, ins := range m.Insides {
-		pages[ins.ID] = true
-	}
-	ref := func(id string) Ref {
-		if pages[id] {
-			return Ref{ID: id, Name: nameOf(m, id), Href: "#m-" + id}
-		}
-		return Ref{ID: id, Name: nameOf(m, id), Href: "#u-" + id}
-	}
+	ref := refFor(m)
 	var out []ContractRow
 	for _, u := range m.Units {
 		if !model.Kind(u.Kind).IsContract() {
@@ -296,4 +296,19 @@ func contractRows(m Model) []ContractRow {
 		return strings.Compare(a.Name+a.ID, b.Name+b.ID)
 	})
 	return out
+}
+
+// refFor names each unit of m and where a reader finds it: its own page
+// when it holds units, its row in the unit index otherwise.
+func refFor(m Model) func(string) Ref {
+	pages := map[string]bool{}
+	for _, ins := range m.Insides {
+		pages[ins.ID] = true
+	}
+	return func(id string) Ref {
+		if pages[id] {
+			return Ref{ID: id, Name: nameOf(m, id), Href: "#m-" + id}
+		}
+		return Ref{ID: id, Name: nameOf(m, id), Href: "#u-" + id}
+	}
 }

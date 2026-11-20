@@ -58,9 +58,9 @@ func (o *overview) overviewHubs() (map[string]bool, map[string]map[string]bool) 
 func isModuleOf(o *overview, id model.ID) bool { return slices.Contains(o.modules, id) }
 
 // foldHubs folds the overview's lines into its hubs on top of the cut c,
-// nil for every link drawn, when hubs is on, and every line of each box
-// the overview record marks ambient, which then stands as a foundation band
-// under the boxes (band). It is c itself when no line folds.
+// nil for every link drawn, when hubs is on, and every line of each box in
+// ambient, the utilities bandOf names, which then stands as a foundation
+// band under the boxes (band). It is c itself when no line folds.
 func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[model.ID]bool) *cut {
 	hub, users := o.overviewHubs()
 	if !hubs {
