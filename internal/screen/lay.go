@@ -145,6 +145,20 @@ func (ly *layRun) plan() {
 	members, ends := map[slotKey][]int{}, map[slotKey][]int{}
 	leave, arrive := map[slotKey][]int{}, map[slotKey][]int{}
 	keys := make([][2]slotKey, len(reqs))
+	// In a fanning view each folded line shares a slot only at its hub
+	// (foldHubs), the end it shares with other folded lines of its kind
+	// and dotting.
+	var hub []string
+	if l.fan {
+		from, to := make([]string, len(reqs)), make([]string, len(reqs))
+		fans := make([]wireReq, len(reqs))
+		for i, r := range reqs {
+			from[i], to[i] = place(r.from), place(r.to)
+			fans[i] = r
+			fans[i].fan = r.both
+		}
+		hub = foldHubs(fans, from, to)
+	}
 	for i, r := range reqs {
 		p := &plans[i]
 		p.dep, p.arr, p.via = -1, -1, -1
@@ -197,12 +211,15 @@ func (ly *layRun) plan() {
 		// A line between two modules that use each other reads both ways,
 		// so apart keeps it off the buses of other pairs' lines (rule 18).
 		// A folded pair rides buses of its own, but in a fanning view
-		// (tactic.fan) folded pairs of one kind and dotting that meet one
-		// box share its slot there, a fan of lines that each read both
-		// ways, and no slot of a line that reads one way.
+		// (tactic.fan) folded pairs of one kind and dotting share their
+		// hub's slot, a fan of lines that each read both ways, and no slot
+		// of a line that reads one way; at the far end each keeps its own.
 		switch {
-		case r.both && l.fan:
+		case r.both && hub != nil && hub[i] == place(r.from):
 			dk.key += fmt.Sprint("|both|", r.plan)
+			ak.key += "|" + place(r.from)
+		case r.both && hub != nil && hub[i] == place(r.to):
+			dk.key += "|" + place(r.to)
 			ak.key += fmt.Sprint("|both|", r.plan)
 		case r.both || o.Apart && r.kind == kindMutual:
 			dk.key += "|" + place(r.to)

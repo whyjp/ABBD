@@ -35,6 +35,22 @@ func TestFanAtSharesOnlyTheHub(t *testing.T) {
 	if v.fanAt(ways, [2]int{0, 0}, [2]int{2, 0}) {
 		t.Error("a folded line shares the hub's run with a line that is not folded")
 	}
+	// mix keeps two lines of a fan apart at the hub where their kinds or
+	// dottings differ, and lets them meet there where they agree.
+	box := func(id string) end { return end{node: id, key: id} }
+	v.kinds, v.plan = []string{"depends_on", "depends_on", "depends_on"}, []bool{false, false, false}
+	v.ends = [][2]end{{box("h"), box("a")}, {box("h"), box("b")}, {box("h"), box("c")}}
+	if v.mix(ways, [2]int{0, 0}, [2]int{1, 0}) {
+		t.Error("two lines of one fan may not meet at the hub")
+	}
+	v.kinds[1] = "consumes"
+	if !v.mix(ways, [2]int{0, 0}, [2]int{1, 0}) {
+		t.Error("two folded lines of two kinds meet at the hub")
+	}
+	v.kinds[1] = "depends_on"
+	if !v.mix(ways, [2]int{0, 0}, [2]int{2, 0}) {
+		t.Error("a folded line meets a line that reads one way at the hub")
+	}
 }
 
 // A near tactic seats the boxes on both sides of the focus in the ring row
@@ -73,8 +89,15 @@ func TestAFanCarriesOnlyFoldedPairs(t *testing.T) {
 	fans := 0
 	for _, ins := range m.Insides {
 		for _, f := range ins.Focus {
+			// Every path that carries one relation of a folded pair along
+			// with other lines, a fan's stem or a branch, carries whole
+			// folded pairs only: no line that reads one way joins a fan.
 			for _, w := range f.Drawing.Wires {
-				if !w.Joins || !w.folded() || len(w.Rels) < 2 {
+				paired := slices.ContainsFunc(w.Rels, func(r string) bool {
+					p := strings.Split(r, ".")
+					return len(p) == 3 && slices.Contains(w.Rels, p[2]+"."+p[1]+"."+p[0])
+				})
+				if !paired || len(w.Rels) < 3 {
 					continue
 				}
 				fans++
