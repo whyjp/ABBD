@@ -36,7 +36,8 @@ func TestOnlyATrueReversePairFolds(t *testing.T) {
 }
 
 // Over every view of every fixture the router folds: each folded pair is
-// drawn as its kept line's ink alone, which no third line rides, the rider
+// drawn as its kept line's ink alone, which no third line rides but, in a
+// view tried as a fan, other whole folded pairs of its hub, the rider
 // runs the kept line's way backward and has no start of its own, and
 // replaying the kept moves draws the same drawing.
 func TestAFoldedPairIsOneLineOfItsOwn(t *testing.T) {
@@ -72,7 +73,16 @@ func TestAFoldedPairIsOneLineOfItsOwn(t *testing.T) {
 				if on < 0 && !slices.Contains(d.reqs, k) {
 					continue
 				}
-				if on < 0 || !slices.Contains(d.reqs, k) || len(d.reqs) != 2 || !d.both {
+				// A fanning view lets folded pairs of one hub share a path,
+				// and nothing else: each line on it is a whole folded pair.
+				fan := at.fan && len(d.reqs) > 2 && !slices.ContainsFunc(d.reqs, func(i int) bool {
+					mate := r.rider[i]
+					if mate < 0 {
+						mate = slices.Index(r.rider, i)
+					}
+					return mate < 0 || !slices.Contains(d.reqs, mate)
+				})
+				if on < 0 || !slices.Contains(d.reqs, k) || len(d.reqs) != 2 && !fan || !d.both {
 					t.Errorf("a path carries %v with folded pair %d, %d", d.reqs, k, j)
 				}
 				if on >= 0 && d.starts[on] != noStart {
