@@ -24388,6 +24388,14 @@
                   "Code": true
                 },
                 {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "libUsers",
+                  "Code": true
+                },
+                {
                   "Text": "). 초점 뷰는 라이브러리가 제 상자 수의 4분의 1(",
                   "Code": false
                 },
@@ -25826,6 +25834,14 @@
               },
               {
                 "Text": "usedBy",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "libUsers",
                 "Code": true
               },
               {
