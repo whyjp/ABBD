@@ -162,7 +162,7 @@ func (l *layout) over(r wireReq) bool {
 	return l.staged(r) && l.row[r.from.node] == l.row[r.to.node]
 }
 
-// foldsHops says the hops is between the boxes of k are a true reverse pair
+// foldsHops says the hops is, between the boxes of k, are a true reverse pair
 // a view that folds its pairs draws as one line: one line each way, of one
 // kind, between a box a beside tactic placed and its partner.
 func (l *layout) foldsHops(reqs []wireReq, k [2]string, is []int) bool {
@@ -170,5 +170,5 @@ func (l *layout) foldsHops(reqs []wireReq, k [2]string, is []int) bool {
 		return false
 	}
 	p, q := reqs[is[0]], reqs[is[1]]
-	return p.kind == q.kind && p.from.node == q.to.node && p.to.node == q.from.node && !p.lead && !q.lead && p.plan == q.plan
+	return p.kind == q.kind && p.kind != kindMutual && p.kind != kindBypass && p.from.node == q.to.node && p.to.node == q.from.node && !p.lead && !q.lead && p.plan == q.plan
 }

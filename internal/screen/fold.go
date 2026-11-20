@@ -284,8 +284,3 @@ func lone(pairs [][2]int, paths []drawn) [][2]int {
 	}
 	return out
 }
-
-// foldsSome says d draws some true reverse pair as one line.
-func foldsSome(d Drawing) bool {
-	return slices.ContainsFunc(d.Routes, func(r Route) bool { return r.Both && r.Kind != kindMutual })
-}

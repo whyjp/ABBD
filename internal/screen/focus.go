@@ -42,10 +42,11 @@ func focusID(scope, unit model.ID) string {
 	return "f-" + string(scope) + "--" + string(unit)
 }
 
-// A box that both uses the focus and is used by it is drawn twice: once
-// above among its callers and once below among what it uses, so every
-// line of a focus view reads down. Its second box is a twin, a unit of the
-// drawing only.
+// A box that both uses the focus and is used by it is drawn once where its
+// two lines fold into one and the view reads no worse (insideFocus). Else it
+// is drawn twice: once above among its callers and once below among what
+// it uses, so every line of a focus view reads down. Its second box is a
+// twin, a unit of the drawing only.
 const twinMark = "↓"
 
 const twinNote = "서로 쓰는 상자라 위와 아래에 한 번씩 그렸습니다"

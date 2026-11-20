@@ -416,6 +416,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	var partner map[string]string
 	if t.beside {
 		partner = partners(nodes, out, lines)
+		idle = idle && len(partner) == 0
 		for v, p := range partner {
 			if rank[v] != rank[p] {
 				rank[v], idle = rank[p], false
@@ -1381,7 +1382,7 @@ func tier(nodes []lnode, order []string, out map[string][]string, keep map[ledge
 // one back to that node, to that node. A node can stand beside its partner
 // only on its left or its right, where nothing comes between them, so a node
 // such nodes meet three or more times keeps them in their rows. Of two nodes
-// that meet only each other, only the one that sorts later moves.
+// that meet only each other, only the one that sorts first moves.
 func partners(nodes []lnode, out map[string][]string, lines map[[2]string]int) map[string]string {
 	meets := map[string][]string{}
 	for k, n := range lines {

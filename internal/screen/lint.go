@@ -140,8 +140,8 @@ type Totals struct {
 	LabelRepeats int `json:"label_repeats"`
 	Labelled     int `json:"labelled"`
 	Routes       int `json:"routes"`
-	// Density is the routes drawn per box, in tenths: the exemplars draw
-	// 10 to 17, and a page the debt file names may not raise it (gate.go).
+	// Density is the lines drawn per unit, in tenths (density): the
+	// exemplars draw 10 to 17, and a page the debt file names may not raise it (gate.go).
 	Density int `json:"density"`
 	// Fans are the paths that start as strands, one per line leaving
 	// there, and Strands those strands (Fan). They say how a change draws
