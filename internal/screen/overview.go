@@ -34,7 +34,10 @@ type Drawing struct {
 	// relations those lines stand for.
 	Counted     [][2]string `json:"-"`
 	countedRels []string
-	said        map[pair]string
+	// Undrawn are the pairs Counted names, listed once each under the box
+	// whose focus view draws them, for the text under the drawing.
+	Undrawn []LeftOut `json:",omitempty"`
+	said    map[pair]string
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
 	// Routes are each line's whole way, one per line the view requests.
@@ -120,10 +123,6 @@ type Box struct {
 	// Role is "entry" for the box a view's lead starts from and "hub" for
 	// one most lines touch; either is drawn filled (dress.go).
 	Role string `json:",omitempty"`
-	// More is how many of its links the overview counts on the box instead
-	// of drawing, and MoreHref the focus view that draws them all.
-	More     int    `json:",omitempty"`
-	MoreHref string `json:",omitempty"`
 	// UsedBy is how many boxes use a foundation band, whose lines the
 	// overview folds into its last line (hubfold.go), 0 for every other box.
 	UsedBy int `json:"-"`
@@ -131,14 +130,6 @@ type Box struct {
 	// the others (hubfold.go).
 	Ambient bool `json:"-"`
 }
-
-// MoreW is how wide the pill counting a box's undrawn links is, MoreX and
-// MoreY where it starts, straddling the box's right edge halfway down, off
-// the chips on its top and bottom, and MoreMid its middle.
-func (b Box) MoreW() int   { return 14 + 7*len(fmt.Sprint(b.More)) }
-func (b Box) MoreX() int   { return b.X + b.W - b.MoreW()/2 }
-func (b Box) MoreY() int   { return b.Y + b.H/2 - 8 }
-func (b Box) MoreMid() int { return b.MoreX() + b.MoreW()/2 }
 
 // Text is one line of a label and where it starts; Mid centres it on X.
 type Text struct {
@@ -548,10 +539,8 @@ type overview struct {
 	// stored says only stored flows lead a view: none is inferred from the
 	// lines unless the project turns that on (store.Project.InferLead).
 	stored bool
-	// more are the links each box counts instead of drawing (primary.go),
-	// counted the pairs of places they join and countedRels the stored
-	// relations they stand for.
-	more        map[model.ID]int
+	// counted are the pairs of places whose links the overview leaves out
+	// (primary.go) and countedRels the stored relations they stand for.
 	counted     [][2]string
 	countedRels []string
 	said        map[pair]string
@@ -776,7 +765,6 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 			o.countedRels = append(o.countedRels, o.rels[e.String()]...)
 			return true
 		})
-		o.more = c.more
 		o.said = c.said
 		o.fold, o.band, o.bandUses = c.fold, c.band, c.bandUses
 		if c.said == nil {
@@ -1310,7 +1298,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, Undrawn: o.undrawn(), countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
 	bandAt := o.bandRects(l)
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
@@ -1331,9 +1319,6 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
-		}
-		if n := o.more[m]; n > 0 {
-			b.More, b.MoreHref = n, "#"+focusID("", m)
 		}
 		if us := o.fold[m]; len(us) > 0 {
 			b.UsedBy = len(us)
