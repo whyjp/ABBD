@@ -76,7 +76,8 @@ func TestFoldedHubsSayHowManyBoxesUseThem(t *testing.T) {
 	}
 }
 
-// Every folded hub says how many boxes use it, on every fixture.
+// Every folded hub says how many boxes use it, on every fixture, and so
+// does a utility the overview stands as a foundation band.
 func TestEveryFoldedHubSaysItsUsers(t *testing.T) {
 	t.Parallel()
 	for _, name := range []string{"pstack", "ripgrep", "self", "orca"} {
@@ -86,7 +87,11 @@ func TestEveryFoldedHubSaysItsUsers(t *testing.T) {
 		}
 		m := Build(Input{Units: units, Project: store.Project{OverviewFoldHubs: true}})
 		for _, b := range m.Overview.Boxes {
-			if b.UsedBy > 0 && (b.Sub == nil || b.Sub.S != usedByText(b.UsedBy)) {
+			want := usedByText(b.UsedBy)
+			if b.Ambient {
+				want = foundationText(b.UsedBy)
+			}
+			if b.UsedBy > 0 && (b.Sub == nil || b.Sub.S != want) {
 				t.Errorf("%s: folded hub %s says %+v", name, b.Name, b.Sub)
 			}
 		}

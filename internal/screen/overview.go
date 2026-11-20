@@ -560,6 +560,9 @@ type overview struct {
 	band map[model.ID]bool
 	// bandUses are the boxes each band uses (hubfold.go).
 	bandUses map[model.ID][]model.ID
+	// common are the overview's common modules by unit (common.go), whose
+	// boxes say in their tooltips what kind they are.
+	common map[model.ID]CommonView
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -1336,6 +1339,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 				names = append(names, o.name(u))
 			}
 			b.Title += "\n" + usedByText(len(us)) + ": " + strings.Join(names, ", ") + ". 선은 접어 그렸고, 이 상자의 초점 뷰가 모두 그립니다"
+		}
+		if cv, ok := o.common[m]; ok {
+			b.Title += "\n" + o.commonNote(cv)
 		}
 		if base(m) != m {
 			b.Title += "\n" + twinNote

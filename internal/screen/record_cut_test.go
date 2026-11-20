@@ -51,9 +51,9 @@ func TestTheOverviewDrawsTheLinesTheRecordChose(t *testing.T) {
 			t.Errorf("chosen pair %v is not drawn", p)
 		}
 	}
-	more := map[string]int{}
+	more, band := map[string]int{}, map[model.ID]bool{}
 	for _, b := range m.Overview.Boxes {
-		more[b.ID] = b.More
+		more[b.ID], band[model.ID(b.ID)] = b.More, b.Ambient
 	}
 	for p := range plain {
 		if chosen[p] {
@@ -62,8 +62,10 @@ func TestTheOverviewDrawsTheLinesTheRecordChose(t *testing.T) {
 		if got[p] {
 			t.Errorf("pair %v was not chosen and is drawn", p)
 		}
+		// A pair into a foundation band adds to no count: the band says
+		// how many boxes use it.
 		for _, id := range p {
-			if more[string(id)] == 0 {
+			if more[string(id)] == 0 && !band[p[0]] && !band[p[1]] {
 				t.Errorf("box %s hides a pair and counts none", id)
 			}
 		}

@@ -90,25 +90,9 @@ func readOverview(in Input) chosen {
 	return c
 }
 
-// ambientOf is each unit the overview record marks ambient, when the project
-// draws ambient boxes as a foundation band (overview_ambient). A mark that
-// is stale or names a unit that is gone counts as no mark.
-func ambientOf(in Input) map[model.ID]bool {
-	if !in.Project.OverviewAmbient || !in.Overview.Known {
-		return nil
-	}
-	var out map[model.ID]bool
-	for _, p := range in.Overview.Ambient {
-		if len(p.Why(in.Units)) > 0 {
-			continue
-		}
-		if out == nil {
-			out = map[model.ID]bool{}
-		}
-		out[p.Claim.Unit] = true
-	}
-	return out
-}
+// bandOf is each box the overview stands as a foundation band: each common
+// module classified a utility (common.go).
+func bandOf(cs []CommonView) map[model.ID]bool { return utilities(cs) }
 
 // scopeOf is the scope of each unit the overview record marks as a sample, an
 // artifact or a tool. A mark that is stale, names a unit that is gone or

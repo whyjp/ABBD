@@ -40,6 +40,14 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 			if 10*len(d.ways) > sparse*len(d.Boxes) || len(d.ways) >= len(plain.ways) {
 				t.Errorf("the overview draws %d lines over %d boxes, against %d uncut, past %d tenths a box", len(d.ways), len(d.Boxes), len(plain.ways), sparse)
 			}
+			// A box whose kept line ran into a foundation band may be left
+			// with none: the band names every box that uses it.
+			usesBand := map[string]bool{}
+			for _, c := range m.Common {
+				for _, u := range c.Users {
+					usesBand[u] = usesBand[u] || c.Utility()
+				}
+			}
 			touched := func(d Drawing) map[string]bool {
 				out := map[string]bool{}
 				for _, r := range d.ways {
@@ -52,7 +60,7 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 			joined, kept := touched(plain), touched(d)
 			counted := 0
 			for _, b := range d.Boxes {
-				if joined[b.ID] && !kept[b.ID] {
+				if joined[b.ID] && !kept[b.ID] && !usesBand[b.ID] {
 					t.Errorf("box %s is drawn with no line", b.ID)
 				}
 				if b.More == 0 {
