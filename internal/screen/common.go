@@ -103,18 +103,29 @@ func (o *overview) commons() ([]CommonView, []SharedLibrary) {
 			if r.Dead || o.tree.units[r.To].Kind == model.External {
 				continue
 			}
-			// A contract outside every box counts toward the boxes that
-			// provide it, as the overview pairs its users with them.
-			tos := []model.ID{box(r.To)}
-			if tos[0] == "" {
-				tos = o.providers[r.To]
-			}
-			for _, to := range tos {
-				if to == "" || to == from {
-					continue
+			if to := box(r.To); to != "" {
+				if to != from {
+					out[from]++
+					in[to]++
+					reached[r.To] = true
 				}
+				continue
+			}
+			// A use of a contract outside every box counts once out of the
+			// user and once into each box that provides it, as the overview
+			// pairs its users with them. Providing it is no use.
+			if r.Kind == model.Provides {
+				continue
+			}
+			used := false
+			for _, to := range o.providers[r.To] {
+				if to != from {
+					in[to]++
+					used = true
+				}
+			}
+			if used {
 				out[from]++
-				in[to]++
 				reached[r.To] = true
 			}
 		}
