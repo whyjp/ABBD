@@ -6840,6 +6840,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "lead-off",
         "Stale": false,
         "Blocks": [
           {
@@ -8020,7 +8021,23 @@
                 "Code": true
               },
               {
-                "Text": " 줄에 개요와 모든 뷰가 정지 화면에서 말을 단 경로의 비율과 그 말의 출처를 알리며, 이 줄도 검사를 실패시키지 않는다.",
+                "Text": " 줄에 개요와 모든 뷰가 정지 화면에서 말을 단 경로의 비율과 그 말의 출처를 알리며, 이 줄도 검사를 실패시키지 않는다. 어떤 뷰가 선에서 읽은 주 흐름을 그리면(",
+                "Code": false
+              },
+              {
+                "Text": "inferred_lead: true",
+                "Code": true
+              },
+              {
+                "Text": "일 때만 그린다) ",
+                "Code": false
+              },
+              {
+                "Text": "lint: leads:",
+                "Code": true
+              },
+              {
+                "Text": " 줄이 그런 뷰의 수와 홉 수를 알리고, 이 줄도 검사를 실패시키지 않는다.",
                 "Code": false
               }
             ]
@@ -25011,6 +25028,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "lead-off",
         "Stale": false,
         "Blocks": [
           {
@@ -26623,15 +26641,15 @@
                 "Code": true
               },
               {
-                "Text": "는 뷰의 주 흐름을 고른다. 저장된 흐름 가운데 단계가 뷰 위에서 가장 멀리 이어지는 것으로, 다음 단계마다 그려진 선이 이어 주는 상자에 있어야 한다. 저장된 흐름이 없으면 다른 상자가 쓰지 않는 유일한 상자에서 시작해, 관계가 엄격히 가장 많은 선을 따라가다 동률에서 멈추는 선 사슬이다. project.yaml이 ",
+                "Text": "는 뷰의 주 흐름을 고른다. 저장된 흐름 가운데 단계가 뷰 위에서 가장 멀리 이어지는 것으로, 다음 단계마다 그려진 선이 이어 주는 상자에 있어야 한다. 저장된 흐름이 없으면 다른 상자가 쓰지 않는 유일한 상자에서 시작해, 관계가 엄격히 가장 많은 선을 따라가다 동률에서 멈추는 선 사슬이다. 이 추정은 기본으로 꺼져 있어 주 흐름과 저장된 흐름만 번호를 받고, project.yaml이 ",
                 "Code": false
               },
               {
-                "Text": "inferred_lead: false",
+                "Text": "inferred_lead: true",
                 "Code": true
               },
               {
-                "Text": "이면 이 추정을 하지 않아 주 흐름과 저장된 흐름만 번호를 받고, ",
+                "Text": "일 때만 켜진다. ",
                 "Code": false
               },
               {
@@ -26651,11 +26669,11 @@
                 "Code": false
               },
               {
-                "Text": "TestInferredLeadsTurnOff",
+                "Text": "TestInferredLeadsDefaultOff",
                 "Code": true
               },
               {
-                "Text": "는 저장된 흐름이 없는 self 픽스처에서 이 값을 끄면 어느 뷰도 리드를 그리지 않음을 지킨다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
+                "Text": "는 저장된 흐름이 없는 self 픽스처에서 기본으로는 어느 뷰도 리드를 그리지 않고, 값을 켜면 그리는 뷰가 있음을 지킨다. 홉이 둘보다 적으면 아무것도 그리지 않는다. 이 고르기는 ",
                 "Code": false
               },
               {
@@ -34340,6 +34358,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "lead-off",
         "Stale": false,
         "Blocks": [
           {
@@ -34403,7 +34422,7 @@
                 "Code": true
               },
               {
-                "Text": "(nil이면 그리고, ",
+                "Text": "(nil이면 그리지 않고, true일 때만 그리며, ",
                 "Code": false
               },
               {
@@ -36269,7 +36288,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치"
+              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 언어, 그리기 스위치"
             },
             {
               "N": 4,
@@ -39487,7 +39506,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 그리기 스위치",
+              "Does": "LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 언어, 그리기 스위치",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",
