@@ -6337,7 +6337,6 @@
         "Provides": 35,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6839,8 +6838,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7639,7 +7637,15 @@
                 "Code": true
               },
               {
-                "Text": "처럼 등록한다. reader는 ",
+                "Text": "처럼 등록한다; 이렇게 들어온 ",
+                "Code": false
+              },
+              {
+                "Text": "EXT",
+                "Code": true
+              },
+              {
+                "Text": "는 개요에 그려지지 않고 쓰는 모듈의 초점 뷰와 단위 목록에 남는다. reader는 ",
                 "Code": false
               },
               {
