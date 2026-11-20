@@ -111,7 +111,7 @@ func (o *overview) foldBands(c *cut, ambient map[model.ID]bool) *cut {
 		}
 	}
 	out := counting(ls, func() map[pair]bool {
-		// Counting counts what is neither kept nor folded on its boxes.
+		// Counting counts what is neither kept nor folded as left out.
 		k := maps.Clone(keep)
 		for l, f := range folded {
 			if f {

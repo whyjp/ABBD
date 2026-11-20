@@ -64,7 +64,7 @@ func TestFocusViewsArePartialGraphsOfTheirView(t *testing.T) {
 			}
 			seen++
 			whole := drawnIn(v.d)
-			// What the view counts on its boxes instead of drawing, its
+			// What the view lists under its picture instead of drawing, its
 			// focus views draw.
 			counted := map[string]bool{}
 			for _, r := range v.d.Counted {

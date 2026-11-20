@@ -8,7 +8,7 @@ import (
 
 // An overview whose boxes use each other many times over reads as a tangle
 // however it is routed: the exemplars draw one to two lines per box. So the
-// overview draws its primary links and counts the rest on their boxes, and
+// overview draws its primary links and lists the rest under the picture, and
 // each box's focus view (focus.go) still draws every line it has.
 //
 // When the stored overview record chose lines, those are the primary ones

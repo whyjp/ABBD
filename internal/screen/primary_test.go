@@ -22,8 +22,8 @@ func cutOn(t *testing.T, name string, marked map[string]bool) Model {
 }
 
 // With the cut switched on, a dense overview draws its primary links, about
-// one a box as the exemplars do, counts the rest on their boxes, and each
-// count opens the focus view that draws them all. Each road still lights
+// one a box as the exemplars do, lists the rest under the picture, and each
+// entry opens the focus view that draws them all. Each road still lights
 // exactly its riders, and no count stands by an arrowhead. Switched off, the
 // overview counts nothing.
 func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
