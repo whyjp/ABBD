@@ -684,7 +684,9 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	}
 	slices.Sort(o.libraries)
 	if focus == "" {
-		o.foldLibraries(len(o.modules))
+		// The overview draws no library: each one stays in the focus view of
+		// the boxes that use it, and in the lists and queries.
+		o.libraries, o.libUsers = nil, map[model.ID]int{}
 	}
 	add := func(m map[model.ID][]model.ID, k, v model.ID) {
 		if !slices.Contains(m[k], v) {

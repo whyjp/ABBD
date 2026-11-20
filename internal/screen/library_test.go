@@ -57,61 +57,45 @@ func libraryWires(d Drawing) []string {
 	return out
 }
 
-// Each library the overview has room for is one chip apart from the
-// product's boxes, with one plain line from each module that uses it and a
-// line of words that says how many boxes use it.
-func TestTheOverviewDrawsEachLibraryAsOneChip(t *testing.T) {
+// The overview draws no library: no chip, no line, no fold chip. The
+// libraries stay in the units list with every user named.
+func TestTheOverviewDrawsNoLibrary(t *testing.T) {
 	t.Parallel()
-	m := Build(Input{Units: libraryUnits(8, 3, "serde", "tokio")})
-	libs := libraryBoxes(m.Overview)
-	if len(libs) != 2 {
-		t.Fatalf("the overview draws %d library chips, want 2: %+v", len(libs), libs)
-	}
-	for _, b := range libs {
-		if !strings.Contains(b.Class, "external") || strings.Contains(b.Class, "twin") {
-			t.Errorf("library %s is drawn as %q, not as an external chip", b.Name, b.Class)
+	want := map[int][]string{2: {"m1", "m3"}, 3: {"m1", "m4"}}
+	for _, libs := range [][]string{{"serde", "tokio"}, {"a", "b", "c"}} {
+		m := Build(Input{Units: libraryUnits(8, 4, libs...)})
+		if got := libraryBoxes(m.Overview); len(got) != 0 {
+			t.Errorf("the overview draws library chips %+v", got)
 		}
-	}
-	if !strings.Contains(libs[0].Title, "2개 상자가 사용") {
-		t.Errorf("serde's chip says %q, want how many boxes use it", libs[0].Title)
-	}
-	want := []string{"MOD-0001.depends_on.EXT-0001", "MOD-0002.depends_on.EXT-0002", "MOD-0003.depends_on.EXT-0001"}
-	if got := libraryWires(m.Overview); !slices.Equal(got, want) {
-		t.Errorf("lines to libraries stand for %q, want %q", got, want)
-	}
-	for _, w := range m.Overview.Wires {
-		if slices.ContainsFunc(w.Rels, func(r string) bool { return strings.Contains(r, ".EXT-") }) && w.Plan {
-			t.Errorf("a line to a library is dotted: %+v", w)
+		if got := libraryWires(m.Overview); len(got) != 0 {
+			t.Errorf("the overview draws lines to libraries %q", got)
+		}
+		for _, r := range m.Units {
+			if r.ID == "EXT-0001" && !slices.Equal(r.UsedBy, want[len(libs)]) {
+				t.Errorf("the list says %s is used by %q, want %q", libs[0], r.UsedBy, want[len(libs)])
+			}
 		}
 	}
 }
 
-// Past a quarter of the boxes, every library folds into one chip, and each
-// module that uses any keeps one line to it that still stands for each of
-// its stored relations; the units list names every user of each library.
-func TestManyLibrariesFoldIntoOneChip(t *testing.T) {
+// A focus view keeps the libraries its module uses, each one chip with one
+// plain line that stands for the stored relation.
+func TestAFocusViewDrawsItsLibraries(t *testing.T) {
 	t.Parallel()
-	m := Build(Input{Units: libraryUnits(8, 4, "a", "b", "c")})
-	libs := libraryBoxes(m.Overview)
-	if len(libs) != 1 || libs[0].ID != string(libraryFold) {
-		t.Fatalf("the overview draws %+v, want the one fold chip", libs)
-	}
-	if !strings.Contains(libs[0].Name, "3개") || !strings.Contains(libs[0].Title, "a, b, c") || !strings.Contains(libs[0].Title, "4개 상자가 사용") {
-		t.Errorf("the fold chip reads %q / %q", libs[0].Name, libs[0].Title)
-	}
-	want := []string{"MOD-0001.depends_on.EXT-0001", "MOD-0002.depends_on.EXT-0002", "MOD-0003.depends_on.EXT-0003", "MOD-0004.depends_on.EXT-0001"}
-	if got := libraryWires(m.Overview); !slices.Equal(got, want) {
-		t.Errorf("lines to the fold stand for %q, want %q", got, want)
-	}
-	if !slices.ContainsFunc(m.Overview.Wires, func(w Wire) bool {
-		return strings.Contains(w.Title, "m1 → 외부 라이브러리 3개: 쓰는 라이브러리 a")
-	}) {
-		t.Errorf("the line from m1 to the fold does not name the library it uses")
-	}
-	for _, r := range m.Units {
-		if r.ID == "EXT-0001" && !slices.Equal(r.UsedBy, []string{"m1", "m4"}) {
-			t.Errorf("the list says a is used by %q, want m1 and m4", r.UsedBy)
+	us := libraryUnits(8, 3, "serde", "tokio")
+	o := planOverview(us, "", nil, tactic{}, nil, nil, nil)
+	var f Drawing
+	for _, v := range o.overviewFocus(us, o.draw(func(model.ID) string { return "" }), true) {
+		if v.Unit == "MOD-0001" {
+			f = v.Drawing
 		}
+	}
+	libs := libraryBoxes(f)
+	if len(libs) != 1 || !strings.Contains(libs[0].Class, "external") {
+		t.Fatalf("m1's focus draws %+v, want the one library chip it uses", libs)
+	}
+	if got, want := libraryWires(f), []string{"MOD-0001.depends_on.EXT-0001"}; !slices.Equal(got, want) {
+		t.Errorf("lines to libraries stand for %q, want %q", got, want)
 	}
 }
 
@@ -135,12 +119,12 @@ func TestAnInsideViewLeavesTheLibrariesOut(t *testing.T) {
 }
 
 // A focus view weighs its module's libraries against its own boxes: a
-// module that uses one library shows that library, not the overview's fold.
+// module that uses one library shows that library.
 func TestAFocusViewFoldsByItsOwnBoxes(t *testing.T) {
 	t.Parallel()
 	us := libraryUnits(8, 4, "a", "b", "c")
-	if o := planOverview(us, "", nil, tactic{}, nil, nil, nil); !slices.Equal(o.libraries, []model.ID{libraryFold}) {
-		t.Fatalf("the overview keeps %v, want the fold", o.libraries)
+	if o := planOverview(us, "", nil, tactic{}, nil, nil, nil); len(o.libraries) != 0 {
+		t.Fatalf("the overview keeps %v, want no library", o.libraries)
 	}
 	if o := planOverview(us, "MOD-0001", nil, tactic{}, nil, nil, nil); !slices.Equal(o.libraries, []model.ID{"EXT-0001"}) {
 		t.Errorf("m1's focus keeps %v, want the one library it uses", o.libraries)
