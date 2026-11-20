@@ -546,7 +546,7 @@ type overview struct {
 	walks []flowWalk
 	whole bool
 	// stored says only stored flows lead a view: none is inferred from the
-	// lines (store.Project.InferLead).
+	// lines unless the project turns that on (store.Project.InferLead).
 	stored bool
 	// more are the links each box counts instead of drawing (primary.go),
 	// counted the pairs of places they join and countedRels the stored

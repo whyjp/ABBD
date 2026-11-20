@@ -570,8 +570,8 @@ type Project struct {
 	// that says how many boxes use it. Off by default.
 	OverviewFoldHubs bool `yaml:"overview_fold_hubs,omitempty"`
 	// InferredLead says whether a view with no stored flow draws the lead
-	// its lines show plainly. On by default; false numbers stored flows
-	// and the primary flow only, so the two can be read side by side.
+	// its lines show plainly. Off by default, so only stored flows and the
+	// primary flow are numbered; true turns the reading on.
 	InferredLead *bool `yaml:"inferred_lead,omitempty"`
 	// OverviewAmbient draws each box the overview record marks ambient as a
 	// foundation band under the others, with none of its lines, which the
@@ -596,7 +596,7 @@ func (p Project) Lang() model.Language {
 func (p Project) Cut() bool { return p.OverviewCut != nil && *p.OverviewCut }
 
 // InferLead says whether a view with no stored flow draws an inferred lead.
-func (p Project) InferLead() bool { return p.InferredLead == nil || *p.InferredLead }
+func (p Project) InferLead() bool { return p.InferredLead != nil && *p.InferredLead }
 
 func (s Store) LoadProject() (Project, error) {
 	var p Project
