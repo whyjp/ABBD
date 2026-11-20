@@ -417,19 +417,22 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	if t.beside {
 		partner = partners(nodes, out, lines)
 		idle = idle && len(partner) == 0
+		moved := false
 		for v, p := range partner {
 			if rank[v] != rank[p] {
-				rank[v], idle = rank[p], false
+				rank[v], idle, moved = rank[p], false, true
 			}
 		}
 		// A box that moved may leave its row empty: the rows close up.
-		used := map[int]bool{}
-		for _, nd := range nodes {
-			used[rank[nd.id]] = true
-		}
-		levels := slices.Sorted(maps.Keys(used))
-		for _, nd := range nodes {
-			rank[nd.id] = slices.Index(levels, rank[nd.id])
+		if moved {
+			used := map[int]bool{}
+			for _, nd := range nodes {
+				used[rank[nd.id]] = true
+			}
+			levels := slices.Sorted(maps.Keys(used))
+			for _, nd := range nodes {
+				rank[nd.id] = slices.Index(levels, rank[nd.id])
+			}
 		}
 	}
 	// The frame's edges leave the layering, and the layers they alone held
