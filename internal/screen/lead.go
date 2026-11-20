@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"html/template"
 	"math"
 	"slices"
 	"strconv"
@@ -203,7 +204,10 @@ type Hop struct {
 	Tips    []string
 	X, Y, R int
 	Lit     string
-	way     int
+	// Vars carry the colours the hop's route lights in, so the number
+	// lights with its line: --kN for a pointed-at box, --rc for pointed-at ink.
+	Vars template.CSS
+	way  int
 	// Word names the stored step the hop arrives at, set at WX, WY beside
 	// its number; "" where no step names it or it has no room.
 	Word   string
@@ -345,6 +349,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk, whole, infer bool) {
 		hp := Hop{N: i + 1, D: r.D, Head: r.Head, Tips: r.Tips, way: h.way, Word: h.word}
 		if h.way < len(d.Routes) {
 			hp.Lit = d.Routes[h.way].Lit
+			hp.Vars = template.CSS(strings.Trim(string(d.Routes[h.way].Vars)+";--rc:var(--h"+d.Routes[h.way].Hue+")", ";"))
 		}
 		l.Hops = append(l.Hops, hp)
 	}

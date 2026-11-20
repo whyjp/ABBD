@@ -537,7 +537,7 @@ type overview struct {
 	walks []flowWalk
 	whole bool
 	// stored says only stored flows lead a view: none is inferred from the
-	// lines (store.Project.InferLead).
+	// lines unless the project turns that on (store.Project.InferLead).
 	stored bool
 	// counted are the pairs of places whose links the overview leaves out
 	// (primary.go) and countedRels the stored relations they stand for.
