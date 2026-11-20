@@ -8,7 +8,7 @@ import (
 
 // An overview whose boxes use each other many times over reads as a tangle
 // however it is routed: the exemplars draw one to two lines per box. So the
-// overview draws its primary links and counts the rest on their boxes, and
+// overview draws its primary links and lists the rest under the picture, and
 // each box's focus view (focus.go) still draws every line it has.
 //
 // When the stored overview record chose lines, those are the primary ones
@@ -41,11 +41,12 @@ func pairOf(a, b model.ID) pair {
 	return pair{a, b}
 }
 
-// cut is what the overview draws of its links: the kept ones, and the
-// number each box counts instead of drawing.
+// cut is what the overview draws of its links: the kept ones, and whether
+// it leaves any out for the list under the picture (undrawn.go).
 type cut struct {
 	keep map[pair]bool
-	more map[model.ID]int
+	// left says some pair is neither kept nor folded.
+	left bool
 	// said are the words a stored overview record gave its chosen lines.
 	said map[pair]string
 	// fold is, for each hub whose incoming lines are folded (hubfold.go), the
@@ -62,7 +63,7 @@ type cut struct {
 func (c *cut) folds() bool { return c != nil && (len(c.fold) > 0 || len(c.band) > 0) }
 
 // hides says the cut leaves any pair undrawn.
-func (c *cut) hides() bool { return c != nil && len(c.more) > 0 }
+func (c *cut) hides() bool { return c != nil && c.left }
 
 // primary decides which of the planned overview's links it draws. marked
 // are the stored relations, by relation key, that must be drawn.
@@ -166,7 +167,7 @@ func (o *overview) cutOf(ls []pair, rels map[pair][]string, contract map[pair]bo
 		for _, l := range ls {
 			whole[l] = true
 		}
-		return &cut{keep: whole, more: map[model.ID]int{}, said: said}
+		return &cut{keep: whole, said: said}
 	}
 	if recorded != nil {
 		c := counting(ls, recorded)
@@ -258,13 +259,12 @@ func (o *overview) cutOf(ls []pair, rels map[pair][]string, contract map[pair]bo
 	return counting(ls, keep)
 }
 
-// counting draws the pairs of keep and counts the rest of ls on their boxes.
+// counting draws the pairs of keep and counts the rest of ls as left out (hides, undrawn.go).
 func counting(ls []pair, keep map[pair]bool) *cut {
-	c := &cut{keep: keep, more: map[model.ID]int{}}
+	c := &cut{keep: keep}
 	for _, l := range ls {
 		if !keep[l] {
-			c.more[l[0]]++
-			c.more[l[1]]++
+			c.left = true
 		}
 	}
 	return c

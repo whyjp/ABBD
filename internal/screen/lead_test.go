@@ -163,7 +163,6 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
 		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b`),
 		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
-		"more":   regexp.MustCompile(`<g class="more">`),
 	}
 	cards := 0
 	for _, name := range fixtures {

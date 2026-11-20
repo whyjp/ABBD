@@ -59,7 +59,7 @@ func freshWith(name string, h *hooks) (Model, error) {
 }
 
 // drawAll is a fixture's model with the overview's density cut switched
-// off, for a test of a line the cut overview counts on a pill instead.
+// off, for a test of a line the cut overview lists instead.
 func drawAll(t *testing.T, name string) Model {
 	t.Helper()
 	v, _ := built.LoadOrStore(name+" uncut", &builtModel{})

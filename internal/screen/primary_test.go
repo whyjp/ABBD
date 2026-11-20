@@ -22,8 +22,8 @@ func cutOn(t *testing.T, name string, marked map[string]bool) Model {
 }
 
 // With the cut switched on, a dense overview draws its primary links, about
-// one a box as the exemplars do, counts the rest on their boxes, and each
-// count opens the focus view that draws them all. Each road still lights
+// one a box as the exemplars do, lists the rest under the picture, and each
+// entry opens the focus view that draws them all. Each road still lights
 // exactly its riders, and no count stands by an arrowhead. Switched off, the
 // overview counts nothing.
 func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
@@ -32,7 +32,7 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			plain := drawAll(t, name).Overview
-			if slices.ContainsFunc(plain.Boxes, func(b Box) bool { return b.More > 0 }) {
+			if len(plain.Undrawn) > 0 {
 				t.Error("the overview counts lines with the cut switched off")
 			}
 			m := fixture(t, name)
@@ -63,12 +63,11 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 				if joined[b.ID] && !kept[b.ID] && !usesBand[b.ID] {
 					t.Errorf("box %s is drawn with no line", b.ID)
 				}
-				if b.More == 0 {
-					continue
-				}
+			}
+			for _, u := range d.Undrawn {
 				counted++
-				if !slices.ContainsFunc(m.Focus, func(f Focus) bool { return "#"+f.ID == b.MoreHref }) {
-					t.Errorf("box %s counts %d lines, and its count opens %q, no focus view", b.ID, b.More, b.MoreHref)
+				if !slices.ContainsFunc(m.Focus, func(f Focus) bool { return "#"+f.ID == u.Href }) {
+					t.Errorf("box %s lists %d undrawn lines, and its list opens %q, no focus view", u.Name, len(u.With), u.Href)
 				}
 			}
 			if counted == 0 {
@@ -132,7 +131,7 @@ func TestAMarkedRelationIsDrawn(t *testing.T) {
 // With the cut switched on, every relation the overview stops drawing is
 // counted on the pill of a box at one of its ends, and the focus view each
 // such pill opens draws it.
-func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
+func TestACountedRelationIsDrawnWhereItsListLeads(t *testing.T) {
 	t.Parallel()
 	rels := func(d Drawing) map[string]bool {
 		out := map[string]bool{}
@@ -172,10 +171,8 @@ func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
 		m := fixture(t, name)
 		drawn := rels(m.Overview)
 		pill := map[string]string{}
-		for _, b := range m.Overview.Boxes {
-			if b.More > 0 {
-				pill[b.ID] = b.MoreHref
-			}
+		for id, u := range undrawnOwners(m.Overview) {
+			pill[id] = u.Href
 		}
 		focus := map[string]map[string]bool{}
 		for _, f := range m.Focus {
@@ -195,16 +192,16 @@ func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
 				}
 				led = true
 				if !focus[href][r] {
-					t.Errorf("%s: %s is counted on %s's pill, and %s does not draw it", name, r, e, href)
+					t.Errorf("%s: %s is listed under %s, and %s does not draw it", name, r, e, href)
 				}
 			}
 			if !led {
-				t.Errorf("%s: the overview neither draws %s nor counts it on a pill at %v", name, r, ends[r])
+				t.Errorf("%s: the overview neither draws %s nor lists it under a box at %v", name, r, ends[r])
 			}
 		}
 		if (counted > 0) != (len(pill) > 0) {
 			t.Errorf("%s: the overview leaves %d relations undrawn and %d boxes count some", name, counted, len(pill))
 		}
-		t.Logf("%s: %d relations counted on pills", name, counted)
+		t.Logf("%s: %d relations counted", name, counted)
 	}
 }
