@@ -66,6 +66,45 @@ func TestAHubThatIsNoUtilityKeepsItsLines(t *testing.T) {
 			t.Errorf("%s folds its lines: %+v", b.Name, b)
 		}
 	}
+	// A hub that is no common module, since it uses as much as it is
+	// used, keeps every line too.
+	units = bandUnits()
+	units[4].Relations = []model.Relation{rel("MOD-0001", model.DependsOn), rel("MOD-0002", model.DependsOn), rel("MOD-0003", model.DependsOn)}
+	m = Build(Input{Units: units})
+	if len(m.Common) != 0 {
+		t.Fatalf("log uses as much as it is used, yet is common: %+v", m.Common)
+	}
+	for _, b := range m.Overview.Boxes {
+		if b.UsedBy > 0 || b.Ambient {
+			t.Errorf("%s folds its lines though it is no common module", b.Name)
+		}
+	}
+}
+
+// A utility a line of the record ends on stays a box with that line drawn,
+// and so does every other line into it: its lines fold together or not at
+// all.
+func TestARecordLineOnAUtilityKeepsAllItsLines(t *testing.T) {
+	plain := Build(Input{Units: bandUnits()})
+	if !slices.ContainsFunc(plain.Overview.Boxes, func(b Box) bool { return b.ID == "MOD-0005" && b.Ambient }) {
+		t.Fatal("log is no band without a record, so the case reads nothing")
+	}
+	var rec store.Overview
+	rec.Known = true
+	rec.Lines = []store.Part[model.Line]{{Claim: model.Line{From: "MOD-0001", To: "MOD-0005", Word: "logs"}}}
+	m := Build(Input{Units: bandUnits(), Overview: rec})
+	for _, b := range m.Overview.Boxes {
+		if b.UsedBy > 0 || b.Ambient {
+			t.Errorf("%s folds its lines though a record line ends on log", b.Name)
+		}
+	}
+	reached := false
+	for _, r := range m.Overview.ways {
+		reached = reached || slices.Contains(r.ends, "MOD-0005") && slices.Contains(r.ends, "MOD-0001")
+	}
+	if !reached {
+		t.Error("the record's line into log is not drawn")
+	}
 }
 
 // On every fixture a box folds its lines all at once or not at all: a box

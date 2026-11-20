@@ -342,7 +342,7 @@ func Build(in Input) Model {
 	// The focus views seat their boxes where the overview without the
 	// record sets them, so a record changes which lines the overview draws
 	// and not how each box's own view reads.
-	// Folded hubs leave every box where the overview without the fold
+	// Foundation bands leave every box where the overview without them
 	// sets it, for the same reason.
 	seats := m.Overview
 	if unfolded.hides() && unfolded.said != nil {

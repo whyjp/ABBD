@@ -206,7 +206,7 @@ func (d *Drawing) subtitle(b *Box) {
 		s += " · " + r
 	}
 	width := subWidth
-	if b.Gist != "" && b.UsedBy == 0 && !b.Ambient {
+	if b.Gist != "" && !b.Ambient {
 		width = monoWidth
 		if width(s) > b.W-16 {
 			s = kind
