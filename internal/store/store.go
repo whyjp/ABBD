@@ -573,10 +573,6 @@ type Project struct {
 	// its lines show plainly. Off by default, so only stored flows and the
 	// primary flow are numbered; true turns the reading on.
 	InferredLead *bool `yaml:"inferred_lead,omitempty"`
-	// OverviewAmbient draws each box the overview record marks ambient as a
-	// foundation band under the others, with none of its lines, which the
-	// band says it stands for. Off by default.
-	OverviewAmbient bool `yaml:"overview_ambient,omitempty"`
 	// Language is the BCP-47 tag of the language a person reads the
 	// stored prose in, such as ko. Loading refuses a tag that is no
 	// BCP-47 tag. The zero Language leaves the choice to the OS.
