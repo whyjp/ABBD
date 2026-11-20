@@ -18,7 +18,8 @@ import (
 // have. A static pair stays drawn where it reaches a contract, joins two
 // stages of the primary flow or two steps of a stored flow, carries the
 // view's lead or the stored overview record, rests on a relation a reader
-// or a human stated or marked, or is a line the lead needs (keepLead):
+// or a human stated or marked, or, where the lead is inferred from the
+// lines, is a line that lead needs (keepLead):
 // those are how the code is meant to be read. A line left out still takes
 // part in the layering, so the boxes keep their rows where the layout can.
 // store.Project.StaticLines draws every static line again.
@@ -65,8 +66,10 @@ func (o *overview) quietCut(c *cut, marked map[string]bool) *cut {
 		}
 		static[l] = true
 	}
-	keepLead(uses, func(u use) bool { return c == nil || c.keep[pairOf(model.ID(u.from), model.ID(u.to))] },
-		func(u use) pair { return pairOf(model.ID(u.from), model.ID(u.to)) }, static)
+	if o.infers() {
+		keepLead(uses, func(u use) bool { return c == nil || c.keep[pairOf(model.ID(u.from), model.ID(u.to))] },
+			func(u use) pair { return pairOf(model.ID(u.from), model.ID(u.to)) }, static)
+	}
 	if len(static) == 0 {
 		return c
 	}
@@ -93,7 +96,7 @@ func (o *overview) quietCut(c *cut, marked map[string]bool) *cut {
 // the overview decides by pair. A pair stays drawn where a line of it
 // reaches a contract, joins two stages of the primary flow or two boxes
 // that follow each other on a stored flow, carries a relation a reader
-// marked or stated, or is one the inside's lead needs (keepLead). box gives
+// marked or stated, or is one an inferred lead needs (keepLead). box gives
 // the inside box a unit stands in.
 func (o *overview) quietLines(lines []line, box func(model.ID) string) (kept, left []line) {
 	contract := func(id model.ID) bool { return o.tree.units[id].Kind.IsContract() }
@@ -119,7 +122,9 @@ func (o *overview) quietLines(lines []line, box func(model.ID) string) (kept, le
 			uses, key[u] = append(uses, u), lineKey(ln)
 		}
 	}
-	keepLead(uses, func(use) bool { return true }, func(u use) string { return key[u] }, static)
+	if o.infers() {
+		keepLead(uses, func(use) bool { return true }, func(u use) string { return key[u] }, static)
+	}
 	for _, ln := range lines {
 		if static[lineKey(ln)] {
 			left = append(left, ln)
@@ -160,6 +165,11 @@ func (o *overview) leftStatic(scope model.ID, left []line) []LeftOut {
 	return out
 }
 
+// infers says a view's lead is the one its lines show (lead.go): no flow is
+// stored and the project draws an inferred lead. Only then does hiding a
+// line change where the lead starts.
+func (o *overview) infers() bool { return !o.stored && len(o.walks) == 0 }
+
 // keepLead puts back, of the static pairs, those the view's lead needs.
 // The lead is found again from the lines a view draws (lead.go), from the
 // one box nothing uses, so hiding leaves a line into every box something
@@ -196,7 +206,13 @@ func (o *overview) walkPairs(box func(model.ID) string) map[[2]string]bool {
 		prev := ""
 		for _, u := range w.units {
 			b := box(u)
-			if b == "" || b == prev {
+			if b == "" {
+				// A step outside the view breaks the run: the boxes on
+				// either side of it do not follow each other here.
+				prev = ""
+				continue
+			}
+			if b == prev {
 				continue
 			}
 			if prev != "" {

@@ -65,16 +65,30 @@ func TestAStatedStaticLineStaysDrawn(t *testing.T) {
 // A use of a contract that rests on an import only still draws the line to
 // the contract's provider.
 func TestAStaticUseOfAContractStaysDrawn(t *testing.T) {
-	units := append(ripgrep(), called("MOD-0006", "grep-cli",
-		found("IF-0002", model.Consumes, "import"), rel("MOD-0004", model.DependsOn)))
+	units := append(ripgrep(),
+		called("IF-0003", "trait Printer (grep-printer)"),
+		called("MOD-0006", "grep-cli", found("IF-0003", model.Consumes, "import"), rel("MOD-0004", model.DependsOn)))
+	units[4].Relations = append(units[4].Relations, found("IF-0003", model.Provides, "trait"))
 	m := build(units)
-	if !drawsRel(m.Overview, "MOD-0006.consumes.IF-0002") {
+	if !drawsRel(m.Overview, "MOD-0006.consumes.IF-0003") {
 		t.Errorf("the overview leaves out a static use of a contract; it lists %+v", m.Overview.Undrawn)
 	}
 }
 
-// Hiding a static line leaves the overview's inferred lead: a box something
-// uses keeps a line into it, so no second box nothing uses appears.
+// inferring draws units with the project's inferred lead on, and with
+// static_lines set as shown says.
+func inferring(units []model.Unit, shown bool) Model {
+	on := true
+	p := store.Project{InferredLead: &on}
+	if shown {
+		p.StaticLines = &on
+	}
+	return Build(Input{Units: units, Project: p})
+}
+
+// Where the project infers its lead, hiding a static line leaves the
+// overview's lead: a box something uses keeps a line into it, so no second
+// box nothing uses appears. With no inferred lead, the line is left out.
 func TestHidingAStaticLineKeepsTheLead(t *testing.T) {
 	units := []model.Unit{
 		called("MOD-0001", "a", rel("MOD-0002", model.DependsOn)),
@@ -84,12 +98,32 @@ func TestHidingAStaticLineKeepsTheLead(t *testing.T) {
 		called("MOD-0005", "e"),
 		called("MOD-0006", "f", rel("MOD-0003", model.DependsOn)),
 	}
-	shown := showStatic(units)
-	if shown.Overview.Lead == nil {
+	if inferring(units, true).Overview.Lead == nil {
 		t.Fatal("the overview with every line draws no lead")
 	}
-	if m := build(units); m.Overview.Lead == nil {
+	if inferring(units, false).Overview.Lead == nil {
 		t.Error("hiding the static line d → f takes the overview's lead away")
+	}
+	if m := build(units); drawsRel(m.Overview, "MOD-0004.depends_on.MOD-0006") {
+		t.Error("with no inferred lead, the static line d → f is still drawn")
+	}
+}
+
+// The same holds inside a module: where the lead is inferred, the static
+// line that is the only one into a box something uses stays drawn.
+func TestAnInsideKeepsTheStaticLineItsLeadNeeds(t *testing.T) {
+	units := named(append(ripgrep(),
+		inside("MOD-0010", "MOD-0002", rel("MOD-0011", model.DependsOn)),
+		inside("MOD-0011", "MOD-0002", rel("MOD-0012", model.DependsOn)),
+		inside("MOD-0012", "MOD-0002", found("MOD-0013", model.DependsOn, "import")),
+		inside("MOD-0013", "MOD-0002", rel("MOD-0011", model.DependsOn)),
+	))
+	const rel = "MOD-0012.depends_on.MOD-0013"
+	if ins := insideOf(t, inferring(units, false)); !drawsRel(ins.Drawing, rel) {
+		t.Errorf("the inside leaves out the only line into MOD-0013 while its lead is inferred; it lists %+v", ins.Drawing.Undrawn)
+	}
+	if ins := insideOf(t, build(units)); drawsRel(ins.Drawing, rel) {
+		t.Error("with no inferred lead, the inside still draws the static line")
 	}
 }
 
@@ -172,7 +206,8 @@ func TestAnInsideKeepsWhatAStaticLineMustNotHide(t *testing.T) {
 	))
 	stack := store.Stack{Question: "q", Primary: true, Known: true, Key: "walk", Parts: []store.Part[model.Layer]{
 		{Claim: model.Layer{Name: "first", Role: "r", Units: []model.ID{"MOD-0010"}}},
-		{Claim: model.Layer{Name: "second", Role: "r", Units: []model.ID{"MOD-0011"}}},
+		{Claim: model.Layer{Name: "second", Role: "r", Units: []model.ID{"MOD-0012"}}},
+		{Claim: model.Layer{Name: "third", Role: "r", Units: []model.ID{"MOD-0011"}}},
 	}}
 	m := Build(Input{Units: staged, Figures: store.Figures{Stacks: []store.Stack{stack}}})
 	if ins := insideOf(t, m); !drawsRel(ins.Drawing, "MOD-0010.depends_on.MOD-0011") {
