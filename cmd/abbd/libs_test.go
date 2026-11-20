@@ -48,8 +48,12 @@ func TestLibsAddsExternalUnitsThatSyncKeeps(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "architecture", "EXT-0001.md")); err != nil {
 		t.Errorf("the library lost its ID on the next sync: %v", err)
 	}
-	if !strings.Contains(p.blueprint(), "yaml.v3: 외부 라이브러리. 1개 상자가 사용") {
-		t.Errorf("the overview does not draw the library as a chip one box uses")
+	index, err := os.ReadFile(filepath.Join(p.root, ".abbd", "blueprint", "index.html"))
+	if err != nil || strings.Contains(string(index), "외부 라이브러리") {
+		t.Errorf("the overview draws the library: %v", err)
+	}
+	if !strings.Contains(p.blueprint(), "yaml.v3") {
+		t.Errorf("no page of the blueprint names the library")
 	}
 }
 

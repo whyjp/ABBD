@@ -90,11 +90,16 @@ type Graph struct {
 	Lines []ChosenLine `json:"lines,omitempty"`
 	// Ambient are the boxes the overview's reader marked ambient.
 	Ambient []AmbientView `json:"ambient,omitempty"`
+	// Common are the overview's common modules, each a utility or one that
+	// affects the logic, and Libraries the third-party libraries two boxes
+	// or more share.
+	Common    []CommonView    `json:"common,omitempty"`
+	Libraries []SharedLibrary `json:"libraries,omitempty"`
 }
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary, Zones: m.Zones, Lines: m.Lines, Ambient: m.Ambient}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables, Primary: m.Primary, Zones: m.Zones, Lines: m.Lines, Ambient: m.Ambient, Common: m.Common, Libraries: m.Libraries}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

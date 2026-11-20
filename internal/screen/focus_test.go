@@ -176,7 +176,9 @@ func TestFocusViewsKeepTheMapOfTheirView(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		all := map[string][]Focus{"overview": m.Focus}
-		full := map[string]Drawing{"overview": m.Overview}
+		// The overview's focus views keep the map of the drawing they are
+		// seated by, which leaves out the record's cut and the band.
+		full := map[string]Drawing{"overview": m.seats}
 		for _, ins := range m.Insides {
 			all[ins.ID], full[ins.ID] = ins.Focus, ins.Drawing
 		}
