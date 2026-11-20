@@ -164,7 +164,8 @@ func (l *layout) over(r wireReq) bool {
 
 // foldsHops says the hops is, between the boxes of k, are a true reverse pair
 // a view that folds its pairs draws as one line: one line each way, of one
-// kind, between a box a beside tactic placed and its partner.
+// kind and one dotting (plan), neither mutual, a bypass nor the lead,
+// between a box a beside tactic placed and its partner.
 func (l *layout) foldsHops(reqs []wireReq, k [2]string, is []int) bool {
 	if l.pairs == foldNone || len(is) != 2 || l.partner[k[0]] != k[1] && l.partner[k[1]] != k[0] {
 		return false
