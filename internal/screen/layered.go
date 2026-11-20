@@ -243,6 +243,14 @@ type tactic struct {
 	// it only where it reads no worse on every total the gate holds a view
 	// to, on the crossings and on the phantom pairs (foldsNoWorse).
 	pairs int
+	// paired draws a focus view's box that makes a true reverse pair with
+	// the focus once, not twice (focus.go), so its two lines can fold.
+	paired bool
+	// beside stands a box whose only lines are a true reverse pair with one
+	// other box in that box's row (partners), so the pair's folded line runs
+	// straight across rather than down. choose and the focus views keep the
+	// drawing with it only where it reads no worse (foldsNoWorse).
+	beside bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true},

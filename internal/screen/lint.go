@@ -140,8 +140,9 @@ type Totals struct {
 	LabelRepeats int `json:"label_repeats"`
 	Labelled     int `json:"labelled"`
 	Routes       int `json:"routes"`
-	// Density is the routes drawn per box, in tenths: the exemplars draw
-	// 10 to 17, and a page the debt file names may not raise it (gate.go).
+	// Density is the lines drawn per unit, in tenths (density): the
+	// exemplars draw 10 to 17, and a page the debt file names may not
+	// raise it (gate.go).
 	Density int `json:"density"`
 	// Fans are the paths that start as strands, one per line leaving
 	// there, and Strands those strands (Fan). They say how a change draws
@@ -432,9 +433,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.Combs, vl.Totals.Counts, vl.Totals.Dots = combs(t.Ways), len(s.counts), len(s.junctions)
 	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
 	vl.Words = wordFill(v.d)
-	if n := len(v.d.Boxes); n > 0 {
-		vl.Totals.Density = 10 * len(v.d.ways) / n
-	}
+	vl.Totals.Density = density(v.d)
 	vl.Totals.Fans, vl.Totals.Strands = s.fans, len(s.strands)
 	vl.Totals.Fanout = v.d.fanout
 	vl.Lead = leadSource(v.d.Lead)
@@ -1425,7 +1424,9 @@ func (l *look) hubsCentred() []Breach {
 
 // H2. Rule 4 bundles the lines of one kind into one edge of a box. A hub's
 // forward lines of one kind reach it as one bundle, whichever edge they
-// reach. The lines that climb to it are rule 13's, not H2's.
+// reach. The lines that climb to it are rule 13's, not H2's, and a folded
+// pair's line, which reads both ways and is drawn to whichever end the
+// router chose, is none of its forward lines.
 func (l *look) hubsOneTrunk() []Breach {
 	var out []Breach
 	hs := l.hubs()
@@ -1433,7 +1434,7 @@ func (l *look) hubsOneTrunk() []Breach {
 		r := l.s.shapes[h].r.grow(5)
 		groups := map[string]map[int]bool{}
 		for _, w := range l.s.strokes {
-			if len(w.pts) < 2 || strings.Contains(" "+w.class+" ", " joins ") || l.climbs(w) || !r.contains(w.pts[len(w.pts)-1], 0) || r.contains(w.pts[0], 0) {
+			if len(w.pts) < 2 || strings.Contains(" "+w.class+" ", " joins ") || folded(w.class) || l.climbs(w) || !r.contains(w.pts[len(w.pts)-1], 0) || r.contains(w.pts[0], 0) {
 				continue
 			}
 			k := colour(w.class)
@@ -1736,4 +1737,30 @@ func (l *look) rules() []Breach {
 			Text: fmt.Sprintf("rule 21: the tallest box is %.2f times the median, limit %.1f", l.trace.SizeSpread, maxSpread)})
 	}
 	return out
+}
+
+// density is the lines d draws at rest per unit it draws, in tenths: a
+// folded pair is one line, and a twin is the unit it draws again. Counting
+// a twin as a second box made a focus view that keeps its twins read less
+// dense than one that draws each unit once, so the choice between them
+// would favour the twin for the count alone. With a twin counted as its
+// unit, density rises in the views that still draw twins; that is the
+// measure corrected, not a drawing that reads worse, and no gate failure
+// changes with it.
+func density(d Drawing) int {
+	units := map[string]bool{}
+	for _, b := range d.Boxes {
+		units[strings.TrimSuffix(b.ID, twinMark)] = true
+	}
+	if len(units) == 0 {
+		return 0
+	}
+	lines := len(d.ways)
+	for _, r := range d.ways {
+		if r.Both && r.Kind != kindMutual {
+			lines-- // each of a folded pair's two routes counts half
+		}
+	}
+	folded := len(d.ways) - lines
+	return 10 * (lines + folded/2) / len(units)
 }
