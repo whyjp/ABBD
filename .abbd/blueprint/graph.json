@@ -30467,15 +30467,11 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "overview_fold_hubs",
-                "Code": true
-              },
-              {
-                "Text": "를 켜면 ",
+                "Text": "허브로 드는 선은 스위치로 접지 않는다. ",
                 "Code": false
               },
               {
-                "Text": "foldHubs",
+                "Text": "foldBands",
                 "Code": true
               },
               {
@@ -30487,15 +30483,15 @@
                 "Code": true
               },
               {
-                "Text": ")가 수준 규칙 L이 계획에서 고르는 허브로 드는 선을 접고, 허브의 마지막 줄이 종류와 역할 대신 ",
+                "Text": ")는 분류가 유틸리티라 부른 공통 모듈의 선만, 그것도 모두 한꺼번에 접고, 로직 영향 모듈이나 다른 허브의 선은 하나도 접지 않는다. 그래서 몇 개 상자가 쓴다고 말하는 상자(",
                 "Code": false
               },
               {
-                "Text": "N개 상자가 사용",
+                "Text": "UsedBy",
                 "Code": true
               },
               {
-                "Text": "이라 말하며 툴팁이 그 상자들을 이름 댄다. 허브가 되쓰는 쌍, 기록이 낱말을 준 쌍, 모든 연결을 그린 그림의 리드가 타는 쌍, 주 흐름 단계인 허브의 선은 남는다. 접은 쌍은 ",
+                "Text": ")는 늘 기반 띠이고, 그 사용자의 선이 일부만 남는 일이 없으며, 테스트가 띠마다 이를 확인한다. 접은 쌍은 ",
                 "Code": false
               },
               {
@@ -30503,7 +30499,7 @@
                 "Code": true
               },
               {
-                "Text": "에 남아 L과 모든 셈이 그대로 읽고 그림 아래 목록에는 허브 밑에 그대로 오르며, 초점 뷰는 접지 않은 개요가 정한 자리에 상자를 놓는다. 양쪽 변에 칩이 있는 접힌 허브는 한 줄 높이를 더 받아 그 마지막 줄이 늘 보인다. ",
+                "Text": "에 남아 L과 모든 셈이 그대로 읽고 그림 아래 목록에는 허브 밑에 그대로 오르며, 초점 뷰는 접지 않은 개요가 정한 자리에 상자를 놓는다. ",
                 "Code": false
               },
               {
@@ -30559,7 +30555,7 @@
                 "Code": true
               },
               {
-                "Text": ") 유틸리티는 모두 상자로 남되 프로젝트가 접은 허브는 그대로 접히고, ",
+                "Text": ") 유틸리티는 모두 상자로 남고, ",
                 "Code": false
               },
               {
@@ -34446,15 +34442,7 @@
                 "Code": true
               },
               {
-                "Text": " 사본도 이 패키지가 맡는다. project.yaml의 ",
-                "Code": false
-              },
-              {
-                "Text": "overview_fold_hubs",
-                "Code": true
-              },
-              {
-                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다.",
+                "Text": " 사본도 이 패키지가 맡는다.",
                 "Code": false
               }
             ]
@@ -35292,19 +35280,6 @@
                 "Key": "overview-cut",
                 "Name": "overview_cut",
                 "Shape": "*bool",
-                "Need": "선택",
-                "Users": [
-                  {
-                    "ID": "MOD-0034",
-                    "Name": "internal/screen",
-                    "Badge": "extracted"
-                  }
-                ]
-              },
-              {
-                "Key": "overview-fold-hubs",
-                "Name": "overview_fold_hubs",
-                "Shape": "bool",
                 "Need": "선택",
                 "Users": [
                   {

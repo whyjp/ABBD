@@ -10,19 +10,16 @@ import (
 
 // A shared layer most of the overview's boxes use, such as shared types or
 // a logger, draws a line from each of them, and those lines say little
-// beyond "most boxes use it". With overview_fold_hubs on, the overview folds
-// the lines into each hub level L names (levels.go) into one line on the hub
-// box, "N개 상자가 사용", where N is how many boxes use it. The fold is the
-// drawing's alone: the folded pairs stay in Counted, so L, the elements'
-// range and every count read them, the hub's tooltip names its users, and
-// its focus view draws every line it has. What is lost at rest is which
-// boxes do not use the hub.
-//
-// A pair stays drawn where the hub uses the box back, since a folded pair
-// would hide that way; where the record gives the pair a word; where the
-// lead a drawing of every line would find rides it; and every line of a hub
-// that is a stage of the primary flow stays drawn, since the flow reads
-// through it.
+// beyond "most boxes use it". The overview folds those lines only for a
+// common module the classification calls a utility (common.go), and then
+// all of them at once: the module stands as a foundation band under the
+// boxes, its last line says how many boxes use it, its tooltip names them
+// and the words their relations carry, and its focus view and the common
+// modules' page draw and list every line. A box whose lines carry what the
+// product does, a common module that affects the logic or any other hub,
+// keeps every line it has, since folding them would drop what they mean.
+// The folded pairs stay in Counted, so level L, the elements' range and
+// every count read them.
 
 // overviewHubs are the hubs level L would name on the overview drawn with
 // every link, read from the plan before any line is routed, and the boxes
@@ -57,18 +54,13 @@ func (o *overview) overviewHubs() (map[string]bool, map[string]map[string]bool) 
 
 func isModuleOf(o *overview, id model.ID) bool { return slices.Contains(o.modules, id) }
 
-// foldHubs folds the overview's lines into its hubs on top of the cut c,
-// nil for every link drawn, when hubs is on, and every line of each box in
-// ambient, the utilities bandOf names, which then stands as a foundation
-// band under the boxes (band). It is c itself when no line folds.
-func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[model.ID]bool) *cut {
-	hub, users := o.overviewHubs()
-	if !hubs {
-		hub = nil
-	}
-	if len(hub) == 0 && len(ambient) == 0 {
-		return c
-	}
+// foldBands folds every line of each box in band, the utilities the
+// overview stands as foundation bands, on top of the cut c, nil for every
+// link drawn. A stage of the primary flow, a box a line of the record ends
+// on and a box the lead rides through stay boxes, since a reader reads
+// through their lines. It is c itself when no box is left to fold.
+func (o *overview) foldBands(c *cut, ambient map[model.ID]bool) *cut {
+	_, users := o.overviewHubs()
 	box := func(u model.ID) string {
 		if ch := o.tree.chain(u); len(ch) > 0 && isModuleOf(o, ch[0]) {
 			return string(ch[0])
@@ -77,23 +69,11 @@ func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[mod
 	}
 	stage := o.flow.stagesOn(box)
 	ls, _, _, uses := o.links()
-	lead := o.leadPairs(uses, flows)
+	lead := o.leadPairs(uses, o.walks)
 	var said map[pair]string
 	if c != nil {
 		said = c.said
 	}
-	folded := map[pair]bool{}
-	fold := map[model.ID][]model.ID{}
-	usersOf := func(h model.ID) []model.ID {
-		var out []model.ID
-		for _, u := range slices.Sorted(maps.Keys(users[string(h)])) {
-			out = append(out, model.ID(u))
-		}
-		return out
-	}
-	// A stage of the primary flow, a box a line of the record ends on and a
-	// box the lead rides through are read through their lines, so each
-	// stays a box whatever its mark.
 	read := map[model.ID]bool{}
 	for _, l := range ls {
 		if lead[l] || said[l] != "" {
@@ -101,33 +81,28 @@ func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[mod
 		}
 	}
 	band := map[model.ID]bool{}
+	fold := map[model.ID][]model.ID{}
 	bandUses := map[model.ID][]model.ID{}
 	for _, m := range o.modules {
-		if ambient[m] && stage[string(m)] == 0 && !read[m] {
-			band[m], fold[m] = true, usersOf(m)
-			for _, t := range o.modules {
-				if users[string(t)][string(m)] {
-					bandUses[m] = append(bandUses[m], t)
-				}
-			}
-		}
-	}
-	for _, l := range ls {
-		if band[l[0]] || band[l[1]] {
-			folded[l] = true
+		if !ambient[m] || stage[string(m)] > 0 || read[m] {
 			continue
 		}
-		for _, ends := range [][2]model.ID{{l[0], l[1]}, {l[1], l[0]}} {
-			from, h := ends[0], ends[1]
-			if !hub[string(h)] || stage[string(h)] > 0 || !users[string(h)][string(from)] || users[string(from)][string(h)] || lead[l] || said[l] != "" {
-				continue
+		band[m] = true
+		for _, u := range slices.Sorted(maps.Keys(users[string(m)])) {
+			fold[m] = append(fold[m], model.ID(u))
+		}
+		for _, t := range o.modules {
+			if users[string(t)][string(m)] {
+				bandUses[m] = append(bandUses[m], t)
 			}
-			folded[l] = true
-			fold[h] = usersOf(h)
 		}
 	}
-	if len(folded) == 0 && len(band) == 0 {
+	if len(band) == 0 {
 		return c
+	}
+	folded := map[pair]bool{}
+	for _, l := range ls {
+		folded[l] = band[l[0]] || band[l[1]]
 	}
 	keep := map[pair]bool{}
 	for _, l := range ls {
@@ -138,8 +113,10 @@ func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[mod
 	out := counting(ls, func() map[pair]bool {
 		// Counting counts what is neither kept nor folded on its boxes.
 		k := maps.Clone(keep)
-		for l := range folded {
-			k[l] = true
+		for l, f := range folded {
+			if f {
+				k[l] = true
+			}
 		}
 		return k
 	}())
@@ -150,7 +127,7 @@ func (o *overview) foldHubs(c *cut, flows []flowWalk, hubs bool, ambient map[mod
 	return out
 }
 
-// usedByText is what a folded hub's last line says.
+// usedByText says how many boxes use a foundation band.
 func usedByText(n int) string { return fmt.Sprintf("%d개 상자가 사용", n) }
 
 // bandGap is the room between the boxes and a foundation band, and between

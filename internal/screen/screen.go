@@ -302,8 +302,8 @@ func Build(in Input) Model {
 	unfolded := c
 	m.Common, m.Libraries = o.commons()
 	common := commonByUnit(m.Common)
-	if amb := bandOf(m.Common); in.Project.OverviewFoldHubs || len(amb) > 0 {
-		c = o.foldHubs(c, fs, in.Project.OverviewFoldHubs, amb)
+	if band := bandOf(m.Common); len(band) > 0 {
+		c = o.foldBands(c, band)
 	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
@@ -328,14 +328,9 @@ func Build(in Input) Model {
 	// carry at rest. Where that would leave the overview fewer lines with a
 	// word than it draws without the band, the utilities stay boxes: a
 	// tidier drawing is not worth a word a reader loses.
-	if c != nil && len(c.band) > 0 {
-		// Only the bands go: a hub the project folds stays folded.
-		bare := unfolded
-		if in.Project.OverviewFoldHubs {
-			bare = o.foldHubs(unfolded, fs, true, nil)
-		}
-		if plain := overview(bare); wordFill(m.Overview).Labelled < wordFill(plain).Labelled {
-			c, m.Overview = bare, plain
+	if c.folds() {
+		if plain := overview(unfolded); wordFill(m.Overview).Labelled < wordFill(plain).Labelled {
+			c, m.Overview = unfolded, plain
 		}
 	}
 	for i := range m.Common {
@@ -347,7 +342,7 @@ func Build(in Input) Model {
 	// The focus views seat their boxes where the overview without the
 	// record sets them, so a record changes which lines the overview draws
 	// and not how each box's own view reads.
-	// Folded hubs leave every box where the overview without the fold
+	// Foundation bands leave every box where the overview without them
 	// sets it, for the same reason.
 	seats := m.Overview
 	if unfolded.hides() && unfolded.said != nil {
