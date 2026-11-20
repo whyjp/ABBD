@@ -223,6 +223,32 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 				}
 			}
 		}
+		// Where the view draws a box twice that makes a true reverse pair
+		// with the focus, it is drawn again with that box once and its pair
+		// folded into one line, and once more with each such box whose only
+		// lines are that pair standing beside the focus, the line straight
+		// across. Of those that fold every such pair and read no worse, the
+		// one beside is kept, else the other. Where neither does, as about a
+		// hub that many boxes use both ways, the box stays drawn twice: a
+		// known debt until opposite lines at a hub keep two lanes.
+		if hasTwin(ins.Drawing) {
+			var c cost
+			c.judge(ins.Drawing)
+			pt := t
+			pt.paired, pt.pairs = true, foldAll
+			bt := pt
+			bt.beside = true
+			for _, at := range []tactic{bt, pt} {
+				if alt, ok := o.inside(scope, units, id, centres(full.Drawing), at, nil); ok && foldsAll(alt.Drawing) {
+					var ac cost
+					ac.judge(alt.Drawing)
+					if foldsNoWorse(ac, c) {
+						ins, t = alt, at
+						break
+					}
+				}
+			}
+		}
 		// Where some line climbs, the view is drawn again with such lines on
 		// roads of their own, and that is kept where sharing roads reads worse.
 		if slices.ContainsFunc(ins.Drawing.Routes, func(r Route) bool { return r.Back }) {
@@ -292,4 +318,30 @@ func (o *overview) usesLibrary(m model.ID) bool {
 	return slices.ContainsFunc(o.relations, func(e model.Edge) bool {
 		return e.From == m && e.Kind == model.DependsOn && o.units[e.To].Kind == model.External
 	})
+}
+
+// hasTwin says d draws some box twice.
+func hasTwin(d Drawing) bool {
+	return slices.ContainsFunc(d.Boxes, func(b Box) bool { return strings.HasSuffix(b.ID, twinMark) })
+}
+
+// foldsAll says d draws every two routes that join two boxes opposite ways
+// by one kind as one line with a head at each end.
+func foldsAll(d Drawing) bool {
+	box := map[string]bool{}
+	for _, b := range d.Boxes {
+		box[b.ID] = true
+	}
+	way := map[[3]string]bool{}
+	for _, r := range d.Routes {
+		if len(r.ends) == 2 && box[r.ends[0]] && box[r.ends[1]] {
+			way[[3]string{r.ends[0], r.ends[1], r.Kind}] = true
+		}
+	}
+	for _, r := range d.Routes {
+		if len(r.ends) == 2 && box[r.ends[0]] && box[r.ends[1]] && way[[3]string{r.ends[1], r.ends[0], r.Kind}] && !r.Both {
+			return false
+		}
+	}
+	return true
 }

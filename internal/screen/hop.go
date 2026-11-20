@@ -2,23 +2,25 @@ package screen
 
 import "slices"
 
-// hops says which requests join two stages of the primary flow that stand
-// next to each other in one row, on the spine or in a stage's own row down
-// the flow, both ends on the boxes themselves, not on a chip. Such a line runs straight across from one box's facing side
-// into the other's, as a pipeline is drawn: it joins no bus, so it never
-// leaves its box beside a bundle of its kind (rule 4) nor dips under the
-// row and comes back up (B3). It is nil when no line does.
+// hops says which requests run straight across between two boxes that
+// stand next to each other in one row, both ends on the boxes themselves,
+// not on a chip: two stages of the primary flow, on the spine or in a
+// stage's own row down the flow, or a box a beside tactic stood next to the
+// box its only lines join (arrange). Such a line runs straight across from
+// one box's facing side into the other's, as a pipeline is drawn: it joins
+// no bus, so it never leaves its box beside a bundle of its kind (rule 4)
+// nor dips under the row and comes back up (B3). It is nil when no line
+// does.
 func (l *layout) hops(reqs []wireReq) []bool {
 	f := l.axis.flow
-	if f == nil {
-		return nil
-	}
-	bare := func(e end) bool {
-		return e.node != "" && f.stage[e.node] > 0 && (e.key == e.node || e.key == "plain|"+e.node)
+	bare := func(e end) bool { return e.node != "" && (e.key == e.node || e.key == "plain|"+e.node) }
+	joins := func(a, b string) bool {
+		return f != nil && f.stage[a] > 0 && f.stage[b] > 0 || l.partner[a] == b || l.partner[b] == a
 	}
 	var out []bool
 	for i, r := range reqs {
-		if !bare(r.from) || !bare(r.to) || r.from.node == r.to.node || l.row[r.from.node] != l.row[r.to.node] || !l.besides(r.from.node, r.to.node) {
+		a, b := r.from.node, r.to.node
+		if !bare(r.from) || !bare(r.to) || a == b || !joins(a, b) || l.row[a] != l.row[b] || !l.besides(a, b) {
 			continue
 		}
 		if out == nil {
@@ -49,7 +51,9 @@ func (l *layout) besides(a, b string) bool {
 // request index back on reqs. Hops between one pair of boxes stand slotGap
 // apart about the middle of the height the two boxes share, so two lines
 // between the same neighbours, one each way, run as two lanes and never
-// merge.
+// merge; but a true reverse pair between a box a beside tactic placed and
+// its partner, in a view that folds its pairs, is one line with a head at
+// each end (fold.go), as it was placed to be.
 func (l *layout) withHops(reqs []wireReq, hop []bool) routing {
 	var at []int
 	var rest []wireReq
@@ -100,6 +104,29 @@ func (l *layout) withHops(reqs []wireReq, hop []bool) routing {
 	}
 	for _, k := range pairs {
 		is := pair[k]
+		if l.foldsHops(reqs, k, is) {
+			// The kept line runs the way the eye reads, right within a row
+			// (readFirst), and the line it folds rides it back.
+			i, j := is[0], is[1]
+			if l.pos[reqs[i].from.node].X > l.pos[reqs[i].to.node].X {
+				i, j = j, i
+			}
+			left, right := l.pos[reqs[i].from.node], l.pos[reqs[i].to.node]
+			y := (max(left.Y, right.Y) + min(left.Y+left.H, right.Y+right.H)) / 2
+			a, b := pt{left.X + left.W, y}, pt{right.X, y}
+			if r.rider == nil {
+				r.rider = make([]int, len(reqs))
+				for n := range r.rider {
+					r.rider[n] = -1
+				}
+			}
+			r.rider[j] = i
+			ways[i], ways[j] = []pt{a, b}, []pt{b, a}
+			back[i], back[j] = false, false
+			line := []pt{a, b}
+			r.drawn = append(r.drawn, drawn{D: polyline(line), parts: [][]pt{line}, reqs: []int{i, j}, starts: []pt{a, noStart}, kind: reqs[i].kind, both: true})
+			continue
+		}
 		left, right := l.pos[k[0]], l.pos[k[1]]
 		if right.X < left.X {
 			left, right = right, left
@@ -133,4 +160,15 @@ func (l *layout) staged(r wireReq) bool {
 // stages send down to the boxes below them.
 func (l *layout) over(r wireReq) bool {
 	return l.staged(r) && l.row[r.from.node] == l.row[r.to.node]
+}
+
+// foldsHops says the hops is between the boxes of k are a true reverse pair
+// a view that folds its pairs draws as one line: one line each way, of one
+// kind, between a box a beside tactic placed and its partner.
+func (l *layout) foldsHops(reqs []wireReq, k [2]string, is []int) bool {
+	if l.pairs == foldNone || len(is) != 2 || l.partner[k[0]] != k[1] && l.partner[k[1]] != k[0] {
+		return false
+	}
+	p, q := reqs[is[0]], reqs[is[1]]
+	return p.kind == q.kind && p.from.node == q.to.node && p.to.node == q.from.node && !p.lead && !q.lead && p.plan == q.plan
 }

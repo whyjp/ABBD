@@ -85,12 +85,16 @@ type layout struct {
 	// ring says the rows stand about a focus (ring), so every line has the
 	// focus at one end and a bus would only gather what drops straight.
 	ring bool
-	// idle says the tactic's fold or entry flag changed nothing (arrange).
+	// idle says the tactic's fold, entry or beside flag changed nothing
+	// (arrange).
 	idle bool
 	// counted, roads, through and apart are the tactic's flags, and pairs
 	// its tier of folding.
 	counted, roads, through, apart bool
 	pairs                          int
+	// partner maps each box a beside tactic stood next to the box its only
+	// lines join, to that box (partners): their lines run straight across.
+	partner map[string]string
 	// recorded says the drawing is an overview whose stored record hides
 	// some pair, so lines against the flow keep a track clear of lines with
 	// it (lay).
@@ -219,14 +223,22 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	// reads both ways, so neither has to stand a row above the other.
 	// idle says the tactic's flags changed nothing here.
 	idle := true
+	// In a focus view, a box on both sides of the focus is ranked by the
+	// focus's line to it, among what the focus uses: its line back reads
+	// both ways or keeps a lane of its own, and the boxes the focus uses
+	// stand in one row (P2).
+	back := func(v, w string) bool { return seat != nil && w == seat.focus && slices.Contains(out[w], v) }
 	both := func(v, w string) bool {
+		if back(v, w) {
+			return true
+		}
 		if !t.fold || !slices.Contains(out[w], v) {
 			return false
 		}
 		idle = false
 		return true
 	}
-	if !t.fold && !t.entry {
+	if !t.fold && !t.entry && !t.beside {
 		idle = false
 	}
 	{
@@ -396,6 +408,20 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	case seat == nil:
 		tier(nodes, order, out, keep, rank)
 	}
+	// A beside tactic stands a box whose only lines are one each way with a
+	// single other box in that box's row, beside it: the two lines are a true
+	// reverse pair the router folds into one line with a head at each end,
+	// which reads both ways, so neither box has to stand a row above the
+	// other.
+	var partner map[string]string
+	if t.beside {
+		partner = partners(nodes, out, lines)
+		for v, p := range partner {
+			if rank[v] != rank[p] {
+				rank[v], idle = rank[p], false
+			}
+		}
+	}
 	// The frame's edges leave the layering, and the layers they alone held
 	// close up.
 	if _, ok := byID[frameTopNode]; ok {
@@ -546,7 +572,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, through: t.through, apart: t.apart, pairs: t.pairs, axis: ax}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, through: t.through, apart: t.apart, pairs: t.pairs, partner: partner, axis: ax}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)
@@ -1349,4 +1375,41 @@ func tier(nodes []lnode, order []string, out map[string][]string, keep map[ledge
 			rank[v] = at[rank[v]]
 		}
 	}
+}
+
+// partners maps each node whose only lines are one to a single other node and
+// one back to that node, to that node. A node can stand beside its partner
+// only on its left or its right, where nothing comes between them, so a node
+// such nodes meet three or more times keeps them in their rows. Of two nodes
+// that meet only each other, only the one that sorts later moves.
+func partners(nodes []lnode, out map[string][]string, lines map[[2]string]int) map[string]string {
+	meets := map[string][]string{}
+	for k, n := range lines {
+		for range n {
+			meets[k[0]] = append(meets[k[0]], k[1])
+			meets[k[1]] = append(meets[k[1]], k[0])
+		}
+	}
+	got := map[string]string{}
+	for _, nd := range nodes {
+		v := nd.id
+		m := meets[v]
+		if len(m) != 2 || m[0] != m[1] || isChip(m[0]) || m[0] == frameTopNode || m[0] == frameBottomNode {
+			continue
+		}
+		p := m[0]
+		if !slices.Contains(out[v], p) || !slices.Contains(out[p], v) {
+			continue
+		}
+		if q, ok := got[p]; ok && q == v {
+			continue
+		}
+		got[v] = p
+	}
+	n := map[string]int{}
+	for _, p := range got {
+		n[p]++
+	}
+	maps.DeleteFunc(got, func(_, p string) bool { return n[p] > 2 })
+	return got
 }
