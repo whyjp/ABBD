@@ -2258,6 +2258,7 @@
         "internal/screen/lint.go",
         "internal/screen/marks.go",
         "internal/screen/matrix.go",
+        "internal/screen/names.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
@@ -30417,7 +30418,15 @@
                 "Code": true
               },
               {
-                "Text": "로만 알린다) 밑에 그 상자의 초점 뷰로 가는 링크와 함께 적힌다. 그림은 그것들을 ",
+                "Text": "로만 알린다) 밑에 그 상자의 초점 뷰로 가는 링크와 함께 적힌다(",
+                "Code": false
+              },
+              {
+                "Text": "undrawn.go",
+                "Code": true
+              },
+              {
+                "Text": "). 그림은 그것들을 ",
                 "Code": false
               },
               {
