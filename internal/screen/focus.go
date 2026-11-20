@@ -175,14 +175,19 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) [
 	return out
 }
 
-// insideFocus derives a focus view per box of a dense inside.
+// insideFocus derives a focus view per box of a dense inside, and per box
+// at an end of a static line the inside leaves out at rest.
 func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) []Focus {
-	if !dense(full.Drawing) {
+	all := dense(full.Drawing)
+	if !all && len(full.quieted) == 0 {
 		return nil
 	}
 	var out []Focus
 	for _, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
+		if !all && !full.quieted[id] {
+			continue
+		}
 		t := tactic{gather: full.gathered}
 		ins, _ := o.inside(scope, units, id, centres(full.Drawing), t, nil)
 		// Drawn again with room for its counts, where some count would get

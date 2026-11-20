@@ -544,6 +544,11 @@ type overview struct {
 	counted     [][2]string
 	countedRels []string
 	said        map[pair]string
+	// static are the counted pairs left out for resting on a static
+	// dependency only, and quiet says the views at rest leave such lines
+	// out (static.go).
+	static map[pair]bool
+	quiet  bool
 	// fold is the boxes that use each hub whose lines the overview folds
 	// (hubfold.go).
 	fold map[model.ID][]model.ID
@@ -728,6 +733,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		}
 	}
 	var hidden []ledge
+	recorded := false
 	o.unreached = map[model.ID][]model.ID{}
 	for _, c := range o.contracts {
 		for _, p := range o.providers[c] {
@@ -765,10 +771,13 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 			o.countedRels = append(o.countedRels, o.rels[e.String()]...)
 			return true
 		})
-		o.said = c.said
+		o.said, o.static = c.said, c.static
 		o.fold, o.band, o.bandUses = c.fold, c.band, c.bandUses
-		if c.said == nil {
-			hidden = nil
+		// A static pair left out still sets which box stands above the
+		// other, so leaving it out moves no box (static.go).
+		recorded = c.said != nil
+		if !recorded {
+			hidden = slices.DeleteFunc(hidden, func(e ledge) bool { return !c.static[pairOf(model.ID(e.from), model.ID(e.to))] })
 		}
 	}
 	var edges []ledge
@@ -865,7 +874,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	}
 	o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
-	o.layout.recorded = len(hidden) > 0
+	o.layout.recorded = recorded && len(hidden) > 0
 	return o
 }
 

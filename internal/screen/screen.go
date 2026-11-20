@@ -299,6 +299,11 @@ func Build(in Input) Model {
 	if c == nil && in.Project.Cut() {
 		c = o.primary(in.Primary, ls, fs, nil, nil)
 	}
+	// The views at rest leave the lines that rest on a static dependency
+	// only to the list under the picture and the focus views (static.go).
+	if o.quiet = !in.Project.ShowStatic(); o.quiet {
+		c = o.quietCut(c, in.Primary)
+	}
 	unfolded := c
 	m.Common, m.Libraries = o.commons()
 	common := commonByUnit(m.Common)

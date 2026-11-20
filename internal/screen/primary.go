@@ -57,6 +57,9 @@ type cut struct {
 	band map[model.ID]bool
 	// bandUses are the boxes each band uses, named in its tooltip.
 	bandUses map[model.ID][]model.ID
+	// static are the pairs left out because they rest on a static
+	// dependency only (static.go), which the list under the picture says.
+	static map[pair]bool
 }
 
 // folds says the cut folds some hub's lines.

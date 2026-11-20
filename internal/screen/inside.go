@@ -56,6 +56,9 @@ type Inside struct {
 	gathered bool
 	// roomy says the counted tactic would give some ×N room (lay).
 	roomy bool
+	// quieted are the boxes at an end of a static line the view leaves out
+	// at rest, whose focus views draw it (static.go).
+	quieted map[model.ID]bool
 }
 
 // Group is a run of names that share a first word, shown once as Head.
@@ -288,6 +291,30 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 	}
 
+	// At rest the view leaves its static lines to the list under the picture
+	// and to the focus views (static.go), and with them a chip on the frame
+	// for a module no other line meets.
+	var left []line
+	if focus == "" && o.quiet {
+		lines, left = o.quietLines(lines, o.flow.stagesOn(func(id model.ID) string {
+			for _, c := range t.chain(id) {
+				if t.units[c].Parent == m {
+					return string(c)
+				}
+			}
+			return ""
+		}))
+		if len(left) > 0 {
+			met := map[string]bool{}
+			for _, ln := range lines {
+				if !ln.inner {
+					met[fmt.Sprint(ln.to, ln.exit)] = true
+				}
+			}
+			ports = slices.DeleteFunc(ports, func(p port) bool { return p.cls == "other" && !met[fmt.Sprint(p.id, p.exit)] })
+		}
+	}
+
 	if focus != "" {
 		lines = slices.DeleteFunc(lines, func(ln line) bool { return ln.from != focus && !(ln.inner && ln.to == focus) })
 		calls := map[model.ID]bool{}
@@ -436,6 +463,13 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			edges = append(edges, ledge{frameTopNode, string(ln.from)})
 		default:
 			edges = append(edges, ledge{string(ln.from), frameBottomNode})
+		}
+	}
+	// A static line left out still sets which box stands above the other,
+	// so leaving it out moves no box (static.go).
+	for _, ln := range left {
+		if ln.inner {
+			edges = append(edges, ledge{string(ln.from), string(ln.to)})
 		}
 	}
 	nodes = append(nodes, lnode{id: frameTopNode}, lnode{id: frameBottomNode})
@@ -811,7 +845,17 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	d.route(routed, reqs, func(i int) []string { return lines[i].rels })
 	d.mark(paths, reqs, t)
 	d.hover()
+	d.Undrawn = o.leftStatic(m, left)
 	ins.Drawing = d
+	for _, ln := range left {
+		if ins.quieted == nil {
+			ins.quieted = map[model.ID]bool{}
+		}
+		ins.quieted[ln.from] = true
+		if ln.inner {
+			ins.quieted[ln.to] = true
+		}
+	}
 	if focus == "" {
 		ins.Inferred = o.inferred(m, units)
 	}
