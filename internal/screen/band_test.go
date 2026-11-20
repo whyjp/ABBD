@@ -140,3 +140,30 @@ func TestTheCommonPageListsWhoUsesEachCommonModule(t *testing.T) {
 		t.Error("a blueprint with no common module has a common page")
 	}
 }
+
+// A contract outside every box that two boxes provide counts each use
+// once out of the user and once into each provider, and a provider's own
+// relation that provides it counts as no use of the other.
+func TestAContractTwoBoxesProvideCountsEachUseOnce(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "a", rel("IF-0001", model.Consumes)),
+		called("MOD-0002", "b", rel("IF-0001", model.Consumes)),
+		called("MOD-0003", "c", rel("IF-0001", model.Consumes)),
+		called("MOD-0004", "d", rel("IF-0001", model.Consumes)),
+		called("MOD-0005", "disk", rel("IF-0001", model.Provides)),
+		called("MOD-0006", "memory", rel("IF-0001", model.Provides)),
+		{ID: "IF-0001", Kind: model.Interface, Name: model.Said(model.Script, "Store")},
+	}
+	in := Input{Units: units}
+	o := planScoped(in.Units, "", nil, tactic{}, layerings(in), walks(in), nil, scopeOf(in))
+	cs, _ := o.commons()
+	got := map[string][2]int{}
+	for _, c := range cs {
+		got[c.Unit] = [2]int{c.In, c.Out}
+	}
+	for _, p := range []string{"MOD-0005", "MOD-0006"} {
+		if got[p] != [2]int{4, 0} {
+			t.Errorf("%s counts in, out %v; want the 4 uses in and nothing out: %+v", p, got[p], cs)
+		}
+	}
+}
