@@ -124,9 +124,11 @@ svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
 svg circle.junction { fill: var(--c); }
-svg g.more rect { fill: var(--panel); stroke: var(--muted); stroke-width: 1.2; }
-svg g.more text { fill: var(--muted); font: 700 10.5px system-ui, sans-serif; }
-svg a:hover g.more rect { stroke: var(--accent); }
+details.undrawn { margin: 6px 0 0; font-size: 13px; }
+details.undrawn summary { cursor: pointer; color: var(--muted); }
+details.undrawn ul { margin: 6px 0 0; padding-left: 18px; columns: 2 16rem; column-gap: 28px; }
+details.undrawn li { break-inside: avoid; margin: 1px 0; }
+details.undrawn a { color: var(--accent); text-decoration: none; }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
@@ -276,16 +278,19 @@ svg [data-h="n"] { --c: var(--hn); }
 svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.w,.junction,.count,.lab,.origin,.hop,.badge){opacity:.1}
 svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.box,.port[class*=" n"]){opacity:.3}
 svg:has(.p0:hover,:focus-visible>.p0) :is(.box,.port).n0,svg:has(.p0:hover,:focus-visible>.p0) :is(.count,.lab,.origin,.badge).e0,svg:has(.w.e0:hover) .p0{opacity:1}
-svg:has(.p0:hover,:focus-visible>.p0) .route.e0{opacity:1;--c:var(--k0)}
+svg:has(.p0:hover,:focus-visible>.p0) :is(.route,.badge).e0{opacity:1;--c:var(--k0)}
 svg:has(.p1:hover,:focus-visible>.p1) :is(.box,.port).n1,svg:has(.p1:hover,:focus-visible>.p1) :is(.count,.lab,.origin,.badge).e1,svg:has(.w.e1:hover) .p1{opacity:1}
-svg:has(.p1:hover,:focus-visible>.p1) .route.e1{opacity:1;--c:var(--k1)}
+svg:has(.p1:hover,:focus-visible>.p1) :is(.route,.badge).e1{opacity:1;--c:var(--k1)}
 svg:has(.p2:hover,:focus-visible>.p2) :is(.box,.port).n2,svg:has(.p2:hover,:focus-visible>.p2) :is(.count,.lab,.origin,.badge).e2,svg:has(.w.e2:hover) .p2{opacity:1}
-svg:has(.p2:hover,:focus-visible>.p2) .route.e2{opacity:1;--c:var(--k2)}
+svg:has(.p2:hover,:focus-visible>.p2) :is(.route,.badge).e2{opacity:1;--c:var(--k2)}
 svg:has(.p3:hover,:focus-visible>.p3) :is(.box,.port).n3,svg:has(.p3:hover,:focus-visible>.p3) :is(.count,.lab,.origin,.badge).e3,svg:has(.w.e3:hover) .p3{opacity:1}
-svg:has(.p3:hover,:focus-visible>.p3) .route.e3{opacity:1;--c:var(--k3)}
+svg:has(.p3:hover,:focus-visible>.p3) :is(.route,.badge).e3{opacity:1;--c:var(--k3)}
 svg:has(.w.r0:hover) .r0:not(.w){opacity:1}
+svg:has(.w.r0:hover) .badge.r0{--c:var(--rc)}
 svg:has(.w.r1:hover) .r1:not(.w){opacity:1}
+svg:has(.w.r1:hover) .badge.r1{--c:var(--rc)}
 svg:has(.w.r2:hover) .r2:not(.w){opacity:1}
+svg:has(.w.r2:hover) .badge.r2{--c:var(--rc)}
 }
 
 </style>
@@ -327,6 +332,7 @@ internal/bootstrap/overlay.go &#34;n := overlap(u.Anchors, d.Anchors)&#34;</titl
 
 
 <g class="route depends_on e0 e1 r0" data-h="0" style="--k0:var(--h0);--k1:var(--h1)"><path class="way" d="M180 106 L180 138"/><use href="#t-dep" transform="translate(180 138) rotate(90)"/></g><g class="route depends_on e1 e2 r1" data-h="1" style="--k1:var(--h1);--k2:var(--h1)"><path class="way" d="M180 182 L180 206"/><use href="#t-dep" transform="translate(180 206) rotate(90)"/></g><g class="route depends_on e0 e3 r2" data-h="0" style="--k0:var(--h0);--k3:var(--h0)"><path class="way" d="M180 38 L180 62"/><use href="#t-dep" transform="translate(180 62) rotate(90)"/></g>
+
 <g class="box inner p0 n0 n1 n3" data-id="MOD-0010" data-h="0"><title>MOD-0010 supplement fold: Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.</title><rect x="109" y="62" width="142" height="44" rx="4"/><text class="name" x="117" y="81">supplement fold</text><text class="sub" x="117" y="98">모듈</text></g><g class="box inner p1 n0 n1 n2" data-id="MOD-0011" data-h="1"><title>MOD-0011 anchor matching: Picks the script unit of the same kind sharing the most anchors with a supplement unit, and fails when none shares one or two share the same count.</title><rect x="109" y="138" width="142" height="44" rx="4"/><text class="name" x="117" y="157">anchor matching</text><text class="sub" x="117" y="174">모듈</text></g>
 <a href="MOD-0017.html"><g class="port other entry p2 n1 n2" data-id="port|MOD-0017false"><title>계약 없이 internal/extract와 이어진 곳</title><rect x="140" y="206" width="80" height="17" rx="3"/><text class="chip" x="140" dx="4" y="206" dy="12.5">→ extract</text></g></a><a href="MOD-0001.html"><g class="port other exit p3 n0 n3" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 이어진 곳</title><rect x="134" y="21" width="93" height="17" rx="3"/><text class="chip" x="134" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
 
@@ -375,6 +381,7 @@ internal/bootstrap/overlay.go &#34;n := overlap(u.Anchors, d.Anchors)&#34;</titl
 
 
 <g class="route bypass e0 e1 r0" data-h="0" style="--k0:var(--h0);--k1:var(--h3)"><path class="way" d="M197 92 L197 128"/><use href="#t-dep" transform="translate(197 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="3" style="--k1:var(--h3);--k2:var(--h2)"><path class="way" d="M159 188 L159 224"/><use href="#t-dep" transform="translate(159 224) rotate(90)"/></g><g class="route bypass e1 e3 r2" data-h="3" style="--k1:var(--h3);--k3:var(--h1)"><path class="way" d="M235 188 L235 224"/><use href="#t-dep" transform="translate(235 224) rotate(90)"/></g>
+
 <a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n1" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI: Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.. 누르면 이 모듈을 중심으로 봅니다</title><rect x="122" y="32" width="150" height="60" rx="6"/><text class="name" x="197" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="197" y="74" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0009"><g class="box design focus p1 n0 n1 n2 n3" data-id="MOD-0009" data-h="3"><title>MOD-0009 internal/bootstrap: Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.. 누르면 이 모듈 내부를 봅니다</title><rect x="111" y="128" width="172" height="60" rx="6"/><text class="name" x="197" y="155" text-anchor="middle">internal/bootstrap</text><text class="sub" x="197" y="170" text-anchor="middle">Folds the supplement</text></g></a><a href="MOD-0017.html#f-overview--MOD-0017"><g class="box design p2 n1 n2" data-id="MOD-0017" data-h="2"><title>MOD-0017 internal/extract: Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader&#39;s unit has a stable identity.. 누르면 이 모듈을 중심으로 봅니다</title><rect x="24" y="224" width="156" height="60" rx="6"/><text class="name" x="102" y="251" text-anchor="middle">internal/extract</text><text class="sub" x="102" y="266" text-anchor="middle">모듈</text></g></a><a href="MOD-0030.html#f-overview--MOD-0030"><g class="box design p3 n1 n3" data-id="MOD-0030" data-h="1"><title>MOD-0030 internal/model: Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.. 누르면 이 모듈을 중심으로 봅니다</title><rect x="220" y="224" width="150" height="60" rx="6"/><text class="name" x="295" y="251" text-anchor="middle">internal/model</text><text class="sub" x="295" y="266" text-anchor="middle">Defines units</text></g></a>
 
 

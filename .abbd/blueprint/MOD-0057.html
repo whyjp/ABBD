@@ -124,9 +124,11 @@ svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
 svg circle.junction { fill: var(--c); }
-svg g.more rect { fill: var(--panel); stroke: var(--muted); stroke-width: 1.2; }
-svg g.more text { fill: var(--muted); font: 700 10.5px system-ui, sans-serif; }
-svg a:hover g.more rect { stroke: var(--accent); }
+details.undrawn { margin: 6px 0 0; font-size: 13px; }
+details.undrawn summary { cursor: pointer; color: var(--muted); }
+details.undrawn ul { margin: 6px 0 0; padding-left: 18px; columns: 2 16rem; column-gap: 28px; }
+details.undrawn li { break-inside: avoid; margin: 1px 0; }
+details.undrawn a { color: var(--accent); text-decoration: none; }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
@@ -276,13 +278,15 @@ svg [data-h="n"] { --c: var(--hn); }
 svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.w,.junction,.count,.lab,.origin,.hop,.badge){opacity:.1}
 svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.box,.port[class*=" n"]){opacity:.3}
 svg:has(.p0:hover,:focus-visible>.p0) :is(.box,.port).n0,svg:has(.p0:hover,:focus-visible>.p0) :is(.count,.lab,.origin,.badge).e0,svg:has(.w.e0:hover) .p0{opacity:1}
-svg:has(.p0:hover,:focus-visible>.p0) .route.e0{opacity:1;--c:var(--k0)}
+svg:has(.p0:hover,:focus-visible>.p0) :is(.route,.badge).e0{opacity:1;--c:var(--k0)}
 svg:has(.p1:hover,:focus-visible>.p1) :is(.box,.port).n1,svg:has(.p1:hover,:focus-visible>.p1) :is(.count,.lab,.origin,.badge).e1,svg:has(.w.e1:hover) .p1{opacity:1}
-svg:has(.p1:hover,:focus-visible>.p1) .route.e1{opacity:1;--c:var(--k1)}
+svg:has(.p1:hover,:focus-visible>.p1) :is(.route,.badge).e1{opacity:1;--c:var(--k1)}
 svg:has(.p2:hover,:focus-visible>.p2) :is(.box,.port).n2,svg:has(.p2:hover,:focus-visible>.p2) :is(.count,.lab,.origin,.badge).e2,svg:has(.w.e2:hover) .p2{opacity:1}
-svg:has(.p2:hover,:focus-visible>.p2) .route.e2{opacity:1;--c:var(--k2)}
+svg:has(.p2:hover,:focus-visible>.p2) :is(.route,.badge).e2{opacity:1;--c:var(--k2)}
 svg:has(.w.r0:hover) .r0:not(.w){opacity:1}
+svg:has(.w.r0:hover) .badge.r0{--c:var(--rc)}
 svg:has(.w.r1:hover) .r1:not(.w){opacity:1}
+svg:has(.w.r1:hover) .badge.r1{--c:var(--rc)}
 }
 
 </style>
@@ -314,6 +318,7 @@ svg:has(.w.r1:hover) .r1:not(.w){opacity:1}
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" data-roads="1" width="360" height="116" viewBox="0 0 360 116" role="img" aria-label="모듈 내부">
 <defs></defs>
 <rect class="frame" x="6" y="18" width="348" height="80" rx="8"/>
+
 
 
 
@@ -359,6 +364,7 @@ via 호출</title></path><path class="w bypass e1 e2 r1" d="M259 92 L259 128" da
 
 
 <g class="route bypass e0 e2 r0" data-h="2" style="--k0:var(--h2);--k2:var(--h0)"><path class="way" d="M129 92 L129 128"/><use href="#t-dep" transform="translate(129 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="3" style="--k1:var(--h3);--k2:var(--h0)"><path class="way" d="M259 92 L259 128"/><use href="#t-dep" transform="translate(259 128) rotate(90)"/></g>
+
 <a href="MOD-0034.html#f-overview--MOD-0034"><g class="box design p0 n0 n2" data-id="MOD-0034" data-h="2"><title>MOD-0034 internal/screen: 저장된 unit으로 결정적인 두 단계 모델(최상위 모듈과 계약의 개요, 모듈마다 inside 하나, unit 목록)을 짓고, 상태와 블루프린트가 최신인지 알려 주며, 블루프린트 페이지(index.html, unit을 담은 모듈마다 한 페이지, 계약 색인, unit 색인)와 graph.json을 그린다. 이 파일들은 sync 값을 담지 않는다. 누르면 이 모듈을 중심으로 봅니다</title><rect x="24" y="32" width="150" height="60" rx="6"/><text class="name" x="99" y="59" text-anchor="middle">internal/screen</text><text class="sub" x="99" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0041.html#f-overview--MOD-0041"><g class="box design p1 n1 n2" data-id="MOD-0041" data-h="3"><title>MOD-0041 internal/store: Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.. 누르면 이 모듈을 중심으로 봅니다</title><rect x="214" y="32" width="150" height="60" rx="6"/><text class="name" x="289" y="59" text-anchor="middle">internal/store</text><text class="sub" x="289" y="74" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0057"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0057" data-h="0"><title>MOD-0057 internal/owners. 누르면 이 모듈 내부를 봅니다</title><rect x="119" y="128" width="150" height="60" rx="6"/><text class="name" x="194" y="155" text-anchor="middle">internal/owners</text><text class="sub" x="194" y="170" text-anchor="middle">모듈</text></g></a>
 
 

@@ -9,7 +9,7 @@ import "testing"
 // back: the line ran left, right, left and right again, and screen's line
 // on the same trunk with it (user-05's knot). The uncut overview, still the
 // default for a repo that does not turn the cut on, draws all six. The cut
-// overview counts most of them on a pill, so internal/gitx's focus view
+// overview lists most of them, so internal/gitx's focus view
 // draws all six there, and any the cut overview still draws keeps the bound.
 func TestALineIntoGitxTurnsBackAtMostOnce(t *testing.T) {
 	t.Parallel()
