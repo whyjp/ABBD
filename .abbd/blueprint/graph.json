@@ -2258,6 +2258,7 @@
         "internal/screen/lint.go",
         "internal/screen/marks.go",
         "internal/screen/matrix.go",
+        "internal/screen/names.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",

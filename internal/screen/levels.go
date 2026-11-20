@@ -155,6 +155,9 @@ func level(name string, d Drawing, at where) Level {
 		}
 		l.Advice = append(l.Advice, fmt.Sprintf("the view draws %d lines between %s%s, more than %d a box. Merge parts that change together into one responsibility, and make what most parts use, such as shared types, helpers or UI, one shared module, whose incoming lines do not count here", own, n, besides, linesPerBox))
 	}
+	if at == atOverview {
+		l.Advice = append(l.Advice, nameAdvice(d.Boxes, part)...)
+	}
 	return l
 }
 
