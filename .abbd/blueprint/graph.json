@@ -23345,7 +23345,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -25010,7 +25009,8 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Reader": "claude",
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -33796,7 +33796,7 @@
                 "Code": true
               },
               {
-                "Text": "도 준다.",
+                "Text": "도 준다. 주 흐름의 번호 원은 켜진 경로까지 포함해 모든 선 위에 그리고, 선이 켜질 때 그 선의 색으로 함께 켜진다.",
                 "Code": false
               }
             ]
