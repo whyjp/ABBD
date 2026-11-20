@@ -170,6 +170,8 @@ func TestLevelsAskForNamesThatSayWhatABoxDoes(t *testing.T) {
 		{"acronyms are spoken in any language", box("라우팅", "엔진", "API", "CLI"), "", true},
 		{"accented latin names alone", box("éditeur", "façade", "routeur", "moteur"), "", true},
 		{"a list of three joined items", box("라우팅", "엔진", "파서·프로세서·억제 서비스", "응답"), "파서·프로세서·억제 서비스", false},
+		{"an empty item does not count", box("라우팅", "엔진", "저장··복원", "응답"), "", true},
+		{"a korean dot variant lists three", box("라우팅", "엔진", "파서ㆍ프로세서ㆍ억제", "응답"), "파서ㆍ프로세서ㆍ억제", false},
 		{"two joined items are one pair", box("라우팅", "엔진", "저장·복원", "응답"), "", true},
 		{"accented latin beside korean is bare", box("라우팅", "엔진", "éditeur", "façade"), "éditeur, façade", false},
 	}
