@@ -188,3 +188,21 @@ func TestBesideLeavesNoEmptyRow(t *testing.T) {
 		}
 	}
 }
+
+// A beside tactic that places no box draws the rows the plain drawing
+// does, and says it is idle.
+func TestAnIdleBesideDrawsThePlainRows(t *testing.T) {
+	nodes := []lnode{{id: "a", w: 100, h: 60}, {id: "b", w: 100, h: 60}, {id: "c", w: 100, h: 60}, {id: "d", w: 100, h: 60}}
+	edges := []ledge{{"a", "b"}, {"a", "c"}, {"b", "d"}, {"c", "d"}}
+	plain := arrange(slices.Clone(nodes), edges, overviewBudget, nil, tactic{})
+	beside := arrange(slices.Clone(nodes), edges, overviewBudget, nil, tactic{beside: true})
+	if len(beside.partner) != 0 {
+		t.Fatalf("beside placed %v; the case tests nothing", beside.partner)
+	}
+	if !beside.idle {
+		t.Error("a beside tactic that placed nothing is not idle")
+	}
+	if !slices.EqualFunc(plain.rows, beside.rows, slices.Equal) {
+		t.Errorf("an idle beside draws rows %v, the plain drawing %v", beside.rows, plain.rows)
+	}
+}

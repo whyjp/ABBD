@@ -1739,7 +1739,13 @@ func (l *look) rules() []Breach {
 }
 
 // density is the lines d draws at rest per unit it draws, in tenths: a
-// folded pair is one line, and a twin is the unit it draws again.
+// folded pair is one line, and a twin is the unit it draws again. Counting
+// a twin as a second box made a focus view that keeps its twins read less
+// dense than one that draws each unit once, so the choice between them
+// would favour the twin for the count alone. With a twin counted as its
+// unit, density rises in the views that still draw twins; that is the
+// measure corrected, not a drawing that reads worse, and no gate failure
+// changes with it.
 func density(d Drawing) int {
 	units := map[string]bool{}
 	for _, b := range d.Boxes {
