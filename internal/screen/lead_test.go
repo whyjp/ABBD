@@ -1,6 +1,8 @@
 package screen
 
 import (
+	"encoding/xml"
+	"io"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -358,5 +360,51 @@ func TestInferredLeadsTurnOff(t *testing.T) {
 	off := false
 	if _, got := inferred(store.Project{InferredLead: &off}); len(got) > 0 {
 		t.Errorf("with inferred_lead false, views still draw a lead: %v", got)
+	}
+}
+
+// A hop's number is drawn after every line, route included, so a lit route
+// never covers it; its group carries the colours that route lights in, so
+// the number lights with its line.
+func TestANumberIsDrawnAboveEveryLine(t *testing.T) {
+	t.Parallel()
+	seen := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			if d.Lead == nil || len(d.Lead.Hops) == 0 || len(d.Routes) == 0 {
+				continue
+			}
+			var b strings.Builder
+			if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
+				t.Fatal(err)
+			}
+			svg := b.String()
+			dec := xml.NewDecoder(strings.NewReader(svg))
+			for {
+				if _, err := dec.Token(); err != nil {
+					if err != io.EOF {
+						t.Errorf("%s: the drawing is not well formed: %v", name, err)
+					}
+					break
+				}
+			}
+			badge := strings.Index(svg, `<g class="badge`)
+			if badge < 0 {
+				continue
+			}
+			seen++
+			for _, line := range []string{`<g class="route `, `<path class="w `, `<g class="hop `} {
+				if at := strings.LastIndex(svg, line); at > badge {
+					t.Errorf("%s: a %q is drawn after the first number, so it can cover it", name, line)
+				}
+			}
+			if !strings.Contains(svg, `<g class="badge`) || !regexp.MustCompile(`<g class="badge[^"]*"( style="[^"]*--rc:)`).MatchString(svg) {
+				t.Errorf("%s: a number does not carry its route's colours", name)
+			}
+		}
+	}
+	if seen == 0 {
+		t.Error("no fixture view draws a number beside routes")
 	}
 }
