@@ -408,3 +408,14 @@ func TestANumberIsDrawnAboveEveryLine(t *testing.T) {
 		t.Error("no fixture view draws a number beside routes")
 	}
 }
+
+// A pointed-at box or line lights a number in its route's colour.
+func TestHoverLightsNumbersLikeTheirRoutes(t *testing.T) {
+	t.Parallel()
+	css := hoverCSS(1, 1)
+	for _, want := range []string{":is(.route,.badge).e0{opacity:1;--c:var(--k0)}", ".badge.r0{--c:var(--rc)}"} {
+		if !strings.Contains(css, want) {
+			t.Errorf("hover rules lack %q", want)
+		}
+	}
+}
