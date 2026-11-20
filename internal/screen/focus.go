@@ -224,7 +224,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 				}
 			}
 		}
-		// Where the view draws a box twice that makes a true reverse pair
+		// Where the view draws a box twice that makes a mutual pair
 		// with the focus, it is drawn again with that box once and its pair
 		// folded into one line, and once more with each such box whose only
 		// lines are that pair standing beside the focus, the line straight

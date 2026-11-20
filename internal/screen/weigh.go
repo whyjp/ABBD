@@ -90,7 +90,7 @@ type cost struct {
 	// pairs says some two lines are a mutual pair, so the view may be
 	// drawn with each pair folded into one line (tactic.pairs).
 	pairs bool
-	// folded says some true reverse pair is drawn as one line, so the view
+	// folded says some mutual pair is drawn as one line, so the view
 	// may be drawn with a box whose only lines are such a pair beside the
 	// box at its other end (tactic.beside).
 	folded bool

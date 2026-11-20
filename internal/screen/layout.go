@@ -409,8 +409,8 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		tier(nodes, order, out, keep, rank)
 	}
 	// A beside tactic stands a box whose only lines are one each way with a
-	// single other box in that box's row, beside it: the two lines are a true
-	// reverse pair the router folds into one line with a head at each end,
+	// single other box in that box's row, beside it: the two lines are a mutual
+	// pair the router folds into one line with a head at each end,
 	// which reads both ways, so neither box has to stand a row above the
 	// other.
 	var partner map[string]string
