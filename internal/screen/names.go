@@ -11,10 +11,9 @@ import (
 // labels a box "common". These are such words, English and Korean.
 var emptyWords = map[string]bool{
 	"common": true, "shared": true, "util": true, "utils": true, "utility": true,
-	"utilities": true, "helper": true, "helpers": true, "base": true, "core": true,
-	"misc": true, "lib": true, "libs": true, "general": true, "module": true,
+	"utilities": true, "helper": true, "helpers": true, "misc": true, "lib": true, "libs": true, "general": true, "module": true,
 	"modules": true, "공통": true, "공용": true, "유틸": true, "유틸리티": true,
-	"기반": true, "코어": true, "기타": true, "헬퍼": true, "모듈": true,
+	"기반": true, "기타": true, "헬퍼": true, "모듈": true,
 }
 
 // nameAdvice reads the names of the overview's parts, which a reader
@@ -30,9 +29,10 @@ func nameAdvice(boxes []Box, part map[string]bool) []string {
 		if isEmptyName(b.Name) {
 			empty = append(empty, b.Name)
 		}
-		if hasNonASCIILetter(b.Name) {
+		switch {
+		case hasNonLatinLetter(b.Name):
 			spoken = append(spoken, b.Name)
-		} else if b.Name != "" {
+		case isCodeName(b.Name):
 			plain = append(plain, b.Name)
 		}
 	}
@@ -58,11 +58,28 @@ func isEmptyName(name string) bool {
 	return len(words) > 0
 }
 
-func hasNonASCIILetter(s string) bool {
+// hasNonLatinLetter is true for a name written in a script of its own,
+// such as Hangul, which an accented Latin letter is not.
+func hasNonLatinLetter(s string) bool {
 	for _, r := range s {
-		if r > unicode.MaxASCII && unicode.IsLetter(r) {
+		if unicode.IsLetter(r) && !unicode.Is(unicode.Latin, r) {
 			return true
 		}
 	}
 	return false
+}
+
+// isCodeName is true for a Latin-letter name that is no acronym: a type,
+// a package or a crate such as ginS or codec/json. An all-capitals name
+// such as API or CLI is spoken in any language.
+func isCodeName(s string) bool {
+	lower := 0
+	for _, r := range s {
+		if unicode.IsLetter(r) {
+			if unicode.IsLower(r) {
+				lower++
+			}
+		}
+	}
+	return lower > 0
 }

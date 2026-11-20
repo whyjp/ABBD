@@ -166,11 +166,36 @@ func TestLevelsAskForNamesThatSayWhatABoxDoes(t *testing.T) {
 		{"mixed languages", box("라우팅", "엔진", "binding", "render"), "binding, render", false},
 		{"one bare name is a proper noun", box("라우팅", "엔진", "응답", "ginS"), "", true},
 		{"all english", box("router", "engine", "binding", "render"), "", true},
+		{"core can be a part's own name", box("라우팅", "엔진", "core", "응답"), "", true},
+		{"acronyms are spoken in any language", box("라우팅", "엔진", "API", "CLI"), "", true},
+		{"accented latin names alone", box("éditeur", "façade", "routeur", "moteur"), "", true},
+		{"accented latin beside korean is bare", box("라우팅", "엔진", "éditeur", "façade"), "éditeur, façade", false},
 	}
 	for _, c := range cases {
 		got := strings.Join(level("overview", c.d, atOverview).Advice, "\n")
 		if c.quiet && got != "" || !c.quiet && !strings.Contains(got, c.want) {
 			t.Errorf("%s: advice %q, want %q (quiet %v)", c.name, got, c.want, c.quiet)
 		}
+	}
+}
+
+// Both name lines can stand together, a box that is no design part is not
+// read, and only the overview's names are.
+func TestLevelsReadNamesOnlyOfOverviewParts(t *testing.T) {
+	both := withBoxes(0, "design")
+	for i, n := range []string{"라우팅", "엔진", "binding", "render", "공통 모듈"} {
+		both.Boxes = append(both.Boxes, Box{ID: fmt.Sprint("b", i), Name: n, Class: "design"})
+	}
+	got := level("overview", both, atOverview).Advice
+	if len(got) != 2 || !strings.Contains(got[0], "공통 모듈") || !strings.Contains(got[1], "binding, render") {
+		t.Errorf("both lines: %q", got)
+	}
+	loose := Drawing{Boxes: []Box{{ID: "x", Name: "공통 모듈", Class: "loose design"}, {ID: "y", Name: "shared", Class: "inner"}}}
+	if a := level("overview", loose, atOverview).Advice; strings.Contains(strings.Join(a, " "), "the overview names") || strings.Contains(strings.Join(a, " "), "mixes names") {
+		t.Errorf("a box that is no part was read: %q", a)
+	}
+	inside := Drawing{Boxes: []Box{{ID: "a", Name: "공통 모듈", Class: "inner"}, {ID: "b", Name: "common", Class: "inner"}, {ID: "c", Name: "binding", Class: "inner"}}}
+	if a := level("MOD-1 x", inside, atNested).Advice; strings.Contains(strings.Join(a, " "), "the overview names") || strings.Contains(strings.Join(a, " "), "mixes names") {
+		t.Errorf("a module's page was read for names: %q", a)
 	}
 }
