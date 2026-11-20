@@ -11,9 +11,9 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// The hubs the fold reads off the plan are the hubs level L names on the
-// overview drawn with every link.
-func TestTheFoldFoldsTheHubsLevelLNames(t *testing.T) {
+// The hubs the common modules are read from are the hubs level L names on
+// the overview drawn with every link.
+func TestTheHubsOffThePlanAreLevelLs(t *testing.T) {
 	t.Parallel()
 	for _, name := range []string{"pstack", "ripgrep", "self", "orca"} {
 		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
@@ -31,74 +31,94 @@ func TestTheFoldFoldsTheHubsLevelLNames(t *testing.T) {
 		slices.Sort(got)
 		slices.Sort(want)
 		if !slices.Equal(got, want) {
-			t.Errorf("%s: the fold reads hubs %v, level L names %v", name, got, want)
+			t.Errorf("%s: the plan reads hubs %v, level L names %v", name, got, want)
 		}
 	}
 }
 
-// With overview_fold_hubs on, the overview draws no line into a hub from a
-// box that only uses it, says on the hub how many boxes use it and names
-// them in its tooltip, and keeps every folded pair in Counted, so level L
-// reads the same lines and hubs as without the fold.
-func TestFoldedHubsSayHowManyBoxesUseThem(t *testing.T) {
+// A hub whose lines carry what the product does keeps every one of them:
+// the overview folds no line into a common module that affects the logic,
+// nor into any hub that is no common module, so no box says how many boxes
+// use it while some of their lines still stand.
+func TestAHubThatIsNoUtilityKeepsItsLines(t *testing.T) {
 	t.Parallel()
-	units, err := store.Open(filepath.Join("testdata", "self")).LoadUnits()
-	if err != nil {
-		t.Fatal(err)
+	units := append(bandUnits(), model.Unit{ID: "DATA-0001", Kind: model.Data, Name: model.Said(model.Script, "registry"), Parent: "MOD-0005"})
+	units[0].Relations = append(units[0].Relations, rel("DATA-0001", model.DependsOn))
+	m := Build(Input{Units: units})
+	if len(m.Common) != 1 || m.Common[0].Utility() {
+		t.Fatalf("log should affect the logic: %+v", m.Common)
 	}
-	plain := Build(Input{Units: units})
-	folded := Build(Input{Units: units, Project: store.Project{OverviewFoldHubs: true}})
-	lp, lf := Levels(plain)[0], Levels(folded)[0]
-	if lp.Lines != lf.Lines || !slices.Equal(lp.Hubs, lf.Hubs) {
-		t.Errorf("level L reads %d lines and hubs %v folded, %d and %v plain", lf.Lines, lf.Hubs, lp.Lines, lp.Hubs)
-	}
-	if len(lp.Hubs) == 0 {
-		t.Fatal("the fixture's overview has no hub to fold")
-	}
-	said := 0
-	for _, b := range folded.Overview.Boxes {
-		if b.UsedBy == 0 {
-			continue
-		}
-		said++
-		if b.Sub == nil || b.Sub.S != usedByText(b.UsedBy) || !strings.Contains(b.Title, usedByText(b.UsedBy)+": ") {
-			t.Errorf("hub %s says %+v, titled %q", b.Name, b.Sub, b.Title)
+	into := map[string]bool{}
+	for _, r := range m.Overview.ways {
+		if slices.Contains(r.ends, "MOD-0005") {
+			for _, e := range r.ends {
+				into[e] = true
+			}
 		}
 	}
-	if said == 0 {
-		t.Error("no hub says how many boxes use it")
+	for _, u := range m.Common[0].Users {
+		if !into[u] {
+			t.Errorf("the line from %s into log is folded though log affects the logic", u)
+		}
 	}
-	if len(folded.Overview.ways) >= len(plain.Overview.ways) {
-		t.Errorf("the folded overview draws %d routes, the plain one %d", len(folded.Overview.ways), len(plain.Overview.ways))
-	}
-	if len(folded.Focus) == 0 {
-		t.Error("a folded overview gives each box a focus view that draws every line")
+	for _, b := range m.Overview.Boxes {
+		if b.UsedBy > 0 || b.Ambient {
+			t.Errorf("%s folds its lines: %+v", b.Name, b)
+		}
 	}
 }
 
-// Every folded hub says how many boxes use it, on every fixture, and so
-// does a utility the overview stands as a foundation band.
-func TestEveryFoldedHubSaysItsUsers(t *testing.T) {
+// On every fixture a box folds its lines all at once or not at all: a box
+// that says how many boxes use it is a foundation band, says so on its
+// last line, names each of those boxes in its tooltip, and no drawn line
+// reaches it.
+func TestEveryFoldedBoxFoldsAllItsLines(t *testing.T) {
 	t.Parallel()
 	for _, name := range []string{"pstack", "ripgrep", "self", "orca"} {
 		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
 		if err != nil {
 			t.Fatal(err)
 		}
-		m := Build(Input{Units: units, Project: store.Project{OverviewFoldHubs: true}})
-		// A band dropped for a word it would take never takes the
-		// project's hub fold with it.
-		if folds := slices.ContainsFunc(m.Overview.Boxes, func(b Box) bool { return b.UsedBy > 0 && !b.Ambient }); !folds && (name == "pstack" || name == "self") {
-			t.Errorf("%s: no hub is folded", name)
-		}
-		for _, b := range m.Overview.Boxes {
-			want := usedByText(b.UsedBy)
-			if b.Ambient {
-				want = foundationText(b.UsedBy)
-			}
-			if b.UsedBy > 0 && (b.Sub == nil || b.Sub.S != want) {
-				t.Errorf("%s: folded hub %s says %+v", name, b.Name, b.Sub)
+		for _, rec := range []store.Overview{{}, recordOf(units)} {
+			m := Build(Input{Units: units, Overview: rec})
+			for _, b := range m.Overview.Boxes {
+				if b.UsedBy == 0 {
+					continue
+				}
+				if !b.Ambient || b.Sub == nil || b.Sub.S != foundationText(b.UsedBy) {
+					t.Errorf("%s: %s folds its lines and says %+v, band %v", name, b.Name, b.Sub, b.Ambient)
+				}
+				c := slices.IndexFunc(m.Common, func(c CommonView) bool { return c.Unit == b.ID })
+				if c < 0 || !m.Common[c].Utility() || !m.Common[c].Band {
+					t.Errorf("%s: %s folds its lines and is no utility band", name, b.Name)
+					continue
+				}
+				for _, u := range m.Common[c].Users {
+					if !strings.Contains(b.Title, nameOf(m, u)) {
+						t.Errorf("%s: the band %s does not name its user %s", name, b.Name, nameOf(m, u))
+					}
+				}
+				for _, r := range m.Overview.ways {
+					if slices.Contains(r.ends, b.ID) {
+						t.Errorf("%s: a line still reaches the band %s: %v", name, b.Name, r.ends)
+					}
+				}
 			}
 		}
 	}
+}
+
+// recordOf is an overview record that chooses the first line of the
+// fixture's plain overview, so the fold is read under a record's cut too.
+func recordOf(units []model.Unit) store.Overview {
+	m := Build(Input{Units: units})
+	var rec store.Overview
+	for _, r := range m.Overview.ways {
+		if len(r.ends) == 2 {
+			rec.Known = true
+			rec.Lines = []store.Part[model.Line]{{Claim: model.Line{From: model.ID(r.ends[0]), To: model.ID(r.ends[1]), Word: "uses"}}}
+			break
+		}
+	}
+	return rec
 }

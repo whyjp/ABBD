@@ -200,10 +200,6 @@ func (d *Drawing) subtitle(b *Box) {
 	case b.Ambient:
 		// A foundation band says it is one, and how many boxes stand on it.
 		s = foundationText(b.UsedBy)
-	case b.UsedBy > 0:
-		// A hub whose lines are folded says how many boxes use it, in place
-		// of its kind and role, since the line stands for its lines.
-		s = usedByText(b.UsedBy)
 	case outside(*b):
 		s = r + " · " + kind
 	case r != "":
