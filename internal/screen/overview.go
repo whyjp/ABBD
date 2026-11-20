@@ -124,8 +124,8 @@ type Box struct {
 	// of drawing, and MoreHref the focus view that draws them all.
 	More     int    `json:",omitempty"`
 	MoreHref string `json:",omitempty"`
-	// UsedBy is how many boxes use a hub whose incoming lines the overview
-	// folds into its last line (hubfold.go), 0 for every other box.
+	// UsedBy is how many boxes use a foundation band, whose lines the
+	// overview folds into its last line (hubfold.go), 0 for every other box.
 	UsedBy int `json:"-"`
 	// Ambient says the box is an ambient one drawn as a foundation band under
 	// the others (hubfold.go).
@@ -857,7 +857,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		o.chipBands[m] = bands
 		h := boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow
 		if len(o.fold[m]) > 0 && len(exits) > 0 && len(entries) > 0 {
-			// A folded hub's last line stands for its lines, so chips on
+			// A folded box's last line stands for its lines, so chips on
 			// both edges never leave it out for want of room (dress.go).
 			h += nameLine
 		}

@@ -565,10 +565,6 @@ type Project struct {
 	// that opens the box's focus view. Off by default. Nil says the human
 	// has not chosen, so a false they chose survives a setup rerun.
 	OverviewCut *bool `yaml:"overview_cut,omitempty"`
-	// OverviewFoldHubs folds the lines into each hub of the overview, a box
-	// most of the others use as level L reads it, into one line on the hub
-	// that says how many boxes use it. Off by default.
-	OverviewFoldHubs bool `yaml:"overview_fold_hubs,omitempty"`
 	// InferredLead says whether a view with no stored flow draws the lead
 	// its lines show plainly. On by default; false numbers stored flows
 	// and the primary flow only, so the two can be read side by side.
