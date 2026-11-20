@@ -506,12 +506,14 @@ type overview struct {
 	relations []model.Edge
 	modules   []model.ID
 	contracts []model.ID
-	// libraries are the external libraries a drawn module depends on, each
-	// one chip of its own that a line from each module that uses it reaches.
+	// libraries are the external libraries a focus view draws, each one chip
+	// of its own that a line from its module reaches; the whole overview
+	// draws none, so it is empty there.
 	libraries []model.ID
 	// libUsers counts the boxes of the whole overview that use each library.
 	libUsers map[model.ID]int
-	// libNames are the libraries the fold chip stands for, when they fold.
+	// libNames are the libraries the fold chip stands for, when they fold in
+	// a focus view.
 	libNames  []string
 	providers map[model.ID][]model.ID
 	users     map[model.ID][]model.ID
