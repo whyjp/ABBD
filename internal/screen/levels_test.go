@@ -142,3 +142,35 @@ func TestLevelsCapTheSharedLayers(t *testing.T) {
 		t.Errorf("hubs %v, want the two most used, b0 and b1", l.Hubs)
 	}
 }
+
+// The overview's names are read too: a name that says only "shared" or
+// "base" is asked to say a role, and names in two languages are asked to
+// pick one. A level with clear names asks for nothing.
+func TestLevelsAskForNamesThatSayWhatABoxDoes(t *testing.T) {
+	box := func(names ...string) Drawing {
+		var d Drawing
+		for i, n := range names {
+			d.Boxes = append(d.Boxes, Box{ID: fmt.Sprint("b", i), Name: n, Class: "design"})
+		}
+		return d
+	}
+	cases := []struct {
+		name  string
+		d     Drawing
+		want  string
+		quiet bool
+	}{
+		{"empty korean", box("라우팅", "엔진", "공통 모듈", "응답"), "공통 모듈", false},
+		{"empty english", box("router", "engine", "shared utils", "reply"), "shared utils", false},
+		{"a word of its own", box("라우팅", "엔진", "기본 자료구조와 유틸", "응답"), "", true},
+		{"mixed languages", box("라우팅", "엔진", "binding", "render"), "binding, render", false},
+		{"one bare name is a proper noun", box("라우팅", "엔진", "응답", "ginS"), "", true},
+		{"all english", box("router", "engine", "binding", "render"), "", true},
+	}
+	for _, c := range cases {
+		got := strings.Join(level("overview", c.d, atOverview).Advice, "\n")
+		if c.quiet && got != "" || !c.quiet && !strings.Contains(got, c.want) {
+			t.Errorf("%s: advice %q, want %q (quiet %v)", c.name, got, c.want, c.quiet)
+		}
+	}
+}
