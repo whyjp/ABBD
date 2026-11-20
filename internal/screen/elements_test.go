@@ -8,11 +8,11 @@ import (
 // small is a view of three boxes and a frame chip with four lines between
 // them: one carries a word, two ride a bundle that says ×2, a lead of two
 // hops numbers the flow over two of the lines and names one step, and the
-// overview counts one more line on a box as +1. Its ink reads as 6 straight
+// overview counts one more line, which no box shows. Its ink reads as 6 straight
 // runs, and its 4 traced lines may take 12 runs drawn apart.
 func small() (Drawing, inkMeasure) {
 	return Drawing{
-		Boxes: []Box{{ID: "a"}, {ID: "b", More: 1}, {ID: "c"}},
+		Boxes: []Box{{ID: "a"}, {ID: "b"}, {ID: "c"}},
 		Ports: []Port{{X: 10, Y: 0, Label: "api"}, {X: 40, Y: 0, Label: "+2", Folded: true}, {X: 40, Y: 0, Label: "+2", Folded: true}},
 		Wires: []Wire{{Label: &Label{S: "data"}}, {Count: 2}, {}},
 		ways:  make([]Route, 4),
@@ -27,9 +27,9 @@ func TestElementsCountWhatAReaderSeesAtRest(t *testing.T) {
 	t.Parallel()
 	e := elementsOf(small())
 	// 3 boxes and 2 chips, the folded ones drawn as one; 6 runs of ink;
-	// the line's word and the step's; ×2, +1 and the two hop numbers.
-	if e.Shapes != 5 || e.Ink != 6 || e.Bends != 2 || e.Words != 2 || e.Badges != 4 || e.Count != 17 {
-		t.Fatalf("got %+v, want 5 shapes, 6 runs with 2 bends, 2 words, 4 badges, 17 in all", e)
+	// the line's word and the step's; ×2 and the two hop numbers.
+	if e.Shapes != 5 || e.Ink != 6 || e.Bends != 2 || e.Words != 2 || e.Badges != 3 || e.Count != 16 {
+		t.Fatalf("got %+v, want 5 shapes, 6 runs with 2 bends, 2 words, 3 badges, 16 in all", e)
 	}
 	// Skeleton: 5 shapes, the 2 lines the lead rides as one run each, and
 	// its 2 numbers. Every line apart: 5 shapes, 12 runs for the 4 traced
@@ -38,8 +38,8 @@ func TestElementsCountWhatAReaderSeesAtRest(t *testing.T) {
 	if e.Flow != 2 || e.Possible != 5 || e.Apart != 15 || e.Min != 9 || e.Max != 28 {
 		t.Fatalf("got %+v, want flow 2, 5 possible lines taking 15 runs apart, range 9..28", e)
 	}
-	if e.Percent == nil || *e.Percent != 43 || *e.WarnAt != 25 || e.Over {
-		t.Fatalf("got %+v, want 43%% of the range and a warning past 25, not reached", e)
+	if e.Percent == nil || *e.Percent != 37 || *e.WarnAt != 25 || e.Over {
+		t.Fatalf("got %+v, want 37%% of the range and a warning past 25, not reached", e)
 	}
 }
 
