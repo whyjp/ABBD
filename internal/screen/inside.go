@@ -296,14 +296,14 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	// for a module no other line meets.
 	var left []line
 	if focus == "" && o.quiet {
-		lines, left = o.quietLines(lines, o.flow.stagesOn(func(id model.ID) string {
+		lines, left = o.quietLines(lines, func(id model.ID) string {
 			for _, c := range t.chain(id) {
 				if t.units[c].Parent == m {
 					return string(c)
 				}
 			}
 			return ""
-		}))
+		})
 		if len(left) > 0 {
 			met := map[string]bool{}
 			for _, ln := range lines {
@@ -465,11 +465,16 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			edges = append(edges, ledge{string(ln.from), frameBottomNode})
 		}
 	}
-	// A static line left out still sets which box stands above the other,
-	// so leaving it out moves no box (static.go).
+	// A static line left out still takes part in the layering, toward the
+	// other box or the frame, so the boxes keep their rows (static.go).
 	for _, ln := range left {
-		if ln.inner {
+		switch {
+		case ln.inner:
 			edges = append(edges, ledge{string(ln.from), string(ln.to)})
+		case ln.exit:
+			edges = append(edges, ledge{frameTopNode, string(ln.from)})
+		default:
+			edges = append(edges, ledge{string(ln.from), frameBottomNode})
 		}
 	}
 	nodes = append(nodes, lnode{id: frameTopNode}, lnode{id: frameBottomNode})

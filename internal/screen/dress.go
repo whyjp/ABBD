@@ -87,7 +87,7 @@ func (d *Drawing) dress(t tree) {
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		w.Plan = t.planOnly(w.Rels) && long[find(i)] >= planMin
-		if w.Plan && w.Title != "" {
+		if t.planOnly(w.Rels) && w.Title != "" {
 			w.Title = staticWord + "(호출 근거 없음): " + w.Title
 		}
 	}

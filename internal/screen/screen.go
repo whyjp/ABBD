@@ -301,7 +301,7 @@ func Build(in Input) Model {
 	}
 	// The views at rest leave the lines that rest on a static dependency
 	// only to the list under the picture and the focus views (static.go).
-	if o.quiet = !in.Project.ShowStatic(); o.quiet {
+	if o.quiet, o.marked = !in.Project.ShowStatic(), in.Primary; o.quiet {
 		c = o.quietCut(c, in.Primary)
 	}
 	unfolded := c

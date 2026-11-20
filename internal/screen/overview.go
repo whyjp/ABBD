@@ -549,6 +549,9 @@ type overview struct {
 	// out (static.go).
 	static map[pair]bool
 	quiet  bool
+	// marked are the stored relations, by key, a reader or a human marked
+	// to be drawn (Input.Primary), which no view leaves out as static.
+	marked map[string]bool
 	// fold is the boxes that use each hub whose lines the overview folds
 	// (hubfold.go).
 	fold map[model.ID][]model.ID
@@ -773,8 +776,8 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		})
 		o.said, o.static = c.said, c.static
 		o.fold, o.band, o.bandUses = c.fold, c.band, c.bandUses
-		// A static pair left out still sets which box stands above the
-		// other, so leaving it out moves no box (static.go).
+		// A static pair left out still takes part in the layering, so the
+		// boxes keep their rows (static.go).
 		recorded = c.said != nil
 		if !recorded {
 			hidden = slices.DeleteFunc(hidden, func(e ledge) bool { return !c.static[pairOf(model.ID(e.from), model.ID(e.to))] })
