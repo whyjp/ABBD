@@ -2258,6 +2258,7 @@
         "internal/screen/lint.go",
         "internal/screen/marks.go",
         "internal/screen/matrix.go",
+        "internal/screen/names.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
@@ -33947,6 +33948,52 @@
               },
               {
                 "Text": "도 준다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "이름 조언",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "names.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "nameAdvice",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "levels.go",
+                "Code": true
+              },
+              {
+                "Text": "가 개요 부분의 상자 이름을 읽을 때 부른다. ",
+                "Code": false
+              },
+              {
+                "Text": "emptyWords",
+                "Code": true
+              },
+              {
+                "Text": "의 공통, 유틸, 모듈 같은 말만 담은 이름은 상자가 하는 일을 말하지 않으므로 역할로 이름 짓기를 권하고, 프로젝트의 말과 맨 코드 식별자가 섞이면 한 언어를 권한다. 다른 조언처럼 린트를 실패시키지 않는다.",
                 "Code": false
               }
             ]
