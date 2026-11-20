@@ -82,12 +82,14 @@ func TestTheOverviewDrawsNoLibrary(t *testing.T) {
 // plain line that stands for the stored relation.
 func TestAFocusViewDrawsItsLibraries(t *testing.T) {
 	t.Parallel()
-	us := libraryUnits(8, 3, "serde", "tokio")
-	o := planOverview(us, "", nil, tactic{}, nil, nil, nil)
+	m := Build(Input{Units: libraryUnits(8, 3, "serde", "tokio")})
 	var f Drawing
-	for _, v := range o.overviewFocus(us, o.draw(func(model.ID) string { return "" }), true) {
+	for _, v := range m.Focus {
 		if v.Unit == "MOD-0001" {
 			f = v.Drawing
+		}
+		if v.Unit == "MOD-0008" {
+			t.Errorf("a module that uses no library has a focus view of a sparse overview")
 		}
 	}
 	libs := libraryBoxes(f)
