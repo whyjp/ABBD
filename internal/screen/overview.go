@@ -506,12 +506,15 @@ type overview struct {
 	relations []model.Edge
 	modules   []model.ID
 	contracts []model.ID
-	// libraries are the external libraries a drawn module depends on, each
-	// one chip of its own that a line from each module that uses it reaches.
+	// libraries are the external libraries a focus view draws, a chip of its
+	// own for each that a line from its module reaches, or the one fold chip
+	// when they are many; the whole overview draws none, so it is empty there.
 	libraries []model.ID
-	// libUsers counts the boxes of the whole overview that use each library.
+	// libUsers counts the boxes that use each library chip a focus view
+	// draws, empty in the whole overview.
 	libUsers map[model.ID]int
-	// libNames are the libraries the fold chip stands for, when they fold.
+	// libNames are the libraries the fold chip stands for, when they fold in
+	// a focus view.
 	libNames  []string
 	providers map[model.ID][]model.ID
 	users     map[model.ID][]model.ID
@@ -560,6 +563,9 @@ type overview struct {
 	band map[model.ID]bool
 	// bandUses are the boxes each band uses (hubfold.go).
 	bandUses map[model.ID][]model.ID
+	// common are the overview's common modules by unit (common.go), whose
+	// boxes say in their tooltips what kind they are.
+	common map[model.ID]CommonView
 	// flow is the stack marked the primary flow, which orders the full
 	// overview and the insides of the units it crosses, nil for none.
 	flow *layering
@@ -684,7 +690,9 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	}
 	slices.Sort(o.libraries)
 	if focus == "" {
-		o.foldLibraries(len(o.modules))
+		// The overview draws no library: each one stays in the focus view of
+		// the boxes that use it, and in the lists and queries.
+		o.libraries, o.libUsers = nil, map[model.ID]int{}
 	}
 	add := func(m map[model.ID][]model.ID, k, v model.ID) {
 		if !slices.Contains(m[k], v) {
@@ -1334,6 +1342,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 				names = append(names, o.name(u))
 			}
 			b.Title += "\n" + usedByText(len(us)) + ": " + strings.Join(names, ", ") + ". 선은 접어 그렸고, 이 상자의 초점 뷰가 모두 그립니다"
+		}
+		if cv, ok := o.common[m]; ok {
+			b.Title += "\n" + o.commonNote(cv)
 		}
 		if base(m) != m {
 			b.Title += "\n" + twinNote

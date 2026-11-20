@@ -132,7 +132,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {ambient{as,reasons,unit},edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,UsedBy,Zone},zones{name,reasons,units}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {ambient{as,reasons,unit},common{band,in,kind,name,non_users,out,phrases{from,words},reasons,unit,users},edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},libraries{name,unit,users},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,UsedBy,Zone},zones{name,reasons,units}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2231,6 +2231,8 @@
         "internal/screen/busy.go",
         "internal/screen/card.go",
         "internal/screen/chosen.go",
+        "internal/screen/common.go",
+        "internal/screen/commonpage.go",
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
         "internal/screen/elements.go",
@@ -6838,7 +6840,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -7638,7 +7639,15 @@
                 "Code": true
               },
               {
-                "Text": "처럼 등록한다. reader는 ",
+                "Text": "처럼 등록한다; 이렇게 들어온 ",
+                "Code": false
+              },
+              {
+                "Text": "EXT",
+                "Code": true
+              },
+              {
+                "Text": "는 개요에 그려지지 않고 쓰는 모듈의 초점 뷰와 단위 목록에 남는다. reader는 ",
                 "Code": false
               },
               {
@@ -24349,7 +24358,7 @@
                   "Code": true
                 },
                 {
-                  "Text": ")는 개요에서 제품 상자와 구분되는 칩 하나로 서고(",
+                  "Text": ")는 개요에 그리지 않는다. 개요 전체 그림에서 ",
                   "Code": false
                 },
                 {
@@ -24357,7 +24366,15 @@
                   "Code": true
                 },
                 {
-                  "Text": "), 그것을 쓰는 모듈마다 실선 ",
+                  "Text": "는 비어 있어 칩도 접힘 칩도 선도 없고, 제품의 상자와 계약만 남는다. 라이브러리를 쓰는 모듈은 개요가 성겨도 초점 뷰를 가지며(",
+                  "Code": false
+                },
+                {
+                  "Text": "usesLibrary",
+                  "Code": true
+                },
+                {
+                  "Text": "), 라이브러리는 그 초점 뷰에 남아, 상자와 구분되는 칩 하나로 서고, 모듈에서 실선 ",
                   "Code": false
                 },
                 {
@@ -24373,7 +24390,15 @@
                   "Code": true
                 },
                 {
-                  "Text": "). 라이브러리가 그림 상자 수의 4분의 1(",
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "libUsers",
+                  "Code": true
+                },
+                {
+                  "Text": "). 초점 뷰는 라이브러리가 제 상자 수의 4분의 1(",
                   "Code": false
                 },
                 {
@@ -24389,7 +24414,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " 칩 하나로 접히고(",
+                  "Text": " 칩 하나로 접고(",
                   "Code": false
                 },
                 {
@@ -24397,7 +24422,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "), 모듈마다 한 줄이 남아 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적으며(",
+                  "Text": "), 그 선이 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적는다(",
                   "Code": false
                 },
                 {
@@ -24405,7 +24430,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "), ",
+                  "Text": "). ",
                   "Code": false
                 },
                 {
@@ -24421,7 +24446,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "), 범례는 라이브러리가 있을 때만 그 칩을 설명한다(",
+                  "Text": "), 범례는 라이브러리가 있을 때만 이를 설명하며(",
                   "Code": false
                 },
                 {
@@ -24429,7 +24454,39 @@
                   "Code": true
                 },
                 {
-                  "Text": "). 초점 뷰는 그 모듈의 라이브러리를 남겨 제 상자 수로 다시 접을지 정하고, 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
+                  "Text": "), 그래프와 ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd libs",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "explain",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "path",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "impact",
+                  "Code": true
+                },
+                {
+                  "Text": "는 라이브러리와 그 관계를 그대로 둔다. 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
                   "Code": false
                 },
                 {
@@ -25751,7 +25808,7 @@
                 "Code": true
               },
               {
-                "Text": ")는 개요에서 제품 상자와 구분되는 칩 하나로 서고(",
+                "Text": ")는 개요에 그리지 않는다. 개요 전체 그림에서 ",
                 "Code": false
               },
               {
@@ -25759,7 +25816,15 @@
                 "Code": true
               },
               {
-                "Text": "), 그것을 쓰는 모듈마다 실선 ",
+                "Text": "는 비어 있어 칩도 접힘 칩도 선도 없고, 제품의 상자와 계약만 남는다. 라이브러리를 쓰는 모듈은 개요가 성겨도 초점 뷰를 가지며(",
+                "Code": false
+              },
+              {
+                "Text": "usesLibrary",
+                "Code": true
+              },
+              {
+                "Text": "), 라이브러리는 그 초점 뷰에 남아, 상자와 구분되는 칩 하나로 서고, 모듈에서 실선 ",
                 "Code": false
               },
               {
@@ -25775,7 +25840,15 @@
                 "Code": true
               },
               {
-                "Text": "). 라이브러리가 그림 상자 수의 4분의 1(",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "libUsers",
+                "Code": true
+              },
+              {
+                "Text": "). 초점 뷰는 라이브러리가 제 상자 수의 4분의 1(",
                 "Code": false
               },
               {
@@ -25791,7 +25864,7 @@
                 "Code": true
               },
               {
-                "Text": " 칩 하나로 접히고(",
+                "Text": " 칩 하나로 접고(",
                 "Code": false
               },
               {
@@ -25799,7 +25872,7 @@
                 "Code": true
               },
               {
-                "Text": "), 모듈마다 한 줄이 남아 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적으며(",
+                "Text": "), 그 선이 각 저장된 관계를 그대로 나르고 hover에 그 모듈이 쓰는 라이브러리 이름을 적는다(",
                 "Code": false
               },
               {
@@ -25807,7 +25880,7 @@
                 "Code": true
               },
               {
-                "Text": "), ",
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -25823,7 +25896,7 @@
                 "Code": true
               },
               {
-                "Text": "), 범례는 라이브러리가 있을 때만 그 칩을 설명한다(",
+                "Text": "), 범례는 라이브러리가 있을 때만 이를 설명하며(",
                 "Code": false
               },
               {
@@ -25831,7 +25904,39 @@
                 "Code": true
               },
               {
-                "Text": "). 초점 뷰는 그 모듈의 라이브러리를 남겨 제 상자 수로 다시 접을지 정하고, 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
+                "Text": "), 그래프와 ",
+                "Code": false
+              },
+              {
+                "Text": "abbd libs",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "path",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "impact",
+                "Code": true
+              },
+              {
+                "Text": "는 라이브러리와 그 관계를 그대로 둔다. 내부 뷰는 라이브러리를 그리지 않는다. 라이브러리로 가는 선은 설계로만 이어진 점선으로 그리지 않으며(",
                 "Code": false
               },
               {
@@ -30417,11 +30522,35 @@
                 "Code": false
               },
               {
-                "Text": "overview_ambient",
+                "Text": "commons",
                 "Code": true
               },
               {
-                "Text": "를 켜면 overview 기록이 ambient로 표시한 상자는 배치에서 빠져 모든 상자 아래에 그 폭만큼 넓은 기반 띠(",
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "common.go",
+                "Code": true
+              },
+              {
+                "Text": ")는 개요의 공통 모듈을 상태만으로 고른다. 세 상자 이상이자 다른 상자의 절반 이상이 쓰고, 다른 상자에서 들어오는 관계가 나가는 관계의 두 배 이상인 상자다. 그 안의 DATA·CFG·EXEC 단위에 다른 상자가 닿거나, 남이 쓰는 계약을 제공하거나, 주 흐름의 단계면 로직 영향(",
+                "Code": false
+              },
+              {
+                "Text": "logic",
+                "Code": true
+              },
+              {
+                "Text": ")이고, 아니면 유틸리티(",
+                "Code": false
+              },
+              {
+                "Text": "utility",
+                "Code": true
+              },
+              {
+                "Text": ")다. 아무도 닿지 않는 단위는 셈에 들지 않는다. 어느 상자에도 들지 않은 계약을 쓰는 관계는 쓰는 쪽에서 한 번, 제공하는 상자마다 한 번 세고, 제공하는 관계는 쓰임으로 세지 않는다. 유틸리티는 스위치나 기록 없이 배치에서 빠져 모든 상자 아래에 그 폭만큼 넓은 기반 띠(",
                 "Code": false
               },
               {
@@ -30437,7 +30566,87 @@
                 "Code": true
               },
               {
-                "Text": "이라 말한다. 주 흐름의 단계인 상자는 표시가 있어도 상자로 남는다. 기록의 선이 닿거나 리드가 지나는 상자도 상자로 남고, 띠는 마지막 행 아래 틈 밑에 서며, 그려지는 구역에서 빠지고, 툴팁이 띠가 쓰는 상자도 이름 댄다.",
+                "Text": "이라 말한다. 주 흐름의 단계이거나 기록의 선이 닿거나 리드가 지나는 상자는 상자로 남는다. 띠가 그림에서 낱말 붙은 선을 줄이면(",
+                "Code": false
+              },
+              {
+                "Text": "wordFill",
+                "Code": true
+              },
+              {
+                "Text": ") 유틸리티는 모두 상자로 남되 프로젝트가 접은 허브는 그대로 접히고, ",
+                "Code": false
+              },
+              {
+                "Text": "CommonView.Band",
+                "Code": true
+              },
+              {
+                "Text": "가 띠로 선 것만 표시한다. 띠는 마지막 행 아래 틈 밑에 서며, 그려지는 구역에서 빠지고, 툴팁이 띠가 쓰는 상자도 이름 댄다. 공통 모듈의 툴팁은 종류와 그 까닭, 사용자마다 오가는 구절을 말하고(",
+                "Code": false
+              },
+              {
+                "Text": "commonNote",
+                "Code": true
+              },
+              {
+                "Text": "), 개요 아래 줄이 공통 모듈 페이지 ",
+                "Code": false
+              },
+              {
+                "Text": "common.html",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "commonpage.go",
+                "Code": true
+              },
+              {
+                "Text": ")로 이끈다. 그 페이지는 모듈마다 쓰는 상자를 한 줄로 띠 위에 세우고(",
+                "Code": false
+              },
+              {
+                "Text": "commonFig",
+                "Code": true
+              },
+              {
+                "Text": ", 넓은 글자를 재어 이름을 줄이는 ",
+                "Code": false
+              },
+              {
+                "Text": "fitName",
+                "Code": true
+              },
+              {
+                "Text": "), 종류의 까닭과 안 쓰는 상자, 그리고 두 상자 이상이 함께 쓰는 외부 라이브러리를 적으며, ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": "은 이를 ",
+                "Code": false
+              },
+              {
+                "Text": "common",
+                "Code": true
+              },
+              {
+                "Text": "과 ",
+                "Code": false
+              },
+              {
+                "Text": "libraries",
+                "Code": true
+              },
+              {
+                "Text": "로 준다. overview 기록의 ambient 표시는 그림을 바꾸지 않는다.",
                 "Code": false
               }
             ]
@@ -34132,7 +34341,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -34260,15 +34468,7 @@
                 "Code": true
               },
               {
-                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다. project.yaml의 ",
-                "Code": false
-              },
-              {
-                "Text": "overview_ambient",
-                "Code": true
-              },
-              {
-                "Text": "는 ambient로 표시한 상자를 기반 띠로 그릴지를 나르며 기본은 꺼져 있다.",
+                "Text": "는 개요가 허브로 드는 선을 접을지를 나르며 기본은 꺼져 있다.",
                 "Code": false
               }
             ]
@@ -35133,19 +35333,6 @@
                 "Name": "inferred_lead",
                 "Shape": "*bool",
                 "Need": "선택"
-              },
-              {
-                "Key": "overview-ambient",
-                "Name": "overview_ambient",
-                "Shape": "bool",
-                "Need": "선택",
-                "Users": [
-                  {
-                    "ID": "MOD-0034",
-                    "Name": "internal/screen",
-                    "Badge": "extracted"
-                  }
-                ]
               },
               {
                 "Key": "language",
@@ -40157,6 +40344,99 @@
         "MOD-0009",
         "MOD-0054",
         "MOD-0047"
+      ]
+    }
+  ],
+  "common": [
+    {
+      "unit": "MOD-0030",
+      "name": "internal/model",
+      "kind": "logic",
+      "reasons": [
+        "다른 상자가 닿는 자료 5개: drawn versus listed relation rule, unit kind directories, unit absent flag, evidence line range text, citable evidence paths.",
+        "다른 상자가 쓰는 계약 relation key을(를) 제공합니다: abbd CLI, internal/screen, internal/topology."
+      ],
+      "users": [
+        "MOD-0001",
+        "MOD-0009",
+        "MOD-0013",
+        "MOD-0017",
+        "MOD-0026",
+        "MOD-0034",
+        "MOD-0041",
+        "MOD-0047",
+        "MOD-0054"
+      ],
+      "non_users": [
+        "FEAT-0001",
+        "FEAT-0002",
+        "MOD-0022",
+        "MOD-0055",
+        "MOD-0056",
+        "MOD-0057"
+      ],
+      "in": 35,
+      "out": 1,
+      "phrases": [
+        {
+          "from": "MOD-0001",
+          "words": [
+            "Unit, Writer, Evidence",
+            "Edge.Joins"
+          ]
+        },
+        {
+          "from": "MOD-0009",
+          "words": [
+            "Supplement, Fact, Anchor"
+          ]
+        },
+        {
+          "from": "MOD-0013",
+          "words": [
+            "Evidence, Status",
+            "Unit.Semantic"
+          ]
+        },
+        {
+          "from": "MOD-0017",
+          "words": [
+            "Evidence, Entry, Fact",
+            "Kind.Joins"
+          ]
+        },
+        {
+          "from": "MOD-0026",
+          "words": [
+            "Unit, ID, Anchor"
+          ]
+        },
+        {
+          "from": "MOD-0034",
+          "words": [
+            "Unit, ID, DependsOn",
+            "relation origins"
+          ]
+        },
+        {
+          "from": "MOD-0041",
+          "words": [
+            "Unit, Evidence, Claim"
+          ]
+        },
+        {
+          "from": "MOD-0047",
+          "words": [
+            "Unit, ID, Origin",
+            "Relation.Counts"
+          ]
+        },
+        {
+          "from": "MOD-0054",
+          "words": [
+            "Unit, Kind, Module"
+          ]
+        }
       ]
     }
   ]

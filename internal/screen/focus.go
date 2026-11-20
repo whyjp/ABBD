@@ -152,11 +152,15 @@ func (o *overview) addTwin(id model.ID) model.ID {
 // overviewFocus derives a focus view per module of a dense overview, or of
 // one that counts lines it does not draw.
 func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) []Focus {
-	if !hides && !dense(full) {
-		return nil
-	}
+	all := hides || dense(full)
 	var out []Focus
 	for _, m := range o.modules {
+		// The overview draws no library, so a module that uses one keeps its
+		// focus view even where the overview is sparse: it is where the
+		// library is drawn.
+		if !all && !o.usesLibrary(m) {
+			continue
+		}
 		f := planScoped(units, m, centres(full), tactic{roads: true}, nil, nil, nil, o.scope)
 		f.hooks = o.hooks
 		d := f.draw(func(id model.ID) string {
@@ -281,4 +285,11 @@ func linkFocus(d Drawing, fs []Focus) Drawing {
 		}
 	}
 	return d
+}
+
+// usesLibrary says the module depends on an external library.
+func (o *overview) usesLibrary(m model.ID) bool {
+	return slices.ContainsFunc(o.relations, func(e model.Edge) bool {
+		return e.From == m && e.Kind == model.DependsOn && o.units[e.To].Kind == model.External
+	})
 }

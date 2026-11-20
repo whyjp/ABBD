@@ -12,13 +12,16 @@ import (
 )
 
 // Lines from different modules into one module meet on one trunk that
-// carries their count, and arrive as one bundle, rule 4.
+// carries their count, and arrive as one bundle, rule 4. a reaches the
+// state inside d, so d, which every other box uses, affects the logic and
+// keeps its lines rather than standing as a band.
 func TestLinesIntoOneBoxShareATrunk(t *testing.T) {
 	units := []model.Unit{
-		called("MOD-0001", "a", rel("MOD-0004", model.DependsOn)),
+		called("MOD-0001", "a", rel("DATA-0001", model.DependsOn)),
 		called("MOD-0002", "b", rel("MOD-0004", model.DependsOn)),
 		called("MOD-0003", "c", rel("MOD-0004", model.DependsOn)),
 		called("MOD-0004", "d"),
+		{ID: "DATA-0001", Kind: model.Data, Name: model.Said(model.Script, "table"), Parent: "MOD-0004"},
 	}
 	d := build(units).Overview
 	var counted []Wire
