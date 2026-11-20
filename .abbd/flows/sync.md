@@ -3,13 +3,13 @@ question: What does abbd sync do, in order?
 format: 1
 steps:
     - unit: MOD-0041
-      does: LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 언어, 그리기 스위치
-      fails: stops when project.yaml names no script; run abbd setup first
+      does: LoadProject() → 추출 argv, 이름, 목적, 언어, 그림 스위치(static_lines 등)
+      fails: project.yaml에 추출 스크립트가 없으면 멈추고 abbd setup을 먼저 돌리라고 한다
       calls:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "599"
+          lines: "607"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
           lines: "573"
@@ -21,7 +21,7 @@ steps:
       code:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
-        internal/store/store.go#quote-ac7ade60: 4b989d9168f666c6
+        internal/store/store.go#quote-ac7ade60: 026281b4b4cd032b
     - unit: MOD-0004
       does: runScript(argv) → 루트에서 돌린 스크립트의 stdout, argv의 abbd는 지금 도는 바이너리
       fails: 스크립트가 0이 아닌 값으로 끝나면 멈추고 그 stderr를 찍는다
@@ -394,6 +394,23 @@ retired:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
         internal/store/store.go#quote-ac7ade60: 738cd123f9a9d4b4
+    - unit: MOD-0041
+      does: LoadProject() → project.yaml의 스크립트 argv, 이름, 목적, 언어, 그리기 스위치
+      fails: stops when project.yaml names no script; run abbd setup first
+      evidence:
+        - path: internal/store/store.go
+          lines: "599"
+          quote: return p, readYAML(s.path("project.yaml"), &p)
+        - path: cmd/abbd/main.go
+          lines: "573"
+          quote: p, err := e.st.LoadProject()
+        - path: cmd/abbd/main.go
+          lines: "577"
+          quote: if len(p.Extract) == 0 {
+      code:
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
+        internal/store/store.go#quote-ac7ade60: 4b989d9168f666c6
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.
