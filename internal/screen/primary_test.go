@@ -123,7 +123,7 @@ func TestAMarkedRelationIsDrawn(t *testing.T) {
 // With the cut switched on, every relation the overview stops drawing is
 // counted on the pill of a box at one of its ends, and the focus view each
 // such pill opens draws it.
-func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
+func TestACountedRelationIsDrawnWhereItsListLeads(t *testing.T) {
 	t.Parallel()
 	rels := func(d Drawing) map[string]bool {
 		out := map[string]bool{}
@@ -184,16 +184,16 @@ func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
 				}
 				led = true
 				if !focus[href][r] {
-					t.Errorf("%s: %s is counted on %s's pill, and %s does not draw it", name, r, e, href)
+					t.Errorf("%s: %s is listed under %s, and %s does not draw it", name, r, e, href)
 				}
 			}
 			if !led {
-				t.Errorf("%s: the overview neither draws %s nor counts it on a pill at %v", name, r, ends[r])
+				t.Errorf("%s: the overview neither draws %s nor lists it under a box at %v", name, r, ends[r])
 			}
 		}
 		if (counted > 0) != (len(pill) > 0) {
 			t.Errorf("%s: the overview leaves %d relations undrawn and %d boxes count some", name, counted, len(pill))
 		}
-		t.Logf("%s: %d relations counted on pills", name, counted)
+		t.Logf("%s: %d relations counted", name, counted)
 	}
 }

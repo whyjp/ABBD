@@ -37,11 +37,18 @@ func (o *overview) undrawn() []LeftOut {
 	folds := func(hub, user string) bool {
 		return slices.Contains(o.fold[model.ID(hub)], model.ID(user))
 	}
+	module := map[string]bool{}
+	for _, m := range o.modules {
+		module[string(m)] = true
+	}
 	own := map[string][]string{}
 	for _, c := range pairs {
 		owner, other := c[0], c[1]
-		if folds(other, owner) && !folds(owner, other) {
+		if folds(other, owner) && !folds(owner, other) || !module[owner] {
 			owner, other = other, owner
+		}
+		if !module[owner] {
+			continue
 		}
 		own[owner] = append(own[owner], other)
 	}

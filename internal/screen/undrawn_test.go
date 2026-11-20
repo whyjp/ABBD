@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -53,6 +54,19 @@ func TestEveryCountedPairIsListedOnce(t *testing.T) {
 			}
 			if len(want) == 0 && len(d.Undrawn) > 0 {
 				t.Errorf("%s: a list of undrawn lines where none is counted", name)
+			}
+		}
+	}
+}
+
+// Every list of undrawn lines leads to a focus view that exists.
+func TestEveryUndrawnListLeadsToAFocusView(t *testing.T) {
+	t.Parallel()
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, u := range m.Overview.Undrawn {
+			if !slices.ContainsFunc(m.Focus, func(f Focus) bool { return "#"+f.ID == u.Href }) {
+				t.Errorf("%s: %s lists undrawn lines and opens %q, no focus view", name, u.Name, u.Href)
 			}
 		}
 	}
