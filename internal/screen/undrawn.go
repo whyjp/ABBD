@@ -47,6 +47,8 @@ func (o *overview) undrawn() []LeftOut {
 		if folds(other, owner) && !folds(owner, other) || !module[owner] {
 			owner, other = other, owner
 		}
+		// A pair no module owns has no focus view to open: the list leaves it
+		// out rather than link nowhere.
 		if !module[owner] {
 			continue
 		}

@@ -118,7 +118,7 @@ svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
 svg circle.junction { fill: var(--c); }
 details.undrawn { margin: 6px 0 0; font-size: 13px; }
 details.undrawn summary { cursor: pointer; color: var(--muted); }
-details.undrawn ul { margin: 6px 0 0; padding-left: 18px; columns: 2; column-gap: 28px; }
+details.undrawn ul { margin: 6px 0 0; padding-left: 18px; columns: 2 16rem; column-gap: 28px; }
 details.undrawn li { break-inside: avoid; margin: 1px 0; }
 details.undrawn a { color: var(--accent); text-decoration: none; }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }

@@ -28,8 +28,7 @@ type Elements struct {
 	// once. Ink is the straight stretches of drawn ink, and Bends how many
 	// of them start at a turn of the stretch before. Words are the labels
 	// at rest, on lines and beside the lead's hops. Badges are the ×N on
-	// bundles, the lead's hop numbers and its stay
-	// pill.
+	// bundles, the lead's hop numbers and its stay pill.
 	Shapes int `json:"shapes"`
 	Ink    int `json:"ink"`
 	Bends  int `json:"bends"`
@@ -38,7 +37,7 @@ type Elements struct {
 	Count  int `json:"count"`
 	// Lines are the lines a reader follows, one per request. Possible are
 	// the lines the view could draw: one for each pair of places and kind
-	// of relation it joins, drawn or counted on a box (overview_cut).
+	// of relation it joins, drawn or listed under the picture (overview_cut).
 	// Stored relations lifted onto one pair count once, as the view never
 	// draws them apart. Apart is the ink those lines take drawn one by one,
 	// and Flow the lines the primary flow rides.

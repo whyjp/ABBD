@@ -258,7 +258,7 @@ func (o *overview) cutOf(ls []pair, rels map[pair][]string, contract map[pair]bo
 	return counting(ls, keep)
 }
 
-// counting draws the pairs of keep and counts the rest of ls on their boxes.
+// counting draws the pairs of keep and counts the rest of ls as left out (hides, undrawn.go).
 func counting(ls []pair, keep map[pair]bool) *cut {
 	c := &cut{keep: keep, more: map[model.ID]int{}}
 	for _, l := range ls {
