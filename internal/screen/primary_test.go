@@ -45,7 +45,7 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 			usesBand := map[string]bool{}
 			for _, c := range m.Common {
 				for _, u := range c.Users {
-					usesBand[u] = usesBand[u] || c.Utility()
+					usesBand[u] = usesBand[u] || c.Band
 				}
 			}
 			touched := func(d Drawing) map[string]bool {

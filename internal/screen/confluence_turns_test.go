@@ -34,14 +34,10 @@ func TestARoadAddsNoTurnToARoute(t *testing.T) {
 // straight: their mutual line drops straight, as on main, rather than
 // stepping over to ride the road beside it. The cut overview counts that
 // line on a pill, and the focus views seat MOD-0001 elsewhere than over
-// MOD-0003, so it is read on the overview drawn whole. MOD-0003 is a
-// utility the overview stands as a band, so the line is read on the
-// overview the focus views are seated by, which keeps it a box.
+// MOD-0003, so it is read on the overview drawn whole.
 func TestALineThatCanDropStraightDoes(t *testing.T) {
 	t.Parallel()
-	m := drawAll(t, "pstack")
-	m.Overview = m.seats
-	for _, v := range views(m) {
+	for _, v := range views(drawAll(t, "pstack")) {
 		if v.name != "overview" {
 			continue
 		}

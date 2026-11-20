@@ -328,12 +328,14 @@ func Build(in Input) Model {
 	// carry at rest. Where that would leave the overview fewer lines with a
 	// word than it draws without the band, the utilities stay boxes: a
 	// tidier drawing is not worth a word a reader loses.
-	var whole *Drawing
-	if c.folds() {
-		plain := overview(unfolded)
-		whole = &plain
-		if wordFill(m.Overview).Labelled < wordFill(plain).Labelled {
-			c, m.Overview = unfolded, plain
+	if c != nil && len(c.band) > 0 {
+		// Only the bands go: a hub the project folds stays folded.
+		bare := unfolded
+		if in.Project.OverviewFoldHubs {
+			bare = o.foldHubs(unfolded, fs, true, nil)
+		}
+		if plain := overview(bare); wordFill(m.Overview).Labelled < wordFill(plain).Labelled {
+			c, m.Overview = bare, plain
 		}
 	}
 	for i := range m.Common {
@@ -355,7 +357,7 @@ func Build(in Input) Model {
 		}
 		seats = overview(plain)
 	} else if c.folds() {
-		seats = *whole
+		seats = overview(unfolded)
 	}
 	m.seats = seats
 	m.Focus = o.overviewFocus(in.Units, seats, c.hides() || c.folds())

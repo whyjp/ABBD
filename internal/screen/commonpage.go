@@ -86,7 +86,7 @@ func commonCards(m Model, ref func(string) Ref) []CommonCard {
 func commonFig(users []Ref, phrases []CommonPhrase, others int, name string) CommonFig {
 	n := max(1, len(users))
 	slot := (commonFigW - 2*padX) / n
-	w := min(commonBoxMax, slot-12)
+	w := max(24, min(commonBoxMax, slot-12))
 	said := map[string][]string{}
 	most := 0
 	for _, p := range phrases {

@@ -100,13 +100,23 @@ func (o *overview) commons() ([]CommonView, []SharedLibrary) {
 			continue
 		}
 		for _, r := range o.tree.units[u].Relations {
-			to := box(r.To)
-			if r.Dead || to == "" || to == from || o.tree.units[r.To].Kind == model.External {
+			if r.Dead || o.tree.units[r.To].Kind == model.External {
 				continue
 			}
-			out[from]++
-			in[to]++
-			reached[r.To] = true
+			// A contract outside every box counts toward the boxes that
+			// provide it, as the overview pairs its users with them.
+			tos := []model.ID{box(r.To)}
+			if tos[0] == "" {
+				tos = o.providers[r.To]
+			}
+			for _, to := range tos {
+				if to == "" || to == from {
+					continue
+				}
+				out[from]++
+				in[to]++
+				reached[r.To] = true
+			}
 		}
 		for _, p := range o.tree.units[u].Phrases {
 			to := box(p.To)

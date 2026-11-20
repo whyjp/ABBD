@@ -86,6 +86,11 @@ func TestEveryFoldedHubSaysItsUsers(t *testing.T) {
 			t.Fatal(err)
 		}
 		m := Build(Input{Units: units, Project: store.Project{OverviewFoldHubs: true}})
+		// A band dropped for a word it would take never takes the
+		// project's hub fold with it.
+		if folds := slices.ContainsFunc(m.Overview.Boxes, func(b Box) bool { return b.UsedBy > 0 && !b.Ambient }); !folds && (name == "pstack" || name == "self") {
+			t.Errorf("%s: no hub is folded", name)
+		}
 		for _, b := range m.Overview.Boxes {
 			want := usedByText(b.UsedBy)
 			if b.Ambient {
