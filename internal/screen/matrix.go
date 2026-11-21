@@ -13,7 +13,8 @@ import (
 // the drawing still answers what connects to what and in which order
 // (Okoe et al. 2019). So such a view keeps its drawing as it is and adds a
 // table below it: one row and one column per box in the order a reader
-// meets them, and in each cell how many stored relations the row's box
+// meets them, boxes that all use one another gathered into neighbouring rows
+// (matrix_order.go), and in each cell how many stored relations the row's box
 // uses the column's by.
 //
 // Which views get one is read against each view's own range, never a fixed
@@ -77,26 +78,7 @@ func (d *Drawing) matrix() *Matrix {
 		return cmp.Or(cmp.Compare(row[a.ID], row[b.ID]), cmp.Compare(a.X, b.X))
 	})
 	n := len(boxes)
-	at := map[string]int{}
-	for i, b := range boxes {
-		at[b.ID] = i
-	}
-	count := make([][]int, n)
-	reach := make([][]bool, n)
-	for i := range count {
-		count[i], reach[i] = make([]int, n), make([]bool, n)
-	}
-	joined := map[[2]int]bool{}
-	for _, u := range d.uses() {
-		i, ok := at[u.from]
-		j, ok2 := at[u.to]
-		if !ok || !ok2 || i == j {
-			continue
-		}
-		count[i][j] += u.weight
-		reach[i][j] = true
-		joined[[2]int{min(i, j), max(i, j)}] = true
-	}
+	count, reach, joined := d.tally(boxes)
 	loops := 0
 	for _, b := range boxes {
 		if d.axis.cycle[b.ID] {
@@ -106,6 +88,14 @@ func (d *Drawing) matrix() *Matrix {
 	lo, hi, p := n-1, n*(n-1)/2, len(joined)
 	if n < matrixMin || hi <= lo || matrixPart*(p-lo) <= hi-lo || 2*loops < n {
 		return nil
+	}
+	if order := gatherCliques(count); order != nil {
+		gathered := make([]Box, n)
+		for p, v := range order {
+			gathered[p] = boxes[v]
+		}
+		boxes = gathered
+		count, reach, _ = d.tally(boxes)
 	}
 	for k := range n {
 		for i := range n {
@@ -138,4 +128,30 @@ func (d *Drawing) matrix() *Matrix {
 		m.Rows = append(m.Rows, r)
 	}
 	return m
+}
+
+// tally counts, for boxes in the order given, how many stored relations each
+// box uses each other by, which of them reach, and which pairs are joined.
+func (d *Drawing) tally(boxes []Box) (count [][]int, reach [][]bool, joined map[[2]int]bool) {
+	n := len(boxes)
+	at := map[string]int{}
+	for i, b := range boxes {
+		at[b.ID] = i
+	}
+	count, reach = make([][]int, n), make([][]bool, n)
+	for i := range count {
+		count[i], reach[i] = make([]int, n), make([]bool, n)
+	}
+	joined = map[[2]int]bool{}
+	for _, u := range d.uses() {
+		i, ok := at[u.from]
+		j, ok2 := at[u.to]
+		if !ok || !ok2 || i == j {
+			continue
+		}
+		count[i][j] += u.weight
+		reach[i][j] = true
+		joined[[2]int{min(i, j), max(i, j)}] = true
+	}
+	return count, reach, joined
 }
