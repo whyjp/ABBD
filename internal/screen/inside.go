@@ -325,7 +325,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		// A paired tactic draws a box that uses the focus by one line of one
 		// kind, and is used by it by one line of that kind, once: the two
-		// lines are a true reverse pair the router folds into one line.
+		// lines are a mutual pair the router folds into one line.
 		pair := map[model.ID]bool{}
 		if by.paired {
 			ways := map[[2]model.ID][]line{}

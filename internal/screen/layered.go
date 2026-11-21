@@ -237,20 +237,29 @@ type tactic struct {
 	// keep the drawing with it only where letting them share roads reads
 	// worse on some total the gate holds a view to (sharedOrApart).
 	apart bool
-	// pairs lets the router fold true reverse pairs into one line each
+	// pairs lets the router fold mutual pairs into one line each
 	// with a head at each end (fold.go): every pair (foldAll), or only the
 	// lone ones (foldLone). choose and the focus views keep the drawing with
 	// it only where it reads no worse on every total the gate holds a view
 	// to, on the crossings and on the phantom pairs (foldsNoWorse).
 	pairs int
-	// paired draws a focus view's box that makes a true reverse pair with
+	// paired draws a focus view's box that makes a mutual pair with
 	// the focus once, not twice (focus.go), so its two lines can fold.
 	paired bool
-	// beside stands a box whose only lines are a true reverse pair with one
+	// beside stands a box whose only lines are a mutual pair with one
 	// other box in that box's row (partners), so the pair's folded line runs
 	// straight across rather than down. choose and the focus views keep the
 	// drawing with it only where it reads no worse (foldsNoWorse).
 	beside bool
+	// fan lets folded pairs of one kind and dotting that meet one box share
+	// its slot and roads there, a fan of lines that each read both ways, as
+	// lines into one box share a bus (lay, confluent). The focus views keep
+	// the drawing with it only where it reads no worse (foldsNoWorse).
+	fan bool
+	// near seats a focus view's boxes on both sides of the focus in the
+	// ring row next to the focus when that row wraps (nearFirst). The focus
+	// views keep the drawing with it only where it reads no worse.
+	near bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true},
