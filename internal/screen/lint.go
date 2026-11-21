@@ -171,11 +171,11 @@ type Totals struct {
 	RowsOff   int `json:"rows_off"`
 	Parents   int `json:"parents"`
 	OffCentre int `json:"off_centre"`
-	// Twins are the boxes a focus view draws a second time, below the
-	// focus, for a unit that is also drawn among those it uses (focus.go
-	// twinMark). No total above counts them, so this is the one number
-	// that says how often a view still draws a unit twice. Nothing bounds
-	// it.
+	// Twins are the boxes a focus view draws a second time: a unit that
+	// both uses the focus and is used by it stands above among the focus's
+	// callers, and its twin below among what the focus uses (focus.go
+	// twinMark). No total above counts them, so this is the one number that
+	// says how often a view still draws a unit twice. Nothing bounds it.
 	Twins int `json:"twins"`
 }
 

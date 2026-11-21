@@ -8,7 +8,7 @@ func TestLintCountsTwinBoxes(t *testing.T) {
 	d := Drawing{Boxes: []Box{{ID: "A"}, {ID: "B"}, {ID: "B" + twinMark}, {ID: "C" + twinMark}}}
 	vl, err := lintView(view{name: "x", d: d})
 	if err != nil {
-		t.Skip("a bare drawing does not lint:", err)
+		t.Fatal(err)
 	}
 	if vl.Totals.Twins != 2 {
 		t.Fatalf("twins = %d, want 2", vl.Totals.Twins)

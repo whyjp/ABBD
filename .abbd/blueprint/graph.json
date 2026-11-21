@@ -25112,7 +25112,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "sonnet-twin-diag",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -33520,7 +33520,7 @@
                 "Code": true
               },
               {
-                "Text": "는 초점 뷰가 같은 단위를 두 번 그린 상자, 곧 ID가 ",
+                "Text": "는 초점 뷰가 한 단위를 위와 아래에 두 번 그린 아래쪽 상자, 곧 ID가 ",
                 "Code": false
               },
               {
