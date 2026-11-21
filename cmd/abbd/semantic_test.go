@@ -336,3 +336,25 @@ func TestStatusAndLintReportACycleOfBoxes(t *testing.T) {
 	p.want(0, "cycle overview: billing, ledger use each other round a cycle", "status", "--check")
 	p.want(0, "cycle overview: billing, ledger use each other round a cycle", "lint")
 }
+
+// Four boxes that all use one another are a tangle: lint says so and, like a
+// cycle, neither it nor the check fails for it.
+func TestLintReportsATangleOfBoxes(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	names := []string{"a", "b", "c", "d"}
+	var units, rels []string
+	for _, n := range names {
+		p.code(n+"/x.go", "package "+n+"\n\nfunc F() {}\n")
+		units = append(units, `{"key":"`+n+`","kind":"MOD","name":"`+n+`","anchors":[{"path":"`+n+`/x.go","symbol":"F"}]}`)
+		for _, o := range names {
+			if o != n {
+				rels = append(rels, `{"from":"`+n+`","to":"`+o+`","kind":"depends_on","via":"call"}`)
+			}
+		}
+	}
+	p.extract(`{"units":[` + strings.Join(units, ",") + `],"relations":[` + strings.Join(rels, ",") + `]}`)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "tangle overview: a, b, c, d, 4개 상자가 서로를 모두 쓰고 있어", "lint")
+	p.want(0, "", "status", "--check")
+}
