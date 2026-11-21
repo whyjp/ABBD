@@ -2,10 +2,10 @@ package screen
 
 import "slices"
 
-// Two boxes that use each other by relations of one kind are a true
-// reverse pair: a line from a to b and one from b to a. Drawn apart they
+// Two boxes that use each other by relations of one kind are a mutual
+// pair: a line from a to b and one from b to a. Drawn apart they
 // read as one line drawn twice, the "11" a hand drawing never draws. The
-// router's fold action draws each such pair as one line with a head at each
+// router's fold action merges each such pair into one line with a head at each
 // end, on buses and roads of its own, so the shared ink joins no third place
 // (rule 18). Each line keeps its relations, its word and its route: the
 // folded line lights both when a reader points at it.
@@ -15,7 +15,7 @@ import "slices"
 // pair with more than one line either way stay apart: one stroke would
 // show there a relation that is not stored, or lose a dotting.
 
-// foldable are the true reverse pairs among reqs, as [kept, rider]: the
+// foldable are the mutual pairs among reqs, as [kept, rider]: the
 // rider folds into the kept line, which runs the way the eye reads, down
 // the rows, or right within a row.
 func foldable(reqs []wireReq, before func(a, b end) bool) [][2]int {
@@ -262,8 +262,8 @@ func foldsAny(d Drawing) bool {
 	return false
 }
 
-// The tiers of folding a view is drawn in (tactic.pairs): none, every true
-// reverse pair, or only the lone ones (lone).
+// The tiers of folding a view is drawn in (tactic.pairs): none, every mutual
+// pair, or only the lone ones (lone).
 const (
 	foldNone = iota
 	foldAll
