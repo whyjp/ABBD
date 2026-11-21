@@ -37,6 +37,9 @@ type Drawing struct {
 	// relations those lines stand for.
 	Counted     [][2]string `json:"-"`
 	countedRels []string
+	// Outside are the external units that take part in the primary flow,
+	// drawn in dotted boxes above the picture (participants.go).
+	Outside []Outside `json:",omitempty"`
 	// Aside are the boxes the overview leaves out of the picture for being a
 	// sample, an artifact or a tool, named under it (aside.go).
 	Aside []Aside `json:",omitempty"`
