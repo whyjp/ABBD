@@ -95,6 +95,9 @@ type layout struct {
 	// partner maps each box a beside tactic stood next to the box its only
 	// lines join, to that box (partners): their lines run straight across.
 	partner map[string]string
+	// fan is the tactic's flag: folded pairs of one kind and dotting that
+	// meet one box share its slot and roads there (tactic.fan).
+	fan bool
 	// recorded says the drawing is an overview whose stored record hides
 	// some pair, so lines against the flow keep a track clear of lines with
 	// it (lay).
@@ -409,8 +412,8 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		tier(nodes, order, out, keep, rank)
 	}
 	// A beside tactic stands a box whose only lines are one each way with a
-	// single other box in that box's row, beside it: the two lines are a true
-	// reverse pair the router folds into one line with a head at each end,
+	// single other box in that box's row, beside it: the two lines are a mutual
+	// pair the router folds into one line with a head at each end,
 	// which reads both ways, so neither box has to stand a row above the
 	// other.
 	var partner map[string]string
@@ -564,13 +567,25 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	room := budget - 2*padX
 	var rows [][]string
 	wrapped := false
-	for _, row := range g.rows {
+	// A near tactic seats a ring row's boxes that use the focus both ways
+	// in the row next to the focus when the row wraps (nearFirst), so a
+	// pair that reads both ways stands in rows next to each other (P1).
+	focusRow := -1
+	if seat != nil {
+		focusRow = slices.IndexFunc(g.rows, func(row []string) bool { return slices.Contains(row, seat.focus) })
+	}
+	for r, row := range g.rows {
 		if slices.ContainsFunc(row, isChip) {
 			rows = append(rows, row)
 			continue
 		}
 		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
 		rs := split(ids, byID, room)
+		if t.near && seat != nil && focusRow >= 0 && r != focusRow && len(rs) > 1 {
+			rs = nearFirst(ids, rs, byID, room, r < focusRow, func(id string) bool {
+				return slices.Contains(out[seat.focus], id) && slices.Contains(out[id], seat.focus)
+			})
+		}
 		if fa.spine(ids) {
 			rs = [][]string{ids}
 		}
@@ -585,7 +600,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, through: t.through, apart: t.apart, pairs: t.pairs, partner: partner, axis: ax}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads, through: t.through, apart: t.apart, pairs: t.pairs, partner: partner, fan: t.fan, axis: ax}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)
@@ -781,9 +796,12 @@ type wireReq struct {
 	kind string
 	plan bool
 	lead bool
-	// both says the line stands for a true reverse pair the router folded
+	// both says the line stands for a mutual pair the router folded
 	// into it (fold.go): it reads both ways, with a head at each end.
 	both bool
+	// fan says the line is folded in a fanning view (tactic.fan): it may
+	// share roads with folded lines of its kind and dotting at its hub.
+	fan bool
 }
 
 // twoWay says the line reads both ways: two modules that use each other
@@ -1425,4 +1443,31 @@ func partners(nodes []lnode, out map[string][]string, lines map[[2]string]int) m
 	}
 	maps.DeleteFunc(got, func(_, p string) bool { return n[p] > 2 })
 	return got
+}
+
+// nearFirst rewraps a ring row that brick split into rs, so that its boxes
+// mutual names, those that use the focus and are used by it, stand in the
+// row next to the focus, in their order, and the others wrap beyond them as
+// brick wraps them. above says the row stands above the focus. It keeps rs
+// where no box is mutual or the mutual boxes alone pass room.
+func nearFirst(ids []string, rs [][]string, byID map[string]lnode, room int, above bool, mutual func(string) bool) [][]string {
+	var near, rest []string
+	for _, id := range ids {
+		if mutual(id) {
+			near = append(near, id)
+		} else {
+			rest = append(rest, id)
+		}
+	}
+	if len(near) == 0 || rowWidth(near, byID) > room {
+		return rs
+	}
+	var far [][]string
+	if len(rest) > 0 {
+		far = brick(rest, byID, room)
+	}
+	if above {
+		return append(far, near)
+	}
+	return append([][]string{near}, far...)
 }

@@ -175,7 +175,8 @@ func gapTo(b box, a, c pt) float64 {
 // than lineRoom off every other line; of those places, it takes one
 // headRoom off every arrowhead, its own included, where there is one. A
 // stretch too short to stand a count clear of the head it ends in hands
-// the count to the line's other stretches, which carry the same lines.
+// the count to the line's other stretches, which carry the same lines; a
+// fan's stem that leaves no such room shows none.
 func anchor(out []drawn, ps []piece, boxes []box) {
 	var taken []box
 	hs := heads(out)
@@ -229,6 +230,14 @@ func anchor(out []drawn, ps []piece, boxes []box) {
 					best, bestGap, bestRank, bestAt = at, near, rank, si
 				}
 			}
+		}
+		// A fan's stem has a head where it leaves its hub, and its lines
+		// part at its other end, so no other stretch carries them all: where
+		// the stem leaves no room clear of that head and the other lines, the
+		// fan shows no count, and each branch still reads as its own line.
+		if d.both && bestRank < 2 {
+			d.count, d.counted = 0, nil
+			continue
 		}
 		d.label = best
 		taken = append(taken, box{best.x, best.y - 9, w, 11})

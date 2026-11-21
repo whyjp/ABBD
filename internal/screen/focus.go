@@ -206,7 +206,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
 			ins = alt
 		}
-		// Where two lines are a true reverse pair, the view is drawn again
+		// Where two lines are a mutual pair, the view is drawn again
 		// with each pair folded into one line, kept where that reads no worse.
 		for _, tier := range []int{foldAll, foldLone} {
 			if !foldsAny(ins.Drawing) {
@@ -224,14 +224,16 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 				}
 			}
 		}
-		// Where the view draws a box twice that makes a true reverse pair
+		// Where the view draws a box twice that makes a mutual pair
 		// with the focus, it is drawn again with that box once and its pair
-		// folded into one line, and once more with each such box whose only
-		// lines are that pair standing beside the focus, the line straight
-		// across. Of those that fold every such pair and read no worse, the
-		// one beside is kept, else the other. Where neither does, as about a
-		// hub that many boxes use both ways, the box stays drawn twice: a
-		// known debt until opposite lines at a hub keep two lanes.
+		// folded into one line: with each such box whose only lines are that
+		// pair standing beside the focus, then without; then each of those
+		// with the folded lines of one hub sharing its roads (tactic.fan);
+		// then all four with such boxes seated in the ring row next to the
+		// focus where that row wraps (tactic.near). The first that folds
+		// every such pair and reads no worse is kept. Where none does, as
+		// about a hub that many boxes use both ways, the box stays drawn
+		// twice: a known debt until opposite lines at a hub keep two lanes.
 		if hasTwin(ins.Drawing) {
 			var c cost
 			c.judge(ins.Drawing)
@@ -239,7 +241,14 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 			pt.paired, pt.pairs = true, foldAll
 			bt := pt
 			bt.beside = true
-			for _, at := range []tactic{bt, pt} {
+			bf, pf := bt, pt
+			bf.fan, pf.fan = true, true
+			var near []tactic
+			for _, at := range []tactic{bt, pt, bf, pf} {
+				at.near = true
+				near = append(near, at)
+			}
+			for _, at := range append([]tactic{bt, pt, bf, pf}, near...) {
 				if alt, ok := o.inside(scope, units, id, centres(full.Drawing), at, nil); ok && foldsAll(alt.Drawing) {
 					var ac cost
 					ac.judge(alt.Drawing)

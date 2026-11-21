@@ -48,7 +48,7 @@ func TestBesideLeavesThreePartnersOfOneBoxInTheirRows(t *testing.T) {
 	}
 }
 
-// Only a true reverse pair between a box beside placed and its partner is
+// Only a mutual pair between a box beside placed and its partner is
 // one hop with a head at each end: one line each way, of one kind and one
 // dotting, neither of them mutual, a bypass or the lead, in a view that
 // folds its pairs.
@@ -60,7 +60,7 @@ func TestFoldsHopsFoldsOnlyATrueReversePair(t *testing.T) {
 	k := [2]string{"p", "v"}
 	pair := func(a, b wireReq) bool { return l.foldsHops([]wireReq{a, b}, k, []int{0, 1}) }
 	if !pair(req("v", "p", "depends_on"), req("p", "v", "depends_on")) {
-		t.Error("a true reverse pair beside its partner does not fold")
+		t.Error("a mutual pair beside its partner does not fold")
 	}
 	for name, q := range map[string]wireReq{
 		"two kinds": req("p", "v", "consumes"),
