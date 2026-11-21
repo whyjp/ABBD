@@ -204,8 +204,8 @@ func (e env) statusLines() error {
 	statusSystem(e.stdout, in.Units)
 	fmt.Fprintf(e.stdout, "relations: %d EXTRACTED, %d USER_STATED, %d INFERRED, %d dead\n",
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
-	// The drawing dots a line whose relations arise only in design, which
-	// it reads from via; a relation with none it draws as run-time.
+	// The drawing dots a line whose relations are all static dependencies,
+	// which it reads from via; a relation with none it draws as run-time.
 	fmt.Fprintf(e.stdout, "via: %d relation(s) say no via, so the drawing reads each as run-time; the extraction script names one where it can\n", noVia)
 	stale := 0
 	var orphans []model.ID

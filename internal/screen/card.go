@@ -43,7 +43,7 @@ func (d *Drawing) card() {
 		items = append(items, CardItem{Kind: kindBypass, Text: "직접 의존, 열린 화살촉"})
 	}
 	if d.Planned() {
-		items = append(items, CardItem{Kind: "plan", Text: "설계로만 이어짐"})
+		items = append(items, CardItem{Kind: "plan", Text: "정적 의존"})
 	}
 	if len(items) < 2 {
 		return

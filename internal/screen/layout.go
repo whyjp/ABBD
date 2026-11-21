@@ -102,6 +102,10 @@ type layout struct {
 	// some pair, so lines against the flow keep a track clear of lines with
 	// it (lay).
 	recorded bool
+	// ghosts are the static pairs an overview leaves out: each keeps the
+	// track it would take between its rows, so the gaps stand as they would
+	// with the lines drawn and a view does not shift when they are shown.
+	ghosts []ledge
 	// axis is what the rows were ranked by.
 	axis axis
 }
