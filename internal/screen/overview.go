@@ -34,6 +34,9 @@ type Drawing struct {
 	// relations those lines stand for.
 	Counted     [][2]string `json:"-"`
 	countedRels []string
+	// Aside are the boxes the overview leaves out of the picture for being a
+	// sample, an artifact or a tool, named under it (aside.go).
+	Aside []Aside `json:",omitempty"`
 	// Undrawn are the pairs Counted names, listed once each under the box
 	// whose focus view draws them, for the text under the drawing.
 	Undrawn []LeftOut `json:",omitempty"`
@@ -560,6 +563,8 @@ type overview struct {
 	band map[model.ID]bool
 	// bandUses are the boxes each band uses (hubfold.go).
 	bandUses map[model.ID][]model.ID
+	// aside are the boxes left out of the picture (aside.go).
+	aside map[model.ID]bool
 	// common are the overview's common modules by unit (common.go), whose
 	// boxes say in their tooltips what kind they are.
 	common map[model.ID]CommonView
@@ -775,7 +780,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 			return true
 		})
 		o.said, o.static = c.said, c.static
-		o.fold, o.band, o.bandUses = c.fold, c.band, c.bandUses
+		o.fold, o.band, o.bandUses, o.aside = c.fold, c.band, c.bandUses, c.aside
 		// A static pair left out still takes part in the layering, so the
 		// boxes keep their rows (static.go).
 		recorded = c.said != nil
@@ -801,7 +806,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 		}
 	}
 	for _, m := range o.modules {
-		if cs := o.unreached[m]; len(cs) > 0 && !o.band[m] {
+		if cs := o.unreached[m]; len(cs) > 0 && !o.band[m] && !o.aside[m] {
 			ch := o.chipFor(m, cs, true)
 			ch.key, ch.label = fmt.Sprint(m, "+"), fmt.Sprintf("+%d\u00a0계약", len(cs))
 			put(m, 0, ch)
@@ -846,7 +851,7 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	var nodes []lnode
 	for _, m := range o.modules {
 		ls, w := setName(o.name(m), 13, 28, 150, boxMax)
-		if o.band[m] {
+		if o.band[m] || o.aside[m] {
 			o.names[m] = ls
 			continue
 		}
@@ -1317,9 +1322,12 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, Undrawn: o.undrawn(), countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, Undrawn: o.undrawn(), Aside: o.asideList(), countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
 	bandAt := o.bandRects(l)
 	for _, m := range o.modules {
+		if o.aside[m] {
+			continue
+		}
 		r := l.pos[string(m)]
 		if br, ok := bandAt[m]; ok {
 			r = br

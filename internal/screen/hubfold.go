@@ -122,7 +122,7 @@ func (o *overview) foldBands(c *cut, ambient map[model.ID]bool) *cut {
 	}())
 	out.keep, out.fold, out.band, out.bandUses = keep, fold, band, bandUses
 	if c != nil {
-		out.said, out.static = c.said, c.static
+		out.said, out.static, out.aside = c.said, c.static, c.aside
 	}
 	return out
 }
