@@ -851,6 +851,13 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	d.mark(paths, reqs, t)
 	d.hover()
 	d.Undrawn = o.leftStatic(m, left)
+	// The pairs left out still count: levels and lint read them, as they do on
+	// the overview, so a view is judged by the lines it has.
+	for _, ln := range left {
+		if ln.inner {
+			d.Counted = append(d.Counted, [2]string{string(ln.from), string(ln.to)})
+		}
+	}
 	ins.Drawing = d
 	for _, ln := range left {
 		if ins.quieted == nil {
