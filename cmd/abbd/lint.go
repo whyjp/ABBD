@@ -231,7 +231,7 @@ func printLint(e env, r lintReport) {
 		}
 	}
 	if n := len(r.Unscoped); n > 0 {
-		fmt.Fprintf(e.stdout, "lint: scope: %s named or placed like samples, examples, tests or generated code carry no scope mark; a sample, an artifact or a tool is no part of the product, so mark it in the overview record (scope: unit, scope, evidence) and the overview leaves it out of the picture and names it in a line under it. A box that is the product keeps this warning:\n", plural(n, "box"))
+		fmt.Fprintf(e.stdout, "lint: scope: %s named or placed like samples, examples, tests or generated code carry no scope mark; a sample, an artifact or a tool is no part of the product, so mark it in the overview record (scope: unit, scope, evidence) and the overview leaves it out of the picture and names it in a line under it, unless it is a stage of the primary flow or a chosen line of the record ends on it. A box that is the product keeps this warning:\n", plural(n, "box"))
 		for _, p := range r.Unscoped[:min(n, 10)] {
 			fmt.Fprintf(e.stdout, "  %s\n", p)
 		}
