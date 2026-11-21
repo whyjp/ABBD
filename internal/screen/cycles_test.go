@@ -95,7 +95,7 @@ func TestTheOverviewsCyclesHoldWhateverItDraws(t *testing.T) {
 }
 
 // Four boxes that all use one another are a tangle, named by their boxes; a
-// ring of four, or three boxes that all use one another, are not.
+// ring of four is not.
 func TestLevelsNameAMutualCliqueAsATangle(t *testing.T) {
 	names := []string{"a", "b", "c", "d"}
 	var units []model.Unit

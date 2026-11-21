@@ -64,8 +64,8 @@ func TestGatheredOrderIsAPermutationOfDisjointCliques(t *testing.T) {
 }
 
 // Cliques that share boxes are taken largest first and never share one: a K5
-// and a K4 sharing a box gather the K5, and the K4 loses the shared box and
-// is left, being then smaller than four.
+// and a K4 sharing box 8 give only the K5, since the K4 comes after it and its
+// box 8 is taken.
 func TestOverlappingCliquesTakeTheLargestAndShareNoBox(t *testing.T) {
 	t.Parallel()
 	k5 := [][2]int{{0, 2}, {0, 4}, {0, 6}, {0, 8}, {2, 4}, {2, 6}, {2, 8}, {4, 6}, {4, 8}, {6, 8}}
@@ -77,6 +77,9 @@ func TestOverlappingCliquesTakeTheLargestAndShareNoBox(t *testing.T) {
 	got := gatherCliques(countOf(9, pairs, nil))
 	if !isPermutation(got, 9) {
 		t.Errorf("%v is no permutation of 9 boxes", got)
+	}
+	if got != nil && !slices.Equal(got[:5], []int{0, 2, 4, 6, 8}) {
+		t.Errorf("the K5 is not gathered first in %v", got)
 	}
 }
 
