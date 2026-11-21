@@ -395,7 +395,7 @@ via 호출</title></path><path class="w depends_on e5 e6 r10" d="M801 146 L801 1
 via 호출</title></path><path class="w depends_on e4 e11 r6" d="M502 226 L502 270" data-origin="extracted" data-net="13" data-h="n" marker-end="url(#m-dep-n)"><title>internal/extract/frontend depends_on internal/model (via call)
 via 호출</title></path><path class="w consumes joins e4 e7 r5" d="M553 226 L553 242 L675 242" data-origin="extracted" data-net="14" data-h="n"><title>internal/extract/frontend consumes extraction JSON (via data)</title></path><text class="lab e4 e7 r5" data-h="n" x="614" y="238" text-anchor="middle">데이터</text><path class="w depends_on e0 e8 r0" d="M974 226 L974 270" data-origin="inferred" data-net="15" data-h="n" marker-end="url(#m-dep-n)"><title>key and parent checks depends_on internal/model (via call), 판독
 오가는 것: Kind.Joins (판독) 1/1
-internal/extract/extract.go &#34;if err := rr.Kind.Joins(from, to); err != nil {&#34;</title></path><circle class="origin inferred e0 e8 r0" cx="974" cy="226" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e0 e8 r0" data-h="n" x="1015" y="252" text-anchor="middle">Kind.Joins</text><path class="w depends_on plan e2 e9 r1" d="M290 234 L290 270" data-origin="inferred" data-net="16" data-h="n" marker-end="url(#m-dep-n)"><title>anchor path normalization depends_on internal/gitx (via convention), 판독
+internal/extract/extract.go &#34;if err := rr.Kind.Joins(from, to); err != nil {&#34;</title></path><circle class="origin inferred e0 e8 r0" cx="974" cy="226" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e0 e8 r0" data-h="n" x="1015" y="252" text-anchor="middle">Kind.Joins</text><path class="w depends_on plan e2 e9 r1" d="M290 234 L290 270" data-origin="inferred" data-net="16" data-h="n" marker-end="url(#m-dep-n)"><title>정적 의존(호출 근거 없음): anchor path normalization depends_on internal/gitx (via convention), 판독
 오가는 것: slash paths (판독) 1/1
 internal/extract/extract.go &#34;the forward-slash, root-relative paths git reports&#34;</title></path><circle class="origin inferred e2 e9 r1" cx="290" cy="234" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e2 e9 r1" data-h="n" x="248" y="256" text-anchor="middle">slash paths</text><path class="w consumes e4 e5 e7 r5 r7" d="M675 242 L675 270" data-net="17" data-h="n" marker-end="url(#m-use-n)"><title>internal/extract/frontend consumes extraction JSON (via data)
 internal/extract/relate consumes extraction JSON (via data)</title></path>
@@ -410,7 +410,7 @@ internal/extract/relate consumes extraction JSON (via data)</title></path>
   <div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
   
@@ -446,11 +446,11 @@ internal/extract/relate consumes extraction JSON (via data)</title></path>
 
 
 <path class="w bypass joins e1 e2 r1" d="M110 92 L110 100 L305 100" data-origin="extracted" data-net="1" data-h="n"><title>internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존
-오가는 것: extract.Unit (판독) 2/2</title></path><text class="lab said e1 e2 r1" data-h="n" x="207" y="112" text-anchor="middle">extract.Unit</text><path class="w bypass joins e2 e4 r4" d="M305 92 L305 100" data-origin="extracted" data-net="2" data-h="n"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
+오가는 것: extract.Unit (판독) 2/2</title></path><text class="lab said e1 e2 r1" data-h="n" x="207" y="112" text-anchor="middle">extract.Unit</text><path class="w bypass joins e2 e4 r4" d="M305 92 L305 100" data-origin="extracted" data-net="2" data-h="n"><title>정적 의존(호출 근거 없음): internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
 오가는 것: extract.Unit (판독) 1/1</title></path><path class="w contract e0 e2 r0" d="M510 92 L510 100 L318 100 L318 128" data-origin="extracted" data-net="3" data-h="n" marker-end="url(#m-use-n)"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 오가는 것: script stdout (판독) 4/6</title></path><text class="lab said e0 e2 r0" data-h="n" x="414" y="112" text-anchor="middle">script stdout</text><path class="w bypass e1 e2 e4 r1 r4" d="M305 100 L305 128" data-net="4" data-h="n" marker-end="url(#m-dep-n)"><title>internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존
 internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
-오가는 것: extract.Unit (판독) 2/2</title></path><path class="w bypass plan e2 e3 r2" d="M273 188 L273 224" data-origin="inferred" data-net="5" data-h="n" marker-end="url(#m-dep-n)"><title>internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
+오가는 것: extract.Unit (판독) 2/2</title></path><path class="w bypass plan e2 e3 r2" d="M273 188 L273 224" data-origin="inferred" data-net="5" data-h="n" marker-end="url(#m-dep-n)"><title>정적 의존(호출 근거 없음): internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
 오가는 것: slash paths (판독) 1/1</title></path><circle class="origin inferred e2 e3 r2" cx="273" cy="188" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e2 e3 r2" data-h="n" x="231" y="210" text-anchor="middle">slash paths</text><path class="w bypass e2 e5 r3" d="M341 188 L341 224" data-origin="extracted" data-net="5" data-h="n" marker-end="url(#m-dep-n)"><title>internal/extract → internal/model: 계약을 거치지 않는 직접 의존
 오가는 것: Evidence, Entry, Fact (판독) 1/4, Kind.Joins (판독) 1/4
 via 호출</title></path>
@@ -465,7 +465,7 @@ via 호출</title></path>
   <div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
 </section>

@@ -570,6 +570,13 @@ type Project struct {
 	// its lines show plainly. Off by default, so only stored flows and the
 	// primary flow are numbered; true turns the reading on.
 	InferredLead *bool `yaml:"inferred_lead,omitempty"`
+	// StaticLines says whether the overview and each module's inside draw
+	// the lines that rest on a static dependency only: an import, a
+	// trait, a macro, a build setting or a convention, with no call or data
+	// on record. Off by default: such a line, unless it reaches a contract
+	// or joins two stages of the primary flow, is listed under the picture
+	// and drawn in the focus views only.
+	StaticLines *bool `yaml:"static_lines,omitempty"`
 	// Language is the BCP-47 tag of the language a person reads the
 	// stored prose in, such as ko. Loading refuses a tag that is no
 	// BCP-47 tag. The zero Language leaves the choice to the OS.
@@ -590,6 +597,10 @@ func (p Project) Cut() bool { return p.OverviewCut != nil && *p.OverviewCut }
 
 // InferLead says whether a view with no stored flow draws an inferred lead.
 func (p Project) InferLead() bool { return p.InferredLead != nil && *p.InferredLead }
+
+// ShowStatic says whether the views at rest draw the lines that rest on a
+// static dependency only.
+func (p Project) ShowStatic() bool { return p.StaticLines != nil && *p.StaticLines }
 
 func (s Store) LoadProject() (Project, error) {
 	var p Project
