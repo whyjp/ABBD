@@ -61,7 +61,7 @@ type Level struct {
 	// about the code, like a cycle, and never fails lint; the drawing is
 	// the same with or without it.
 	Tangles [][]string `json:"tangles,omitempty"`
-	Advice []string   `json:"advice,omitempty"`
+	Advice  []string   `json:"advice,omitempty"`
 	// Participants are findings about the overview record's participant marks.
 	// They are no advice about the level, so they never move a level's
 	// verdict, and never fail lint.

@@ -55,6 +55,8 @@ func gatherCliques(count [][]int) []int {
 // mutualCliques are the exact mutual cliques of four boxes or more that
 // count holds, largest first and never sharing a box, each in index order.
 // The matrix gathers them, and a view's level reports them as a tangle.
+// Bron-Kerbosch is exponential in the worst case, but a full view draws a dozen
+// boxes or so, so it stays cheap even where no matrix bounds the density.
 func mutualCliques(count [][]int) [][]int {
 	n := len(count)
 	mutual := make([][]bool, n)
