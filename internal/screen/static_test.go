@@ -214,3 +214,22 @@ func TestAnInsideKeepsWhatAStaticLineMustNotHide(t *testing.T) {
 		t.Errorf("the inside leaves out a static line between two stages of the primary flow; it lists %+v", ins.Drawing.Undrawn)
 	}
 }
+
+// An inside counts the pairs it left out of the picture, as the overview
+// does, so its levels read the lines it has and not only the drawn ones.
+func TestAnInsideCountsTheStaticPairsItLeftOut(t *testing.T) {
+	units := named(append(ripgrep(),
+		inside("MOD-0010", "MOD-0002", found("MOD-0011", model.DependsOn, "import")),
+		inside("MOD-0011", "MOD-0002"),
+	))
+	ins := insideOf(t, build(units))
+	if !slices.Contains(ins.Drawing.Counted, [2]string{"MOD-0010", "MOD-0011"}) {
+		t.Errorf("the inside counts %v, want the pair it left out", ins.Drawing.Counted)
+	}
+	at := atTop
+	got := level("in", ins.Drawing, at)
+	want := level("in", insideOf(t, showStatic(units)).Drawing, at)
+	if got.Lines != want.Lines || got.Lines != 1 {
+		t.Errorf("levels count %d lines at rest and %d with static_lines, want 1 both", got.Lines, want.Lines)
+	}
+}
