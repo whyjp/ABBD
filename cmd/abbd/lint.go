@@ -261,6 +261,9 @@ func printLint(e env, r lintReport) {
 		for _, a := range l.Advice {
 			fmt.Fprintf(e.stdout, "level %s: %s\n", l.View, a)
 		}
+		for _, a := range l.Participants {
+			fmt.Fprintf(e.stdout, "participants: %s\n", a)
+		}
 		if l.Kept != "" {
 			fmt.Fprintf(e.stdout, "level %s: kept, %s\n", l.View, l.Kept)
 		}

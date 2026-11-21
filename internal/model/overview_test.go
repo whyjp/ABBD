@@ -57,3 +57,31 @@ func TestZoneNamesAreShortAndEachItsOwn(t *testing.T) {
 		t.Errorf("two zones with one name are refused: %v", gaps)
 	}
 }
+
+// A participant is an external unit the flow reaches: one the state lacks or
+// one of the project's own is refused, and its quote lies in its own code or
+// in the code of a unit that uses it.
+func TestAParticipantIsAnExternalUnitTheFlowReaches(t *testing.T) {
+	units := append(boxes(), Unit{ID: "EXT-0001", Kind: External, Anchors: []Anchor{{Path: "go.mod", Symbol: "lib"}}})
+	units[3].Relations = append(units[3].Relations, Relation{To: "EXT-0001", Kind: DependsOn})
+	for _, c := range []struct {
+		name string
+		unit ID
+		path string
+		want string
+	}{
+		{"gone", "EXT-0009", "c/x.go", "is no longer in the state"},
+		{"own", "MOD-0002", "c/x.go", "is a unit of the project"},
+		{"user's code", "EXT-0001", "c/x.go", ""},
+		{"no user's code", "EXT-0001", "a/x.go", "none of the quotes of participant EXT-0001"},
+	} {
+		p := Participant{Unit: c.unit, Evidence: []Evidence{{Path: c.path, Quote: "x"}}}
+		got := strings.Join(p.Gaps(units), "; ")
+		if c.want == "" && got != "" || c.want != "" && !strings.Contains(got, c.want) {
+			t.Errorf("%s: want %q, got %q", c.name, c.want, got)
+		}
+	}
+	if err := (Participant{Unit: "EXT-0001"}).Validate(); err == nil || !strings.Contains(err.Error(), "cites no code") {
+		t.Errorf("a participant with no quote: %v", err)
+	}
+}

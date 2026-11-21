@@ -52,6 +52,9 @@ func overviewMarks(o store.Overview) string {
 	if len(o.Ambient) > 0 {
 		marks += fmt.Sprintf(", %d ambient marks", len(o.Ambient))
 	}
+	if len(o.Participants) > 0 {
+		marks += fmt.Sprintf(", %d participants", len(o.Participants))
+	}
 	return marks
 }
 
@@ -72,7 +75,10 @@ func checkOverview(e env, o *store.Overview, units []model.Unit) error {
 	if err := partCount(len(o.Ambient), model.AmbientMark{}.Kind()); err != nil {
 		return err
 	}
-	for _, err := range []error{checkParts(e, o.Zones, units), checkParts(e, o.Lines, units), checkParts(e, o.Scopes, units), checkParts(e, o.Ambient, units)} {
+	if err := partCount(len(o.Participants), model.Participant{}.Kind()); err != nil {
+		return err
+	}
+	for _, err := range []error{checkParts(e, o.Zones, units), checkParts(e, o.Lines, units), checkParts(e, o.Scopes, units), checkParts(e, o.Ambient, units), checkParts(e, o.Participants, units)} {
 		if err != nil {
 			return err
 		}
@@ -147,7 +153,7 @@ func (p shownPart) String() string { return fmt.Sprintf("overview %s %d (%s)", p
 // overviewParts are the overview's parts in the file's order: zones, then
 // lines.
 func overviewParts(o store.Overview) []shownPart {
-	return slices.Concat(partsShown(o.Zones), partsShown(o.Lines), partsShown(o.Scopes), partsShown(o.Ambient))
+	return slices.Concat(partsShown(o.Zones), partsShown(o.Lines), partsShown(o.Scopes), partsShown(o.Ambient), partsShown(o.Participants))
 }
 
 func partsShown[C model.Claim[C]](parts []store.Part[C]) []shownPart {
