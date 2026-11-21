@@ -60,10 +60,16 @@ type cut struct {
 	// static are the pairs left out because they rest on a static
 	// dependency only (static.go), which the list under the picture says.
 	static map[pair]bool
+	// aside are the boxes the overview record marks as a sample, an artifact
+	// or a tool: not drawn, named in a line under the picture (aside.go).
+	aside map[model.ID]bool
 }
 
 // folds says the cut folds some hub's lines.
 func (c *cut) folds() bool { return c != nil && (len(c.fold) > 0 || len(c.band) > 0) }
+
+// asides says the cut sets some box out of the picture (aside.go).
+func (c *cut) asides() bool { return c != nil && len(c.aside) > 0 }
 
 // hides says the cut leaves any pair undrawn.
 func (c *cut) hides() bool { return c != nil && c.left }
