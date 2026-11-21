@@ -206,6 +206,10 @@ type UnitRow struct {
 
 type Model struct {
 	Units []UnitRow
+	// focusHues are the colours the focus views of insides were judged in
+	// and the page is painted in, and hues those of every drawing as it
+	// ends; a test holds them equal.
+	focusHues, hues map[model.ID]int
 	// Overview is the first level: modules, their contracts as ports, and
 	// the lines between them. Insides are the second, one per module.
 	Overview Drawing
@@ -396,11 +400,12 @@ func Build(in Input) Model {
 		}
 		return nil
 	}
+	var firsts [][]Inside
 	for _, id := range views {
 		ins := choose(tactics, func(t tactic, read *cost) (Inside, bool) {
 			return o.inside(id, in.Units, "", nil, t, read)
 		}, func(ins Inside, read *cost) { read.judge(ins.Drawing) })
-		ins.Focus = o.insideFocus(id, in.Units, ins)
+		firsts = append(firsts, o.firstFocus(id, in.Units, ins))
 		ins.Understanding = text(id)
 		ins.Standing = o.standing(id, in)
 		for i, c := range ins.Inferred {
@@ -421,17 +426,38 @@ func Build(in Input) Model {
 		}
 		m.Insides = append(m.Insides, ins)
 	}
-	hues := colours(m.drawings(), o.tree)
+	// A focus view of an inside keeps the candidate that reads best as the
+	// page will show it, so the colours are chosen first, from the first
+	// view of each: the units and relations a view draws are the same
+	// whichever tactic places them (TestFocusColoursDoNotDependOnTheTactic).
+	seen := m.drawings()
+	for _, fs := range firsts {
+		for i := range fs {
+			seen = append(seen, &fs[i].Drawing)
+		}
+	}
+	early := colours(seen, o.tree)
+	for i := range m.Insides {
+		m.Insides[i].Focus = o.insideFocus(views[i], in.Units, m.Insides[i], firsts[i], early)
+	}
+	// The page is painted in the colours the focus views were judged in,
+	// so a unit has one colour on it; the colours of every drawing as it
+	// ends are kept for the test that holds the two equal.
+	m.focusHues, m.hues = early, colours(m.drawings(), o.tree)
 	for _, d := range m.drawings() {
-		d.paint(hues)
+		if !d.dressed {
+			d.paint(early)
+		}
 	}
 	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
 	for i, d := range leads {
 		d.lead(o.tree, fs, i == 0, !o.stored)
 	}
 	for _, d := range m.drawings() {
-		d.dress(o.tree)
-		d.unlabelKin()
+		if !d.dressed {
+			d.dress(o.tree)
+			d.unlabelKin()
+		}
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.

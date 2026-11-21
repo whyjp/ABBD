@@ -27,6 +27,10 @@ type Focus struct {
 	Drawing        Drawing
 	// Ring counts the boxes it meets.
 	Ring int
+	// judged is the totals the gate holds a view to (gateTotals) that the
+	// kept drawing read as when insideFocus chose it, for the test that
+	// holds them to what lint reads of the page.
+	judged []int
 }
 
 // dense says a view draws more than two lines per box on average: enough
@@ -175,28 +179,78 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) [
 	return out
 }
 
+// firstFocus draws the first view of each box's focus view of a dense
+// inside, before any tactic is tried: the units and the relations the view
+// draws, which the colours of every view are chosen from (colours), however
+// the tactics that follow place them.
+func (o *overview) firstFocus(scope model.ID, units []model.Unit, full Inside) []Inside {
+	all := dense(full.Drawing)
+	if !all && len(full.quieted) == 0 {
+		return nil
+	}
+	out := make([]Inside, len(full.Drawing.Boxes))
+	for k, b := range full.Drawing.Boxes {
+		if id := model.ID(b.ID); all || full.quieted[id] {
+			out[k], _ = o.inside(scope, units, id, centres(full.Drawing), tactic{gather: full.gathered}, nil)
+		}
+	}
+	return out
+}
+
+// finished dresses a candidate drawing of the focus view of unit as the
+// page will show it, with the colours hues give, so that the check that
+// keeps or drops it reads what the lint of the page reads (judge). A
+// drawing dressed here is not dressed again by Build (Drawing.dressed).
+func (o *overview) finished(ins Inside, unit model.ID, hues map[model.ID]int) Inside {
+	d := &ins.Drawing
+	d.markFocus(unit)
+	d.paint(hues)
+	d.dress(o.tree)
+	d.unlabelKin()
+	d.dressed = true
+	return ins
+}
+
+// markFocus classes the box of unit as the focus of the view.
+func (d *Drawing) markFocus(unit model.ID) {
+	for i := range d.Boxes {
+		if d.Boxes[i].ID == string(unit) && !strings.Contains(" "+d.Boxes[i].Class+" ", " focus ") {
+			d.Boxes[i].Class += " focus"
+		}
+	}
+}
+
 // insideFocus derives a focus view per box of a dense inside, and per box
-// at an end of a static line the inside leaves out at rest.
-func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) []Focus {
+// at an end of a static line the inside leaves out at rest, from the first
+// views firstFocus drew, each candidate judged as the page will show it,
+// painted in the colours hues give.
+func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside, firsts []Inside, hues map[model.ID]int) []Focus {
 	all := dense(full.Drawing)
 	if !all && len(full.quieted) == 0 {
 		return nil
 	}
 	var out []Focus
-	for _, b := range full.Drawing.Boxes {
+	try := func(id model.ID, t tactic) (Inside, bool) {
+		ins, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil)
+		if ok {
+			ins = o.finished(ins, id, hues)
+		}
+		return ins, ok
+	}
+	for k, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
 		if !all && !full.quieted[id] {
 			continue
 		}
 		t := tactic{gather: full.gathered}
-		ins, _ := o.inside(scope, units, id, centres(full.Drawing), t, nil)
+		ins := o.finished(firsts[k], id, hues)
 		// Drawn again with room for its counts, where some count would get
 		// it, the view keeps that if choose's checks pass it against the
 		// first drawing and lint reads it no worse.
 		if ins.roomy {
 			ct := t
 			ct.counted = true
-			if alt, ok := o.inside(scope, units, id, centres(full.Drawing), ct, nil); ok {
+			if alt, ok := try(id, ct); ok {
 				var c, ac cost
 				c.judge(ins.Drawing)
 				ac.judge(alt.Drawing)
@@ -208,7 +262,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 			}
 		}
 		t.roads = true
-		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
+		if alt, ok := try(id, t); ok {
 			ins = alt
 		}
 		// Where two lines are a mutual pair, the view is drawn again
@@ -219,7 +273,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 			}
 			ft := t
 			ft.pairs = tier
-			if folded, ok := o.inside(scope, units, id, centres(full.Drawing), ft, nil); ok {
+			if folded, ok := try(id, ft); ok {
 				var c, fc cost
 				c.judge(ins.Drawing)
 				fc.judge(folded.Drawing)
@@ -254,7 +308,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 				near = append(near, at)
 			}
 			for _, at := range append([]tactic{bt, pt, bf, pf}, near...) {
-				if alt, ok := o.inside(scope, units, id, centres(full.Drawing), at, nil); ok && foldsAll(alt.Drawing) {
+				if alt, ok := try(id, at); ok && foldsAll(alt.Drawing) {
 					var ac cost
 					ac.judge(alt.Drawing)
 					if foldsNoWorse(ac, c) {
@@ -269,7 +323,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if slices.ContainsFunc(ins.Drawing.Routes, func(r Route) bool { return r.Back }) {
 			at := t
 			at.apart = true
-			if apart, ok := o.inside(scope, units, id, centres(full.Drawing), at, nil); ok {
+			if apart, ok := try(id, at); ok {
 				var c, ac cost
 				c.judge(ins.Drawing)
 				ac.judge(apart.Drawing)
@@ -278,18 +332,17 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 				}
 			}
 		}
-		d := ins.Drawing
-		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+" 내부", id, d))
+		var last cost
+		last.judge(ins.Drawing)
+		f := o.focus(scope, "#m-"+string(scope), full.Name+" 내부", id, ins.Drawing)
+		f.judged = last.gate
+		out = append(out, f)
 	}
 	return out
 }
 
 func (o *overview) focus(scope model.ID, of, ofName string, unit model.ID, d Drawing) Focus {
-	for i := range d.Boxes {
-		if d.Boxes[i].ID == string(unit) {
-			d.Boxes[i].Class += " focus"
-		}
-	}
+	d.markFocus(unit)
 	return Focus{
 		ID: focusID(scope, unit), Unit: string(unit), Name: o.name(unit),
 		Of: of, OfName: ofName, In: viewOf(o.tree, unit), Drawing: d, Ring: len(d.Boxes) - 1,
