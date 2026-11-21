@@ -31335,7 +31335,23 @@
                 "Code": true
               },
               {
-                "Text": "가 뺀 관계마다 윗 상자 행 아래 틈에 트랙 하나(서로 나누지 않는 근사)를 남겨 틈이 닫히지 않게 하며, 내부에서는 남은 선이 닿지 않는 바깥 단위 칩이 함께 빠진다. ",
+                "Text": "가 뺀 관계마다 윗 상자 행 아래 틈에 트랙 하나(서로 나누지 않는 근사)를 남겨 틈이 닫히지 않게 하며, 내부에서는 남은 선이 닿지 않는 바깥 단위 칩이 함께 빠진다. 내부에서 뺀 상자 쌍도 ",
+                "Code": false
+              },
+              {
+                "Text": "inside",
+                "Code": true
+              },
+              {
+                "Text": "가 ",
+                "Code": false
+              },
+              {
+                "Text": "Drawing.Counted",
+                "Code": true
+              },
+              {
+                "Text": "에 넣어 개요처럼 세므로, 수준 판정과 원소 수와 린트는 그리지 않은 선까지 읽는다. ",
                 "Code": false
               },
               {
@@ -33903,6 +33919,38 @@
               },
               {
                 "Text": "TestSymmetryReadsCentresAndRows",
+                "Code": true
+              },
+              {
+                "Text": "가 그 셈을 지킨다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "는 초점 뷰가 한 단위를 위와 아래에 두 번 그린 아래쪽 상자, 곧 ID가 ",
+                "Code": false
+              },
+              {
+                "Text": "↓",
+                "Code": true
+              },
+              {
+                "Text": "로 끝나는 상자의 수도 ",
+                "Code": false
+              },
+              {
+                "Text": "twins",
+                "Code": true
+              },
+              {
+                "Text": "로 합계에 넣는다. 어떤 합계도 쌍둥이를 세지 않으므로 이 수만이 그 수를 말해 주며, 관문은 이것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestLintCountsTwinBoxes",
                 "Code": true
               },
               {
