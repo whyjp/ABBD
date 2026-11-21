@@ -35,6 +35,11 @@ func TestFocusIsJudgedAsLintReadsIt(t *testing.T) {
 		for _, ins := range fixture(t, name).Insides {
 			for _, f := range ins.Focus {
 				seen++
+				for _, b := range f.Drawing.Boxes {
+					if coloured(b) && b.Hue == "" {
+						t.Errorf("%s %s focus %s: box %s is not painted", name, ins.ID, f.Unit, b.ID)
+					}
+				}
 				vl, err := lintView(view{d: f.Drawing, budget: overviewWidth, room: screenH - focusNote})
 				if err != nil {
 					t.Fatal(err)

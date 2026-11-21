@@ -205,10 +205,11 @@ type UnitRow struct {
 }
 
 type Model struct {
-	// focusHues are the colours the focus views of insides were judged in,
-	// and hues those the page is painted in; a test holds them equal.
-	focusHues, hues map[model.ID]int
 	Units []UnitRow
+	// focusHues are the colours the focus views of insides were judged in
+	// and the page is painted in, and hues those of every drawing as it
+	// ends; a test holds them equal.
+	focusHues, hues map[model.ID]int
 	// Overview is the first level: modules, their contracts as ports, and
 	// the lines between them. Insides are the second, one per module.
 	Overview Drawing
@@ -435,11 +436,13 @@ func Build(in Input) Model {
 	for i := range m.Insides {
 		m.Insides[i].Focus = o.insideFocus(views[i], in.Units, m.Insides[i], firsts[i], early)
 	}
-	hues := colours(m.drawings(), o.tree)
-	m.focusHues, m.hues = early, hues
+	// The page is painted in the colours the focus views were judged in,
+	// so a unit has one colour on it; the colours of every drawing as it
+	// ends are kept for the test that holds the two equal.
+	m.focusHues, m.hues = early, colours(m.drawings(), o.tree)
 	for _, d := range m.drawings() {
 		if !d.dressed {
-			d.paint(hues)
+			d.paint(early)
 		}
 	}
 	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
