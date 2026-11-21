@@ -47,7 +47,7 @@ func (e env) overviewDraft() error {
 		return err
 	}
 	front, caption, _ := strings.Cut(strings.TrimPrefix(string(b), "---\n"), "---\n")
-	if len(prev.Zones)+len(prev.Lines)+len(prev.Scopes)+len(prev.Ambient) == 0 {
+	if len(prev.Zones)+len(prev.Lines)+len(prev.Scopes)+len(prev.Ambient)+len(prev.Participants) == 0 {
 		front = "zones: []\nlines: []\nscope: []\n"
 	}
 	var w strings.Builder
@@ -326,6 +326,13 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	fmt.Fprintln(w, "# global state, static data or a context handed down every call (as: global, static")
 	fmt.Fprintln(w, "# or context), such as a registry, configuration or a request context, quoting a")
 	fmt.Fprintln(w, "# line of its own code that shows it. Mark only what the code shows.")
+	fmt.Fprintln(w, "#")
+	fmt.Fprintln(w, "# A participant (participants: unit, evidence) marks an external unit the primary flow")
+	fmt.Fprintln(w, "# crosses or that carries out a stage, so the overview draws it outside the boxes. Mark it")
+	fmt.Fprintln(w, "# when a person could not follow the flow without it: the platform the flow hands work to,")
+	fmt.Fprintln(w, "# or the library whose code implements a stage. Leave a library the code only uses, such")
+	fmt.Fprintln(w, "# as a logger, a parser or a test helper, unmarked. Quote a line that shows the flow")
+	fmt.Fprintln(w, "# reaching it. The external units a box of the flow reaches are listed after the boxes.")
 	fmt.Fprintf(w, "#\n# The boxes the overview draws (%d), and the stage of the primary flow each stands at:\n", len(boxes))
 	for _, id := range boxes {
 		at := "-"
@@ -333,6 +340,12 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 			at = fmt.Sprintf("stage %d %s", n, layers[n-1].Name)
 		}
 		fmt.Fprintf(w, "#   %-10s %-32s %s\n", id, byID[id].Name.Value, at)
+	}
+	if reached := externalsReached(units, boxes, stage); len(reached) > 0 {
+		fmt.Fprintf(w, "#\n# External units a box of the primary flow reaches (%d), as candidate participants:\n", len(reached))
+		for _, r := range reached {
+			fmt.Fprintf(w, "#   %-10s %-32s from %s\n", r.id, byID[r.id].Name.Value, strings.Join(r.from, ", "))
+		}
 	}
 	fmt.Fprintln(w, "#")
 	if primary {
@@ -471,3 +484,65 @@ func zoneOffers(units []model.Unit, boxes []model.ID, byID map[model.ID]model.Un
 
 // oneSegment is a top-level directory name an include path can start with.
 var oneSegment = regexp.MustCompile(`^[A-Za-z_]\w+$`)
+
+// reachedExternal is an external unit and the flow boxes that depend on it.
+type reachedExternal struct {
+	id   model.ID
+	from []string
+}
+
+// externalsReached lists the external units a box that stands at a stage of
+// the primary flow depends on, most-used first, at most 12.
+func externalsReached(units []model.Unit, boxes []model.ID, stage func(model.ID) int) []reachedExternal {
+	st := map[model.ID]model.Unit{}
+	for _, u := range units {
+		st[u.ID] = u
+	}
+	boxOf := func(id model.ID) model.ID {
+		for seen := map[model.ID]bool{}; !seen[id]; seen[id] = true {
+			p := st[id].Parent
+			if _, ok := st[p]; !ok {
+				return id
+			}
+			id = p
+		}
+		return id
+	}
+	inFlow := map[model.ID]bool{}
+	for _, b := range boxes {
+		if stage(b) > 0 {
+			inFlow[b] = true
+		}
+	}
+	from := map[model.ID]map[string]bool{}
+	for _, u := range model.Present(units) {
+		b := boxOf(u.ID)
+		if !inFlow[b] {
+			continue
+		}
+		for _, r := range u.Relations {
+			if t, ok := st[r.To]; ok && !r.Dead && t.Kind == model.External {
+				if from[r.To] == nil {
+					from[r.To] = map[string]bool{}
+				}
+				from[r.To][string(b)] = true
+			}
+		}
+	}
+	var out []reachedExternal
+	for id, bs := range from {
+		r := reachedExternal{id: id}
+		for b := range bs {
+			r.from = append(r.from, b)
+		}
+		slices.Sort(r.from)
+		out = append(out, r)
+	}
+	slices.SortFunc(out, func(a, b reachedExternal) int {
+		if c := len(b.from) - len(a.from); c != 0 {
+			return c
+		}
+		return strings.Compare(string(a.id), string(b.id))
+	})
+	return out[:min(len(out), 12)]
+}

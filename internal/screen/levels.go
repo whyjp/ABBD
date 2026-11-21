@@ -81,6 +81,7 @@ func Levels(m Model) []Level {
 		unit[u.ID] = u
 	}
 	out := []Level{level("overview", m.Overview, atOverview)}
+	out[0].Advice = append(out[0].Advice, participantAdvice(m.Participants, namesOf(m.Units))...)
 	for _, ins := range m.Insides {
 		if unit[ins.ID].Kind != "MOD" {
 			continue
@@ -232,4 +233,12 @@ func boxCount(n int) string {
 		return "1 box"
 	}
 	return fmt.Sprintf("%d boxes", n)
+}
+
+func namesOf(us []UnitRow) map[string]string {
+	out := map[string]string{}
+	for _, u := range us {
+		out[u.ID] = u.Name
+	}
+	return out
 }
