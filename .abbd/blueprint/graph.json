@@ -33897,6 +33897,38 @@
                 "Code": true
               },
               {
+                "Text": "가 그 셈을 지킨다. ",
+                "Code": false
+              },
+              {
+                "Text": "lintView",
+                "Code": true
+              },
+              {
+                "Text": "는 초점 뷰가 한 단위를 위와 아래에 두 번 그린 아래쪽 상자, 곧 ID가 ",
+                "Code": false
+              },
+              {
+                "Text": "↓",
+                "Code": true
+              },
+              {
+                "Text": "로 끝나는 상자의 수도 ",
+                "Code": false
+              },
+              {
+                "Text": "twins",
+                "Code": true
+              },
+              {
+                "Text": "로 합계에 넣는다. 어떤 합계도 쌍둥이를 세지 않으므로 이 수만이 그 수를 말해 주며, 관문은 이것도 막지 않는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestLintCountsTwinBoxes",
+                "Code": true
+              },
+              {
                 "Text": "가 그 셈을 지킨다.",
                 "Code": false
               }

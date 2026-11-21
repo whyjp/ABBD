@@ -171,6 +171,12 @@ type Totals struct {
 	RowsOff   int `json:"rows_off"`
 	Parents   int `json:"parents"`
 	OffCentre int `json:"off_centre"`
+	// Twins are the boxes a focus view draws a second time: a unit that
+	// both uses the focus and is used by it stands above among the focus's
+	// callers, and its twin below among what the focus uses (focus.go
+	// twinMark). No total above counts them, so this is the one number that
+	// says how often a view still draws a unit twice. Nothing bounds it.
+	Twins int `json:"twins"`
 }
 
 // Sum adds up the totals of several views.
@@ -197,6 +203,7 @@ func Sum(views []ViewLint) Totals {
 		t.LeadHops += o.LeadHops
 		t.RoadTurns, t.Junctions, t.BentJunctions = t.RoadTurns+o.RoadTurns, t.Junctions+o.Junctions, t.BentJunctions+o.BentJunctions
 		t.RowsOff, t.Parents, t.OffCentre = t.RowsOff+o.RowsOff, t.Parents+o.Parents, t.OffCentre+o.OffCentre
+		t.Twins += o.Twins
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -452,6 +459,11 @@ func lintView(v view) (ViewLint, error) {
 	}
 	sy := symmetryOf(v.d)
 	vl.Totals.RowsOff, vl.Totals.Parents, vl.Totals.OffCentre = sy.rowsOff, sy.parents, sy.offCentre
+	for _, b := range v.d.Boxes {
+		if strings.HasSuffix(b.ID, twinMark) {
+			vl.Totals.Twins++
+		}
+	}
 	return vl, nil
 }
 
