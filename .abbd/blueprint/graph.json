@@ -2258,6 +2258,7 @@
         "internal/screen/lint.go",
         "internal/screen/marks.go",
         "internal/screen/matrix.go",
+        "internal/screen/matrix_order.go",
         "internal/screen/names.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
@@ -31067,7 +31068,31 @@
                 "Code": true
               },
               {
-                "Text": "가 조건과 표의 모양을 지킨다.",
+                "Text": "가 조건과 표의 모양을 지킨다. 표의 행은 그림에 그려진 순서를 따르되, 서로를 양방향으로 쓰는 상자가 넷 이상인 정확한 클리크는 그 첫 상자가 서 있던 자리에 이웃 행으로 모으고(",
+                "Code": false
+              },
+              {
+                "Text": "gatherCliques",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "matrix_order.go",
+                "Code": true
+              },
+              {
+                "Text": "), 모은 순서가 쓰인 칸들의 대각선과의 거리 합을 줄일 때만 남긴다. 거의 클리크는 모으지 않고, 그림은 바뀌지 않으며 표만 달라진다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestAMutualCliqueGathersIntoNeighbouringRows",
+                "Code": true
+              },
+              {
+                "Text": "가 지킨다.",
                 "Code": false
               }
             ]
