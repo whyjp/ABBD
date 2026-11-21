@@ -93,3 +93,39 @@ func TestTheOverviewsCyclesHoldWhateverItDraws(t *testing.T) {
 		}
 	}
 }
+
+// Four boxes that all use one another are a tangle, named by their boxes; a
+// ring of four, or three boxes that all use one another, are not.
+func TestLevelsNameAMutualCliqueAsATangle(t *testing.T) {
+	names := []string{"a", "b", "c", "d"}
+	var units []model.Unit
+	for i, n := range names {
+		var rels []model.Relation
+		for j := range names {
+			if j != i {
+				rels = append(rels, rel(model.ID("MOD-000"+string(rune('1'+j))), model.DependsOn))
+			}
+		}
+		units = append(units, called(model.ID("MOD-000"+string(rune('1'+i))), n, rels...))
+	}
+	var got [][]string
+	for _, l := range Levels(Build(Input{Units: units})) {
+		if l.View == "overview" {
+			got = l.Tangles
+		}
+	}
+	if want := [][]string{{"a", "b", "c", "d"}}; !reflect.DeepEqual(got, want) {
+		t.Errorf("tangles = %v, want %v", got, want)
+	}
+	ring := []model.Unit{
+		called("MOD-0001", "a", rel("MOD-0002", model.DependsOn)),
+		called("MOD-0002", "b", rel("MOD-0003", model.DependsOn)),
+		called("MOD-0003", "c", rel("MOD-0004", model.DependsOn)),
+		called("MOD-0004", "d", rel("MOD-0001", model.DependsOn)),
+	}
+	for _, l := range Levels(Build(Input{Units: ring})) {
+		if len(l.Tangles) > 0 {
+			t.Errorf("%s names tangles %v in a ring", l.View, l.Tangles)
+		}
+	}
+}

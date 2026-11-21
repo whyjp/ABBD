@@ -21,6 +21,42 @@ const cliqueMin = 4
 // is how many relations box i uses box j by.
 func gatherCliques(count [][]int) []int {
 	n := len(count)
+	chosen := mutualCliques(count)
+	if len(chosen) == 0 {
+		return nil
+	}
+	group := make([]int, n)
+	for i := range group {
+		group[i] = -1
+	}
+	for g, c := range chosen {
+		for _, v := range c {
+			group[v] = g
+		}
+	}
+	var order []int
+	done := make([]bool, len(chosen))
+	for i := range n {
+		g := group[i]
+		switch {
+		case g < 0:
+			order = append(order, i)
+		case !done[g]:
+			done[g] = true
+			order = append(order, chosen[g]...)
+		}
+	}
+	if distance(count, order) >= distance(count, identity(n)) {
+		return nil
+	}
+	return order
+}
+
+// mutualCliques are the exact mutual cliques of four boxes or more that
+// count holds, largest first and never sharing a box, each in index order.
+// The matrix gathers them, and a view's level reports them as a tangle.
+func mutualCliques(count [][]int) [][]int {
+	n := len(count)
 	mutual := make([][]bool, n)
 	for i := range mutual {
 		mutual[i] = make([]bool, n)
@@ -80,36 +116,18 @@ func gatherCliques(count [][]int) []int {
 		}
 		return slices.Compare(a, b)
 	})
-	group, taken := make([]int, n), make([]bool, n)
-	for i := range group {
-		group[i] = -1
-	}
+	taken := make([]bool, n)
 	var chosen [][]int
 	for _, c := range maximal {
 		if slices.ContainsFunc(c, func(v int) bool { return taken[v] }) {
 			continue
 		}
 		for _, v := range c {
-			taken[v], group[v] = true, len(chosen)
+			taken[v] = true
 		}
 		chosen = append(chosen, c)
 	}
-	var order []int
-	done := make([]bool, len(chosen))
-	for i := range n {
-		g := group[i]
-		switch {
-		case g < 0:
-			order = append(order, i)
-		case !done[g]:
-			done[g] = true
-			order = append(order, chosen[g]...)
-		}
-	}
-	if distance(count, order) >= distance(count, identity(n)) {
-		return nil
-	}
-	return order
+	return chosen
 }
 
 func identity(n int) []int {
