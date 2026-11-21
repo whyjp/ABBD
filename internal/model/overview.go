@@ -590,3 +590,67 @@ func (a AmbientMark) Gaps(units []Unit) []string {
 	}
 	return nil
 }
+
+// OverviewParticipants bounds the participant marks of the overview. The
+// drawing keeps the number it shows small relative to the boxes it has.
+const OverviewParticipants = 4
+
+// Participant is one mark a reader puts on an external unit: the primary
+// flow crosses it or it carries out a stage, as a platform the flow hands
+// work to or the library that implements a stage, so a person who reads the
+// flow needs it drawn. A library the code only uses takes no mark. The mark
+// is the overview's own record: it stores no unit and no relation, and
+// tells whoever draws the overview to draw the unit outside the system's
+// boxes. The reader judges it; the code shows only whether a unit of the
+// flow reaches it.
+type Participant struct {
+	Unit     ID         `yaml:"unit"`
+	Evidence []Evidence `yaml:"evidence"`
+}
+
+// Kind makes the participants a kind of figure part, each unit marked once.
+func (Participant) Kind() FigureKind[Participant] {
+	return FigureKind[Participant]{Noun: "overview", Part: "participant", Parts: "participants", Max: OverviewParticipants, Whole: holdOnce[Participant](0)}
+}
+
+// Validate checks the mark on its own: a unit and the code it rests on.
+func (p Participant) Validate() error {
+	if _, _, err := ParseID(string(p.Unit)); err != nil {
+		return err
+	}
+	if len(p.Evidence) == 0 {
+		return fmt.Errorf("participant %s cites no code; cite the lines that show the flow crosses it or it carries out a stage", p.Unit)
+	}
+	return validateEvidence(p.Evidence)
+}
+
+func (p Participant) Label() string                     { return string(p.Unit) }
+func (p Participant) Names() []ID                       { return []ID{p.Unit} }
+func (p Participant) Words() []Word                     { return nil }
+func (p Participant) Quotes() []Evidence                { return p.Evidence }
+func (p Participant) Requote(es []Evidence) Participant { p.Evidence = es; return p }
+func (p Participant) Retire() Participant               { return p }
+
+// Gaps reads the mark against the state: the unit is present and is
+// external, since the project's own units are drawn already, and one quote
+// at least lies in the code of the unit or of a unit that uses it.
+func (p Participant) Gaps(units []Unit) []string {
+	st := stateOf(units)
+	u, ok := st[p.Unit]
+	if !ok {
+		return []string{fmt.Sprintf("%s is no longer in the state", p.Unit)}
+	}
+	if u.Kind != External {
+		return []string{fmt.Sprintf("%s is a unit of the project, which the overview draws already; mark only an external unit as a participant", p.Unit)}
+	}
+	tops := []ID{p.Unit}
+	for _, user := range st {
+		if slices.ContainsFunc(user.Relations, func(r Relation) bool { return !r.Dead && r.To == p.Unit }) {
+			tops = append(tops, user.ID)
+		}
+	}
+	if !st.rests(tops, p.Evidence) {
+		return []string{fmt.Sprintf("none of the quotes of participant %s is in its code or in the code of a unit that uses it; cite the lines that show the flow reaches it", p.Unit)}
+	}
+	return nil
+}

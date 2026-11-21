@@ -57,6 +57,10 @@ type Level struct {
 	// code, not about the drawing, so it never fails lint either.
 	Cycles [][]string `json:"cycles,omitempty"`
 	Advice []string   `json:"advice,omitempty"`
+	// Participants are findings about the overview record's participant marks.
+	// They are no advice about the level, so they never move a level's
+	// verdict, and never fail lint.
+	Participants []string `json:"participants,omitempty"`
 	// Kept is why the repository keeps the view at this level, as
 	// .abbd/lint-debt.yaml records it.
 	Kept string `json:"kept,omitempty"`
@@ -81,6 +85,7 @@ func Levels(m Model) []Level {
 		unit[u.ID] = u
 	}
 	out := []Level{level("overview", m.Overview, atOverview)}
+	out[0].Participants = append(out[0].Participants, participantAdvice(m.Participants, namesOf(m.Units))...)
 	for _, ins := range m.Insides {
 		if unit[ins.ID].Kind != "MOD" {
 			continue
@@ -232,4 +237,12 @@ func boxCount(n int) string {
 		return "1 box"
 	}
 	return fmt.Sprintf("%d boxes", n)
+}
+
+func namesOf(us []UnitRow) map[string]string {
+	out := map[string]string{}
+	for _, u := range us {
+		out[u.ID] = u.Name
+	}
+	return out
 }

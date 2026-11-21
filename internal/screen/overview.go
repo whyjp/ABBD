@@ -878,6 +878,13 @@ func planScoped(units []model.Unit, focus model.ID, at map[string]int, t tactic,
 	o.layout = arrange(nodes, slices.Concat(edges, hidden), overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
 	o.layout.recorded = recorded && len(hidden) > 0
+	if c != nil && focus == "" {
+		for _, e := range hidden {
+			if c.static[pairOf(model.ID(e.from), model.ID(e.to))] {
+				o.layout.ghosts = append(o.layout.ghosts, e)
+			}
+		}
+	}
 	return o
 }
 

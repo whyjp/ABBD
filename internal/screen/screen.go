@@ -227,6 +227,9 @@ type Model struct {
 	Lines []ChosenLine
 	// Ambient are the boxes the overview record marks ambient, with how.
 	Ambient []AmbientView
+	// Participants are the external units the overview record says take part
+	// in the primary flow, with whether a unit of the flow reaches each.
+	Participants []ParticipantView `json:",omitempty"`
 	// Common are the overview's common modules, each classified as one that
 	// affects the logic or a utility (common.go), and Libraries the
 	// third-party libraries two boxes or more share.
@@ -439,6 +442,7 @@ func Build(in Input) Model {
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
 	m.Primary = o.flow.record()
+	m.Participants = tiedParticipants(ov.participants, m.Primary, in.Units)
 	rank(&m)
 	for _, d := range leads {
 		d.Matrix = d.matrix()

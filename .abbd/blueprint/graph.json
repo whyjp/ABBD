@@ -2262,6 +2262,7 @@
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
+        "internal/screen/participants.go",
         "internal/screen/primary.go",
         "internal/screen/rank.go",
         "internal/screen/roadindex.go",
@@ -6843,7 +6844,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -7944,7 +7945,7 @@
                 "Code": true
               },
               {
-                "Text": "로 생존과 신선도를 쓰지 않고 보고한다. status는 via가 없는 살아 있는 관계도 세어, 그림이 그런 관계를 실행 중 관계로 읽고 점선으로 그리지 않는다고 알린다. 비교 페이지는 전체 그림을 ",
+                "Text": "로 생존과 신선도를 쓰지 않고 보고한다. status는 via가 없는 살아 있는 관계도 세어, 그림이 그런 관계를 실행 중 관계로 읽고 점선으로 그리지 않는다고 알린다. 그림은 via가 모두 정적 의존인 선을 평소 그림에서 빼고 목록에 적는다. 비교 페이지는 전체 그림을 ",
                 "Code": false
               },
               {
@@ -8565,7 +8566,31 @@
                 "Code": true
               },
               {
-                "Text": " 목록으로 받아 다른 파트와 같은 검사로 받아들이거나 거부하고, status는 그 수를 구역과 선 옆에 센다. 초안의 설명은 ambient 표시가 표시한 상자 자신의 코드 한 줄을 인용해야 한다고 말한다.",
+                "Text": " 목록으로 받아 다른 파트와 같은 검사로 받아들이거나 거부하고, status는 그 수를 구역과 선 옆에 센다. 초안의 설명은 ambient 표시가 표시한 상자 자신의 코드 한 줄을 인용해야 한다고 말한다. 개요 기록은 외부 단위를 ",
+                "Code": false
+              },
+              {
+                "Text": "participants",
+                "Code": true
+              },
+              {
+                "Text": "로도 받아, 그 단위가 외부이고 쓰는 단위의 코드에 인용이 있는지만 구조로 거부하며, 주 흐름의 어느 단계도 닿지 않는 외부 단위는 lint가 ",
+                "Code": false
+              },
+              {
+                "Text": "participants:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 알리기만 하며 레벨 판정과 ",
+                "Code": false
+              },
+              {
+                "Text": "--record",
+                "Code": true
+              },
+              {
+                "Text": "에는 닿지 않는다.",
                 "Code": false
               }
             ]
@@ -19824,7 +19849,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -22646,7 +22671,31 @@
                 "Code": true
               },
               {
-                "Text": ")은 unit의 anchor가 함께 놓인 가장 깊은 디렉터리다.",
+                "Text": ")은 unit의 anchor가 함께 놓인 가장 깊은 디렉터리다. ",
+                "Code": false
+              },
+              {
+                "Text": "Participant",
+                "Code": true
+              },
+              {
+                "Text": "는 주 흐름이 거치는 외부 단위 하나를 가리키는 개요의 표시로, 최대 4개이며 단위가 외부(",
+                "Code": false
+              },
+              {
+                "Text": "External",
+                "Code": true
+              },
+              {
+                "Text": ")가 아니거나 사라졌거나 인용이 단위나 쓰는 단위의 코드에 없으면 ",
+                "Code": false
+              },
+              {
+                "Text": "Gaps",
+                "Code": true
+              },
+              {
+                "Text": "가 거부한다.",
                 "Code": false
               }
             ]
@@ -24699,7 +24748,39 @@
                   "Code": true
                 },
                 {
-                  "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다.",
+                  "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model.Participants",
+                  "Code": true
+                },
+                {
+                  "Text": "는 개요 기록의 참여 외부 단위를 주 흐름의 단계가 닿는지(",
+                  "Code": false
+                },
+                {
+                  "Text": "Tied",
+                  "Code": true
+                },
+                {
+                  "Text": ")와 함께 싣고, 닿지 않는 표시는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Level.Participants",
+                  "Code": true
+                },
+                {
+                  "Text": "로만 알리고 레벨 조언(",
+                  "Code": false
+                },
+                {
+                  "Text": "Advice",
+                  "Code": true
+                },
+                {
+                  "Text": ")에는 섞지 않으며 그림은 바꾸지 않는다.",
                   "Code": false
                 }
               ]
@@ -26149,7 +26230,39 @@
                 "Code": true
               },
               {
-                "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다.",
+                "Text": "에 담고 그림이 그것을 나르므로, 순위가 layout과 어긋날 수 없다. ",
+                "Code": false
+              },
+              {
+                "Text": "Model.Participants",
+                "Code": true
+              },
+              {
+                "Text": "는 개요 기록의 참여 외부 단위를 주 흐름의 단계가 닿는지(",
+                "Code": false
+              },
+              {
+                "Text": "Tied",
+                "Code": true
+              },
+              {
+                "Text": ")와 함께 싣고, 닿지 않는 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Participants",
+                "Code": true
+              },
+              {
+                "Text": "로만 알리고 레벨 조언(",
+                "Code": false
+              },
+              {
+                "Text": "Advice",
+                "Code": true
+              },
+              {
+                "Text": ")에는 섞지 않으며 그림은 바꾸지 않는다.",
                 "Code": false
               }
             ]
@@ -31132,7 +31245,15 @@
                 "Code": true
               },
               {
-                "Text": ") 그 상자의 초점 뷰로 링크되며, 초점 뷰는 그 선을 그린다. 뺀 선도 층 나누기에는 들어가 상자가 행을 지키고, 내부에서는 남은 선이 닿지 않는 바깥 단위 칩이 함께 빠진다. ",
+                "Text": ") 그 상자의 초점 뷰로 링크되며, 초점 뷰는 그 선을 그린다. 뺀 선도 층 나누기에 들어가 상자가 행을 지키고 개요에서는 ",
+                "Code": false
+              },
+              {
+                "Text": "layout.ghosts",
+                "Code": true
+              },
+              {
+                "Text": "가 그 선의 트랙 자리를 행 사이에 남겨 틈이 닫히지 않게 하며, 내부에서는 남은 선이 닿지 않는 바깥 단위 칩이 함께 빠진다. ",
                 "Code": false
               },
               {
@@ -34811,7 +34932,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -34916,6 +35037,30 @@
               },
               {
                 "Text": "를 담는다. ",
+                "Code": false
+              },
+              {
+                "Text": "StaticLines",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "static_lines",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "ShowStatic",
+                "Code": true
+              },
+              {
+                "Text": ")를 켜면 정적 의존 선도 평소 그림에 그린다. ",
                 "Code": false
               },
               {
@@ -35399,7 +35544,31 @@
                 "Code": true
               },
               {
-                "Text": "): 모든 쓰기는 바이트가 같은 파일을 건너뛰고, 아니면 .tmp 형제 파일에 쓴 뒤 rename한다. 그래서 같은 상태는 같은 바이트를 쓴다.",
+                "Text": "): 모든 쓰기는 바이트가 같은 파일을 건너뛰고, 아니면 .tmp 형제 파일에 쓴 뒤 rename한다. 그래서 같은 상태는 같은 바이트를 쓴다. 개요 기록은 ",
+                "Code": false
+              },
+              {
+                "Text": "participants",
+                "Code": true
+              },
+              {
+                "Text": " 파트도 저장하고 읽으며(",
+                "Code": false
+              },
+              {
+                "Text": "SaveOverview",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "LoadOverview",
+                "Code": true
+              },
+              {
+                "Text": ") 다른 파트처럼 인용으로 stamp하며, 아직 그리지는 않는 표시다.",
                 "Code": false
               }
             ]
