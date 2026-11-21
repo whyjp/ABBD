@@ -31063,7 +31063,63 @@
                 "Code": true
               },
               {
-                "Text": "가 ×N을 세우지 않는다. 이 쌍둥이는 허브에서 반대 방향 선이 2차선 도로를 이룰 때까지 남는 빚이다. 린트의 ",
+                "Text": "가 ×N을 세우지 않는다. 이 쌍둥이는 허브에서 반대 방향 선이 2차선 도로를 이룰 때까지 남는 빚이다. 초점 뷰의 후보는 하나씩 만들어질 때마다 색을 입히고 ",
+                "Code": false
+              },
+              {
+                "Text": "dress",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "unlabelKin",
+                "Code": true
+              },
+              {
+                "Text": "을 거친 뒤에 ",
+                "Code": false
+              },
+              {
+                "Text": "judge",
+                "Code": true
+              },
+              {
+                "Text": "가 읽는다. 색을 칠한 뒤에야 정해지는 ",
+                "Code": false
+              },
+              {
+                "Text": "combs",
+                "Code": true
+              },
+              {
+                "Text": " 같은 합계를 린트가 읽는 그림 그대로 읽기 위해서다. 색은 후보를 고르기 전에 각 상자의 첫 그림(",
+                "Code": false
+              },
+              {
+                "Text": "firstFocus",
+                "Code": true
+              },
+              {
+                "Text": ")으로 정하며, ",
+                "Code": false
+              },
+              {
+                "Text": "TestFocusColoursDoNotDependOnTheTactic",
+                "Code": true
+              },
+              {
+                "Text": "이 그 색이 쪽을 칠할 때의 색과 같음을, ",
+                "Code": false
+              },
+              {
+                "Text": "TestFocusIsJudgedAsLintReadsIt",
+                "Code": true
+              },
+              {
+                "Text": "이 판정이 읽은 합계가 린트가 읽는 합계와 같음을 지킨다. 린트의 ",
                 "Code": false
               },
               {
