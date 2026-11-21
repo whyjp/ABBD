@@ -310,8 +310,11 @@ type roadView struct {
 	// lead, nil where no lead is drawn, says the view's lead rides a route.
 	plan, lead []bool
 	// both says each route is a folded pair's line (fold.go), nil where
-	// none is: its first and last runs ride no road with another route.
+	// none is: its first and last runs ride no road with another route but,
+	// in a fanning view, a line of its fan at its hub (foldHubs), which hub
+	// names.
 	both  []bool
+	hub   []string
 	kinds []string
 	// ends are each route's two ends, whose spans its first and last runs
 	// may slide along.
@@ -591,8 +594,9 @@ func (v roadView) mix(ways [][]pt, a, b [2]int) bool {
 	}
 	x, y := assets(a), assets(b)
 	// A folded pair's line has a head at each end, so another route on
-	// either of its end runs would read as arriving there too (rule 18).
-	if v.both != nil && a[0] != b[0] && (v.both[a[0]] && len(x) > 0 || v.both[b[0]] && len(y) > 0) {
+	// either of its end runs would read as arriving there too (rule 18),
+	// but for another folded line of its hub's fan meeting it at the hub.
+	if v.both != nil && a[0] != b[0] && (v.both[a[0]] && len(x) > 0 || v.both[b[0]] && len(y) > 0) && !v.fanAt(ways, a, b) {
 		return true
 	}
 	switch {
@@ -644,13 +648,22 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int, 
 			ink[i] = fmt.Sprint(b)
 		}
 	}
-	// A folded pair rides a road of its own: on another line's road its
+	// A folded pair rides no road of a line that reads one way: there its
 	// heads would read as arrivals of that line's places too (rule 18).
+	// In a fanning view, folded pairs of one kind and dotting that share
+	// one end, their hub, may share roads with each other, as a fan of
+	// lines that each read both ways, the way lines into one box share a
+	// bus; any other folded pair rides a road of its own.
+	hub := foldHubs(reqs, from, to)
 	for i, q := range reqs {
 		if q.both {
-			ink[i] += "|both|" + from[i] + "|" + to[i]
+			if hub[i] != "" {
+				ink[i] += fmt.Sprint("|both|", hub[i], "|", q.plan)
+			} else {
+				ink[i] += "|both|" + from[i] + "|" + to[i]
+			}
 			if v.both == nil {
-				v.both = make([]bool, len(reqs))
+				v.both, v.hub = make([]bool, len(reqs)), hub
 			}
 			v.both[i] = true
 		}
@@ -1278,4 +1291,52 @@ func road(pts []pt, is []int, ways [][]pt, reqs []wireReq, back []bool) drawn {
 		}
 	}
 	return d
+}
+
+// foldHubs names, for each folded pair's line among reqs that fans
+// (wireReq.fan), its hub: the end it shares with another such line of its
+// kind and dotting, the end that shares with more of them where both ends
+// do, its start on a tie; or "" where it shares neither. from and to are
+// each line's places.
+func foldHubs(reqs []wireReq, from, to []string) []string {
+	type key struct {
+		place, kind string
+		plan        bool
+	}
+	n := map[key]int{}
+	for i, q := range reqs {
+		if q.fan {
+			n[key{from[i], q.kind, q.plan}]++
+			n[key{to[i], q.kind, q.plan}]++
+		}
+	}
+	out := make([]string, len(reqs))
+	for i, q := range reqs {
+		if !q.fan {
+			continue
+		}
+		a, b := n[key{from[i], q.kind, q.plan}], n[key{to[i], q.kind, q.plan}]
+		switch {
+		case a >= 2 && a >= b:
+			out[i] = from[i]
+		case b >= 2:
+			out[i] = to[i]
+		}
+	}
+	return out
+}
+
+// fanAt says route runs a and b are two folded lines of one hub's fan
+// whose end runs among them both touch only that hub.
+func (v roadView) fanAt(ways [][]pt, a, b [2]int) bool {
+	ha, hb := v.hub[a[0]], v.hub[b[0]]
+	if !v.both[a[0]] || !v.both[b[0]] || ha == "" || ha != hb {
+		return false
+	}
+	for _, s := range [][2]int{a, b} {
+		if s[1] == 0 && v.from[s[0]] != ha || s[1] == len(ways[s[0]])-2 && v.to[s[0]] != ha {
+			return false
+		}
+	}
+	return true
 }
