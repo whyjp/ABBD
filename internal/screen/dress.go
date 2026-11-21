@@ -15,12 +15,12 @@ import (
 // its role where the view gives it one. One box may be filled with its colour:
 // the entry the lead starts from, or, in a view with no lead, a hub, the
 // box at least half again as many lines touch as any other. A line whose
-// relations all arise only in design, by a convention, an import, a trait,
-// a macro or a build feature, with no call or data between the two at run
-// time, is drawn dotted.
+// relations all rest on a static dependency, a convention, an import, a
+// trait, a macro, a build feature or a link, with no call or data between
+// the two on record, is drawn dotted, and its tooltip says 정적 의존.
 
-// planned are the ways a coupling arises without a call or data at run
-// time.
+// planned are the ways a static dependency arises: with no call or data on
+// record.
 var planned = map[model.Via]bool{"convention": true, "import": true, "trait": true, "macro": true, "build-feature": true, "link": true}
 
 const (
@@ -34,7 +34,8 @@ const (
 	planMin = 30
 )
 
-// planOnly says every one of rels, and at least one, arises only in design.
+// planOnly says every one of rels, and at least one, rests on a static
+// dependency only.
 func (t tree) planOnly(rels []string) bool {
 	return len(rels) > 0 && !slices.ContainsFunc(rels, func(r string) bool { return !planned[t.vias[r]] || t.toLibrary[r] })
 }
@@ -86,6 +87,9 @@ func (d *Drawing) dress(t tree) {
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		w.Plan = t.planOnly(w.Rels) && long[find(i)] >= planMin
+		if t.planOnly(w.Rels) && w.Title != "" {
+			w.Title = staticWord + "(호출 근거 없음): " + w.Title
+		}
 	}
 	// A hub's view fills its hub and keeps its lines' weight: its lines
 	// rest grey like every other (paint), the hub's own included, and

@@ -1599,6 +1599,12 @@ func (ly *layRun) makeRoom() {
 			room[h.g][1] += want - tracksHeight(tracks[h.g], room[h.g])
 		}
 	}
+	for _, e := range l.ghosts {
+		a, b := l.rowOf(e.from), l.rowOf(e.to)
+		if a >= 0 && b >= 0 && a != b {
+			tracks[min(a, b)+1]++
+		}
+	}
 	l.place(tracks, room)
 }
 
@@ -1979,4 +1985,14 @@ func (ly *layRun) routing() routing {
 		}
 	}
 	return routing{drawn: out, ways: ways, back: backs, shares: ly.can, roomy: ly.roomy, strays: ly.strays, bent: crooked, dropped: dropped, boxes: boxes, tweaked: ly.tweaked, joined: ly.joined, tracks: ly.took}
+}
+
+// rowOf is the row a box stands in, -1 when it stands in none.
+func (l *layout) rowOf(id string) int {
+	for r, row := range l.rows {
+		if slices.Contains(row, id) {
+			return r
+		}
+	}
+	return -1
 }

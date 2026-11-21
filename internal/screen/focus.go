@@ -184,13 +184,15 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) [
 // draws, which the colours of every view are chosen from (colours), however
 // the tactics that follow place them.
 func (o *overview) firstFocus(scope model.ID, units []model.Unit, full Inside) []Inside {
-	if !dense(full.Drawing) {
+	all := dense(full.Drawing)
+	if !all && len(full.quieted) == 0 {
 		return nil
 	}
-	var out []Inside
-	for _, b := range full.Drawing.Boxes {
-		ins, _ := o.inside(scope, units, model.ID(b.ID), centres(full.Drawing), tactic{gather: full.gathered}, nil)
-		out = append(out, ins)
+	out := make([]Inside, len(full.Drawing.Boxes))
+	for k, b := range full.Drawing.Boxes {
+		if id := model.ID(b.ID); all || full.quieted[id] {
+			out[k], _ = o.inside(scope, units, id, centres(full.Drawing), tactic{gather: full.gathered}, nil)
+		}
 	}
 	return out
 }
@@ -218,11 +220,13 @@ func (d *Drawing) markFocus(unit model.ID) {
 	}
 }
 
-// insideFocus derives a focus view per box of a dense inside, from the
-// first views firstFocus drew, each candidate judged as the page will show
-// it, painted in the colours hues give.
+// insideFocus derives a focus view per box of a dense inside, and per box
+// at an end of a static line the inside leaves out at rest, from the first
+// views firstFocus drew, each candidate judged as the page will show it,
+// painted in the colours hues give.
 func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside, firsts []Inside, hues map[model.ID]int) []Focus {
-	if !dense(full.Drawing) {
+	all := dense(full.Drawing)
+	if !all && len(full.quieted) == 0 {
 		return nil
 	}
 	var out []Focus
@@ -235,6 +239,9 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside, 
 	}
 	for k, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
+		if !all && !full.quieted[id] {
+			continue
+		}
 		t := tactic{gather: full.gathered}
 		ins := o.finished(firsts[k], id, hues)
 		// Drawn again with room for its counts, where some count would get

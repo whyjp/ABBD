@@ -335,7 +335,7 @@ svg:has(.w.r6:hover) .badge.r6{--c:var(--rc)}
 <defs><marker id="m-dep-n" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hn); stroke-width: 1.6"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 <rect class="frame" x="6" y="18" width="446" height="272" rx="8"/>
 
-<path class="w depends_on plan e0 e5 r2" d="M131 38 L131 102" data-origin="inferred" data-net="1" data-h="n" marker-end="url(#m-dep-n)"><title>ID high-water minting depends_on anchor takeover matching (via convention), 판독
+<path class="w depends_on plan e0 e5 r2" d="M131 38 L131 102" data-origin="inferred" data-net="1" data-h="n" marker-end="url(#m-dep-n)"><title>정적 의존(호출 근거 없음): ID high-water minting depends_on anchor takeover matching (via convention), 판독
 오가는 것: ID format (판독) 1/1</title></path><circle class="origin inferred e0 e5 r2" cx="131" cy="38" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e0 e5 r2" data-h="n" x="169" y="74" text-anchor="middle">ID format</text><path class="w depends_on e2 e4 r1" d="M356 38 L356 94" data-origin="inferred" data-net="2" data-h="n" marker-end="url(#m-dep-n)"><title>abbd CLI depends_on fact and relation ownership (via call), 판독
 오가는 것: claims setup owns (판독) 1/1</title></path><circle class="origin inferred e2 e4 r1" cx="356" cy="38" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e2 e4 r1" data-h="n" x="291" y="70" text-anchor="middle">claims setup owns</text><path class="w depends_on e0 e3 r0" d="M131 146 L131 270" data-origin="inferred" data-net="3" data-h="n" marker-end="url(#m-dep-n)"><title>anchor takeover matching depends_on internal/gitx (via data), 판독
 오가는 것: git renames (판독) 1/1
@@ -351,7 +351,7 @@ internal/identity/identity.go &#34;if to, ok := renames[a.Path]; ok {&#34;</titl
   <div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
   
@@ -387,13 +387,13 @@ internal/identity/identity.go &#34;if to, ok := renames[a.Path]; ok {&#34;</titl
 
 
 <path class="w bypass e0 e3 r2" d="M410 92 L410 128" data-origin="extracted" data-net="1" data-h="n" marker-end="url(#m-dep-n)"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
-오가는 것: ID reconcile (판독) 2/3, claims setup owns (판독) 1/3</title></path><text class="lab said e0 e3 r2" data-h="n" x="458" y="114" text-anchor="middle">ID reconcile</text><path class="w bypass plan e3 e5 r6" d="M518 92 L518 128" data-origin="extracted" data-net="1" data-h="n" marker-end="url(#m-dep-n)"><title>internal/store → internal/identity: 계약을 거치지 않는 직접 의존
+오가는 것: ID reconcile (판독) 2/3, claims setup owns (판독) 1/3</title></path><text class="lab said e0 e3 r2" data-h="n" x="458" y="114" text-anchor="middle">ID reconcile</text><path class="w bypass plan e3 e5 r6" d="M518 92 L518 128" data-origin="extracted" data-net="1" data-h="n" marker-end="url(#m-dep-n)"><title>정적 의존(호출 근거 없음): internal/store → internal/identity: 계약을 거치지 않는 직접 의존
 오가는 것: ID format (판독) 1/2, merge candidates (판독) 1/2</title></path><text class="lab said e3 e5 r6" data-h="n" x="556" y="114" text-anchor="middle">ID format</text><path class="w bypass joins e1 e2 e3 e4 r3 r4 r5" d="M482 188 L482 212" data-origin="mixed" data-net="2" data-h="n"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
 internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
 internal/identity → internal/model: 계약을 거치지 않는 직접 의존
 오가는 것: Unit, ID, Anchor (판독) 1/3, extract.Unit (판독) 1/3, git renames (판독) 1/3</title></path><circle class="origin inferred e1 e2 e3 e4 r3 r4 r5" cx="482" cy="188" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="count e1 e2 e3 e4 r3 r4 r5" x="487" y="200">×3</text><path class="w contract joins e0 e3 e5 r0 r1" d="M519 188 L519 212 L649 212" data-origin="inferred" data-net="3" data-h="n"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독
 internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독
-오가는 것: ID high-water (판독) 2/2</title></path><circle class="origin inferred e0 e3 e5 r0 r1" cx="519" cy="188" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><circle class="origin inferred e0 e3 e5 r0 r1" cx="519" cy="188" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e0 e3 e5 r0 r1" data-h="n" x="584" y="208" text-anchor="middle">ID high-water</text><path class="w bypass plan e1 e3 r3" d="M295 212 L102 212 L102 232" data-net="4" data-h="n" marker-end="url(#m-dep-n)"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
+오가는 것: ID high-water (판독) 2/2</title></path><circle class="origin inferred e0 e3 e5 r0 r1" cx="519" cy="188" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><circle class="origin inferred e0 e3 e5 r0 r1" cx="519" cy="188" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e0 e3 e5 r0 r1" data-h="n" x="584" y="208" text-anchor="middle">ID high-water</text><path class="w bypass plan e1 e3 r3" d="M295 212 L102 212 L102 232" data-net="4" data-h="n" marker-end="url(#m-dep-n)"><title>정적 의존(호출 근거 없음): internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
 오가는 것: extract.Unit (판독) 1/1</title></path><text class="lab said e1 e3 r3" data-h="n" x="198" y="208" text-anchor="middle">extract.Unit</text><path class="w bypass joins e1 e2 e3 r3 r4" d="M482 212 L295 212" data-net="2" data-h="n"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
 internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
 오가는 것: extract.Unit (판독) 1/2, git renames (판독) 1/2</title></path><text class="lab said e1 e2 e3 r3 r4" data-h="n" x="388" y="208" text-anchor="middle">git renames</text><path class="w bypass e2 e3 r4" d="M295 212 L295 232" data-net="5" data-h="n" marker-end="url(#m-dep-n)"><title>internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
@@ -414,7 +414,7 @@ internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, �
   <div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
 </section>

@@ -386,7 +386,7 @@ strongest shortest path depends_on live links (via call), 판독
 via 호출
 internal/topology/impact.go &#34;links := Links(units)&#34;
 internal/topology/query.go &#34;for _, l := range Links(units) {&#34;
-internal/topology/path.go &#34;return walk(append(Links(units), nesting(units)...), a, b)&#34;</title></path><text class="count e7 e8 e9 e10 r2 r4 r5" x="759" y="158">×3</text><path class="w depends_on plan e6 e9 r3" d="M1076 138 L1076 250" data-net="11" data-h="n" marker-end="url(#m-dep-n)"><title>unit explanation depends_on topology diff (via convention), 판독
+internal/topology/path.go &#34;return walk(append(Links(units), nesting(units)...), a, b)&#34;</title></path><text class="count e7 e8 e9 e10 r2 r4 r5" x="759" y="158">×3</text><path class="w depends_on plan e6 e9 r3" d="M1076 138 L1076 250" data-net="11" data-h="n" marker-end="url(#m-dep-n)"><title>정적 의존(호출 근거 없음): unit explanation depends_on topology diff (via convention), 판독
 internal/topology/query.go &#34;case l.From == id, own(l.From) &amp;&amp; !own(l.To):&#34;</title></path><text class="lab e6 e9 r3" data-h="n" x="1092" y="170" text-anchor="middle">관례</text><path class="w depends_on e5 e6 r0" d="M1162 218 L1162 250" data-origin="inferred" data-net="11" data-h="n" marker-end="url(#m-dep-n)"><title>boundary rule depends_on topology diff (via call), 판독
 via 호출
 internal/topology/diff.go &#34;return len(d.Signatures) &gt; 0 || len(d.Entries) &gt; 0 || len(d.Listed) &gt; 0 ||&#34;</title></path><circle class="origin inferred e5 e6 r0" cx="1162" cy="218" r="3.5"><title>판독: 에이전트가 코드를 읽고 적음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w provides e0 e6 r1" d="M1147 294 L1147 326" data-origin="inferred" data-net="12" data-h="n" marker-end="url(#m-impl-n)"><title>topology diff provides diff report fields (via data), 판독
@@ -402,7 +402,7 @@ internal/topology/diff.go &#34;func Compare(base, now []model.Unit) Diff {&#34;<
   <div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
   
