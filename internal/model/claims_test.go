@@ -268,6 +268,8 @@ func TestAnOutrankedSupplementParentIsReported(t *testing.T) {
 		{[]ParentClaim{by(Supplement, "MOD-0002"), by(Reader, "MOD-0003")}, true},
 		{[]ParentClaim{by(Supplement, "MOD-0002"), by(Script, "MOD-0002")}, false},
 		{[]ParentClaim{by(Supplement, "MOD-0002")}, false},
+		{[]ParentClaim{by(Supplement, "MOD-0009"), by(Script, "MOD-0003")}, false},
+		{[]ParentClaim{by(Supplement, "MOD-0001"), by(Script, "MOD-0003")}, false},
 	} {
 		units := []Unit{mod("MOD-0001", tc.claims...), mod("MOD-0002"), mod("MOD-0003")}
 		Resolve(units)
@@ -275,5 +277,21 @@ func TestAnOutrankedSupplementParentIsReported(t *testing.T) {
 		if (len(got) == 1 && strings.HasPrefix(got[0], "parent ignored: MOD-0001")) != tc.report || len(got) > 1 {
 			t.Errorf("%+v: reported %q, want report %v", tc.claims, got, tc.report)
 		}
+	}
+}
+
+// A supplement parent whose unit is absent is not reported; a reported one says who places the unit and how
+// to move it.
+func TestAnIgnoredSupplementParentSaysWhoPlacesItAndHow(t *testing.T) {
+	units := []Unit{mod("MOD-0001", by(Supplement, "MOD-0002"), by(Script, "MOD-0003")), mod("MOD-0002"), mod("MOD-0003")}
+	Resolve(units)
+	got := ParentConflicts(units)
+	if len(got) != 1 || !strings.Contains(got[0], "placed in MOD-0003 by the script") || !strings.Contains(got[0], "abbd record parent MOD-0001 MOD-0002") {
+		t.Errorf("message = %q", got)
+	}
+	units[1].Absent = true
+	Resolve(units)
+	if got := ParentConflicts(units); len(got) != 0 {
+		t.Errorf("an absent supplement parent is reported: %q", got)
 	}
 }

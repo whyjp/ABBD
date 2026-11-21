@@ -432,9 +432,9 @@ func resolveParents(units []Unit) {
 // claim outranks, which claim shows instead and what a reader does to move it.
 // The order of the writers is not changed; the supplement's claim only stays
 // stored beside the winner, so the reader is told it has no effect.
-func ignoredSupplement(u Unit) (string, bool) {
+func ignoredSupplement(u Unit, holds map[ID]bool) (string, bool) {
 	c, ok := u.Claim(Supplement)
-	if !ok || u.Parent == "" || u.ParentWriter == Supplement || u.Parent == c.To || StatusOf(c.Evidence) == Dead {
+	if !ok || u.Parent == "" || u.ParentWriter == Supplement || u.Parent == c.To || StatusOf(c.Evidence) == Dead || !holds[c.To] || c.To == u.ID {
 		return "", false
 	}
 	if u.Masked("parent", c.Writer, ParentDigest(c)) {
@@ -461,8 +461,14 @@ func ParentConflicts(units []Unit) []string {
 			out = append(out, fmt.Sprintf("%s: a human placed it in %s (%s) over the script's %s, and the script now places it in %s", u.ID, h.To, h.Source, was, place(s.To)))
 		}
 	}
+	holds := map[ID]bool{}
 	for _, u := range Present(units) {
-		if m, ok := ignoredSupplement(u); ok {
+		if u.Kind.Holds() {
+			holds[u.ID] = true
+		}
+	}
+	for _, u := range Present(units) {
+		if m, ok := ignoredSupplement(u, holds); ok {
 			out = append(out, m)
 		}
 	}

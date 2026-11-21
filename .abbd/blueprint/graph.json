@@ -9053,7 +9053,47 @@
                 "Code": true
               },
               {
-                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다. 같은 끝에 ",
+                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다. setup, sync, status가 찍는 ",
+                "Code": false
+              },
+              {
+                "Text": "conflict:",
+                "Code": true
+              },
+              {
+                "Text": " 줄은 더 높은 writer의 부모에 밀린 supplement의 부모를 ",
+                "Code": false
+              },
+              {
+                "Text": "parent ignored:",
+                "Code": true
+              },
+              {
+                "Text": "로도 알리며(",
+                "Code": false
+              },
+              {
+                "Text": "attention",
+                "Code": true
+              },
+              {
+                "Text": "), ",
+                "Code": false
+              },
+              {
+                "Text": "TestSupplementParentOfAScriptPlacedUnitIsSaidToBeIgnored",
+                "Code": true
+              },
+              {
+                "Text": "가 setup과 ",
+                "Code": false
+              },
+              {
+                "Text": "status --check",
+                "Code": true
+              },
+              {
+                "Text": "의 통과와 줄을 지킨다. 같은 끝에 ",
                 "Code": false
               },
               {
@@ -22312,7 +22352,7 @@
                 "Code": true
               },
               {
-                "Text": "로 말하는데, 우선순위는 바꾸지 않고 알리기만 하며 ",
+                "Text": "로 말하는데(그 부모가 지금 있는 모듈이나 기능일 때만), 우선순위는 바꾸지 않고 알리기만 하며 ",
                 "Code": false
               },
               {
