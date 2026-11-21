@@ -2,6 +2,7 @@ package model
 
 import (
 	"math/rand"
+	"strings"
 	"testing"
 )
 
@@ -251,5 +252,28 @@ func TestARefusedClaimFallsToTheNextBeforeALowerTier(t *testing.T) {
 	}
 	if p, _ := parentOf(units, "MOD-0003"); p != "" {
 		t.Errorf("MOD-0003 inside %q, want top level once its reader claim closes a cycle", p)
+	}
+}
+
+// A supplement's parent that another writer's claim outranks has no effect,
+// and ParentConflicts says so; one that shows, or agrees with the shown, or
+// is the only claim, is not reported.
+func TestAnOutrankedSupplementParentIsReported(t *testing.T) {
+	for _, tc := range []struct {
+		claims []ParentClaim
+		report bool
+	}{
+		{[]ParentClaim{by(Supplement, "MOD-0002"), by(Script, "MOD-0003")}, true},
+		{[]ParentClaim{by(Supplement, "MOD-0002"), by(Human, "MOD-0003")}, true},
+		{[]ParentClaim{by(Supplement, "MOD-0002"), by(Reader, "MOD-0003")}, true},
+		{[]ParentClaim{by(Supplement, "MOD-0002"), by(Script, "MOD-0002")}, false},
+		{[]ParentClaim{by(Supplement, "MOD-0002")}, false},
+	} {
+		units := []Unit{mod("MOD-0001", tc.claims...), mod("MOD-0002"), mod("MOD-0003")}
+		Resolve(units)
+		got := ParentConflicts(units)
+		if (len(got) == 1 && strings.HasPrefix(got[0], "parent ignored: MOD-0001")) != tc.report || len(got) > 1 {
+			t.Errorf("%+v: reported %q, want report %v", tc.claims, got, tc.report)
+		}
 	}
 }
