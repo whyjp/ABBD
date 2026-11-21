@@ -18,16 +18,20 @@ var emptyWords = map[string]bool{
 
 // nameAdvice reads the names of the overview's parts, which a reader
 // takes in before anything else. It asks for a name by role where a name
-// is empty, and for one language where the names mix a project's own with
-// bare code identifiers. Like the other advice it never fails lint.
+// is empty or a list of dot-joined items, and for one language where the names
+// mix a project's own with bare code identifiers. Like the other advice it
+// never fails lint.
 func nameAdvice(boxes []Box, part map[string]bool) []string {
-	var empty, plain, spoken []string
+	var empty, plain, spoken, listed []string
 	for _, b := range boxes {
 		if !part[b.ID] {
 			continue
 		}
 		if isEmptyName(b.Name) {
 			empty = append(empty, b.Name)
+		}
+		if joinedItems(b.Name) >= listedFrom {
+			listed = append(listed, b.Name)
 		}
 		switch {
 		case hasNonLatinLetter(b.Name):
@@ -43,7 +47,26 @@ func nameAdvice(boxes []Box, part map[string]bool) []string {
 	if len(spoken) >= 2 && len(plain) >= 2 {
 		out = append(out, fmt.Sprintf("the overview mixes names in the project's language with bare code names (%s). Name every module in one language, by its role, and keep identifiers such as a type or package name for the module's own page", strings.Join(plain, ", ")))
 	}
+	if len(listed) > 0 {
+		out = append(out, fmt.Sprintf("the overview names %s as a list of %d or more items joined by a middle dot (·). Name each by the one role its parts share, and keep the items for the module's own page", strings.Join(listed, ", "), listedFrom))
+	}
 	return out
+}
+
+// listedFrom is how many dot-joined items make a name a list: a part is
+// named by the one role its pieces share, as a hand-drawn box is.
+const listedFrom = 3
+
+// joinedItems counts the items of a name joined by a middle dot.
+func joinedItems(name string) int {
+	items := strings.FieldsFunc(name, func(r rune) bool { return strings.ContainsRune("·ㆍ・∙•‧⋅･", r) })
+	n := 0
+	for _, it := range items {
+		if strings.TrimSpace(it) != "" {
+			n++
+		}
+	}
+	return n
 }
 
 func isEmptyName(name string) bool {
