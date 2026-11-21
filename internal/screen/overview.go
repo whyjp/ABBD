@@ -15,7 +15,10 @@ import (
 // Drawing is one SVG picture: the overview of modules, or one module's inside.
 type Drawing struct {
 	// hooks are a test's, nil as abbd builds.
-	hooks         *hooks
+	hooks *hooks
+	// dressed says paint, dress and unlabelKin have run on it already, as
+	// they have on a focus view of an inside that insideFocus judged.
+	dressed       bool
 	Width, Height int
 	Boxes         []Box
 	Ports         []Port
