@@ -307,6 +307,10 @@ func Build(in Input) Model {
 	if o.quiet, o.marked = !in.Project.ShowStatic(), in.Primary; o.quiet {
 		c = o.quietCut(c, in.Primary)
 	}
+	// A box the record marks as a sample, an artifact or a tool stands
+	// outside the picture, named in a line under it (aside.go).
+	bare := c
+	c = o.asideBoxes(c, scope)
 	unfolded := c
 	m.Common, m.Libraries = o.commons()
 	common := commonByUnit(m.Common)
@@ -359,11 +363,11 @@ func Build(in Input) Model {
 			plain = o.primary(in.Primary, ls, fs, nil, nil)
 		}
 		seats = overview(plain)
-	} else if c.folds() {
-		seats = overview(unfolded)
+	} else if c.folds() || c.asides() {
+		seats = overview(bare)
 	}
 	m.seats = seats
-	m.Focus = o.overviewFocus(in.Units, seats, c.hides() || c.folds())
+	m.Focus = o.overviewFocus(in.Units, seats, c.hides() || c.folds() || c.asides())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {

@@ -76,7 +76,7 @@ func (o *overview) quietCut(c *cut, marked map[string]bool) *cut {
 	out := &cut{keep: map[pair]bool{}, left: true, static: static}
 	if c != nil {
 		out.keep = maps.Clone(c.keep)
-		out.said, out.fold, out.band, out.bandUses = c.said, c.fold, c.band, c.bandUses
+		out.said, out.fold, out.band, out.bandUses, out.aside = c.said, c.fold, c.band, c.bandUses, c.aside
 		for l := range c.static {
 			static[l] = true
 		}

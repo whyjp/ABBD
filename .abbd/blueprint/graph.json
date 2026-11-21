@@ -2228,6 +2228,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/aside.go",
         "internal/screen/busy.go",
         "internal/screen/card.go",
         "internal/screen/chosen.go",
@@ -25278,7 +25279,31 @@
                 "Code": true
               },
               {
-                "Text": "는 저장된 overview의 scope 표시 가운데 샘플, 산출물, 도구로 읽을 수 있고 낡지 않은 것만 단위별 scope로 모아 개요 계획에 넘기며, 낡았거나 단위가 사라졌거나 모르는 scope인 표시는 표시가 없는 것으로 친다. ",
+                "Text": "는 저장된 overview의 scope 표시 가운데 샘플, 산출물, 도구로 읽을 수 있고 낡지 않은 것만 단위별 scope로 모아 개요 계획에 넘기며, 낡았거나 단위가 사라졌거나 모르는 scope인 표시는 표시가 없는 것으로 친다. 살아 있는 scope 표시가 있는 모듈은 ",
+                "Code": false
+              },
+              {
+                "Text": "aside.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "asideBoxes",
+                "Code": true
+              },
+              {
+                "Text": "가 개요의 상자에서 빼고 그림 아래 ",
+                "Code": false
+              },
+              {
+                "Text": "주변:",
+                "Code": true
+              },
+              {
+                "Text": " 한 줄에 이름과 초점 뷰 링크로만 적으며, 그 선은 그림에서 뺀 선으로 센다. 주 흐름의 단계이거나 고른 선, 리드가 지나는 모듈은 표시가 있어도 상자로 남고, 표시가 없는 저장소의 그림은 바뀌지 않는다. ",
                 "Code": false
               },
               {

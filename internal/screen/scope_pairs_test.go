@@ -118,3 +118,34 @@ func TestAPluginTheHostLoadsKeepsItsLine(t *testing.T) {
 		t.Errorf("without marks the pairs are %v", plain)
 	}
 }
+
+func TestABoxMarkedOutOfScopeLeavesThePictureAndIsNamedUnderIt(t *testing.T) {
+	t.Parallel()
+	units := libraryWithSamples()
+	scope := map[model.ID]string{"MOD-0003": model.ScopeSample, "MOD-0005": model.ScopeSample, "MOD-0004": model.ScopeTool}
+	o := planScoped(units, "", nil, tactic{}, nil, nil, nil, scope)
+	c := o.asideBoxes(nil, scope)
+	if c == nil || !c.asides() || len(c.aside) != 3 {
+		t.Fatalf("the three marked boxes are set aside and their lines left out: %+v", c)
+	}
+	p := planScoped(units, "", nil, tactic{}, nil, nil, c, scope)
+	d := p.draw(func(model.ID) string { return "" })
+	var names []string
+	for _, b := range d.Boxes {
+		names = append(names, b.Name)
+	}
+	slices.Sort(names)
+	if !slices.Equal(names, []string{"Extensions", "MediatR"}) {
+		t.Errorf("the picture draws %v, want the product's two boxes", names)
+	}
+	var aside []string
+	for _, a := range d.Aside {
+		aside = append(aside, a.Name+":"+a.Scope)
+	}
+	if want := []string{"Samples:sample", "Benchmarks:tool", "Examples:sample"}; !slices.Equal(aside, want) {
+		t.Errorf("the line under the picture names %v, want %v", aside, want)
+	}
+	if o2 := o.asideBoxes(nil, nil); o2 != nil {
+		t.Errorf("with no mark the cut stays as it was: %+v", o2)
+	}
+}
