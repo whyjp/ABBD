@@ -42,10 +42,11 @@ func focusID(scope, unit model.ID) string {
 	return "f-" + string(scope) + "--" + string(unit)
 }
 
-// A box that both uses the focus and is used by it is drawn twice: once
-// above among its callers and once below among what it uses, so every
-// line of a focus view reads down. Its second box is a twin, a unit of the
-// drawing only.
+// A box that both uses the focus and is used by it is drawn once where its
+// two lines fold into one and the view reads no worse (insideFocus). Else it
+// is drawn twice: once above among its callers and once below among what
+// it uses, so every line of a focus view reads down. Its second box is a
+// twin, a unit of the drawing only.
 const twinMark = "↓"
 
 const twinNote = "서로 쓰는 상자라 위와 아래에 한 번씩 그렸습니다"
@@ -205,7 +206,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
 			ins = alt
 		}
-		// Where two lines are a true reverse pair, the view is drawn again
+		// Where two lines are a mutual pair, the view is drawn again
 		// with each pair folded into one line, kept where that reads no worse.
 		for _, tier := range []int{foldAll, foldLone} {
 			if !foldsAny(ins.Drawing) {
@@ -220,6 +221,41 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 				if foldsNoWorse(fc, c) {
 					ins, t = folded, ft
 					break
+				}
+			}
+		}
+		// Where the view draws a box twice that makes a mutual pair
+		// with the focus, it is drawn again with that box once and its pair
+		// folded into one line: with each such box whose only lines are that
+		// pair standing beside the focus, then without; then each of those
+		// with the folded lines of one hub sharing its roads (tactic.fan);
+		// then all four with such boxes seated in the ring row next to the
+		// focus where that row wraps (tactic.near). The first that folds
+		// every such pair and reads no worse is kept. Where none does, as
+		// about a hub that many boxes use both ways, the box stays drawn
+		// twice: a known debt until opposite lines at a hub keep two lanes.
+		if hasTwin(ins.Drawing) {
+			var c cost
+			c.judge(ins.Drawing)
+			pt := t
+			pt.paired, pt.pairs = true, foldAll
+			bt := pt
+			bt.beside = true
+			bf, pf := bt, pt
+			bf.fan, pf.fan = true, true
+			var near []tactic
+			for _, at := range []tactic{bt, pt, bf, pf} {
+				at.near = true
+				near = append(near, at)
+			}
+			for _, at := range append([]tactic{bt, pt, bf, pf}, near...) {
+				if alt, ok := o.inside(scope, units, id, centres(full.Drawing), at, nil); ok && foldsAll(alt.Drawing) {
+					var ac cost
+					ac.judge(alt.Drawing)
+					if foldsNoWorse(ac, c) {
+						ins, t = alt, at
+						break
+					}
 				}
 			}
 		}
@@ -292,4 +328,30 @@ func (o *overview) usesLibrary(m model.ID) bool {
 	return slices.ContainsFunc(o.relations, func(e model.Edge) bool {
 		return e.From == m && e.Kind == model.DependsOn && o.units[e.To].Kind == model.External
 	})
+}
+
+// hasTwin says d draws some box twice.
+func hasTwin(d Drawing) bool {
+	return slices.ContainsFunc(d.Boxes, func(b Box) bool { return strings.HasSuffix(b.ID, twinMark) })
+}
+
+// foldsAll says d draws every two routes that join two boxes opposite ways
+// by one kind as one line with a head at each end.
+func foldsAll(d Drawing) bool {
+	box := map[string]bool{}
+	for _, b := range d.Boxes {
+		box[b.ID] = true
+	}
+	way := map[[3]string]bool{}
+	for _, r := range d.Routes {
+		if len(r.ends) == 2 && box[r.ends[0]] && box[r.ends[1]] {
+			way[[3]string{r.ends[0], r.ends[1], r.Kind}] = true
+		}
+	}
+	for _, r := range d.Routes {
+		if len(r.ends) == 2 && box[r.ends[0]] && box[r.ends[1]] && way[[3]string{r.ends[1], r.ends[0], r.Kind}] && !r.Both {
+			return false
+		}
+	}
+	return true
 }

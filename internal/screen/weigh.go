@@ -87,9 +87,13 @@ type cost struct {
 	// climbs says some line runs against the reading axis, so the view may
 	// be drawn with such lines apart (tactic.apart).
 	climbs bool
-	// pairs says some two lines are a true reverse pair, so the view may be
+	// pairs says some two lines are a mutual pair, so the view may be
 	// drawn with each pair folded into one line (tactic.pairs).
 	pairs bool
+	// folded says some mutual pair is drawn as one line, so the view
+	// may be drawn with a box whose only lines are such a pair beside the
+	// box at its other end (tactic.beside).
+	folded bool
 }
 
 // sharedOrApart says a drawing whose lines that climb share roads with the
@@ -102,7 +106,7 @@ type cost struct {
 // such as colour_switches, is not seen.
 func sharedOrApart(c, a cost) bool { return readsNoWorse(c, a) }
 
-// foldsNoWorse says a drawing with its true reverse pairs folded, of cost
+// foldsNoWorse says a drawing with its mutual pairs folded, of cost
 // c, reads no worse than the one with them apart, of cost a, as
 // sharedOrApart reads it, and joins no more pairs of places that no
 // relation joins, roads included: folding draws the folded lines on roads
@@ -210,7 +214,7 @@ func costOf(r routing, reqs []wireReq) cost {
 			}
 		}
 	}
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(ways), climbs: slices.Contains(r.back, true), pairs: len(foldable(reqs, readFirst)) > 0}
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy, strays: r.strays, far: farWays(ways), climbs: slices.Contains(r.back, true), pairs: len(foldable(reqs, readFirst)) > 0, folded: slices.ContainsFunc(r.rider, func(k int) bool { return k >= 0 })}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
@@ -386,12 +390,18 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		// or shrink with the tracks the lines take.
 		{actRoads, func(t *tactic) { t.roads = true }, func(tactic, cost) bool { return true }, nil, false,
 			func(tactic, cost, cost) bool { return true }},
-		// Where two lines are a true reverse pair, it is drawn again with
+		// Where two lines are a mutual pair, it is drawn again with
 		// each such pair folded into one line, and that is kept where it
 		// reads no worse; failing that, with only the lone pairs folded.
 		{actFold, func(t *tactic) { t.pairs = foldAll }, func(t tactic, c cost) bool { return c.pairs && t.pairs == foldNone }, nil, true,
 			func(_ tactic, kept, c cost) bool { return foldsNoWorse(c, kept) }},
 		{actFold, func(t *tactic) { t.pairs = foldLone }, func(t tactic, c cost) bool { return c.pairs && t.pairs == foldNone }, nil, true,
+			func(_ tactic, kept, c cost) bool { return foldsNoWorse(c, kept) }},
+		// Where a pair is folded, it is drawn again with each box whose only
+		// lines are such a pair standing beside the box at its other end, the
+		// folded line straight across between them, and that is kept where it
+		// reads no worse.
+		{actBeside, func(t *tactic) { t.beside = true }, func(t tactic, c cost) bool { return c.folded && !t.beside }, nil, true,
 			func(_ tactic, kept, c cost) bool { return foldsNoWorse(c, kept) }},
 		// Where some line climbs, it is drawn again with such lines on roads
 		// of their own, and that is kept where sharing roads reads worse.
@@ -459,6 +469,7 @@ const (
 	actCounted = "counted"
 	actRoads   = "roads"
 	actThrough = "through"
+	actBeside  = "beside"
 )
 
 // noWorse says no total of a reads worse than b's.

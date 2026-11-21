@@ -296,12 +296,30 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 				calls[ln.from] = true
 			}
 		}
+		// A paired tactic draws a box that uses the focus by one line of one
+		// kind, and is used by it by one line of that kind, once: the two
+		// lines are a mutual pair the router folds into one line.
+		pair := map[model.ID]bool{}
+		if by.paired {
+			ways := map[[2]model.ID][]line{}
+			for _, ln := range lines {
+				if ln.inner {
+					ways[[2]model.ID{ln.from, ln.to}] = append(ways[[2]model.ID{ln.from, ln.to}], ln)
+				}
+			}
+			for k, there := range ways {
+				back := ways[[2]model.ID{k[1], k[0]}]
+				if k[0] == focus && len(there) == 1 && len(back) == 1 && there[0].kind == back[0].kind && there[0].origin == back[0].origin {
+					pair[k[1]] = true
+				}
+			}
+		}
 		ring := map[model.ID]bool{focus: true}
 		for i, ln := range lines {
 			if !ln.inner {
 				continue
 			}
-			if ln.from == focus && calls[ln.to] {
+			if ln.from == focus && calls[ln.to] && !pair[ln.to] {
 				tw := twin(ln.to)
 				if !ring[tw] {
 					u := t.units[ln.to]

@@ -7,13 +7,13 @@
 ceilings:
     against_axis: 92
     detours: 38
-    excess_turns: 487
+    excess_turns: 473
     opposite_shared: 4507
     overflow: 6
     placement: 122
     tees: 13
     two_lane_off: 80
-    weighed: 1208
+    weighed: 1194
 debt:
     MOD-0007 mobile app (Expo):
         R: 1

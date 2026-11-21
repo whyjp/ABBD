@@ -183,7 +183,11 @@ func (l *layout) routeLines(reqs []wireReq) routing {
 	}
 	// A folded pair rides the roads as the one line it is drawn as.
 	if folded, f, ok := r.fold(); ok {
-		folded.confluent(f.reqs(reqs), l.position, len(l.rows), l.apart, l.hooks.onRoads())
+		fr := f.reqs(reqs)
+		for i := range fr {
+			fr[i].fan = fr[i].both && l.fan
+		}
+		folded.confluent(fr, l.position, len(l.rows), l.apart, l.hooks.onRoads())
 		return f.unfold(folded)
 	}
 	r.confluent(reqs, l.position, len(l.rows), l.apart, l.hooks.onRoads())
