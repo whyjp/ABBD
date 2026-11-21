@@ -328,7 +328,7 @@ func writeOffers(w io.Writer, units []model.Unit, figs store.Figures, o store.Ov
 	fmt.Fprintln(w, "# line of its own code that shows it. Mark only what the code shows.")
 	fmt.Fprintln(w, "#")
 	fmt.Fprintln(w, "# A participant (participants: unit, evidence) marks an external unit the primary flow")
-	fmt.Fprintln(w, "# crosses or that carries out a stage, so the overview draws it outside the boxes. Mark it")
+	fmt.Fprintln(w, "# crosses or that carries out a stage, so the overview record keeps it as one the flow needs (the overview does not draw it yet). Mark it")
 	fmt.Fprintln(w, "# when a person could not follow the flow without it: the platform the flow hands work to,")
 	fmt.Fprintln(w, "# or the library whose code implements a stage. Leave a library the code only uses, such")
 	fmt.Fprintln(w, "# as a logger, a parser or a test helper, unmarked. Quote a line that shows the flow")

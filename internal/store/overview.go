@@ -28,7 +28,7 @@ type Overview struct {
 	Scopes  []Part[model.ScopeMark]
 	Ambient []Part[model.AmbientMark]
 	// Participants are the external units the reader says take part in the
-	// primary flow, which the overview draws outside its boxes.
+	// primary flow, which the overview will draw outside its boxes.
 	Participants []Part[model.Participant]
 	Caption      string
 	File         string

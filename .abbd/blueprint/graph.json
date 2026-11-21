@@ -8564,7 +8564,23 @@
                 "Code": true
               },
               {
-                "Text": "로도 받아, 그 단위가 외부이고 쓰는 단위의 코드에 인용이 있는지만 구조로 거부하며, 주 흐름의 어느 단계도 닿지 않는 외부 단위는 lint가 알리기만 한다.",
+                "Text": "로도 받아, 그 단위가 외부이고 쓰는 단위의 코드에 인용이 있는지만 구조로 거부하며, 주 흐름의 어느 단계도 닿지 않는 외부 단위는 lint가 ",
+                "Code": false
+              },
+              {
+                "Text": "participants:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 알리기만 하며 레벨 판정과 ",
+                "Code": false
+              },
+              {
+                "Text": "--record",
+                "Code": true
+              },
+              {
+                "Text": "에는 닿지 않는다.",
                 "Code": false
               }
             ]
@@ -24738,7 +24754,15 @@
                   "Code": true
                 },
                 {
-                  "Text": ")와 함께 싣고, 닿지 않는 표시는 lint의 조언(",
+                  "Text": ")와 함께 싣고, 닿지 않는 표시는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "Level.Participants",
+                  "Code": true
+                },
+                {
+                  "Text": "로만 알리고 레벨 조언(",
                   "Code": false
                 },
                 {
@@ -24746,7 +24770,7 @@
                   "Code": true
                 },
                 {
-                  "Text": ")으로만 알리며 그림은 바꾸지 않는다.",
+                  "Text": ")에는 섞지 않으며 그림은 바꾸지 않는다.",
                   "Code": false
                 }
               ]
@@ -26212,7 +26236,15 @@
                 "Code": true
               },
               {
-                "Text": ")와 함께 싣고, 닿지 않는 표시는 lint의 조언(",
+                "Text": ")와 함께 싣고, 닿지 않는 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Participants",
+                "Code": true
+              },
+              {
+                "Text": "로만 알리고 레벨 조언(",
                 "Code": false
               },
               {
@@ -26220,7 +26252,7 @@
                 "Code": true
               },
               {
-                "Text": ")으로만 알리며 그림은 바꾸지 않는다.",
+                "Text": ")에는 섞지 않으며 그림은 바꾸지 않는다.",
                 "Code": false
               }
             ]
@@ -35191,7 +35223,7 @@
                 "Code": true
               },
               {
-                "Text": ") 다른 파트처럼 인용으로 stamp한다.",
+                "Text": ") 다른 파트처럼 인용으로 stamp하며, 아직 그리지는 않는 표시다.",
                 "Code": false
               }
             ]

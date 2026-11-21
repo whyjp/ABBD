@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -29,5 +30,15 @@ func TestParticipantsAreTiedByTheFlowsStages(t *testing.T) {
 	}
 	if tiedParticipants(nil, p, units) != nil || participantAdvice(got[:1], nil) != nil {
 		t.Error("no participants, or only tied ones, ask for nothing")
+	}
+}
+
+// A participant no stage reaches is no advice about the overview's level:
+// advice moves the level verdict that lint --record and --keep-level read.
+func TestAnUntiedParticipantIsNoLevelAdvice(t *testing.T) {
+	m := Model{Participants: []ParticipantView{{Unit: "EXT-0001"}}}
+	l, base := Levels(m)[0], Levels(Model{})[0]
+	if !slices.Equal(l.Advice, base.Advice) || len(l.Participants) != 1 {
+		t.Errorf("advice %q, participants %q; want the advice of a model without participants and one finding", l.Advice, l.Participants)
 	}
 }

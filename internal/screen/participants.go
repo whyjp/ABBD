@@ -69,5 +69,5 @@ func participantAdvice(ps []ParticipantView, names map[string]string) []string {
 	if len(loose) == 0 {
 		return nil
 	}
-	return []string{fmt.Sprintf("no unit of the primary flow has a relation to the participant %s. Record the relation the flow crosses it by, or drop the mark if the flow does not need it", strings.Join(loose, ", "))}
+	return []string{fmt.Sprintf("no unit of a stage of the primary flow (or no primary flow at all) has a relation to the participant %s. Record the relation the flow crosses it by, or drop the mark if the flow does not need it", strings.Join(loose, ", "))}
 }
