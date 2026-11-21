@@ -24838,7 +24838,31 @@
                   "Code": true
                 },
                 {
-                  "Text": ")에는 섞지 않으며 그림은 바꾸지 않는다.",
+                  "Text": ")에는 섞지 않는다. 서 있는 표시는 ",
+                  "Code": false
+                },
+                {
+                  "Text": "participants.go",
+                  "Code": true
+                },
+                {
+                  "Text": "의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "outsideOf",
+                  "Code": true
+                },
+                {
+                  "Text": "가 개요 그림 위 ",
+                  "Code": false
+                },
+                {
+                  "Text": "저장소 밖",
+                  "Code": true
+                },
+                {
+                  "Text": " 줄의 점선 상자로 옮기며, 선과 상자 수와 배치에는 들지 않아 그림 자체는 바뀌지 않고, 닿는 단계는 상자의 툴팁과 이름 옆에 적는다.",
                   "Code": false
                 }
               ]
@@ -26344,7 +26368,31 @@
                 "Code": true
               },
               {
-                "Text": ")에는 섞지 않으며 그림은 바꾸지 않는다.",
+                "Text": ")에는 섞지 않는다. 서 있는 표시는 ",
+                "Code": false
+              },
+              {
+                "Text": "participants.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "outsideOf",
+                "Code": true
+              },
+              {
+                "Text": "가 개요 그림 위 ",
+                "Code": false
+              },
+              {
+                "Text": "저장소 밖",
+                "Code": true
+              },
+              {
+                "Text": " 줄의 점선 상자로 옮기며, 선과 상자 수와 배치에는 들지 않아 그림 자체는 바뀌지 않고, 닿는 단계는 상자의 툴팁과 이름 옆에 적는다.",
                 "Code": false
               }
             ]

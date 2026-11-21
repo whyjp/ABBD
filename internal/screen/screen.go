@@ -473,6 +473,7 @@ func Build(in Input) Model {
 	o.linkFigures(&m)
 	m.Primary = o.flow.record()
 	m.Participants = tiedParticipants(ov.participants, m.Primary, in.Units)
+	m.Overview.Outside = outsideOf(m.Participants, m.Primary, in.Units)
 	rank(&m)
 	for _, d := range leads {
 		d.Matrix = d.matrix()

@@ -42,3 +42,23 @@ func TestAnUntiedParticipantIsNoLevelAdvice(t *testing.T) {
 		t.Errorf("advice %q, participants %q; want the advice of a model without participants and one finding", l.Advice, l.Participants)
 	}
 }
+
+// An outside unit is drawn for each participant mark that stands, with the
+// stages that reach it, and a mark that is stale or names a unit the state no
+// longer holds draws nothing. No mark gives no outside unit.
+func TestAParticipantStandsOutsideTheBoxesWithTheStagesThatReachIt(t *testing.T) {
+	units := []model.Unit{
+		{ID: "MOD-0001", Kind: model.Module},
+		{ID: "MOD-0002", Kind: model.Module, Parent: "MOD-0001", Relations: []model.Relation{{To: "EXT-0001", Kind: model.DependsOn}}},
+		{ID: "EXT-0001", Kind: model.External, Name: model.Fact{Value: "libx"}},
+		{ID: "EXT-0002", Kind: model.External},
+	}
+	p := &PrimaryFlow{Stages: []Stage{{N: 1, Name: "a", Units: []string{"MOD-0001"}}}}
+	got := outsideOf([]ParticipantView{{Unit: "EXT-0001"}, {Unit: "EXT-0002"}, {Unit: "EXT-0001", Reasons: []string{"stale"}}, {Unit: "EXT-0099"}}, p, units)
+	if len(got) != 2 || got[0].Name != "libx" || !slices.Equal(got[0].Reached, []string{"1단계 a"}) || len(got[1].Reached) != 0 {
+		t.Fatalf("outside = %+v", got)
+	}
+	if outsideOf(nil, p, units) != nil {
+		t.Error("no participant mark, nothing outside")
+	}
+}
