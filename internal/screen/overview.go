@@ -1322,7 +1322,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, Undrawn: o.undrawn(), Aside: o.asideList(href), countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs), Counted: o.counted, Undrawn: o.undrawn(), Aside: o.asideList(), countedRels: o.countedRels, said: o.said, roads: l.roads, axis: l.axis, hooks: o.hooks, fanout: o.fanout()}
 	bandAt := o.bandRects(l)
 	for _, m := range o.modules {
 		if o.aside[m] {

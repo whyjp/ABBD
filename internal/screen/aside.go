@@ -82,13 +82,16 @@ func (o *overview) asideBoxes(c *cut, scope map[model.ID]string) *cut {
 	return out
 }
 
+// scopeWords are the scopes as the line under the picture says them.
+var scopeWords = map[string]string{model.ScopeSample: "샘플", model.ScopeArtifact: "산출물", model.ScopeTool: "도구"}
+
 // asideList names the boxes the overview leaves out of the picture, in the
-// order of the modules.
-func (o *overview) asideList(href func(model.ID) string) []Aside {
+// order of the modules, each linked to its focus view in the overview.
+func (o *overview) asideList() []Aside {
 	var out []Aside
 	for _, m := range o.modules {
 		if o.aside[m] {
-			out = append(out, Aside{Name: o.name(m), Scope: o.scope[m], Href: href(m)})
+			out = append(out, Aside{Name: o.name(m), Scope: scopeWords[o.scope[m]], Href: "#" + focusID("", m)})
 		}
 	}
 	return out

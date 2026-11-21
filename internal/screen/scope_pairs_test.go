@@ -142,7 +142,7 @@ func TestABoxMarkedOutOfScopeLeavesThePictureAndIsNamedUnderIt(t *testing.T) {
 	for _, a := range d.Aside {
 		aside = append(aside, a.Name+":"+a.Scope)
 	}
-	if want := []string{"Samples:sample", "Benchmarks:tool", "Examples:sample"}; !slices.Equal(aside, want) {
+	if want := []string{"Samples:샘플", "Benchmarks:도구", "Examples:샘플"}; !slices.Equal(aside, want) {
 		t.Errorf("the line under the picture names %v, want %v", aside, want)
 	}
 	if o2 := o.asideBoxes(nil, nil); o2 != nil {
