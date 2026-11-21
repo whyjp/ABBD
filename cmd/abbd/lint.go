@@ -270,6 +270,9 @@ func printLint(e env, r lintReport) {
 		for _, c := range l.Cycles {
 			fmt.Fprintf(e.stdout, "cycle %s: %s\n", l.View, cycleLine(c))
 		}
+		for _, t := range l.Tangles {
+			fmt.Fprintf(e.stdout, "tangle %s: %s\n", l.View, tangleLine(t))
+		}
 	}
 	for _, f := range r.Failures {
 		fmt.Fprintf(e.stdout, "lint: breaks the gate: %s\n", f)
@@ -340,6 +343,12 @@ func offLevel(views []screen.ViewLint, levels []screen.Level, kept map[string]st
 // only a change to the code ends, so it never fails lint or the check.
 func cycleLine(names []string) string {
 	return fmt.Sprintf("%s use each other round a cycle, so no order runs between them. Only the code ends it, by dropping one of the uses or turning it round through an interface; it never fails lint", strings.Join(names, ", "))
+}
+
+// tangleLine says what one exact mutual clique of boxes is: a finding about
+// the code, which only a change to the code ends, so it never fails lint.
+func tangleLine(names []string) string {
+	return fmt.Sprintf("%s, %d개 상자가 서로를 모두 쓰고 있어 코드가 얽혀 있다. 그림은 있는 그대로 그리며, 얽힘은 코드에서 서로 쓰는 관계를 줄여야 풀린다. lint는 이것으로 실패하지 않는다", strings.Join(names, ", "), len(names))
 }
 
 // levelsOf is the levels of the full views lint checked.

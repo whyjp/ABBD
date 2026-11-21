@@ -56,7 +56,12 @@ type Level struct {
 	// layer for the view to read them down by. It is a finding about the
 	// code, not about the drawing, so it never fails lint either.
 	Cycles [][]string `json:"cycles,omitempty"`
-	Advice []string   `json:"advice,omitempty"`
+	// Tangles are the exact mutual cliques of four boxes or more, by name:
+	// every box of one uses every other and is used by it. It is a finding
+	// about the code, like a cycle, and never fails lint; the drawing is
+	// the same with or without it.
+	Tangles [][]string `json:"tangles,omitempty"`
+	Advice  []string   `json:"advice,omitempty"`
 	// Participants are findings about the overview record's participant marks.
 	// They are no advice about the level, so they never move a level's
 	// verdict, and never fail lint.
@@ -128,6 +133,7 @@ func level(name string, d Drawing, at where) Level {
 	}
 	l.Lines = len(lines)
 	l.Cycles = cycleNames(d)
+	l.Tangles = tangleNames(d, part)
 	hub := hubs(d.Boxes, part, users)
 	for _, b := range d.Boxes {
 		if hub[b.ID] {
@@ -228,6 +234,28 @@ func cycleNames(d Drawing) [][]string {
 			slices.Sort(g)
 			out = append(out, g)
 		}
+	}
+	return out
+}
+
+// tangleNames are the exact mutual cliques among the view's parts, each by
+// its boxes' names in name order, the largest first.
+func tangleNames(d Drawing, part map[string]bool) [][]string {
+	var boxes []Box
+	for _, b := range d.Boxes {
+		if part[b.ID] {
+			boxes = append(boxes, b)
+		}
+	}
+	count, _, _ := d.tally(boxes)
+	var out [][]string
+	for _, c := range mutualCliques(count) {
+		var g []string
+		for _, v := range c {
+			g = append(g, boxes[v].Name)
+		}
+		slices.Sort(g)
+		out = append(out, g)
 	}
 	return out
 }
