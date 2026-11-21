@@ -51,7 +51,7 @@ func (l *layout) besides(a, b string) bool {
 // request index back on reqs. Hops between one pair of boxes stand slotGap
 // apart about the middle of the height the two boxes share, so two lines
 // between the same neighbours, one each way, run as two lanes and never
-// merge; but a true reverse pair between a box a beside tactic placed and
+// merge; but a mutual pair between a box a beside tactic placed and
 // its partner, in a view that folds its pairs, is one line with a head at
 // each end (fold.go), as it was placed to be.
 func (l *layout) withHops(reqs []wireReq, hop []bool) routing {
@@ -162,7 +162,7 @@ func (l *layout) over(r wireReq) bool {
 	return l.staged(r) && l.row[r.from.node] == l.row[r.to.node]
 }
 
-// foldsHops says the hops is, between the boxes of k, are a true reverse pair
+// foldsHops says the hops is, between the boxes of k, are a mutual pair
 // a view that folds its pairs draws as one line: one line each way, of one
 // kind and one dotting (plan), neither mutual, a bypass nor the lead,
 // between a box a beside tactic placed and its partner.
