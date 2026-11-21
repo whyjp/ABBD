@@ -58,11 +58,7 @@ func TestAParticipantStandsOutsideTheBoxesWithTheStagesThatReachIt(t *testing.T)
 	if len(got) != 2 || got[0].Name != "libx" || !slices.Equal(got[0].Reached, []string{"1단계 a"}) || len(got[1].Reached) != 0 {
 		t.Fatalf("outside = %+v", got)
 	}
-	left := outsideLeftOut(got)
-	if len(left) != 1 || left[0].Name != "libx" || !slices.Equal(left[0].With, []string{"1단계 a"}) {
-		t.Errorf("left out = %+v", left)
-	}
-	if outsideOf(nil, p, units) != nil || outsideLeftOut(nil) != nil {
+	if outsideOf(nil, p, units) != nil {
 		t.Error("no participant mark, nothing outside")
 	}
 }

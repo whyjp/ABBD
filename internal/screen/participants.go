@@ -78,7 +78,7 @@ func participantAdvice(ps []ParticipantView, names map[string]string) []string {
 // flow starts, outside the system's boxes: a platform the flow hands work to
 // or the library that implements a stage. It is no box of the overview, so
 // the layout, the lines and the count of boxes leave it out. It draws no
-// line; Reached says which stages reach it.
+// line; Reached says which stages reach it, in its hover and beside its name.
 type Outside struct {
 	Name    string
 	Kind    string
@@ -134,18 +134,6 @@ func outsideOf(ps []ParticipantView, p *PrimaryFlow, units []model.Unit) []Outsi
 			o.Title += "\n주 흐름의 어느 단계도 저장된 관계로 닿지 않습니다"
 		}
 		out = append(out, o)
-	}
-	return out
-}
-
-// outsideLeftOut lists under the picture, as lines it leaves out, the stages
-// each outside unit is reached from.
-func outsideLeftOut(os []Outside) []LeftOut {
-	var out []LeftOut
-	for _, o := range os {
-		if len(o.Reached) > 0 {
-			out = append(out, LeftOut{Name: o.Name, Href: o.Href, With: o.Reached})
-		}
 	}
 	return out
 }

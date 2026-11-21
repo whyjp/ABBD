@@ -474,7 +474,6 @@ func Build(in Input) Model {
 	m.Primary = o.flow.record()
 	m.Participants = tiedParticipants(ov.participants, m.Primary, in.Units)
 	m.Overview.Outside = outsideOf(m.Participants, m.Primary, in.Units)
-	m.Overview.Undrawn = append(m.Overview.Undrawn, outsideLeftOut(m.Overview.Outside)...)
 	rank(&m)
 	for _, d := range leads {
 		d.Matrix = d.matrix()
