@@ -36,7 +36,9 @@ func composeGroups(in Input) []model.Unit {
 	var groups []foldedGroup
 	taken := map[model.ID]bool{}
 	for _, f := range in.Figures.Stacks {
-		if !f.Known || f.Primary || f.View == "" || f.Kind != model.KindCore || len(f.Gaps(in.Units)) > 0 {
+		// The overview's own record is not drawn yet: a box folded there
+		// would lose the page of each box it holds.
+		if !f.Known || f.Primary || f.View == "" || f.View == model.OverviewView || f.Kind != model.KindCore || len(f.Gaps(in.Units)) > 0 {
 			continue
 		}
 		c := f.Composition()
@@ -74,9 +76,6 @@ func composeGroups(in Input) []model.Unit {
 // and described as the record says, holding the anchors of its boxes.
 func foldUnit(units []model.Unit, view, address string, l model.Layer) model.Unit {
 	module := model.ID(view)
-	if view == model.OverviewView {
-		module = ""
-	}
 	g := model.Unit{ID: groupID(l.Units, address), Kind: model.Module, Parent: module, Name: model.Said(model.Reader, l.Name)}
 	role := model.Said(model.Reader, l.Role)
 	g.Responsibility = &role

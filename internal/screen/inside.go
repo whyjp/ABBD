@@ -136,7 +136,14 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	ins := Inside{ID: string(m), Name: o.name(m), Feature: t.units[m].Kind == model.Feature, Up: "#overview"}
 	ins.Purpose, ins.Responsibility = fact(t.units[m].Purpose), fact(t.units[m].Responsibility)
 	if p := t.units[m].Parent; p != "" {
-		ins.Up = "#m-" + string(p)
+		// A folded group has no view, so a box inside one goes up to the
+		// module the group stands in.
+		if t.units[p].Mark != "" {
+			p = t.units[p].Parent
+		}
+		if p != "" {
+			ins.Up = "#m-" + string(p)
+		}
 	}
 	for _, id := range t.chain(m) {
 		ins.Trail = append(ins.Trail, o.name(id))
