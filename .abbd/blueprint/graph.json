@@ -40,6 +40,11 @@
         "internal/store/store.go LoadProject",
         "internal/store/store.go Project",
         "internal/store/store.go SaveProject"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "sync pipeline",
+        "internal/screen"
       ]
     },
     {
@@ -65,6 +70,9 @@
         "cmd/abbd/install.go \"blockBegin = \\\"\u003c!-- abbd:begin --\u003e\\\"\"",
         "cmd/abbd/install.go \"case line == blockBegin \u0026\u0026 begin \u003c 0:\"",
         "cmd/abbd/install.go \"want := strings.ReplaceAll(block, \\\"\\\\n\\\", nl)\""
+      ],
+      "UsedBy": [
+        "/abbd-setup verify, install and hand over"
       ]
     },
     {
@@ -84,6 +92,13 @@
         "internal/extract/extract.go Doc",
         "internal/extract/extract.go DocUnit",
         "internal/extract/extract.go Parse"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "sync pipeline",
+        "setup determinism proof and supplement fold",
+        "internal/extract/frontend",
+        "internal/extract/relate"
       ]
     },
     {
@@ -107,6 +122,9 @@
       "Evidence": [
         "internal/store/store.go \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
         "internal/identity/identity.go \"Shared   model.Anchor `yaml:\\\"shared\\\"`\""
+      ],
+      "UsedBy": [
+        "internal/identity"
       ]
     },
     {
@@ -126,13 +144,19 @@
         "internal/model/model.go Unit",
         "internal/store/store.go LoadUnits",
         "internal/store/store.go SaveUnits"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "review commands",
+        "record writers",
+        "internal/screen"
       ]
     },
     {
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {ambient{as,reasons,unit},common{band,in,kind,name,non_users,out,phrases{from,words},reasons,unit,users},edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},libraries{name,unit,users},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,UsedBy,Zone},zones{name,reasons,units}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {ambient{as,reasons,unit},common{band,in,kind,name,non_users,out,phrases{from,words},reasons,unit,users},edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When,WhenOrigin},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},libraries{name,unit,users},lines{from,kinds,reasons,relations,to,vias,word},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Dependents{ID,Name},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Rank{Basis,Cycle,N,Of,Stage},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},primary{Key,Question,Stages{N,Name,Units}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Primary,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Rank{Basis,Cycle,N,Of,Stage},Responsibility{Badge,Stale,Value},Signature,UsedBy,Zone},zones{name,reasons,units}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -145,6 +169,10 @@
         "internal/screen/page.go Files",
         "internal/screen/page.go Graph",
         "internal/screen/site.go Pages"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "freshness verdicts"
       ]
     },
     {
@@ -164,6 +192,13 @@
         "internal/store/store.go LoadState",
         "internal/store/store.go SaveState",
         "internal/store/store.go State"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "sync pipeline",
+        "internal/identity",
+        "internal/screen",
+        "freshness verdicts"
       ]
     },
     {
@@ -206,6 +241,13 @@
         "internal/store/understanding.go LoadUnderstandings",
         "internal/store/understanding.go SaveUnderstanding",
         "internal/store/understanding.go Understanding"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "query commands",
+        "record writers",
+        "internal/screen",
+        "understanding text"
       ]
     },
     {
@@ -228,6 +270,9 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"Signatures []Signature `json:\\\"contract_signatures_changed\\\"`\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -246,6 +291,10 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      ],
+      "UsedBy": [
+        "internal/screen",
+        "internal/topology"
       ]
     },
     {
@@ -265,6 +314,11 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "internal/screen",
+        "internal/group"
       ]
     },
     {
@@ -283,6 +337,10 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go \"Data: \\\"architecture\\\", Config: \\\"architecture\\\", Feature: \\\"features\\\",\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "internal/store"
       ]
     },
     {
@@ -302,6 +360,9 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/query.go \"var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}\""
+      ],
+      "UsedBy": [
+        "internal/screen"
       ]
     },
     {
@@ -320,6 +381,9 @@
       "Parent": "MOD-0034",
       "Evidence": [
         "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+      ],
+      "UsedBy": [
+        "internal/topology"
       ]
     },
     {
@@ -338,6 +402,10 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go \"if !u.Absent {\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "internal/store"
       ]
     },
     {
@@ -393,6 +461,9 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      ],
+      "UsedBy": [
+        "internal/topology"
       ]
     },
     {
@@ -411,6 +482,9 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      ],
+      "UsedBy": [
+        "internal/gitx"
       ]
     },
     {
@@ -449,6 +523,9 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 u.Kind != model.External \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+      ],
+      "UsedBy": [
+        "internal/screen"
       ]
     },
     {
@@ -468,6 +545,9 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+      ],
+      "UsedBy": [
+        "internal/screen"
       ]
     },
     {
@@ -481,6 +561,10 @@
         "internal/store/note.go LoadNotes",
         "internal/store/note.go Note",
         "internal/store/note.go SaveNote"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "internal/screen"
       ]
     },
     {
@@ -508,7 +592,11 @@
         "N": 3,
         "Of": 8,
         "Cycle": true
-      }
+      },
+      "UsedBy": [
+        "CLAUDE.md abbd block",
+        "/abbd-setup verify, install and hand over"
+      ]
     },
     {
       "ID": "FEAT-0002",
@@ -535,7 +623,10 @@
         "N": 1,
         "Of": 8,
         "Cycle": true
-      }
+      },
+      "UsedBy": [
+        "/abbd ground rules"
+      ]
     },
     {
       "ID": "FEAT-0003",
@@ -574,6 +665,9 @@
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Open `.abbd/blueprint/index.html` for the modules the request touches\"",
         "plugins/abbd/skills/abbd/SKILL.md \"Ask the topology before grepping the code.\""
+      ],
+      "UsedBy": [
+        "CLAUDE.md abbd block"
       ]
     },
     {
@@ -632,6 +726,9 @@
       "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/SKILL.md \"Put the topology difference in the reply and in the PR description\""
+      ],
+      "UsedBy": [
+        "CLAUDE.md abbd block"
       ]
     },
     {
@@ -792,6 +889,9 @@
       "Parent": "MOD-0055",
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"you may use pstack `how` to explore a module this reader calls complex\""
+      ],
+      "UsedBy": [
+        "abbd reader"
       ]
     },
     {
@@ -812,6 +912,9 @@
       "Parent": "MOD-0055",
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
+      ],
+      "UsedBy": [
+        "abbd reader"
       ]
     },
     {
@@ -831,6 +934,11 @@
       "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd/references/reader.md \"ABBD reads code with this reader.\""
+      ],
+      "UsedBy": [
+        "/abbd-setup find units with a reader swarm",
+        "/abbd-setup build the deterministic extractor",
+        "/abbd-setup store a reader's text per module"
       ]
     },
     {
@@ -888,6 +996,12 @@
       "Anchors": [
         "cmd/abbd/diff.go diff",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd after work",
+        "/abbd evidence and CI gate"
       ]
     },
     {
@@ -906,6 +1020,11 @@
       "Anchors": [
         "cmd/abbd/evidence.go checkEvidence",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd evidence and CI gate"
       ]
     },
     {
@@ -924,6 +1043,11 @@
       "Anchors": [
         "cmd/abbd/evidence.go status",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd ask the blueprint before the code"
       ]
     },
     {
@@ -942,6 +1066,11 @@
       "Anchors": [
         "cmd/abbd/impact.go impact",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd ask the blueprint before the code"
       ]
     },
     {
@@ -960,6 +1089,10 @@
       "Anchors": [
         "cmd/abbd/install.go install",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd-setup",
+        "/abbd-setup verify, install and hand over"
       ]
     },
     {
@@ -978,6 +1111,11 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/main.go sync"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd after work"
       ]
     },
     {
@@ -996,6 +1134,11 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/query.go explain"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd ask the blueprint before the code"
       ]
     },
     {
@@ -1014,6 +1157,11 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/query.go path"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd ask the blueprint before the code"
       ]
     },
     {
@@ -1032,6 +1180,12 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/record.go recordFact"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd what the human states",
+        "/abbd-setup extraction format"
       ]
     },
     {
@@ -1050,6 +1204,12 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/record.go recordRelation"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd record what a reader found",
+        "/abbd what the human states"
       ]
     },
     {
@@ -1068,6 +1228,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/record.go recordUnit"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd record what a reader found"
       ]
     },
     {
@@ -1086,6 +1250,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/setup.go setup"
+      ],
+      "UsedBy": [
+        "/abbd-setup",
+        "/abbd-setup run setup and resolve refusals"
       ]
     },
     {
@@ -1104,6 +1272,12 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/understand.go understand"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd record what a reader found",
+        "/abbd-setup store a reader's text per module"
       ]
     },
     {
@@ -1123,6 +1297,11 @@
         "cmd/abbd/main.go exitUsage",
         "cmd/abbd/main.go flagDefs",
         "cmd/abbd/main.go parse"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup",
+        "/abbd evidence and CI gate"
       ]
     },
     {
@@ -1141,6 +1320,12 @@
       "Anchors": [
         "internal/model/model.go Edge",
         "internal/model/model.go ParseEdge"
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "record writers",
+        "internal/screen",
+        "internal/topology"
       ]
     },
     {
@@ -1187,6 +1372,11 @@
       "Evidence": [
         "internal/model/model.go \"is not PATH:LINES:QUOTE\"",
         "internal/model/model.go \"must cite the code, not ABBD's or git's own files\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "quote matching",
+        "untrusted-output gate"
       ]
     },
     {
@@ -1199,6 +1389,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/record.go recordParent"
+      ],
+      "UsedBy": [
+        "/abbd-setup",
+        "/abbd-setup extraction format"
       ]
     },
     {
@@ -1211,6 +1405,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/migrate.go migrate"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1223,6 +1421,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/record.go refresh"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1235,6 +1437,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/record.go retract"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1247,6 +1453,10 @@
       "Anchors": [
         "cmd/abbd/flow.go flow",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1259,6 +1469,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/understand.go forget"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1271,6 +1485,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/stack.go stack"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1283,6 +1501,9 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/table.go table"
+      ],
+      "UsedBy": [
+        "/abbd"
       ]
     },
     {
@@ -1295,6 +1516,10 @@
       "Anchors": [
         "cmd/abbd/lint.go lint",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1307,6 +1532,9 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/review.go review"
+      ],
+      "UsedBy": [
+        "/abbd"
       ]
     },
     {
@@ -1319,6 +1547,10 @@
       "Anchors": [
         "cmd/abbd/brief.go brief",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1331,6 +1563,9 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/review.go scope"
+      ],
+      "UsedBy": [
+        "/abbd"
       ]
     },
     {
@@ -1343,6 +1578,9 @@
       "Anchors": [
         "cmd/abbd/extract.go extractBundled",
         "cmd/abbd/main.go commands"
+      ],
+      "UsedBy": [
+        "/abbd-setup"
       ]
     },
     {
@@ -1355,6 +1593,10 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/overview.go overview"
+      ],
+      "UsedBy": [
+        "/abbd",
+        "/abbd-setup"
       ]
     },
     {
@@ -1367,6 +1609,9 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/relate.go relateExtraction"
+      ],
+      "UsedBy": [
+        "/abbd-setup"
       ]
     },
     {
@@ -1391,6 +1636,9 @@
       "Anchors": [
         "cmd/abbd/main.go commands",
         "cmd/abbd/relate.go libraries"
+      ],
+      "UsedBy": [
+        "/abbd-setup"
       ]
     },
     {
@@ -1647,7 +1895,11 @@
         "Basis": "stack",
         "N": 5,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "setup determinism proof and supplement fold"
+      ]
     },
     {
       "ID": "MOD-0010",
@@ -1669,6 +1921,9 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/bootstrap/overlay.go \"u.Purpose = supplemented(d.Purpose)\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -1719,7 +1974,14 @@
         "Basis": "stack",
         "N": 6,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "review commands",
+        "sync pipeline",
+        "record writers",
+        "internal/store"
+      ]
     },
     {
       "ID": "MOD-0014",
@@ -1745,6 +2007,9 @@
       "Evidence": [
         "internal/evidence/evidence.go \"v.SetAbsent(model.EvidenceDead)\"",
         "internal/evidence/evidence.go \"e.Status, e.Since = model.Drifted, rev\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -1819,7 +2084,12 @@
         "Basis": "stack",
         "N": 6,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "internal/bootstrap",
+        "internal/identity"
+      ]
     },
     {
       "ID": "MOD-0018",
@@ -1913,6 +2183,9 @@
       "Evidence": [
         "internal/extract/extract.go \"dec.DisallowUnknownFields()\"",
         "internal/extract/extract.go \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
+      ],
+      "UsedBy": [
+        "anchor matching"
       ]
     },
     {
@@ -1937,7 +2210,15 @@
         "Basis": "stack",
         "N": 6,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "review commands",
+        "sync pipeline",
+        "anchor path normalization",
+        "freshness verdicts",
+        "internal/store"
+      ]
     },
     {
       "ID": "MOD-0023",
@@ -1959,6 +2240,9 @@
       "Zone": "읽는 쪽",
       "Evidence": [
         "internal/gitx/gitx.go \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -1982,6 +2266,9 @@
       "Evidence": [
         "internal/gitx/gitx.go \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
         "internal/gitx/gitx.go \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+      ],
+      "UsedBy": [
+        "anchor takeover matching"
       ]
     },
     {
@@ -2005,6 +2292,10 @@
       "Evidence": [
         "internal/gitx/gitx.go \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
         "internal/gitx/gitx.go \"\\\":(exclude)\\\"+exclude\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "internal/screen"
       ]
     },
     {
@@ -2030,7 +2321,12 @@
         "N": 5,
         "Of": 8,
         "Cycle": true
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "sync pipeline",
+        "internal/store"
+      ]
     },
     {
       "ID": "MOD-0027",
@@ -2053,6 +2349,9 @@
       "Evidence": [
         "internal/identity/identity.go \"if ov \u003e= 2 || same {\"",
         "internal/identity/identity.go \"case p.identical != q.identical:\""
+      ],
+      "UsedBy": [
+        "ID high-water minting"
       ]
     },
     {
@@ -2099,6 +2398,9 @@
       "Evidence": [
         "internal/identity/identity.go \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
         "internal/identity/identity.go \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -2137,7 +2439,21 @@
         "Basis": "stack",
         "N": 7,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "internal/bootstrap",
+        "internal/evidence",
+        "internal/extract",
+        "internal/identity",
+        "internal/screen",
+        "overview plan",
+        "internal/store",
+        "internal/topology",
+        "internal/group",
+        "internal/extract/frontend",
+        "internal/extract/relate"
+      ]
     },
     {
       "ID": "MOD-0031",
@@ -2161,6 +2477,10 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
+      ],
+      "UsedBy": [
+        "liveness and line moves",
+        "internal/topology"
       ]
     },
     {
@@ -2186,6 +2506,10 @@
       "Evidence": [
         "internal/model/model.go \"var ends = map[RelationKind]struct {\"",
         "internal/model/model.go \"var vias = map[Via]bool{\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "key and parent checks"
       ]
     },
     {
@@ -2238,6 +2562,7 @@
         "internal/screen/commonpage.go",
         "internal/screen/compose.go",
         "internal/screen/confluence.go",
+        "internal/screen/dependents.go",
         "internal/screen/dress.go",
         "internal/screen/elements.go",
         "internal/screen/entries.go",
@@ -2298,7 +2623,11 @@
         "N": 3,
         "Of": 8,
         "Cycle": true
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "blueprint publish"
+      ]
     },
     {
       "ID": "MOD-0035",
@@ -2420,6 +2749,9 @@
       "Evidence": [
         "internal/screen/screen.go \"func (in Input) BlueprintFreshness() Freshness\"",
         "internal/screen/screen.go \"func (in Input) ActualFreshness() Freshness\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -2474,7 +2806,13 @@
         "N": 4,
         "Of": 8,
         "Cycle": true
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "internal/screen",
+        "freshness verdicts",
+        "understanding text"
+      ]
     },
     {
       "ID": "MOD-0042",
@@ -2499,6 +2837,9 @@
       "Evidence": [
         "internal/store/store.go \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
         "internal/store/store.go \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", name, len(b))\""
+      ],
+      "UsedBy": [
+        "internal/screen"
       ]
     },
     {
@@ -2520,6 +2861,9 @@
       "Parent": "MOD-0041",
       "Evidence": [
         "internal/store/store.go \"st.HighWater[kind]++\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -2543,6 +2887,9 @@
       "Parent": "MOD-0041",
       "Evidence": [
         "internal/store/store.go \"files, err := gitx.FilesAt(filepath.Dir(s.root), rev, func(f string) bool { return strings.HasSuffix(f, \\\".md\\\") }, dirs...)\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -2586,6 +2933,10 @@
       "Parent": "MOD-0041",
       "Evidence": [
         "internal/store/understanding.go \"return digestOf(code), code\""
+      ],
+      "UsedBy": [
+        "abbd CLI",
+        "internal/screen"
       ]
     },
     {
@@ -2617,7 +2968,13 @@
         "Basis": "stack",
         "N": 5,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "review commands",
+        "query commands",
+        "internal/screen"
+      ]
     },
     {
       "ID": "MOD-0048",
@@ -2639,6 +2996,9 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"func (d Diff) Boundary() bool {\""
+      ],
+      "UsedBy": [
+        "abbd CLI"
       ]
     },
     {
@@ -2771,7 +3131,10 @@
         "Basis": "stack",
         "N": 5,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI"
+      ]
     },
     {
       "ID": "MOD-0055",
@@ -2796,7 +3159,10 @@
         "Basis": "stack",
         "N": 4,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "/abbd-setup stance"
+      ]
     },
     {
       "ID": "MOD-0056",
@@ -2815,7 +3181,11 @@
         "Basis": "stack",
         "N": 6,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "abbd CLI",
+        "internal/screen"
+      ]
     },
     {
       "ID": "MOD-0057",
@@ -2833,7 +3203,11 @@
         "Basis": "stack",
         "N": 5,
         "Of": 8
-      }
+      },
+      "UsedBy": [
+        "internal/screen",
+        "internal/store"
+      ]
     },
     {
       "ID": "MOD-0058",
@@ -2851,7 +3225,10 @@
         "internal/extract/frontend/msbuild.go"
       ],
       "Parent": "MOD-0017",
-      "Zone": "읽는 쪽"
+      "Zone": "읽는 쪽",
+      "UsedBy": [
+        "abbd CLI"
+      ]
     },
     {
       "ID": "MOD-0060",
@@ -2875,7 +3252,10 @@
         "internal/extract/relate/ts.go"
       ],
       "Parent": "MOD-0017",
-      "Zone": "읽는 쪽"
+      "Zone": "읽는 쪽",
+      "UsedBy": [
+        "abbd CLI"
+      ]
     },
     {
       "ID": "MOD-0061",
@@ -5563,7 +5943,17 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "DATA-0001",
+              "Name": "CLAUDE.md abbd block"
+            },
+            {
+              "ID": "FEAT-0023",
+              "Name": "abbd reader"
+            }
+          ]
         },
         {
           "ID": "FEAT-0006",
@@ -5658,7 +6048,13 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "DATA-0001",
+              "Name": "CLAUDE.md abbd block"
+            }
+          ]
         },
         {
           "ID": "FEAT-0009",
@@ -5690,7 +6086,25 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0006",
+              "Name": "/abbd record what a reader found"
+            },
+            {
+              "ID": "FEAT-0011",
+              "Name": "/abbd-setup find units with a reader swarm"
+            },
+            {
+              "ID": "FEAT-0012",
+              "Name": "/abbd-setup build the deterministic extractor"
+            },
+            {
+              "ID": "FEAT-0025",
+              "Name": "/abbd-setup store a reader's text per module"
+            }
+          ]
         }
       ],
       "Understanding": null,
@@ -5989,7 +6403,17 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0012",
+              "Name": "/abbd-setup build the deterministic extractor"
+            },
+            {
+              "ID": "FEAT-0016",
+              "Name": "/abbd-setup verify, install and hand over"
+            }
+          ]
         },
         {
           "ID": "FEAT-0012",
@@ -6005,7 +6429,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0014",
+              "Name": "/abbd-setup run setup and resolve refusals"
+            }
+          ]
         },
         {
           "ID": "FEAT-0013",
@@ -6021,7 +6451,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0014",
+              "Name": "/abbd-setup run setup and resolve refusals"
+            }
+          ]
         },
         {
           "ID": "FEAT-0014",
@@ -6069,7 +6505,21 @@
             "Basis": "dependency",
             "N": 4,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0011",
+              "Name": "/abbd-setup find units with a reader swarm"
+            },
+            {
+              "ID": "FEAT-0012",
+              "Name": "/abbd-setup build the deterministic extractor"
+            },
+            {
+              "ID": "FEAT-0013",
+              "Name": "/abbd-setup write the reader supplement"
+            }
+          ]
         },
         {
           "ID": "FEAT-0025",
@@ -6371,7 +6821,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0016",
+              "Name": "/abbd-setup verify, install and hand over"
+            }
+          ]
         },
         {
           "ID": "MOD-0002",
@@ -6425,7 +6881,13 @@
             "N": 1,
             "Of": 2,
             "Cycle": true
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0008",
+              "Name": "setup determinism proof and supplement fold"
+            }
+          ]
         },
         {
           "ID": "MOD-0005",
@@ -6812,7 +7274,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0005",
+              "Name": "query commands"
+            }
+          ]
         },
         {
           "ID": "MOD-0007",
@@ -6829,7 +7297,17 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0002",
+              "Name": "review commands"
+            },
+            {
+              "ID": "MOD-0003",
+              "Name": "argv parsing and dispatch"
+            }
+          ]
         },
         {
           "ID": "MOD-0008",
@@ -6848,7 +7326,13 @@
             "N": 2,
             "Of": 2,
             "Cycle": true
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0004",
+              "Name": "sync pipeline"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -12223,7 +12707,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0011",
@@ -12240,7 +12730,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0010",
+              "Name": "supplement fold"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -13118,7 +13614,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0015",
@@ -13135,7 +13637,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0014",
+              "Name": "liveness and line moves"
+            }
+          ]
         },
         {
           "ID": "MOD-0016",
@@ -13152,7 +13660,13 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0015",
+              "Name": "quote matching"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -14144,7 +14658,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0021",
+              "Name": "untrusted-output gate"
+            }
+          ]
         },
         {
           "ID": "MOD-0020",
@@ -14160,7 +14680,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0021",
+              "Name": "untrusted-output gate"
+            }
+          ]
         },
         {
           "ID": "MOD-0021",
@@ -14176,7 +14702,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0011",
+              "Name": "anchor matching"
+            }
+          ]
         },
         {
           "ID": "MOD-0058",
@@ -14197,7 +14729,17 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0060",
+              "Name": "internal/extract/relate"
+            }
+          ]
         },
         {
           "ID": "MOD-0060",
@@ -14472,7 +15014,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0061",
@@ -14492,7 +15040,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0060",
+              "Name": "internal/extract/relate"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -17271,7 +17825,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0024",
@@ -17287,7 +17847,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0027",
+              "Name": "anchor takeover matching"
+            }
+          ]
         },
         {
           "ID": "MOD-0025",
@@ -17303,7 +17869,21 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0024",
+              "Name": "rename detection"
+            },
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -18701,7 +19281,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0043",
+              "Name": "ID high-water minting"
+            }
+          ]
         },
         {
           "ID": "MOD-0028",
@@ -18734,7 +19320,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 2
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -19953,7 +20545,17 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            },
+            {
+              "ID": "MOD-0047",
+              "Name": "internal/topology"
+            }
+          ]
         },
         {
           "ID": "DATA-0012",
@@ -19969,7 +20571,17 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0041",
+              "Name": "internal/store"
+            }
+          ]
         },
         {
           "ID": "DATA-0015",
@@ -19985,7 +20597,17 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0041",
+              "Name": "internal/store"
+            }
+          ]
         },
         {
           "ID": "DATA-0019",
@@ -20001,7 +20623,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0047",
+              "Name": "internal/topology"
+            }
+          ]
         },
         {
           "ID": "DATA-0020",
@@ -20017,7 +20645,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0022",
+              "Name": "internal/gitx"
+            }
+          ]
         },
         {
           "ID": "IF-0016",
@@ -20051,7 +20685,21 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0015",
+              "Name": "quote matching"
+            },
+            {
+              "ID": "MOD-0021",
+              "Name": "untrusted-output gate"
+            }
+          ]
         },
         {
           "ID": "MOD-0031",
@@ -20068,7 +20716,17 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0014",
+              "Name": "liveness and line moves"
+            },
+            {
+              "ID": "MOD-0047",
+              "Name": "internal/topology"
+            }
+          ]
         },
         {
           "ID": "MOD-0032",
@@ -20085,7 +20743,17 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0018",
+              "Name": "key and parent checks"
+            }
+          ]
         },
         {
           "ID": "MOD-0033",
@@ -23868,7 +24536,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0047",
+              "Name": "internal/topology"
+            }
+          ]
         },
         {
           "ID": "MOD-0035",
@@ -23997,7 +24671,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0038",
+              "Name": "page template"
+            }
+          ]
         },
         {
           "ID": "MOD-0036",
@@ -24135,7 +24815,17 @@
             "Basis": "dependency",
             "N": 4,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0035",
+              "Name": "module inside"
+            },
+            {
+              "ID": "MOD-0037",
+              "Name": "overview plan"
+            }
+          ]
         },
         {
           "ID": "MOD-0037",
@@ -24549,7 +25239,17 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0035",
+              "Name": "module inside"
+            },
+            {
+              "ID": "MOD-0038",
+              "Name": "page template"
+            }
+          ]
         },
         {
           "ID": "MOD-0038",
@@ -24949,7 +25649,39 @@
                   "Code": true
                 },
                 {
-                  "Text": "), 범례는 라이브러리가 있을 때만 이를 설명하며(",
+                  "Text": "), 모듈 페이지의 내부 단위 줄(",
+                  "Code": false
+                },
+                {
+                  "Text": "InsideUnit.Dependents",
+                  "Code": true
+                },
+                {
+                  "Text": ")은 ",
+                  "Code": false
+                },
+                {
+                  "Text": "dependents.go",
+                  "Code": true
+                },
+                {
+                  "Text": "의 ",
+                  "Code": false
+                },
+                {
+                  "Text": "directDependents",
+                  "Code": true
+                },
+                {
+                  "Text": "가 저장된 관계로 센 직접 의존 단위를 이름과 링크로 적고, 다른 단위의 행은 다른 모듈의 직접 의존 단위만 이름으로 적어 한 모듈 안의 관계 변경이 모든 모듈이 같이 쓰는 목록을 바꾸지 않게 하며, 개요의 기반 띠는 마지막 줄에 상자 단위 집계임을 밝히고 툴팁에 안쪽에서 가장 많은 상자가 쓰는 단위를 셋까지(",
+                  "Code": false
+                },
+                {
+                  "Text": "topUsed",
+                  "Code": true
+                },
+                {
+                  "Text": ") 적으며, 범례는 라이브러리가 있을 때만 이를 설명하며(",
                   "Code": false
                 },
                 {
@@ -25373,7 +26105,13 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0040",
@@ -25566,7 +26304,13 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0038",
+              "Name": "page template"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -26479,7 +27223,39 @@
                 "Code": true
               },
               {
-                "Text": "), 범례는 라이브러리가 있을 때만 이를 설명하며(",
+                "Text": "), 모듈 페이지의 내부 단위 줄(",
+                "Code": false
+              },
+              {
+                "Text": "InsideUnit.Dependents",
+                "Code": true
+              },
+              {
+                "Text": ")은 ",
+                "Code": false
+              },
+              {
+                "Text": "dependents.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "directDependents",
+                "Code": true
+              },
+              {
+                "Text": "가 저장된 관계로 센 직접 의존 단위를 이름과 링크로 적고, 다른 단위의 행은 다른 모듈의 직접 의존 단위만 이름으로 적어 한 모듈 안의 관계 변경이 모든 모듈이 같이 쓰는 목록을 바꾸지 않게 하며, 개요의 기반 띠는 마지막 줄에 상자 단위 집계임을 밝히고 툴팁에 안쪽에서 가장 많은 상자가 쓰는 단위를 셋까지(",
+                "Code": false
+              },
+              {
+                "Text": "topUsed",
+                "Code": true
+              },
+              {
+                "Text": ") 적으며, 범례는 라이브러리가 있을 때만 이를 설명하며(",
                 "Code": false
               },
               {
@@ -35819,7 +36595,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0026",
+              "Name": "internal/identity"
+            }
+          ]
         },
         {
           "ID": "DATA-0007",
@@ -35869,7 +36651,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            }
+          ]
         },
         {
           "ID": "MOD-0043",
@@ -35885,7 +36673,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0044",
@@ -35901,7 +36695,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0045",
@@ -35933,7 +36733,17 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 3
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -38051,7 +38861,13 @@
             "Basis": "dependency",
             "N": 4,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "DATA-0011",
@@ -38067,7 +38883,21 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            },
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            },
+            {
+              "ID": "MOD-0054",
+              "Name": "internal/group"
+            }
+          ]
         },
         {
           "ID": "DATA-0013",
@@ -38083,7 +38913,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            }
+          ]
         },
         {
           "ID": "DATA-0021",
@@ -38099,7 +38935,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0047",
+              "Name": "internal/topology"
+            }
+          ]
         },
         {
           "ID": "DATA-0023",
@@ -38115,7 +38957,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            }
+          ]
         },
         {
           "ID": "MOD-0048",
@@ -38131,7 +38979,13 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0001",
+              "Name": "abbd CLI"
+            }
+          ]
         },
         {
           "ID": "MOD-0049",
@@ -38148,7 +39002,17 @@
             "Basis": "dependency",
             "N": 3,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0048",
+              "Name": "boundary rule"
+            },
+            {
+              "ID": "MOD-0052",
+              "Name": "unit explanation"
+            }
+          ]
         },
         {
           "ID": "MOD-0050",
@@ -38180,7 +39044,21 @@
             "Basis": "dependency",
             "N": 2,
             "Of": 4
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0050",
+              "Name": "impact walk"
+            },
+            {
+              "ID": "MOD-0052",
+              "Name": "unit explanation"
+            },
+            {
+              "ID": "MOD-0053",
+              "Name": "strongest shortest path"
+            }
+          ]
         },
         {
           "ID": "MOD-0052",
@@ -40308,7 +41186,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 1
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0054",
+              "Name": "internal/group"
+            }
+          ]
         },
         {
           "ID": "DATA-0022",
@@ -40324,7 +41208,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 1
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "MOD-0034",
+              "Name": "internal/screen"
+            }
+          ]
         }
       ],
       "Understanding": null,
@@ -40461,7 +41351,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 1
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0023",
+              "Name": "abbd reader"
+            }
+          ]
         },
         {
           "ID": "FEAT-0020",
@@ -40478,7 +41374,13 @@
             "Basis": "dependency",
             "N": 1,
             "Of": 1
-          }
+          },
+          "Dependents": [
+            {
+              "ID": "FEAT-0023",
+              "Name": "abbd reader"
+            }
+          ]
         }
       ],
       "Understanding": null,
