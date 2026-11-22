@@ -169,7 +169,7 @@ func TestALeadsNumbersStandApart(t *testing.T) {
 // layers, folders and libraries. This repository's own overview, with its
 // record's zones left out, whose layers each name boxes the layout sets
 // apart, keeps two numbered bands at least, and with them a recorded zone's
-// band is never numbered.
+// band is never numbered and holds a box at least.
 func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 	t.Parallel()
 	for name, m := range clearModels(t) {
@@ -185,17 +185,20 @@ func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 				if z.Title == "외부 계약" {
 					continue
 				}
-				if d == &m.Overview && recordedZone(m, z) {
-					if z.N != 0 {
-						t.Errorf("%s: recorded zone %q is numbered %d, a number is a stage's", name, z.Title, z.N)
-					}
-					continue
-				}
 				held := 0
 				for _, b := range d.Boxes {
 					if b.X >= z.X && b.Y >= z.Y && b.X+b.W <= z.X+z.W && b.Y+b.H <= z.Y+z.H {
 						held++
 					}
+				}
+				if d == &m.Overview && recordedZone(m, z) {
+					if z.N != 0 {
+						t.Errorf("%s: recorded zone %q is numbered %d, a number is a stage's", name, z.Title, z.N)
+					}
+					if held < 1 {
+						t.Errorf("%s: recorded zone %q holds no box", name, z.Title)
+					}
+					continue
 				}
 				if held < 2 {
 					t.Errorf("%s: band %q holds %d box", name, z.Label(), held)
@@ -212,7 +215,7 @@ func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 // overview record.
 func recordedZone(m *Model, z Zone) bool {
 	for _, r := range m.Zones {
-		if r.Name == z.Title {
+		if r.Name == z.Title && len(r.Reasons) == 0 {
 			return true
 		}
 	}

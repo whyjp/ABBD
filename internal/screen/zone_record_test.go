@@ -122,6 +122,18 @@ func TestARecordedZoneIsDrawnUnderItsNameAndOneColour(t *testing.T) {
 	if pieces["Alpha"]+pieces["Beta"] == 0 {
 		t.Fatalf("no recorded zone is drawn: %v", titles(&m.Overview))
 	}
+	// Every box a zone names stands in a band of that zone.
+	for name, idx := range all {
+		for _, i := range idx {
+			b := plain.Overview.Boxes[i]
+			in := slices.ContainsFunc(m.Overview.Zones, func(z Zone) bool {
+				return z.Title == name && b.X >= z.X && b.Y >= z.Y && b.X+b.W <= z.X+z.W && b.Y+b.H <= z.Y+z.H
+			})
+			if !in {
+				t.Errorf("box %s of zone %s stands in none of its bands", b.ID, name)
+			}
+		}
+	}
 	for _, title := range titles(&m.Overview) {
 		if title != "Alpha" && title != "Beta" && title != "외부 계약" && title != "외부 라이브러리" {
 			t.Errorf("band %q is drawn beside the recorded zones", title)
@@ -137,11 +149,33 @@ func TestAStaleRecordedZoneIsNotDrawn(t *testing.T) {
 	if len(plain.Overview.Boxes) < 2 {
 		t.Skip("the fixture's overview has too few boxes")
 	}
+	// The same zone, not stale, is drawn: the only difference is the stamp.
+	if live := recordedFixture(t, map[string][]int{"Stale": {0, 1}}); !slices.Contains(titles(&live.Overview), "Stale") {
+		t.Fatalf("the zone is not drawn when it stands: %v", titles(&live.Overview))
+	}
 	m := recordedFixture(t, map[string][]int{"Stale": {0, 1}}, "Stale")
 	if slices.Contains(titles(&m.Overview), "Stale") {
 		t.Errorf("a STALE zone is drawn: %v", titles(&m.Overview))
 	}
 	if !slices.Equal(titles(&m.Overview), titles(&plain.Overview)) {
 		t.Errorf("bands %v, want those without the record %v", titles(&m.Overview), titles(&plain.Overview))
+	}
+}
+
+// Two zones that name units one drawn box shows share it: the box belongs
+// to the zone stored first, and the second zone draws no band for it, so no
+// two bands ask for one box.
+func TestABoxTwoZonesNameBelongsToTheFirst(t *testing.T) {
+	t.Parallel()
+	plain := fixture(t, "orca")
+	if len(plain.Overview.Boxes) < 2 {
+		t.Skip("the fixture's overview has too few boxes")
+	}
+	m := recordedFixture(t, map[string][]int{"Alpha": {0, 1}, "Beta": {1}})
+	if !slices.Contains(titles(&m.Overview), "Alpha") {
+		t.Fatalf("the first zone is not drawn: %v", titles(&m.Overview))
+	}
+	if slices.Contains(titles(&m.Overview), "Beta") {
+		t.Errorf("a second zone draws a band round a box the first holds: %v", titles(&m.Overview))
 	}
 }

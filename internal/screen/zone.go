@@ -184,21 +184,30 @@ func (d *Drawing) zone(t tree, stacks []layering, recorded []recordZone) {
 // every band of a zone bears its name and takes the colour most of the
 // zone's boxes wear, so the one name read in several places says the zone
 // runs across the picture. A box no zone names is in no band. Foundation
-// bands and boxes the picture does not draw belong to none.
+// bands and boxes the picture does not draw belong to none. A contract no
+// repository box provides and a library chip stay with the bands of their
+// own (외부 계약, 외부 라이브러리), whatever zone names them. When two zones
+// name units that one drawn box shows, the box belongs to the zone stored
+// first, so no two bands ask for the same box.
 func (d *Drawing) recorded(t tree, zones []recordZone) []group {
 	shown := d.shown(t)
 	hue := map[string]string{}
-	ambient := map[string]bool{}
+	own := map[string]bool{}
 	for _, b := range d.Boxes {
-		hue[b.ID], ambient[b.ID] = b.Hue, b.Ambient
+		hue[b.ID] = b.Hue
+		own[b.ID] = b.Ambient || b.Kind == string(model.External) || !coloured(b)
 	}
+	taken := map[string]bool{}
 	var out []group
 	for _, z := range zones {
 		var ids []string
 		for _, u := range z.units {
-			if b := shown(u); b != "" && !ambient[b] && !slices.Contains(ids, b) {
+			if b := shown(u); b != "" && !own[b] && !taken[b] && !slices.Contains(ids, b) {
 				ids = append(ids, b)
 			}
+		}
+		for _, id := range ids {
+			taken[id] = true
 		}
 		votes, key, most := map[string]int{}, "", 0
 		for _, id := range ids {
