@@ -425,9 +425,6 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/group/group.go \"return path.Dir(u.Anchors[0].Path)\""
-      ],
-      "UsedBy": [
-        "internal/group"
       ]
     },
     {
@@ -507,9 +504,6 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/diff.go \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
-      ],
-      "UsedBy": [
-        "internal/topology"
       ]
     },
     {
@@ -673,8 +667,7 @@
         "plugins/abbd/skills/abbd/SKILL.md \"Ask the topology before grepping the code.\""
       ],
       "UsedBy": [
-        "CLAUDE.md abbd block",
-        "abbd reader"
+        "CLAUDE.md abbd block"
       ]
     },
     {
@@ -775,10 +768,6 @@
       "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"List unit candidates from the layout, entry points, manifests and schemas.\""
-      ],
-      "UsedBy": [
-        "/abbd-setup build the deterministic extractor",
-        "/abbd-setup verify, install and hand over"
       ]
     },
     {
@@ -799,9 +788,6 @@
       "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
-      ],
-      "UsedBy": [
-        "/abbd-setup run setup and resolve refusals"
       ]
     },
     {
@@ -822,9 +808,6 @@
       "Zone": "abbd 스킬",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
-      ],
-      "UsedBy": [
-        "/abbd-setup run setup and resolve refusals"
       ]
     },
     {
@@ -885,11 +868,6 @@
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md \"## Extraction format\"",
         "plugins/abbd/skills/abbd-setup/SKILL.md \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes`, `provides`, `runs_on`\""
-      ],
-      "UsedBy": [
-        "/abbd-setup find units with a reader swarm",
-        "/abbd-setup build the deterministic extractor",
-        "/abbd-setup write the reader supplement"
       ]
     },
     {
@@ -958,7 +936,6 @@
         "plugins/abbd/skills/abbd/references/reader.md \"ABBD reads code with this reader.\""
       ],
       "UsedBy": [
-        "/abbd record what a reader found",
         "/abbd-setup find units with a reader swarm",
         "/abbd-setup build the deterministic extractor",
         "/abbd-setup store a reader's text per module"
@@ -1795,9 +1772,6 @@
       "Parent": "MOD-0001",
       "Evidence": [
         "cmd/abbd/main.go \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
-      ],
-      "UsedBy": [
-        "setup determinism proof and supplement fold"
       ]
     },
     {
@@ -1849,9 +1823,6 @@
       "Parent": "MOD-0001",
       "Evidence": [
         "cmd/abbd/record.go \"case o.Writer == model.Human \u0026\u0026 w == model.Reader:\""
-      ],
-      "UsedBy": [
-        "query commands"
       ]
     },
     {
@@ -1875,10 +1846,6 @@
       "Evidence": [
         "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
         "cmd/abbd/screen.go \"if err := e.st.SaveBlueprint(files); err != nil {\""
-      ],
-      "UsedBy": [
-        "review commands",
-        "argv parsing and dispatch"
       ]
     },
     {
@@ -1904,9 +1871,6 @@
         "cmd/abbd/setup.go \"reseed := reseeded()\"",
         "cmd/abbd/setup.go \"for _, name := range []string{\\\"PYTHONHASHSEED\\\", \\\"PERL_HASH_SEED\\\"} {\"",
         "cmd/abbd/setup.go \"path = filepath.Join(e.root, path)\""
-      ],
-      "UsedBy": [
-        "sync pipeline"
       ]
     },
     {
@@ -1984,9 +1948,6 @@
       "Evidence": [
         "internal/bootstrap/overlay.go \"its anchors match more than one %s equally\"",
         "internal/bootstrap/overlay.go \"keys[x.Key()] = true\""
-      ],
-      "UsedBy": [
-        "supplement fold"
       ]
     },
     {
@@ -2073,9 +2034,6 @@
       "Evidence": [
         "internal/evidence/evidence.go \"const Slack = 3\"",
         "internal/evidence/evidence.go \"// A quote ending in a word must end where the code's word ends, so\""
-      ],
-      "UsedBy": [
-        "liveness and line moves"
       ]
     },
     {
@@ -2100,9 +2058,6 @@
       "Evidence": [
         "internal/evidence/evidence.go \"// norm is the file with all whitespace removed, so formatting never kills\"",
         "internal/evidence/evidence.go \"bytes.ReplaceAll(b, []byte(\\\"\\\\r\\\\n\\\"), []byte(\\\"\\\\n\\\"))\""
-      ],
-      "UsedBy": [
-        "quote matching"
       ]
     },
     {
@@ -2182,9 +2137,6 @@
       "Zone": "읽는 쪽",
       "Evidence": [
         "internal/extract/extract.go \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
-      ],
-      "UsedBy": [
-        "untrusted-output gate"
       ]
     },
     {
@@ -2208,9 +2160,6 @@
       "Evidence": [
         "internal/extract/extract.go \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
         "internal/extract/extract.go \"leaves the project root\""
-      ],
-      "UsedBy": [
-        "untrusted-output gate"
       ]
     },
     {
@@ -2346,7 +2295,6 @@
       ],
       "UsedBy": [
         "abbd CLI",
-        "rename detection",
         "internal/screen"
       ]
     },
@@ -2702,9 +2650,6 @@
       "Parent": "MOD-0034",
       "Evidence": [
         "internal/screen/inside.go \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) (Inside, bool) {\""
-      ],
-      "UsedBy": [
-        "page template"
       ]
     },
     {
@@ -2730,10 +2675,6 @@
         "internal/screen/layout.go \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
         "internal/screen/layout.go \"func textWidth(s string, px int) int {\""
-      ],
-      "UsedBy": [
-        "module inside",
-        "overview plan"
       ]
     },
     {
@@ -2759,10 +2700,6 @@
       "Parent": "MOD-0034",
       "Evidence": [
         "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut) *overview {\""
-      ],
-      "UsedBy": [
-        "module inside",
-        "page template"
       ]
     },
     {
@@ -2837,9 +2774,6 @@
       "Evidence": [
         "internal/screen/words.go \"func blocks(text string) []Block {\"",
         "internal/screen/words.go \"func spans(s string) []Span {\""
-      ],
-      "UsedBy": [
-        "page template"
       ]
     },
     {
@@ -3088,10 +3022,6 @@
       "Evidence": [
         "internal/topology/diff.go \"func Compare(base, now []model.Unit) Diff {\"",
         "internal/topology/diff.go \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
-      ],
-      "UsedBy": [
-        "boundary rule",
-        "unit explanation"
       ]
     },
     {
@@ -3136,11 +3066,6 @@
       "Zone": "토폴로지 규칙",
       "Evidence": [
         "internal/topology/impact.go \"func Links(units []model.Unit) []Link {\""
-      ],
-      "UsedBy": [
-        "impact walk",
-        "unit explanation",
-        "strongest shortest path"
       ]
     },
     {
@@ -3301,8 +3226,7 @@
       "Parent": "MOD-0017",
       "Zone": "읽는 쪽",
       "UsedBy": [
-        "abbd CLI",
-        "internal/extract/relate"
+        "abbd CLI"
       ]
     },
     {
@@ -3347,10 +3271,7 @@
         "internal/extract/lsp/tree_windows.go"
       ],
       "Parent": "MOD-0017",
-      "Zone": "읽는 쪽",
-      "UsedBy": [
-        "internal/extract/relate"
-      ]
+      "Zone": "읽는 쪽"
     }
   ],
   "edges": [
@@ -25727,7 +25648,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "), 다른 단위의 행과 모듈 페이지의 내부 단위 줄(",
+                  "Text": "), 모듈 페이지의 내부 단위 줄(",
                   "Code": false
                 },
                 {
@@ -25735,7 +25656,7 @@
                   "Code": true
                 },
                 {
-                  "Text": ")도 ",
+                  "Text": ")은 ",
                   "Code": false
                 },
                 {
@@ -25751,7 +25672,7 @@
                   "Code": true
                 },
                 {
-                  "Text": "가 저장된 관계로 센 직접 의존 단위를 이름과 링크로 적으며, 개요의 기반 띠는 마지막 줄에 상자 단위 집계임을 밝히고 툴팁에 안쪽에서 가장 많은 상자가 쓰는 단위 셋(",
+                  "Text": "가 저장된 관계로 센 직접 의존 단위를 이름과 링크로 적고, 다른 단위의 행은 다른 모듈의 직접 의존 단위만 이름으로 적어 한 모듈 안의 관계 변경이 모든 모듈이 같이 쓰는 목록을 바꾸지 않게 하며, 개요의 기반 띠는 마지막 줄에 상자 단위 집계임을 밝히고 툴팁에 안쪽에서 가장 많은 상자가 쓰는 단위 셋(",
                   "Code": false
                 },
                 {
@@ -27301,7 +27222,7 @@
                 "Code": true
               },
               {
-                "Text": "), 다른 단위의 행과 모듈 페이지의 내부 단위 줄(",
+                "Text": "), 모듈 페이지의 내부 단위 줄(",
                 "Code": false
               },
               {
@@ -27309,7 +27230,7 @@
                 "Code": true
               },
               {
-                "Text": ")도 ",
+                "Text": ")은 ",
                 "Code": false
               },
               {
@@ -27325,7 +27246,7 @@
                 "Code": true
               },
               {
-                "Text": "가 저장된 관계로 센 직접 의존 단위를 이름과 링크로 적으며, 개요의 기반 띠는 마지막 줄에 상자 단위 집계임을 밝히고 툴팁에 안쪽에서 가장 많은 상자가 쓰는 단위 셋(",
+                "Text": "가 저장된 관계로 센 직접 의존 단위를 이름과 링크로 적고, 다른 단위의 행은 다른 모듈의 직접 의존 단위만 이름으로 적어 한 모듈 안의 관계 변경이 모든 모듈이 같이 쓰는 목록을 바꾸지 않게 하며, 개요의 기반 띠는 마지막 줄에 상자 단위 집계임을 밝히고 툴팁에 안쪽에서 가장 많은 상자가 쓰는 단위 셋(",
                 "Code": false
               },
               {

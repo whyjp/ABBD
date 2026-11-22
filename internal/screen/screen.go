@@ -200,7 +200,8 @@ type UnitRow struct {
 	// Rank is where the unit's box stands on the overview, for a unit the
 	// overview draws.
 	Rank *Rank `json:",omitempty"`
-	// UsedBy names the units that depend on the unit directly.
+	// UsedBy names the units that depend on the unit directly; for a unit
+	// other than a library, those of other modules only.
 	UsedBy []string `json:",omitempty"`
 }
 
@@ -275,7 +276,8 @@ func Build(in Input) Model {
 		}
 		m.Units = append(m.Units, row)
 	}
-	usedBy(m.Units, in.Units)
+	deps := directDependents(in.Units)
+	usedBy(m.Units, in.Units, deps)
 	m.Edges = lines(in.Units)
 	m.Decisions = decisions(in)
 	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
@@ -293,7 +295,7 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	scope := scopeOf(in)
 	o := planScoped(in.Units, "", nil, tactic{}, ls, fs, nil, scope)
-	o.dependents = directDependents(in.Units)
+	o.dependents = deps
 	o.hooks, o.stored = in.hooks, !in.Project.InferLead()
 	var c *cut
 	// A project that turned the cut off draws every line, record or not.
@@ -634,44 +636,33 @@ func parts(units []model.Unit) []Part {
 	return append(mods, feats...)
 }
 
-// usedBy names on each external library's row the units that depend on it,
-// so the list keeps every use the overview folds into one line or one chip.
-func usedBy(rows []UnitRow, units []model.Unit) {
-	at := map[string]int{}
-	for i, r := range rows {
-		if r.Kind == string(model.External) {
-			at[r.ID] = i
-		}
-	}
-	// Every other unit names the units that depend on it directly, the
-	// reverse of its relations and the direct tier of abbd impact.
+// usedBy names on each unit's row the units that depend on it directly (deps,
+// dependents.go): on a library's row every one, so the list keeps every use the
+// overview folds into one line or one chip, and on any other unit's row those
+// of other modules only. A relation between two units of one module reaches
+// that module's page alone, so the list of all units, a page every module
+// shares, does not change with it (locality_test.go).
+func usedBy(rows []UnitRow, units []model.Unit, deps map[model.ID][]model.ID) {
 	byID := map[model.ID]model.Unit{}
 	for _, u := range units {
 		byID[u.ID] = u
 	}
-	deps := directDependents(units)
-	for i, r := range rows {
-		if r.Kind == string(model.External) {
-			continue
+	top := func(id model.ID) model.ID {
+		for seen := map[model.ID]bool{}; byID[id].Parent != "" && !seen[id]; id = byID[id].Parent {
+			seen[id] = true
 		}
+		return id
+	}
+	for i, r := range rows {
 		for _, d := range deps[model.ID(r.ID)] {
+			if r.Kind != string(model.External) && top(d) == top(model.ID(r.ID)) {
+				continue
+			}
 			name := byID[d].Name.Value
 			if name == "" {
 				name = string(d)
 			}
 			rows[i].UsedBy = append(rows[i].UsedBy, name)
-		}
-	}
-	if len(at) == 0 {
-		return
-	}
-	for _, u := range model.Present(units) {
-		seen := map[int]bool{}
-		for _, r := range u.Relations {
-			if i, ok := at[string(r.To)]; ok && !r.Dead && !seen[i] {
-				seen[i] = true
-				rows[i].UsedBy = append(rows[i].UsedBy, u.Name.Value)
-			}
 		}
 	}
 }

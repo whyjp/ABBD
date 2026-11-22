@@ -1392,7 +1392,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 				b.Title += "\n쓰는 상자: " + strings.Join(names, ", ")
 			}
 			if tops := o.topUsed(m, 3); len(tops) > 0 {
-				b.Title += "\n상자 단위로 센 값이라 안쪽 단위별 사용과 다릅니다. 가장 많은 상자가 쓰는 안쪽 단위: " + strings.Join(tops, ", ")
+				b.Title += "\n상자 수로 센 값이라, 안쪽 단위별 사용 수와 다를 수 있습니다. 가장 많은 상자가 쓰는 안쪽 단위: " + strings.Join(tops, ", ")
 			}
 			d.Height = max(d.Height, r.Y+r.H+padY)
 			d.Width = max(d.Width, r.X+r.W+padX)

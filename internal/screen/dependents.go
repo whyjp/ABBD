@@ -9,18 +9,19 @@ import (
 
 // A unit's direct dependents are the other present units that hold a live
 // relation to it by which they depend on it or consume it, computed from the
-// stored relations and written on the unit's row and in the module page's list of
-// inside units, so a reader can answer what a change to the unit reaches
-// first without leaving the page. It is the direct tier of `abbd impact`: a
-// unit inside the one it depends on is no dependent of it, and a unit that
-// only provides a contract is not one either.
+// stored relations and written on the unit's row and in the module page's
+// list of inside units, so a reader can answer what a change to the unit
+// reaches first without leaving the page. It is the depends_on and consumes
+// tier of `abbd impact`: a unit inside the one it depends on is no dependent
+// of it, and a unit that only provides a contract is not one either, so the
+// providers of a contract are not listed on the contract's row.
 
 // Dependent is one unit that directly depends on another.
 type Dependent struct {
 	ID, Name string
-	// Paged says the unit has a page of its own, where the link goes;
-	// otherwise it goes to the unit's row in the list of units.
-	Paged bool `json:"-"`
+	// Href is where the name links: the page of the unit's own, when it has
+	// one, otherwise its row in the list of units.
+	Href string `json:"-"`
 }
 
 // directDependents is, for each present unit, the units that depend on or
@@ -68,7 +69,11 @@ func (o *overview) dependentsOf(id model.ID) []Dependent {
 		if name == "" {
 			name = string(d)
 		}
-		out = append(out, Dependent{ID: string(d), Name: name, Paged: viewOf(o.tree, d) != ""})
+		href := viewOf(o.tree, d)
+		if href == "" {
+			href = "#u-" + string(d)
+		}
+		out = append(out, Dependent{ID: string(d), Name: name, Href: href})
 	}
 	return out
 }
