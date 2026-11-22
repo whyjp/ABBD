@@ -191,3 +191,42 @@ func TestThePrimaryStackIsTheOneMarked(t *testing.T) {
 		}
 	}
 }
+
+// A stack keeps the view, kind and faces of a composition record and its
+// groups' as and promises, a plain stack none of them, and a stored group is
+// found by its address.
+func TestAStackKeepsItsCompositionAndAGroupIsFoundByAddress(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "a.go"), []byte("package a\nfunc A() {}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	s := Open(root)
+	draft := "---\nquestion: Q?\nview: MOD-0100\nkind: core\nfaces: [IF-0001]\nlayers:\n  - name: tangle\n    role: uses itself\n    as: clique\n    promises: [IF-0001]\n    units: [MOD-0101, MOD-0102]\n    evidence: [{path: a.go, quote: func A()}]\n---\n"
+	f, err := ParseFigureDraft[model.Layer]([]byte(draft))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if f.View != "MOD-0100" || f.Kind != "core" || len(f.Faces) != 1 || f.Parts[0].Claim.As != "clique" || len(f.Parts[0].Claim.Promises) != 1 {
+		t.Fatalf("the draft keeps the composition: %+v", f)
+	}
+	f.Key, f.Parts[0].Writer = "core", model.Reader
+	if err := SaveFigure(s, f); err != nil {
+		t.Fatal(err)
+	}
+	back, ok, err := LoadFigure[model.Layer](s, "core")
+	if err != nil || !ok || back.View != f.View || back.Kind != f.Kind || back.Faces[0] != "IF-0001" || back.Parts[0].Claim.As != "clique" {
+		t.Fatalf("the stored stack reads back as it was written: %+v %v %v", back, ok, err)
+	}
+	if _, n, err := s.Group("stack-core.1"); err != nil || n != 1 {
+		t.Errorf("stack-core.1 names the first group: %d %v", n, err)
+	}
+	for _, bad := range []string{"stack-core.2", "stack-none.1", "core.1"} {
+		if _, _, err := s.Group(bad); err == nil {
+			t.Errorf("%s names no group", bad)
+		}
+	}
+	plain, err := FigureDraft(Figure[model.Layer]{Question: "Q?", Parts: []Part[model.Layer]{{Claim: model.Layer{Name: "a", Role: "r", Units: []model.ID{"MOD-0001"}}}}})
+	if err != nil || bytes.Contains(plain, []byte("view:")) || bytes.Contains(plain, []byte("as:")) || bytes.Contains(plain, []byte("promises:")) || bytes.Contains(plain, []byte("kind:")) {
+		t.Errorf("a plain stack's draft holds no composition field: %q %v", plain, err)
+	}
+}

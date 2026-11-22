@@ -304,3 +304,32 @@ func TestStatusNamesAPrimaryMarkOnAFlow(t *testing.T) {
 		t.Errorf("a mark on a flow is no conflict:\n%s", out)
 	}
 }
+
+// A stack that says its view and kind is a composition record: it stores
+// them, the status line reports how many of the view's boxes its groups
+// hold, a claim the relations do not bear out is refused, a view has one
+// record, and a plain stack stores none of the new fields.
+func TestAStackMayComposeOneView(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.stack(0, "stored stack charge", chargeStack)
+	if md := p.read("stacks/charge.md"); strings.Contains(md, "view:") || strings.Contains(md, "kind:") || strings.Contains(md, "as:") {
+		t.Fatalf("a plain stack stores none of the composition fields:\n%s", md)
+	}
+	composed := strings.Replace(chargeStack, "layers:\n", "view: overview\nkind: layers\nlayers:\n", 1)
+	p.want(0, "stored stack ledger", "stack", "ledger", p.file(t, "composed.md", composed))
+	for _, want := range []string{"view: overview", "kind: layers"} {
+		if md := p.read("stacks/ledger.md"); !strings.Contains(md, want) {
+			t.Errorf("the stored record keeps %q:\n%s", want, md)
+		}
+	}
+	p.want(0, "composition: stack ledger, kind layers, composes overview: 2 of 2 box(es) held by a group", "status")
+	p.want(1, "stack ledger already composes view overview", "stack", "other", p.file(t, "again.md", composed))
+	cycle := strings.Replace(strings.Replace(chargeStack, "layers:\n", "view: overview\nkind: core\nlayers:\n", 1), "    units: [MOD-0002]\n", "    as: cycle\n    units: [MOD-0002]\n", 1)
+	p.want(1, "which takes two units or more", "stack", "core", p.file(t, "cycle.md", cycle))
+	hub := strings.Replace(strings.Replace(chargeStack, "layers:\n", "view: overview\nkind: core\nlayers:\n", 1), "    units: [MOD-0002]\n", "    as: hub\n    units: [MOD-0002]\n", 1)
+	hub = strings.Replace(hub, "  - name: billing\n", "  - name: billing\n    as: hub\n", 1)
+	p.want(1, "are used both ways with half the view's other boxes", "stack", "ledger", p.file(t, "hub.md", hub))
+	p.want(1, "is as cycle, which a stack of kind layers does not hold", "stack", "bad", p.file(t, "bad.md", strings.Replace(composed, "    units: [MOD-0002]\n", "    as: cycle\n    units: [MOD-0002]\n", 1)))
+	p.want(1, "composes no view", "flow", "f", p.file(t, "flow.md", "---\nquestion: q\nview: overview\nsteps: []\n---\n"))
+}

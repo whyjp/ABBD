@@ -24,12 +24,17 @@ type Layer struct {
 	Role     string     `yaml:"role"`
 	Units    []ID       `yaml:"units"`
 	Evidence []Evidence `yaml:"evidence"`
+	// As says what the group is, and Promises the contracts it keeps for
+	// the groups beside it. A composition record reads them
+	// (composition.go); a plain stack leaves both out.
+	As       string `yaml:"as,omitempty"`
+	Promises []ID   `yaml:"promises,omitempty"`
 }
 
 // Kind makes a stack's layers a kind of figure, whose layers hold each unit
 // once between them.
 func (Layer) Kind() FigureKind[Layer] {
-	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce[Layer](StackUnits), Primary: true}
+	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce[Layer](StackUnits), Primary: true, Composes: true}
 }
 
 // Validate checks the layer on its own: a name and a role, one line each, the

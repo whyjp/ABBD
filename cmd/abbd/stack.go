@@ -34,6 +34,46 @@ func (e env) stack(key string, args []string) error {
 	return nil
 }
 
+// statusCompositions reports the stacks that compose a view: how many of the
+// view's boxes the groups hold, which the rest stand as lines, a record that
+// is no composition, and two records of one view. A claim the relations do
+// not bear out reads STALE with its stack; this is a report and fails nothing
+// itself.
+func (e env) statusCompositions(units []model.Unit, stacks []store.Stack) {
+	views := map[string]model.FigureKey{}
+	for _, s := range stacks {
+		if !s.Known || !s.Composition().Said() {
+			continue
+		}
+		c := s.Composition()
+		if err := c.Validate(s.Claims()); err != nil {
+			fmt.Fprintf(e.stdout, "warning: stack %s is no composition record, so abbd reads it as a plain stack: %v\n", s.Key, err)
+			continue
+		}
+		if c.View == "" {
+			continue
+		}
+		if other, dup := views[c.View]; dup {
+			fmt.Fprintf(e.stdout, "conflict: stacks %s and %s both compose view %s, so abbd reads past the second; a view has one record\n", other, s.Key, c.View)
+			continue
+		}
+		views[c.View] = s.Key
+		held := model.Holders(s.Claims(), units)
+		boxes := model.ViewBoxes(units, c.View)
+		in := 0
+		for _, b := range boxes {
+			if held[b] > 0 {
+				in++
+			}
+		}
+		kind := c.Kind
+		if kind == "" {
+			kind = model.KindLayers
+		}
+		fmt.Fprintf(e.stdout, "composition: stack %s, kind %s, composes %s: %d of %d box(es) held by a group, the rest stand as lines; reported, not checked\n", s.Key, kind, c.View, in, len(boxes))
+	}
+}
+
 // statusBreaches reports each stored relation by which a lower layer of a
 // stack uses a higher one. A breach is debt in the code or a layer drawn
 // wrong, and only a design call clears it, so it never fails the check. The

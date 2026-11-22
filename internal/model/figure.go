@@ -42,6 +42,9 @@ type FigureKind[C any] struct {
 	Whole                        func(cols []Column, claims []C, units []Unit) []Gap
 	Renamed                      bool
 	Primary                      bool
+	// Composes is true for a kind whose figure may say how one view is
+	// composed: its view, kind and faces (composition.go).
+	Composes bool
 }
 
 // Gap is one thing that keeps a figure's claims, taken together, from being
