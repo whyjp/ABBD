@@ -151,6 +151,12 @@ svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
 .legend svg { vertical-align: middle; margin-right: 4px; }
 
+.neighbors { margin: 10px 0 0; }
+.neighbors summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.neighbors p { margin: 2px 0; font-size: 13px; }
+.neighbors ul { margin: 4px 0; padding-left: 18px; }
+.neighbors li { margin: 2px 0; font-size: 13.5px; }
+
 .inside { display: none; border-color: var(--accent); }
 .inside:target { display: block; }
 .inside .text { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 0 28px; align-items: start; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
@@ -405,7 +411,7 @@ internal/topology/diff.go &#34;func Compare(base, now []model.Unit) Diff {&#34;<
 <span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
-  
+  <details class="neighbors" open><summary>상자별 이웃</summary><p class="muted">상자마다 그 상자가 쓰는 상자와 그 상자를 쓰는 상자입니다. 그림에서 뺀 선도 포함합니다. 모듈 밖의 상자와 그리지 않는 계약은 상자별 집중 뷰에서 봅니다.</p><ul><li><strong>boundary rule</strong> <span class="muted">이 상자가 쓰는 상자:</span> topology diff</li><li><strong>topology diff</strong> <span class="muted">이 상자를 쓰는 상자:</span> boundary rule · unit explanation</li><li><strong>impact walk</strong> <span class="muted">이 상자가 쓰는 상자:</span> live links</li><li><strong>live links</strong> <span class="muted">이 상자를 쓰는 상자:</span> impact walk · strongest shortest path · unit explanation</li><li><strong>unit explanation</strong> <span class="muted">이 상자가 쓰는 상자:</span> live links · topology diff</li><li><strong>strongest shortest path</strong> <span class="muted">이 상자가 쓰는 상자:</span> live links</li></ul></details>
   <div class="text">
     <div class="about">
       
