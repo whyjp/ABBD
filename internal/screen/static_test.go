@@ -2,6 +2,7 @@ package screen
 
 import (
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -231,5 +232,30 @@ func TestAnInsideCountsTheStaticPairsItLeftOut(t *testing.T) {
 	want := level("in", insideOf(t, showStatic(units)).Drawing, at)
 	if got.Lines != want.Lines || got.Lines != 1 {
 		t.Errorf("levels count %d lines at rest and %d with static_lines, want 1 both", got.Lines, want.Lines)
+	}
+}
+
+// Each full view lists, as text, what every box uses and is used by, the
+// pairs left out of the picture included, so a capture of the page holds what
+// a focus view shows.
+func TestAViewListsItsBoxesNeighborsAsText(t *testing.T) {
+	units := ripgrep()
+	units[0].Relations = append(units[0].Relations, found("MOD-0005", model.DependsOn, "import"))
+	m := build(units)
+	var got Neighbor
+	for _, n := range m.Overview.Neighbors {
+		if n.Name == "ripgrep" {
+			got = n
+		}
+	}
+	if !slices.Contains(got.Uses, "grep-printer") || !slices.Contains(got.Uses, "grep") {
+		t.Errorf("ripgrep uses %v, want grep and the grep-printer a static line left out of the picture", got.Uses)
+	}
+	pages, err := Pages(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if page := string(pages["index.html"]); !strings.Contains(page, "상자별 이웃") || !strings.Contains(page, "쓰는 상자:") {
+		t.Error("the overview page does not list the boxes' neighbors as text")
 	}
 }

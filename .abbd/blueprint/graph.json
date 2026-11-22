@@ -2264,6 +2264,7 @@
         "internal/screen/matrix.go",
         "internal/screen/matrix_order.go",
         "internal/screen/names.go",
+        "internal/screen/neighbors.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
@@ -31997,6 +31998,52 @@
               },
               {
                 "Text": "가 함께 지킨다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Neighbors",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "neighbors.go",
+                "Code": true
+              },
+              {
+                "Text": "): 개요와 각 모듈 내부의 전체 뷰는 그림 아래에 ",
+                "Code": false
+              },
+              {
+                "Text": "상자별 이웃",
+                "Code": true
+              },
+              {
+                "Text": "을 글로 싣는다. 상자마다 그 상자가 쓰는 상자와 그 상자를 쓰는 상자를 이름 순으로 적으며, 그린 선뿐 아니라 그리지 않고 센 쌍(",
+                "Code": false
+              },
+              {
+                "Text": "Counted",
+                "Code": true
+              },
+              {
+                "Text": ")도 읽는다. 상자별 집중 뷰는 URL이 가리킬 때만 보여서 화면 캡처나 페이지 글에는 나오지 않으므로, 영향을 묻는 질문에 필요한 이웃을 이 목록이 항상 보이는 글로 둔다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestAViewListsItsBoxesNeighborsAsText",
+                "Code": true
+              },
+              {
+                "Text": "가 지킨다.",
                 "Code": false
               }
             ]

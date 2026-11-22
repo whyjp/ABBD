@@ -480,8 +480,12 @@ func Build(in Input) Model {
 	m.Participants = tiedParticipants(ov.participants, m.Primary, in.Units)
 	m.Overview.Outside = outsideOf(m.Participants, m.Primary, in.Units)
 	rank(&m)
-	for _, d := range leads {
+	for i, d := range leads {
 		d.Matrix = d.matrix()
+		d.Neighbors = d.neighbors(atOverview)
+		if i > 0 {
+			d.Neighbors = d.neighbors(atTop)
+		}
 	}
 	m.nameGroups()
 	return m

@@ -151,6 +151,12 @@ svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
 .legend svg { vertical-align: middle; margin-right: 4px; }
 
+.neighbors { margin: 10px 0 0; }
+.neighbors h3 { margin: 0 0 2px; font-size: 14px; }
+.neighbors p { margin: 2px 0; font-size: 13px; }
+.neighbors ul { margin: 4px 0; padding-left: 18px; }
+.neighbors li { margin: 2px 0; font-size: 13.5px; }
+
 .inside { display: none; border-color: var(--accent); }
 .inside:target { display: block; }
 .inside .text { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 0 28px; align-items: start; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
@@ -353,7 +359,7 @@ internal/evidence/evidence.go &#34;f := c.load(e.Path)&#34;</title></path><circl
 
 
 </div>
-  
+  <div class="neighbors"><h3>상자별 이웃</h3><p class="muted">상자마다 그 상자가 쓰는 상자와 그 상자를 쓰는 상자입니다. 그림에서 뺀 선도 셉니다.</p><ul><li><strong>liveness and line moves</strong> <span class="muted">쓰는 상자:</span> quote matching</li><li><strong>quote matching</strong> <span class="muted">쓰는 상자:</span> whitespace-free file index <span class="muted">쓰이는 상자:</span> liveness and line moves</li><li><strong>whitespace-free file index</strong> <span class="muted">쓰이는 상자:</span> quote matching</li></ul></div>
   <div class="text">
     <div class="about">
       

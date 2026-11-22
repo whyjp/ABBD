@@ -151,6 +151,12 @@ svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
 .legend svg { vertical-align: middle; margin-right: 4px; }
 
+.neighbors { margin: 10px 0 0; }
+.neighbors h3 { margin: 0 0 2px; font-size: 14px; }
+.neighbors p { margin: 2px 0; font-size: 13px; }
+.neighbors ul { margin: 4px 0; padding-left: 18px; }
+.neighbors li { margin: 2px 0; font-size: 13.5px; }
+
 .inside { display: none; border-color: var(--accent); }
 .inside:target { display: block; }
 .inside .text { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 0 28px; align-items: start; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
@@ -351,7 +357,7 @@ cmd/abbd/main.go &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</title>
 
 
 </div>
-  
+  <div class="neighbors"><h3>상자별 이웃</h3><p class="muted">상자마다 그 상자가 쓰는 상자와 그 상자를 쓰는 상자입니다. 그림에서 뺀 선도 셉니다.</p><ul><li><strong>rename detection</strong> <span class="muted">쓰는 상자:</span> working-tree snapshot</li><li><strong>working-tree snapshot</strong> <span class="muted">쓰이는 상자:</span> rename detection</li></ul></div>
   <div class="text">
     <div class="about">
       
