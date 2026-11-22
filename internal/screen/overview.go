@@ -1346,7 +1346,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
-		b.Title = fmt.Sprintf("%s %s", base(m), b.Name)
+		b.Title = fmt.Sprintf("%s %s", addressOf(model.ID(base(m))), b.Name)
 		if b.Artifact != "" {
 			b.Title += " (" + b.Artifact + ")"
 		}
@@ -1554,11 +1554,8 @@ func (o *overview) usedBy(x model.ID) string {
 
 // viewOf is the link to the view that shows id's inside, when it has one.
 func viewOf(t tree, id model.ID) string {
-	if u := t.units[id]; u.Mark != "" {
-		// A folded composition group has no view of its own yet.
-		return ""
-	} else if len(t.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
-		return "#m-" + string(id)
+	if u := t.units[id]; len(t.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
+		return "#m-" + addressOf(id)
 	}
 	return ""
 }

@@ -1418,6 +1418,7 @@
         "cmd/abbd/extract.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
+        "cmd/abbd/group.go",
         "cmd/abbd/impact.go",
         "cmd/abbd/install.go",
         "cmd/abbd/keyunits.go",
@@ -8438,6 +8439,46 @@
               },
               {
                 "Text": "가 먼저 거부하며, 평범한 stack의 저장과 status는 그대로이고, ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": "은 묶음 주소 ",
+                "Code": false
+              },
+              {
+                "Text": "stack-KEY.N",
+                "Code": true
+              },
+              {
+                "Text": "을 받아 이름, 역할, 든 상자와 안의 순환을 말하고 unit에는 그 unit이 든 묶음을 말하며, ",
+                "Code": false
+              },
+              {
+                "Text": "impact",
+                "Code": true
+              },
+              {
+                "Text": "는 묶음의 상자들을 씨앗으로 읽는다(",
+                "Code": false
+              },
+              {
+                "Text": "group.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "TestAGroupAddressIsAskedLikeAUnit",
+                "Code": true
+              },
+              {
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -35306,7 +35347,15 @@
                 "Code": true
               },
               {
-                "Text": "). 아직 자기 뷰가 없어 ",
+                "Text": "). 묶음은 자기 주소 ",
+                "Code": false
+              },
+              {
+                "Text": "stack-KEY.N",
+                "Code": true
+              },
+              {
+                "Text": "에 자기 뷰와 페이지를 가진다. ",
                 "Code": false
               },
               {
@@ -35314,7 +35363,47 @@
                 "Code": true
               },
               {
-                "Text": "가 빈 값을 주고 링크도 페이지도 없으며, 그 안의 상자가 올라가는 곳은 묶음이 서 있는 모듈이다. 기록이 없는 뷰는 바이트 하나 바뀌지 않으며 ",
+                "Text": "가 ",
+                "Code": false
+              },
+              {
+                "Text": "addressOf",
+                "Code": true
+              },
+              {
+                "Text": "로 주소의 앵커를 주고, ",
+                "Code": false
+              },
+              {
+                "Text": "nameGroups",
+                "Code": true
+              },
+              {
+                "Text": "가 마지막에 뷰와 안의 unit의 ID를 그림 ID에서 주소로 바꾸며(그림은 그림 ID를 그대로 둔다), 안의 상자는 묶음으로, 묶음은 서 있는 모듈로 올라가고, 탐색 트리는 묶음을 그 모듈 아래에, 묶음 안의 상자를 그 묶음 아래에 둔다(",
+                "Code": false
+              },
+              {
+                "Text": "navTree",
+                "Code": true
+              },
+              {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "TestAFoldedGroupHasAPageAtItsAddress",
+                "Code": true
+              },
+              {
+                "Text": "가 지킨다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestABoxInsideAFoldedGroupStandsUnderTheGroup",
+                "Code": true
+              },
+              {
+                "Text": "이 안의 상자의 위치와 초점 id에 그림 ID가 없음을 지킨다. 기록이 없는 뷰는 바이트 하나 바뀌지 않으며 ",
                 "Code": false
               },
               {

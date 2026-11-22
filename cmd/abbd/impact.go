@@ -18,6 +18,14 @@ func (e env) impact(list string) error {
 	name := names(units)
 	var seeds []model.ID
 	for _, s := range strings.Split(list, ",") {
+		if _, _, err := model.ParseGroupAddress(strings.TrimSpace(s)); err == nil {
+			boxes, err := e.groupSeeds(strings.TrimSpace(s))
+			if err != nil {
+				return err
+			}
+			seeds = append(seeds, boxes...)
+			continue
+		}
 		ms, err := e.find(units, strings.TrimSpace(s))
 		if err != nil {
 			return err

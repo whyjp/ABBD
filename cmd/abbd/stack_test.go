@@ -348,3 +348,25 @@ func TestACompositionGoesStaleWhenItsRelationsGo(t *testing.T) {
 	p.want(0, "retracted", "retract", "MOD-0001.depends_on.MOD-0002", "--reason", "a wrong reading")
 	p.want(1, "is used both ways with half the view's other boxes", "status", "--check")
 }
+
+// A group of a composition record is asked for by its address: explain says
+// what it is and holds, a unit says which group holds it, and impact reads the
+// group's boxes as the seeds.
+func TestAGroupAddressIsAskedLikeAUnit(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	composed := strings.Replace(chargeStack, "layers:\n", "view: overview\nkind: layers\nlayers:\n", 1)
+	p.want(0, "stored stack ledger", "stack", "ledger", p.file(t, "composed.md", composed))
+	out := p.want(0, "stack-ledger.1 books (group 1 of stack ledger, kind layers, as layer)", "explain", "stack-ledger.1")
+	for _, want := range []string{"role: posts each charge into the ledger", "inside it: 1 box(es)", "MOD-0002 "} {
+		if !strings.Contains(out, want) {
+			t.Errorf("explain of a group says %q:\n%s", want, out)
+		}
+	}
+	p.want(0, "group stack-ledger.1 books (layer)", "explain", "MOD-0002")
+	if want, got := p.want(0, "", "impact", "MOD-0002"), p.want(0, "", "impact", "stack-ledger.1"); want != got {
+		t.Errorf("impact of a group of one box is that box's:\n%s\nvs\n%s", want, got)
+	}
+	p.want(1, "stack ledger has 2 groups", "explain", "stack-ledger.9")
+	p.want(1, "there is no stack nothere", "explain", "stack-nothere.1")
+}
