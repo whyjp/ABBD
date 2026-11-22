@@ -221,3 +221,25 @@ func TestSupplementGroupingQuotesItsMembersCode(t *testing.T) {
 	s2.setup(1, "would merge into it", "--supplement", s2.file(t, "sup.json", `{"units":[`+group+`,
  `+member("f:globals", "globals.py", "from .ctx import _cv_app")+`]}`), "--", exe)
 }
+
+// A supplement that moves a unit the script already places says nothing of
+// the move in the state, so setup and status say it was ignored, and which
+// writer places the unit. Neither fails.
+func TestSupplementParentOfAScriptPlacedUnitIsSaidToBeIgnored(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("pkg/ctx.py", "_cv_app = ContextVar('flask.app_ctx')\n")
+	p.code("pkg/globals.py", "current_app = _cv_app.get\n")
+	p.extract(`{"units":[
+ {"key":"f:ctx","kind":"MOD","name":"ctx","anchors":[{"path":"pkg/ctx.py"}],"parent":"f:globals"},
+ {"key":"f:globals","kind":"MOD","name":"globals","anchors":[{"path":"pkg/globals.py"}]}]}`)
+	p.code("pkg/doc.py", "CONTEXT = 'the request context'\n")
+	sup := `{"units":[
+ {"key":"grp:context","kind":"MOD","name":"request context",
+  "evidence":[{"path":"pkg/doc.py","lines":"1","quote":"CONTEXT = "}]},
+ {"key":"f:ctx","kind":"MOD","name":"ctx","anchors":[{"path":"pkg/ctx.py"}],"parent":"grp:context",
+  "parent_evidence":[{"path":"pkg/ctx.py","quote":"_cv_app = ContextVar"}]}]}`
+	out := p.setup(0, "", "--supplement", p.file(t, "sup.json", sup), "--", exe)
+	contains(t, out, "conflict: parent ignored: ", `"ctx" is placed in `, "by the script")
+	contains(t, p.want(0, "", "status", "--check"), "parent ignored: ")
+}

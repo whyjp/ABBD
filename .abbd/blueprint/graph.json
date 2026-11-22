@@ -2861,6 +2861,7 @@
         "internal/extract/relate/cread.go",
         "internal/extract/relate/golang.go",
         "internal/extract/relate/libs.go",
+        "internal/extract/relate/progress.go",
         "internal/extract/relate/python.go",
         "internal/extract/relate/relate.go",
         "internal/extract/relate/rust.go",
@@ -9052,7 +9053,47 @@
                 "Code": true
               },
               {
-                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다. 같은 끝에 ",
+                "Text": ")로 준다. 이 보고도 관문을 실패시키지 않는다. setup, sync, status가 찍는 ",
+                "Code": false
+              },
+              {
+                "Text": "conflict:",
+                "Code": true
+              },
+              {
+                "Text": " 줄은 더 높은 writer의 부모에 밀린 supplement의 부모를 ",
+                "Code": false
+              },
+              {
+                "Text": "parent ignored:",
+                "Code": true
+              },
+              {
+                "Text": "로도 알리며(",
+                "Code": false
+              },
+              {
+                "Text": "attention",
+                "Code": true
+              },
+              {
+                "Text": "), ",
+                "Code": false
+              },
+              {
+                "Text": "TestSupplementParentOfAScriptPlacedUnitIsSaidToBeIgnored",
+                "Code": true
+              },
+              {
+                "Text": "가 setup과 ",
+                "Code": false
+              },
+              {
+                "Text": "status --check",
+                "Code": true
+              },
+              {
+                "Text": "의 통과와 줄을 지킨다. 같은 끝에 ",
                 "Code": false
               },
               {
@@ -14029,6 +14070,7 @@
             "internal/extract/relate/cread.go",
             "internal/extract/relate/golang.go",
             "internal/extract/relate/libs.go",
+            "internal/extract/relate/progress.go",
             "internal/extract/relate/python.go",
             "internal/extract/relate/relate.go",
             "internal/extract/relate/rust.go",
@@ -14313,7 +14355,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "claude-opus-5.5",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -15743,7 +15785,23 @@
                 "Code": true
               },
               {
-                "Text": " 같은 흔한 이름이 엉뚱한 unit을 가리키기 때문이다. 구조 분해로 묶인 변수와 리터럴 기본 내보내기도 묻지 않는다. 서버가 심볼을 나열하지 못한 파일은 읽지 못한 것으로 돌려준다.",
+                "Text": " 같은 흔한 이름이 엉뚱한 unit을 가리키기 때문이다. 구조 분해로 묶인 변수와 리터럴 기본 내보내기도 묻지 않는다. 서버가 심볼을 나열하지 못한 파일은 읽지 못한 것으로 돌려준다. 단계마다 시작할 때와 30초마다 표준 오류에 ",
+                "Code": false
+              },
+              {
+                "Text": "relate:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 파일이나 선언이 몇 개 중 몇 개 끝났는지와 경과 시간을 알리며(",
+                "Code": false
+              },
+              {
+                "Text": "progress",
+                "Code": true
+              },
+              {
+                "Text": "), 읽은 결과는 이 줄이 있든 없든 같다.",
                 "Code": false
               }
             ]
@@ -22286,7 +22344,23 @@
                 "Code": true
               },
               {
-                "Text": "가 어긋남을 나열한다. ",
+                "Text": "가 어긋남을 나열한다. 그 목록은 더 높은 writer의 부모에 밀려 효과가 없는 supplement의 부모도 ",
+                "Code": false
+              },
+              {
+                "Text": "parent ignored:",
+                "Code": true
+              },
+              {
+                "Text": "로 말하는데(그 부모가 지금 있는 모듈이나 기능일 때만), 우선순위는 바꾸지 않고 알리기만 하며 ",
+                "Code": false
+              },
+              {
+                "Text": "TestAnOutrankedSupplementParentIsReported",
+                "Code": true
+              },
+              {
+                "Text": "가 지킨다. ",
                 "Code": false
               },
               {
