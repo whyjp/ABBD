@@ -82,7 +82,13 @@ func viewShape(d Drawing, part map[string]bool, unit map[string]UnitRow, stacks 
 	s := &Shape{Boxes: len(part)}
 	edge := map[[2]string]bool{}
 	chip := map[string]string{}
+	// A chip that stands for a module met without a contract carries that
+	// module's ID, so a chip is a contract's only where the unit is one.
+	isContract := func(p Port) bool { return p.Contract != "" && kind(p.Contract).IsContract() }
 	for _, p := range d.Ports {
+		if !isContract(p) {
+			continue
+		}
 		for _, k := range p.Keys {
 			chip[k] = p.Contract
 		}
@@ -198,7 +204,7 @@ func viewShape(d Drawing, part map[string]bool, unit map[string]UnitRow, stacks 
 			break
 		}
 		n := max(len(p.Rels), 1)
-		if p.Contract != "" {
+		if isContract(p) {
 			s.Contract += n
 		} else {
 			s.Direct += n
@@ -231,7 +237,7 @@ func shapeNotes(s *Shape, stacked bool) []string {
 		out = append(out, fmt.Sprintf("사슬이 %d줄이고 순환 위 상자가 적어 층 후보가 된다. 층 이름이 코드에 보이면 stack으로 적을 수 있고, 코드에 없으면 적지 않는다", s.Chain))
 	}
 	for _, f := range s.Families {
-		out = append(out, fmt.Sprintf("%d개 상자가 서로 쓰지 않고 계약 %s를 함께 쓰거나 제공한다. 같은 계약의 구현체인지는 코드를 읽어야 가려진다", f.Parts, f.Contract))
+		out = append(out, fmt.Sprintf("%d개 상자가 서로 쓰지 않고 %s 계약을 함께 쓰거나 제공한다. 같은 계약의 구현체인지는 코드를 읽어야 가려진다", f.Parts, f.Contract))
 	}
 	if s.NoProvider > 0 {
 		out = append(out, fmt.Sprintf("제공하는 모듈이 없는 계약이 %d개 그려져 있어, 경계의 약속이 비어 보인다. 코드에 없어서인지 추출이 놓쳐서인지는 코드를 읽어야 가려진다", s.NoProvider))

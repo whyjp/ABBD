@@ -6346,6 +6346,7 @@
         "Provides": 35,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6848,7 +6849,7 @@
       ],
       "Understanding": {
         "Reader": "claude-sonnet-5.5",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -23500,6 +23501,7 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 6,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 8
       },
@@ -25221,7 +25223,7 @@
       ],
       "Understanding": {
         "Reader": "claude-sonnet-5.5",
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",

@@ -371,7 +371,7 @@ func shapeLine(s *screen.Shape) string {
 		out += fmt.Sprintf(", 층 후보 %s(위에서 아래로 상자 수), 층 사이 %d줄, 같은 무리 안 %d줄", strings.Join(ns, "·"), s.Down, s.Same)
 	}
 	for _, st := range s.Stacks {
-		out += fmt.Sprintf(", stack %s가 상자 %d개를 담고 위로 쓰는 줄 %d", st.Key, st.Held, st.Up)
+		out += fmt.Sprintf(", stack %s: 상자 %d개를 담고, 위로 쓰는 줄 %d", st.Key, st.Held, st.Up)
 	}
 	if s.Contract+s.Direct+s.NoProvider > 0 {
 		out += fmt.Sprintf(", 경계는 계약 %d줄과 직접 %d줄, 제공자 없는 계약 %d개", s.Contract, s.Direct, s.NoProvider)

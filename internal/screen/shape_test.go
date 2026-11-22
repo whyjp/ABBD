@@ -74,3 +74,20 @@ func TestShapeFindsAFamilyThroughAFrameChip(t *testing.T) {
 		t.Errorf("%d lines through a contract cross the frame, want 1 or more", s.Contract)
 	}
 }
+
+// A frame chip for another module met without a contract is no contract:
+// parts that all use that module are no family, and their lines count as
+// direct.
+func TestShapeTakesAModuleChipForNoContract(t *testing.T) {
+	units := ripgrep()
+	for i := 10; i < 14; i++ {
+		units = append(units, inside(model.ID("MOD-00"+string(rune('0'+i/10))+string(rune('0'+i%10))), "MOD-0002", rel("MOD-0004", model.DependsOn)))
+	}
+	s := shapeOfInside(t, units)
+	if len(s.Families) != 0 {
+		t.Errorf("families %+v, want none for a module chip", s.Families)
+	}
+	if s.Direct < 1 || s.Contract != 0 {
+		t.Errorf("direct %d, contract %d, want direct lines and no contract lines", s.Direct, s.Contract)
+	}
+}
