@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/screen"
 )
 
 // explainGroup answers for a composition group's address, stack-KEY.N: its
@@ -28,7 +29,11 @@ func (e env) explainGroup(units []model.Unit, address string) error {
 		module = ""
 	}
 	if c.View != "" {
-		fmt.Fprintf(e.stdout, "inside %s %s\n", c.View, name[model.ID(c.View)])
+		if c.View == model.OverviewView {
+			fmt.Fprintln(e.stdout, "inside the overview")
+		} else {
+			fmt.Fprintf(e.stdout, "inside %s %s\n", c.View, name[model.ID(c.View)])
+		}
 		cycle, boundary := model.GroupFacts(units, l.Units, module)
 		fmt.Fprintf(e.stdout, "inside it: %d box(es), %d in the largest cycle, %d reach outside the module\n", len(l.Units), cycle, boundary)
 	}
@@ -41,6 +46,15 @@ func (e env) explainGroup(units []model.Unit, address string) error {
 	}
 	if stale := st.Parts[n-1].Why(units); len(stale) > 0 {
 		fmt.Fprintf(e.stdout, "STALE: %v\n", stale)
+	}
+	figs, err := e.st.LoadFigures()
+	if err != nil {
+		return err
+	}
+	if drawn, why := screen.GroupDrawn(units, figs.Stacks, address); drawn {
+		fmt.Fprintf(e.stdout, "drawn: a folded box in %s, its page %s.html\n", c.View, address)
+	} else if why != "" {
+		fmt.Fprintf(e.stdout, "not drawn as a box: %s\n", why)
 	}
 	return nil
 }
@@ -68,7 +82,12 @@ func (e env) explainGroups(units []model.Unit, id model.ID) error {
 		}
 		layers := s.Claims()
 		if n, ok := model.Holders(layers, units)[id]; ok {
-			fmt.Fprintf(e.stdout, "group %s %s (%s)\n", model.GroupAddress(s.Key, n), layers[n-1].Name, s.Composition().AsOf(layers[n-1]))
+			address := model.GroupAddress(s.Key, n)
+			line := fmt.Sprintf("group %s %s (%s)", address, layers[n-1].Name, s.Composition().AsOf(layers[n-1]))
+			if drawn, _ := screen.GroupDrawn(units, figs.Stacks, address); !drawn {
+				line += ", not drawn as a box"
+			}
+			fmt.Fprintln(e.stdout, line)
 		}
 	}
 	return nil

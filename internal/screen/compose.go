@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // A composition record of kind core names groups of a view's boxes that use
@@ -33,30 +34,7 @@ type foldedGroup struct {
 // boundary of boxes the view draws directly. Without such a record it returns
 // the units as they are.
 func composeGroups(in Input) []model.Unit {
-	var groups []foldedGroup
-	taken := map[model.ID]bool{}
-	for _, f := range in.Figures.Stacks {
-		// The overview's own record is not drawn yet: a box folded there
-		// would lose the page of each box it holds.
-		if !f.Known || f.Primary || f.View == "" || f.View == model.OverviewView || f.Kind != model.KindCore || len(f.Gaps(in.Units)) > 0 {
-			continue
-		}
-		c := f.Composition()
-		boxes := model.ViewBoxes(in.Units, f.View)
-		for i, p := range f.Parts {
-			l := p.Claim
-			if as := c.AsOf(l); as != model.AsCycle && as != model.AsClique && as != model.AsBoundary || len(p.Why(in.Units)) > 0 {
-				continue
-			}
-			if slices.ContainsFunc(l.Units, func(id model.ID) bool { return !slices.Contains(boxes, id) || taken[id] }) {
-				continue
-			}
-			for _, id := range l.Units {
-				taken[id] = true
-			}
-			groups = append(groups, foldedGroup{foldUnit(in.Units, f.View, model.GroupAddress(f.Key, i+1), l), l.Units})
-		}
-	}
+	groups, _ := planGroups(in.Units, in.Figures.Stacks)
 	if len(groups) == 0 {
 		return in.Units
 	}
@@ -70,6 +48,77 @@ func composeGroups(in Input) []model.Unit {
 		units = append(units, g.unit)
 	}
 	return units
+}
+
+// planGroups are the groups of the stacks the screen folds, and why each
+// other group of a stack that composes a view is left as lines, by its
+// address.
+func planGroups(units []model.Unit, stacks []store.Stack) ([]foldedGroup, map[string]string) {
+	var groups []foldedGroup
+	left := map[string]string{}
+	taken := map[model.ID]string{}
+	for _, f := range stacks {
+		if !f.Known || f.Primary || f.View == "" {
+			continue
+		}
+		reason := ""
+		gaps := f.Gaps(units)
+		switch {
+		case f.View == model.OverviewView:
+			// A box folded in the overview would lose the page of each box it holds.
+			reason = "the overview's own record is not drawn yet"
+		case f.Kind != model.KindCore:
+			reason = "only a record of kind core is drawn"
+		case len(gaps) > 0:
+			reason = "the record is STALE: " + gaps[0].Text
+		}
+		c := f.Composition()
+		boxes := model.ViewBoxes(units, f.View)
+		for i, p := range f.Parts {
+			l, address := p.Claim, model.GroupAddress(f.Key, i+1)
+			why := reason
+			if as := c.AsOf(l); why == "" && as != model.AsCycle && as != model.AsClique && as != model.AsBoundary {
+				why = "only a cycle, a clique or a boundary is folded, not " + as
+			}
+			if why == "" {
+				if stale := p.Why(units); len(stale) > 0 {
+					why = "the group is STALE: " + stale[0]
+				}
+			}
+			if why == "" && slices.ContainsFunc(l.Units, func(id model.ID) bool { return !slices.Contains(boxes, id) }) {
+				why = "a box of the group is not one the view draws directly"
+			}
+			if why == "" {
+				for _, id := range l.Units {
+					if other, ok := taken[id]; ok {
+						why = "box " + string(id) + " is held by " + other + ", which is folded first"
+						break
+					}
+				}
+			}
+			if why != "" {
+				left[address] = why
+				continue
+			}
+			for _, id := range l.Units {
+				taken[id] = address
+			}
+			groups = append(groups, foldedGroup{foldUnit(units, f.View, address, l), l.Units})
+		}
+	}
+	return groups, left
+}
+
+// GroupDrawn says whether the group a stack address names is drawn as a folded
+// box with a page of its own, and if not, why not.
+func GroupDrawn(units []model.Unit, stacks []store.Stack, address string) (bool, string) {
+	groups, left := planGroups(units, stacks)
+	for _, g := range groups {
+		if addressOf(g.unit.ID) == address {
+			return true, ""
+		}
+	}
+	return false, left[address]
 }
 
 // foldUnit is the folded unit of group l of the view: a module of its own, named

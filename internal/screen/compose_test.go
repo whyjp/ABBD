@@ -253,3 +253,40 @@ func TestABoxInsideAFoldedGroupStandsUnderTheGroup(t *testing.T) {
 		}
 	}
 }
+
+// A group says whether it is drawn as a box, and why not; a drawn group's view
+// is read as a level like any module's inside.
+func TestAGroupSaysWhetherAndWhyItIsDrawn(t *testing.T) {
+	units := tangled()
+	second := record("MOD-0100", model.KindCore, clique())
+	second.Key = "again"
+	stale := clique()
+	stale.Evidence = []model.Evidence{{Path: "elsewhere.go", Quote: "q"}}
+	staleRec := record("MOD-0100", model.KindCore, stale)
+	staleRec.Key = "old"
+	stacks := []store.Stack{record("MOD-0100", model.KindCore, clique()), second, staleRec, record(model.OverviewView, model.KindCore, clique()), record("MOD-0100", model.KindLayers, clique())}
+	stacks[3].Key, stacks[4].Key = "over", "layers"
+	for address, want := range map[string]string{
+		"stack-core.1":   "",
+		"stack-again.1":  "box MOD-0101 is held by stack-core.1",
+		"stack-old.1":    "the group is STALE",
+		"stack-over.1":   "the overview's own record",
+		"stack-layers.1": "only a record of kind core",
+	} {
+		drawn, why := GroupDrawn(units, stacks, address)
+		if drawn != (want == "") || !strings.Contains(why, want) {
+			t.Errorf("%s: drawn %v, why %q; want %q", address, drawn, why, want)
+		}
+	}
+	in := Input{Units: units}
+	in.Figures.Stacks = stacks[:1]
+	levels := Levels(Build(in))
+	if !slices.ContainsFunc(levels, func(l Level) bool { return l.View == "stack-core.1 engine core" }) {
+		t.Errorf("the group's view is no level: %v", func() (vs []string) {
+			for _, l := range levels {
+				vs = append(vs, l.View)
+			}
+			return
+		}())
+	}
+}
