@@ -292,3 +292,36 @@ func TestGroupFactsCountTheCycleAndTheBoxesThatReachOutside(t *testing.T) {
 		t.Errorf("two boxes with no cycle between them: %d", cycle)
 	}
 }
+
+// A phrase's symbols are few, one name each as the code spells it, none
+// twice, only with words, and a reader's each stand in a cited quote.
+func TestAPhrasesSymbolsAreNamesTheCodeHolds(t *testing.T) {
+	quote := []Evidence{{Path: "a.c", Quote: "uv_async_send(&wq_async)"}}
+	for _, tc := range []struct {
+		name    string
+		symbols []string
+		text    string
+		cited   bool
+		want    string
+	}{
+		{"none", nil, "", true, ""},
+		{"held", []string{"uv_async_send", "wq_async"}, "완료 알림", true, ""},
+		{"absent from the quotes", []string{"uv__work_done"}, "완료 알림", true, "stands in none of the quotes"},
+		{"absent but not a reader's", []string{"uv__work_done"}, "완료 알림", false, ""},
+		{"too many", []string{"a", "b", "c", "d"}, "x", false, "at most 3"},
+		{"a bracket", []string{"f()"}, "x", false, "one name as the code spells it"},
+		{"a space", []string{"two words"}, "x", false, "one name as the code spells it"},
+		{"twice", []string{"a", "a"}, "x", false, "named twice"},
+		{"without words", []string{"a"}, "", false, "give the phrase"},
+		{"scoped name", []string{"Foo::bar", "a.b#c"}, "x", false, ""},
+		{"a name inside a longer one", []string{"uv_async"}, "x", true, "stands in none of the quotes"},
+	} {
+		err := ValidateSymbols(tc.symbols, tc.text, quote, tc.cited)
+		switch {
+		case tc.want == "" && err != nil:
+			t.Errorf("%s: %v", tc.name, err)
+		case tc.want != "" && (err == nil || !strings.Contains(err.Error(), tc.want)):
+			t.Errorf("%s: %v, want %q", tc.name, err, tc.want)
+		}
+	}
+}

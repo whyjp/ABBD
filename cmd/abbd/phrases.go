@@ -119,3 +119,27 @@ func unphrased(units []model.Unit, d screen.Drawing, chosen []model.Line) []stri
 	}
 	return out
 }
+
+// unsymboled lists, by edge and phrase, the live phrases on edges that show
+// which name no symbol: the words say what crosses the line, and nothing
+// says which name in the code carries it.
+func unsymboled(units []model.Unit) []string {
+	var out []string
+	name := map[model.ID]string{}
+	for _, u := range model.Present(units) {
+		name[u.ID] = u.Name.Value
+	}
+	for _, u := range model.Present(units) {
+		for _, n := range u.Phrases {
+			if n.Text == "" || len(n.Symbols) > 0 || n.Status() != model.Live || !u.Shown(n.Kind, n.To) {
+				continue
+			}
+			if note, ok := u.Note(n.Kind, n.To); !ok || note.Writer != n.Writer {
+				continue
+			}
+			out = append(out, fmt.Sprintf("%s %s %s %s %s: %q", u.ID, name[u.ID], n.Kind, n.To, name[n.To], n.Text))
+		}
+	}
+	slices.Sort(out)
+	return out
+}
