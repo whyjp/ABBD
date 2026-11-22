@@ -86,6 +86,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		u.Relations, u.Hidden = clonedRelations(u.Relations), clonedRelations(u.Hidden)
 		u.Phrases = slices.Clone(u.Phrases)
 		for j := range u.Phrases {
+			u.Phrases[j].Symbols = slices.Clone(u.Phrases[j].Symbols)
 			u.Phrases[j].Evidence = slices.Clone(u.Phrases[j].Evidence)
 		}
 		u.EachEvidence(func(_ model.Writer, e *model.Evidence) {
@@ -350,7 +351,7 @@ func setPhrases(units []model.Unit, input []extract.Unit, ids []model.ID, phrase
 	made := map[model.ID][]model.PhraseNote{}
 	for _, p := range phrases {
 		f := byKey[p.From]
-		made[f] = append(made[f], model.PhraseNote{To: byKey[p.To], Kind: p.Kind, Writer: p.Writer, Text: p.Text, Evidence: p.Evidence})
+		made[f] = append(made[f], model.PhraseNote{To: byKey[p.To], Kind: p.Kind, Writer: p.Writer, Text: p.Text, Evidence: p.Evidence, Symbols: p.Symbols})
 	}
 	for i := range units {
 		u := &units[i]

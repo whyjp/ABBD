@@ -53,6 +53,9 @@ type DocRelation struct {
 	Kind     model.RelationKind `json:"kind"`
 	Via      model.Via          `json:"via,omitempty"`
 	Phrase   string             `json:"phrase,omitempty"`
+	// Symbols are the names in the code that carry the phrase, each in a
+	// quote the relation cites.
+	Symbols []string `json:"symbols,omitempty"`
 	When     string             `json:"when,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
 	Entries  []string           `json:"entries,omitempty"`
@@ -74,6 +77,8 @@ type Phrase struct {
 	Writer   model.Writer
 	Text     string
 	Evidence []model.Evidence
+	// Symbols are the names in the code that carry what the phrase says.
+	Symbols []string
 }
 
 type Relation struct {
@@ -211,6 +216,9 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
+		if err := model.ValidateSymbols(rr.Symbols, rr.Phrase, evidence, true); err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
 		if err := rr.Kind.Quoted(len(evidence)); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
@@ -224,7 +232,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if j := slices.IndexFunc(res.Phrases, func(o Phrase) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }); rr.Phrase != "" && j >= 0 && res.Phrases[j].Text != rr.Phrase {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s) gives two phrases for one edge, %q and %q; keep one", i, rr.From, rr.To, res.Phrases[j].Text, rr.Phrase)
 		} else if rr.Phrase != "" && j < 0 {
-			res.Phrases = append(res.Phrases, Phrase{From: rr.From, To: rr.To, Kind: rr.Kind, Text: rr.Phrase, Evidence: evidence})
+			res.Phrases = append(res.Phrases, Phrase{From: rr.From, To: rr.To, Kind: rr.Kind, Text: rr.Phrase, Evidence: evidence, Symbols: rr.Symbols})
 		}
 		// One claim holds an edge, so the entries of two lines of one edge add
 		// up, and a line that names none uses the whole contract.

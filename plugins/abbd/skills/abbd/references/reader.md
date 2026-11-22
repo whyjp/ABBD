@@ -15,6 +15,7 @@ A person reads every text you store to judge an agent's change, so write it in t
 A phrase labels a coupling, and a word labels a line of the overview record. Each is a short verb or noun phrase. A zone and a stage of the overview take a name. The blueprint shows each at rest, so each follows these rules:
 
 - Say what crosses: an endpoint, a message, a query, a file, a command or the types one part hands another. A line's word may say instead what the caller does with the other box. Name the thing itself.
+- Say which symbol carries it. The phrase says what happens; where a function, a type or a channel in the code carries it, name that with `--symbol NAME`, up to 3, each a name the line you quote holds, such as `uv_async_send` for `완료 알림 전송`, so a reader of the line can find the code that does the carrying. A name you did not read in the quoted line is no symbol: quote the line that holds it. the command refuses a symbol the quotes do not hold, and `abbd lint` lists the live phrases that name none under `lint: symbols:`, which never fails.
 - Never restate the via, in its own words or in others. An `import` edge is not `model types` or `imports`. A `call` edge is not `function call`. If nothing more specific than the via crosses, give no phrase.
 - Never give many edges one generic phrase such as `shell command` or `render inputs`.
 - Keep it to 4 words and 24 characters.

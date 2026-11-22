@@ -231,3 +231,51 @@ func TestADanglingHumanPhraseSaysHowAHumanRetractsIt(t *testing.T) {
 	p.resync()
 	contains(t, p.want(1, "", "status", "--check"), "abbd retract MOD-0002.depends_on.MOD-0001.phrase --reason TEXT --source REF")
 }
+
+// A phrase may name the symbols that carry what it says. Each stands in a
+// quote the reader cites, it is kept with the note, explain and impact say it,
+// the lint advises on a live phrase with none, and the lint JSON is as it was.
+func TestAPhraseNamesTheSymbolsThatCarryIt(t *testing.T) {
+	t.Parallel()
+	p := semanticProject(t)
+	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1))
+	p.resync()
+	edge := []string{"record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()"}
+	p.want(0, `"charge post" names what crosses it`, append(edge, "--phrase", "charge post")...)
+	text := p.want(0, "", "lint")
+	contains(t, text, "lint: symbols: 1 phrase name what crosses a line and no symbol that carries it", `MOD-0002 ledger depends_on MOD-0001 billing: "charge post"`)
+	jsonBefore := p.want(0, "", "lint", "--json")
+	if strings.Contains(jsonBefore, "symbols") && strings.Contains(jsonBefore, "Unsymboled") {
+		t.Errorf("the lint JSON carries the advice:\n%s", jsonBefore)
+	}
+	p.want(1, "stands in none of the quotes cited", append(edge, "--phrase", "charge post", "--symbol", "Charge")...)
+	p.want(1, "one name as the code spells it", append(edge, "--phrase", "charge post", "--symbol", "Post()")...)
+	p.want(1, "named twice", append(edge, "--phrase", "charge post", "--symbol", "Post", "--symbol", "Post")...)
+	p.want(1, "give the phrase", append(edge, "--symbol", "Post")...)
+	p.want(0, "its symbols Post carry it", append(edge, "--phrase", "charge post", "--symbol", "Post")...)
+	contains(t, p.want(0, "", "explain", "MOD-0002"), `phrase "charge post", inferred, symbols Post`)
+	if text := p.want(0, "", "lint"); strings.Contains(text, "lint: symbols:") {
+		t.Errorf("a phrase with a symbol is still advised on:\n%s", text)
+	}
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "symbols:\n") {
+		t.Errorf("the note keeps its symbols:\n%s", md)
+	}
+}
+
+// The supplement may name the symbols too, on a relation of its own or on a
+// phrase for an edge the script reads, and a symbol its quotes do not hold is
+// refused.
+func TestASupplementPhraseNamesItsSymbols(t *testing.T) {
+	t.Parallel()
+	p := semanticProject(t)
+	topo := strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1)
+	p.extract(topo)
+	p.resync()
+	rel := func(symbol string) string {
+		return strings.Replace(chargesTable, `"relations":[`, `"relations":[
+ {"from":"l","to":"b","kind":"depends_on","via":"call","phrase":"charge post","symbols":["`+symbol+`"],"evidence":[{"path":"ledger/book.go","lines":"6","quote":"func Post()"}]},`, 1)
+	}
+	p.setup(1, "stands in none of the quotes cited", "--supplement", p.file(t, "bad.json", rel("Charge")))
+	p.setup(0, "synced", "--supplement", p.file(t, "good.json", rel("Post")))
+	contains(t, p.want(0, "", "explain", "MOD-0002"), `phrase "charge post", inferred, symbols Post`)
+}

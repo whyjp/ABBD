@@ -591,6 +591,11 @@ type PhraseNote struct {
 	Source   string       `yaml:"source,omitempty"`
 	Text     string       `yaml:"text"`
 	Evidence []Evidence   `yaml:"evidence,omitempty"`
+	// Symbols are the names in the code that carry what the phrase says, a
+	// function, a type or a channel, such as uv_async_send for "완료 알림 전송".
+	// Each stands in a quote the note cites, so the code that shows the symbol
+	// is the code that keeps the note live.
+	Symbols []string `yaml:"symbols,omitempty"`
 }
 
 // Status is the note's: live while any item is, else drifted while any is.
@@ -615,7 +620,43 @@ func (n PhraseNote) validate() error {
 	case n.Text == "":
 		return fmt.Errorf("a phrase needs its text")
 	}
+	if err := ValidateSymbols(n.Symbols, n.Text, n.Evidence, n.Writer.Origin() == Inferred); err != nil {
+		return err
+	}
 	return ValidatePhrase(n.Text, "")
+}
+
+// PhraseSymbols bounds the symbols of one phrase, so they fit beside it.
+const PhraseSymbols = 3
+
+var symbolShape = regexp.MustCompile(`^[A-Za-z_$][A-Za-z0-9_$.:#-]{0,47}$`)
+
+// ValidateSymbols checks the symbols a phrase names: at most PhraseSymbols,
+// each one name as the code spells it, with no space, quote or bracket, none
+// twice, and only for a phrase that has words. A reader's symbols, where
+// cited is true, each stand in a quote of the evidence, since the code that
+// shows the symbol is what keeps the note live.
+func ValidateSymbols(symbols []string, text string, evidence []Evidence, cited bool) error {
+	if len(symbols) == 0 {
+		return nil
+	}
+	switch {
+	case text == "":
+		return fmt.Errorf("a symbol says what carries what a phrase says; give the phrase")
+	case len(symbols) > PhraseSymbols:
+		return fmt.Errorf("a phrase names at most %d symbols, and this one names %d; keep the ones that carry it", PhraseSymbols, len(symbols))
+	}
+	for i, s := range symbols {
+		switch {
+		case !symbolShape.MatchString(s):
+			return fmt.Errorf("symbol %q: one name as the code spells it, of letters, digits and _ $ . : # -, at most 48 characters", s)
+		case slices.Contains(symbols[:i], s):
+			return fmt.Errorf("symbol %q is named twice", s)
+		case cited && !slices.ContainsFunc(evidence, func(e Evidence) bool { return strings.Contains(e.Quote, s) }):
+			return fmt.Errorf("symbol %q stands in none of the quotes cited; cite the line that holds it, or name the symbol the cited line holds", s)
+		}
+	}
+	return nil
 }
 
 const (

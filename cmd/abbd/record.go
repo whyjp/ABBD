@@ -109,6 +109,10 @@ func (e env) recordRelation(pos []string) error {
 		return err
 	}
 	note.Evidence = slices.Clone(rel.Evidence)
+	note.Symbols = slices.Clone(e.symbol)
+	if err := model.ValidateSymbols(note.Symbols, note.Text, note.Evidence, w.Origin() == model.Inferred); err != nil {
+		return err
+	}
 	held := ""
 	for _, o := range u.Claims() {
 		if o.To != edge.To || o.Kind != edge.Kind {
@@ -154,6 +158,10 @@ func (e env) recordRelation(pos []string) error {
 	}
 	if phrased {
 		fmt.Fprintf(e.stdout, "recorded %s.phrase, %s: %q names what crosses it while its evidence is live and a claim shows on the edge\n", edge, w.Origin(), note.Text)
+		if len(note.Symbols) > 0 {
+			fmt.Fprintf(e.stdout, "its symbols %s carry it, each in a quote cited", strings.Join(note.Symbols, ", "))
+			fmt.Fprintln(e.stdout)
+		}
 		if w.Origin() == model.Inferred {
 			e.checkLanguage(edge.String()+".phrase", note.Text)
 		}
