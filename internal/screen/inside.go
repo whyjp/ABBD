@@ -758,7 +758,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	for _, u := range inner {
 		r := l.pos[string(u.ID)]
 		b := Box{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind), Artifact: boxTag(u), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "inner"}
-		if len(t.children[u.ID]) > 0 {
+		if len(t.children[u.ID]) > 0 && u.Mark == "" {
 			b.Href, b.Class = "#m-"+string(u.ID), "inner has"
 		}
 		if focus != "" && u.ID != focus {
@@ -769,6 +769,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + 8, Y: r.Y + 19 + i*nameLine})
 		}
 		b.Sub = &Text{S: kindWord(u.Kind), X: r.X + 8, Y: r.Y + 19 + len(ls)*nameLine + 1}
+		if s := fitMark(u.Mark, r.W-16); s != "" {
+			b.Sub.S = s
+		}
 		if base(u.ID) != u.ID {
 			b.Sub.S += " · 위에도 있음"
 			b.Class += " twin"
@@ -779,6 +782,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
+		}
+		if u.Mark != "" {
+			b.Title += " [" + u.Mark + "]"
 		}
 		if base(u.ID) != u.ID {
 			b.Title += "\n" + twinNote

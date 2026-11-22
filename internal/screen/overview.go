@@ -1353,6 +1353,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
 		}
+		if u.Mark != "" {
+			b.Title += " [" + u.Mark + "]"
+		}
 		if us := o.fold[m]; len(us) > 0 {
 			b.UsedBy = len(us)
 			var names []string
@@ -1551,7 +1554,10 @@ func (o *overview) usedBy(x model.ID) string {
 
 // viewOf is the link to the view that shows id's inside, when it has one.
 func viewOf(t tree, id model.ID) string {
-	if u := t.units[id]; len(t.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
+	if u := t.units[id]; u.Mark != "" {
+		// A folded composition group has no view of its own yet.
+		return ""
+	} else if len(t.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
 		return "#m-" + string(id)
 	}
 	return ""

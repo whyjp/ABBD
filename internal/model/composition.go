@@ -462,3 +462,52 @@ func ParseGroupAddress(s string) (FigureKey, int, error) {
 	}
 	return k, n, nil
 }
+
+// GroupFacts say what a group of boxes holds inside: the most boxes that use
+// each other round one cycle (0 for none), and how many of them have a
+// relation with a unit outside the module that says its via. Uses with no via
+// count for the cycle, as the drawing draws them, since this only describes
+// the inside and claims nothing.
+func GroupFacts(units []Unit, members []ID, module ID) (cycle, boundary int) {
+	st := stateOf(units)
+	left := slices.Clone(members)
+	for len(left) > 0 {
+		at := left[0]
+		comp := []ID{at}
+		for _, o := range left[1:] {
+			if st.leadsTo(at, o, members) && st.leadsTo(o, at, members) {
+				comp = append(comp, o)
+			}
+		}
+		if len(comp) > 1 {
+			cycle = max(cycle, len(comp))
+		}
+		left = slices.DeleteFunc(left, func(id ID) bool { return slices.Contains(comp, id) })
+	}
+	for _, id := range members {
+		if st.reachesOutside(id, module) {
+			boundary++
+		}
+	}
+	return cycle, boundary
+}
+
+// leadsTo reports whether a reaches b along the uses among boxes.
+func (st state) leadsTo(a, b ID, boxes []ID) bool {
+	seen := map[ID]bool{a: true}
+	queue := []ID{a}
+	for len(queue) > 0 {
+		at := queue[0]
+		queue = queue[1:]
+		for _, to := range boxes {
+			if !seen[to] && st.link(at, to, false) {
+				if to == b {
+					return true
+				}
+				seen[to] = true
+				queue = append(queue, to)
+			}
+		}
+	}
+	return false
+}

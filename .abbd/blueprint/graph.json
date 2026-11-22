@@ -2235,6 +2235,7 @@
         "internal/screen/chosen.go",
         "internal/screen/common.go",
         "internal/screen/commonpage.go",
+        "internal/screen/compose.go",
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
         "internal/screen/elements.go",
@@ -22913,6 +22914,22 @@
                 "Code": false
               },
               {
+                "Text": "GroupFacts",
+                "Code": true
+              },
+              {
+                "Text": "는 한 묶음의 상자가 안에서 서로 쓰며 이루는 가장 큰 순환과 모듈 바깥과 이어진 상자 수를 세고, ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Mark",
+                "Code": true
+              },
+              {
+                "Text": "는 화면이 그리는 접힌 묶음 상자가 안에 든 것을 말하는 저장되지 않는 낱말이다. ",
+                "Code": false
+              },
+              {
                 "Text": "GroupAddress",
                 "Code": true
               },
@@ -35164,6 +35181,148 @@
               },
               {
                 "Text": ")은 목록이지 역할이 아니므로, 그 부분들이 함께 하는 하나의 역할로 이름 짓기를 권한다. 다른 조언처럼 린트를 실패시키지 않는다.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "composeGroups",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "compose.go",
+                "Code": true
+              },
+              {
+                "Text": "): 알려진 stack이 한 뷰의 구성 기록(",
+                "Code": false
+              },
+              {
+                "Text": "view",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "kind: core",
+                "Code": true
+              },
+              {
+                "Text": ")이고 주장이 모두 맞으며 STALE 층이 없을 때, 그 뷰가 직접 그리는 상자들의 ",
+                "Code": false
+              },
+              {
+                "Text": "cycle",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "clique",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "boundary",
+                "Code": true
+              },
+              {
+                "Text": " 층마다 접힌 상자 하나를 그린다(",
+                "Code": false
+              },
+              {
+                "Text": "foldUnit",
+                "Code": true
+              },
+              {
+                "Text": "). 접힌 상자는 그림에서만 있는 모듈 unit이어서 구성원의 선이 그 위로 올라가고, 이름과 역할은 기록의 것이며, 마지막 줄에는 안에 든 것을(",
+                "Code": false
+              },
+              {
+                "Text": "groupMark",
+                "Code": true
+              },
+              {
+                "Text": ": ",
+                "Code": false
+              },
+              {
+                "Text": "↻ 안에 순환 N상자",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "바깥과 이어진 N상자",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "N상자",
+                "Code": true
+              },
+              {
+                "Text": ") 들어갈 만큼 말한다(",
+                "Code": false
+              },
+              {
+                "Text": "fitMark",
+                "Code": true
+              },
+              {
+                "Text": "). 배치가 ID로 비길 때 첫 상자의 자리에 서도록 그림 ID는 가장 앞선 구성원 ID, 물결표, 묶음 주소다(",
+                "Code": false
+              },
+              {
+                "Text": "groupID",
+                "Code": true
+              },
+              {
+                "Text": "). 아직 자기 뷰가 없어 ",
+                "Code": false
+              },
+              {
+                "Text": "viewOf",
+                "Code": true
+              },
+              {
+                "Text": "가 빈 값을 주고 링크도 페이지도 없다. 기록이 없는 뷰는 바이트 하나 바뀌지 않으며 ",
+                "Code": false
+              },
+              {
+                "Text": "TestACompositionRecordFoldsItsGroupIntoOneBox",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "TestACompositionRecordTheStateDoesNotBearOutFoldsNothing",
+                "Code": true
+              },
+              {
+                "Text": "이 지킨다.",
                 "Code": false
               }
             ]
