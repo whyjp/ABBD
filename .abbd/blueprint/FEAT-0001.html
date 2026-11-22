@@ -151,6 +151,12 @@ svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
 .legend svg { vertical-align: middle; margin-right: 4px; }
 
+.neighbors { margin: 10px 0 0; }
+.neighbors summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.neighbors p { margin: 2px 0; font-size: 13px; }
+.neighbors ul { margin: 4px 0; padding-left: 18px; }
+.neighbors li { margin: 2px 0; font-size: 13.5px; }
+
 .inside { display: none; border-color: var(--accent); }
 .inside:target { display: block; }
 .inside .text { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 0 28px; align-items: start; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
@@ -554,7 +560,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record fact &lt;ID.FIELD&gt; --valu
 <span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 정적 의존 — import·구현·매크로·빌드 설정으로만 확인됨(호출 근거 없음)</span>
 
 </div>
-  <div class="chips picker"><span class="muted">한 상자씩 볼 수 있습니다. 상자를 고르면 그 상자와 이어진 상자, 그 상자의 선을 빠짐없이 그립니다:</span> <a class="chip" href="#f-FEAT-0001--FEAT-0003" title="이어진 상자 0개">/abbd ground rules</a> <a class="chip" href="#f-FEAT-0001--FEAT-0004" title="이어진 상자 1개">/abbd ask the blueprint before the code</a> <a class="chip" href="#f-FEAT-0001--FEAT-0006" title="이어진 상자 1개">/abbd record what a reader found</a> <a class="chip" href="#f-FEAT-0001--FEAT-0007" title="이어진 상자 0개">/abbd what the human states</a> <a class="chip" href="#f-FEAT-0001--FEAT-0008" title="이어진 상자 0개">/abbd after work</a> <a class="chip" href="#f-FEAT-0001--FEAT-0009" title="이어진 상자 0개">/abbd evidence and CI gate</a> <a class="chip" href="#f-FEAT-0001--FEAT-0023" title="이어진 상자 2개">abbd reader</a></div>
+  <div class="chips picker"><span class="muted">한 상자씩 볼 수 있습니다. 상자를 고르면 그 상자와 이어진 상자, 그 상자의 선을 빠짐없이 그립니다:</span> <a class="chip" href="#f-FEAT-0001--FEAT-0003" title="이어진 상자 0개">/abbd ground rules</a> <a class="chip" href="#f-FEAT-0001--FEAT-0004" title="이어진 상자 1개">/abbd ask the blueprint before the code</a> <a class="chip" href="#f-FEAT-0001--FEAT-0006" title="이어진 상자 1개">/abbd record what a reader found</a> <a class="chip" href="#f-FEAT-0001--FEAT-0007" title="이어진 상자 0개">/abbd what the human states</a> <a class="chip" href="#f-FEAT-0001--FEAT-0008" title="이어진 상자 0개">/abbd after work</a> <a class="chip" href="#f-FEAT-0001--FEAT-0009" title="이어진 상자 0개">/abbd evidence and CI gate</a> <a class="chip" href="#f-FEAT-0001--FEAT-0023" title="이어진 상자 2개">abbd reader</a></div><details class="neighbors" open><summary>상자별 이웃</summary><p class="muted">상자마다 그 상자가 쓰는 상자와 그 상자를 쓰는 상자입니다. 그림에서 뺀 선도 포함합니다. 모듈 밖의 상자와 그리지 않는 계약은 상자별 집중 뷰에서 봅니다.</p><ul><li><strong><a href="#f-FEAT-0001--FEAT-0004">/abbd ask the blueprint before the code</a></strong> <span class="muted">이 상자를 쓰는 상자:</span> <a href="#f-FEAT-0001--FEAT-0023">abbd reader</a></li><li><strong><a href="#f-FEAT-0001--FEAT-0006">/abbd record what a reader found</a></strong> <span class="muted">이 상자가 쓰는 상자:</span> <a href="#f-FEAT-0001--FEAT-0023">abbd reader</a></li><li><strong><a href="#f-FEAT-0001--FEAT-0023">abbd reader</a></strong> <span class="muted">이 상자가 쓰는 상자:</span> <a href="#f-FEAT-0001--FEAT-0004">/abbd ask the blueprint before the code</a> <span class="muted">이 상자를 쓰는 상자:</span> <a href="#f-FEAT-0001--FEAT-0006">/abbd record what a reader found</a></li></ul></details>
   <div class="text">
     <div class="about">
       <p class="muted">이 기능의 설명은 아직 없습니다. <code>abbd understand FEAT-0001 FILE</code>로 채웁니다.</p>
