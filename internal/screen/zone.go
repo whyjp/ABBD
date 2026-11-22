@@ -218,13 +218,8 @@ func (d *Drawing) recorded(t tree, zones []recordZone) []group {
 				key, most = h, n
 			}
 		}
-		for len(ids) > 0 {
-			run := d.together(ids)
-			if len(run) == 0 {
-				break
-			}
+		for _, run := range d.pieces(ids) {
 			out = append(out, group{title: z.name, ids: run, hue: key})
-			ids = slices.DeleteFunc(ids, func(id string) bool { return slices.Contains(run, id) })
 		}
 	}
 	return out
@@ -316,6 +311,103 @@ func (d *Drawing) together(ids []string) []string {
 		out = append(out, b.ID)
 	}
 	return out
+}
+
+// piecesMost is how many boxes a zone may hold for pieces to try every
+// rectangle its boxes' edges make; a zone of more is cut by together.
+const piecesMost = 24
+
+// pieces cuts a zone's boxes ids into the bands that draw it: the most boxes
+// that sit together in one band, then the most of what is left, and so on,
+// each piece in reading order. A band around some of the boxes takes in
+// every other box of the zone it holds, and a box of the zone is not foreign
+// to it, so a zone whose boxes fit one rectangle is one band however the
+// boxes are met in reading order. Among pieces of one size the one whose
+// boxes come first in reading order is taken.
+func (d *Drawing) pieces(ids []string) [][]string {
+	var rest []Box
+	for _, b := range d.Boxes {
+		if slices.Contains(ids, b.ID) {
+			rest = append(rest, b)
+		}
+	}
+	slices.SortStableFunc(rest, func(a, b Box) int {
+		if a.Y != b.Y {
+			return a.Y - b.Y
+		}
+		return a.X - b.X
+	})
+	var out [][]string
+	for len(rest) > 0 {
+		run := d.piece(rest)
+		if len(run) == 0 {
+			break
+		}
+		var piece []string
+		for _, b := range run {
+			piece = append(piece, b.ID)
+		}
+		out = append(out, piece)
+		rest = slices.DeleteFunc(rest, func(b Box) bool { return slices.Contains(piece, b.ID) })
+	}
+	return out
+}
+
+// piece is the most of bs, which stand in reading order, that sit together
+// as one band. The rectangle of such a set can be named by the edges of its
+// boxes, so each rectangle the edges of bs make is tried.
+func (d *Drawing) piece(bs []Box) []Box {
+	if len(bs) > piecesMost {
+		var ids []string
+		for _, b := range bs {
+			ids = append(ids, b.ID)
+		}
+		var out []Box
+		for _, id := range d.together(ids) {
+			for _, b := range bs {
+				if b.ID == id {
+					out = append(out, b)
+				}
+			}
+		}
+		return out
+	}
+	var x0s, x1s, y0s, y1s []int
+	for _, b := range bs {
+		x0s, x1s, y0s, y1s = append(x0s, b.X), append(x1s, b.X+b.W), append(y0s, b.Y), append(y1s, b.Y+b.H)
+	}
+	var best []int
+	var bestBoxes []Box
+	for _, x0 := range x0s {
+		for _, x1 := range x1s {
+			for _, y0 := range y0s {
+				for _, y1 := range y1s {
+					var in []int
+					for i, b := range bs {
+						if b.X >= x0 && b.X+b.W <= x1 && b.Y >= y0 && b.Y+b.H <= y1 {
+							in = append(in, i)
+						}
+					}
+					if len(in) < len(best) || len(in) == 0 || len(in) == len(best) && slices.Compare(in, best) >= 0 {
+						continue
+					}
+					var set []Box
+					for _, i := range in {
+						set = append(set, bs[i])
+					}
+					if d.sitTogether(set) {
+						best, bestBoxes = in, set
+					}
+				}
+			}
+		}
+	}
+	if len(bestBoxes) == 0 {
+		// No box sits clear even alone, so no band is drawn for it, and the
+		// others are cut as before.
+		return bs[:1]
+	}
+	return bestBoxes
 }
 
 // sitTogether says a band around bs, with no room for a title yet, stands
