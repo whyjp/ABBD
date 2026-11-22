@@ -8428,7 +8428,15 @@
                 "Code": true
               },
               {
-                "Text": ") 못 맞는 주장은 STALE로 본다. 평범한 stack의 저장과 status는 그대로이고, ",
+                "Text": ") 못 맞는 주장은 STALE로 본다. view와 kind와 faces는 stack이 아닌 그림이 말하면 ",
+                "Code": false
+              },
+              {
+                "Text": "checkFigure",
+                "Code": true
+              },
+              {
+                "Text": "가 먼저 거부하며, 평범한 stack의 저장과 status는 그대로이고, ",
                 "Code": false
               },
               {

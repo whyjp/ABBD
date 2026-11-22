@@ -438,13 +438,6 @@ func statusFigures[C model.Claim[C]](e env, units []model.Unit, figs []store.Fig
 // groups it names, and a second record of one view. The relations the record
 // claims are read with the rest of the figure's gaps.
 func checkComposition[C model.Claim[C]](e env, f *store.Figure[C]) error {
-	kind := model.KindOf[C]()
-	if !kind.Composes {
-		if f.View != "" || f.Kind != "" || len(f.Faces) > 0 {
-			return fmt.Errorf("a %s composes no view; drop the view, kind and faces fields, which a stack takes", kind.Noun)
-		}
-		return nil
-	}
 	layers, ok := any(f.Claims()).([]model.Layer)
 	if !ok {
 		return nil
