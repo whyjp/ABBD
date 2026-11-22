@@ -2,6 +2,7 @@ package screen
 
 import (
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -231,5 +232,41 @@ func TestAnInsideCountsTheStaticPairsItLeftOut(t *testing.T) {
 	want := level("in", insideOf(t, showStatic(units)).Drawing, at)
 	if got.Lines != want.Lines || got.Lines != 1 {
 		t.Errorf("levels count %d lines at rest and %d with static_lines, want 1 both", got.Lines, want.Lines)
+	}
+}
+
+// Each full view lists, as text, what every box uses and is used by, the
+// pairs left out of the picture included, so a capture of the page holds what
+// a focus view shows.
+func TestAViewListsItsBoxesNeighborsAsText(t *testing.T) {
+	units := ripgrep()
+	units[0].Relations = append(units[0].Relations, found("MOD-0005", model.DependsOn, "import"))
+	m := build(units)
+	names := func(rs []Near) []string {
+		var out []string
+		for _, r := range rs {
+			out = append(out, r.Name)
+		}
+		return out
+	}
+	by := map[string]Neighbor{}
+	for _, n := range m.Overview.Neighbors {
+		by[n.Name] = n
+	}
+	if got := names(by["ripgrep"].Uses); !slices.Contains(got, "grep-printer") || !slices.Contains(got, "grep") {
+		t.Errorf("ripgrep uses %v, want grep and the grep-printer a static line left out of the picture", got)
+	}
+	if got := names(by["grep-printer"].UsedBy); !slices.Contains(got, "ripgrep") {
+		t.Errorf("grep-printer is used by %v, want ripgrep", got)
+	}
+	pages, err := Pages(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	page := string(pages["index.html"])
+	for _, want := range []string{"상자별 이웃", "이 상자가 쓰는 상자:", "이 상자를 쓰는 상자:", "<details class=\"neighbors\" open>"} {
+		if !strings.Contains(page, want) {
+			t.Errorf("the overview page lacks %q", want)
+		}
 	}
 }

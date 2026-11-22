@@ -35,7 +35,10 @@ type Drawing struct {
 	// Counted are the pairs of places whose lines the view counts on their
 	// boxes instead of drawing (primary.go), and countedRels the stored
 	// relations those lines stand for.
-	Counted     [][2]string `json:"-"`
+	Counted [][2]string `json:"-"`
+	// Neighbors are the full view's boxes with the boxes they use and those
+	// that use them, listed as text under the picture (neighbors.go).
+	Neighbors   []Neighbor `json:"-"`
 	countedRels []string
 	// Outside are the external units that take part in the primary flow,
 	// drawn in dotted boxes above the picture (participants.go).
