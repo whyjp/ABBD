@@ -43,7 +43,7 @@ func focusID(scope, unit model.ID) string {
 	if scope == "" {
 		scope = "overview"
 	}
-	return "f-" + string(scope) + "--" + string(unit)
+	return "f-" + addressOf(scope) + "--" + addressOf(unit)
 }
 
 // A box that both uses the focus and is used by it is drawn once where its

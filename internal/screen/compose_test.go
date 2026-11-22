@@ -222,3 +222,34 @@ func TestAFoldedGroupHasAPageAtItsAddress(t *testing.T) {
 		}
 	}
 }
+
+// A box inside a group that holds boxes of its own stands under the group in
+// the navigation and goes up to it, and no focus id carries a drawing ID.
+func TestABoxInsideAFoldedGroupStandsUnderTheGroup(t *testing.T) {
+	units := append(tangled(), inside("MOD-0111", "MOD-0101"), inside("MOD-0112", "MOD-0101"))
+	units = named(units)
+	in := Input{Units: units}
+	in.Figures.Stacks = []store.Stack{record("MOD-0100", model.KindCore, clique())}
+	m := Build(in)
+	member, ok := insideByID(m, "MOD-0101")
+	if !ok || member.Up != "#m-stack-core.1" {
+		t.Fatalf("the member's view goes up to the group: %+v", member.Up)
+	}
+	nav, _ := navTree(m)
+	depth := map[string]int{}
+	for _, n := range nav {
+		depth[n.ID] = n.Depth
+	}
+	if depth["stack-core.1"] != 1 || depth["MOD-0101"] != 2 {
+		t.Errorf("navigation depths %v: the group stands in its module and the member under the group", depth)
+	}
+	pages, err := Pages(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for file, b := range pages {
+		if strings.Contains(string(b), "f-MOD-0101~") || strings.Contains(string(b), "--MOD-0101~") {
+			t.Errorf("%s carries a drawing ID in a focus id", file)
+		}
+	}
+}

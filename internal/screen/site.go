@@ -210,9 +210,10 @@ func navTree(m Model) ([]NavItem, map[string]string) {
 	for _, u := range m.Units {
 		parent[u.ID] = u.Parent
 	}
-	// A folded group is no stored unit: it stands in the module its view goes up to.
+	// A folded group is no stored unit, and a box inside one stands under it:
+	// each view stands under the one its view goes up to.
 	for _, ins := range m.Insides {
-		if _, stored := parent[ins.ID]; !stored {
+		if _, stored := parent[ins.ID]; !stored || strings.HasPrefix(ins.Up, "#m-stack-") {
 			parent[ins.ID] = strings.TrimPrefix(ins.Up, "#m-")
 		}
 	}
