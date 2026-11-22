@@ -2272,6 +2272,7 @@
         "internal/screen/route.go",
         "internal/screen/router.go",
         "internal/screen/screen.go",
+        "internal/screen/shape.go",
         "internal/screen/site.go",
         "internal/screen/stack.go",
         "internal/screen/stages.go",
@@ -7987,7 +7988,23 @@
                 "Code": true
               },
               {
-                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
+                "Text": "로 낸다. 어느 쪽도 검사를 실패시키지 않는다. lint는 같은 전체 뷰마다 ",
+                "Code": false
+              },
+              {
+                "Text": "shape VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " 줄과 ",
+                "Code": false
+              },
+              {
+                "Text": "levels[].shape",
+                "Code": true
+              },
+              {
+                "Text": "로 뷰의 구조를 숫자로 알리며, 이것도 발견일 뿐 검사를 실패시키지 않는다. status는 개요의 상자들이 서로를 돌아 쓰는 순환 묶음의 수를 ",
                 "Code": false
               },
               {
@@ -34461,6 +34478,46 @@
               },
               {
                 "Text": "이 지킨다. ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Shape",
+                "Code": true
+              },
+              {
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "shape.go",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "viewShape",
+                "Code": true
+              },
+              {
+                "Text": ")는 뷰가 세는 선, 곧 그린 선과 그리지 않고 센 쌍에서 이름이 아니라 구조만으로 상자 수, 순환 위 상자, 사슬 깊이, 층 후보, 형제 가족 후보, 틀을 넘는 선 가운데 계약을 거치는 몫을 숫자로 내고, 저장된 stack이 상자 둘 이상을 두 층 이상에 담으면 위로 쓰는 선을 센다. 이것도 발견일 뿐이어서 그림을 바꾸지 않고 lint를 실패시키지 않으며, 층이나 가족인지는 코드를 읽는 쪽이 가린다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestShapeReadsTheChainAndTheCycle",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "TestShapeFindsAFamilyOfPartsThatShareAContract",
+                "Code": true
+              },
+              {
+                "Text": "가 지킨다. ",
                 "Code": false
               },
               {

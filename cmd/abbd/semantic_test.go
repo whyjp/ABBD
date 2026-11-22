@@ -358,3 +358,19 @@ func TestLintReportsATangleOfBoxes(t *testing.T) {
 	p.want(0, "tangle overview: a, b, c, d, 4개 상자가 서로를 모두 쓰고 있어", "lint")
 	p.want(0, "", "status", "--check")
 }
+
+// A view's shape is a finding in numbers: lint prints it beside the level
+// and never fails for it.
+func TestLintReportsTheShapeOfAView(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.extract(`{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}
+],"relations":[{"from":"billing","to":"ledger","kind":"depends_on","via":"call"}]}`)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "shape overview: 상자 2개, 이어진 것 2개, 쌍 1개, 순환 위 0개, 사슬 1줄, 층 후보 1·1", "lint")
+	p.want(0, "", "status", "--check")
+}
