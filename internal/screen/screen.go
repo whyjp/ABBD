@@ -482,10 +482,15 @@ func Build(in Input) Model {
 	rank(&m)
 	for i, d := range leads {
 		d.Matrix = d.matrix()
-		d.Neighbors = d.neighbors(atOverview)
+		at, focus := atOverview, m.Focus
 		if i > 0 {
-			d.Neighbors = d.neighbors(atTop)
+			at, focus = atTop, m.Insides[i-1].Focus
 		}
+		href := map[string]string{}
+		for _, f := range focus {
+			href[f.Unit] = "#" + f.ID
+		}
+		d.Neighbors = d.neighbors(at, href)
 	}
 	m.nameGroups()
 	return m

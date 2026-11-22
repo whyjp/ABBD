@@ -242,20 +242,31 @@ func TestAViewListsItsBoxesNeighborsAsText(t *testing.T) {
 	units := ripgrep()
 	units[0].Relations = append(units[0].Relations, found("MOD-0005", model.DependsOn, "import"))
 	m := build(units)
-	var got Neighbor
-	for _, n := range m.Overview.Neighbors {
-		if n.Name == "ripgrep" {
-			got = n
+	names := func(rs []Near) []string {
+		var out []string
+		for _, r := range rs {
+			out = append(out, r.Name)
 		}
+		return out
 	}
-	if !slices.Contains(got.Uses, "grep-printer") || !slices.Contains(got.Uses, "grep") {
-		t.Errorf("ripgrep uses %v, want grep and the grep-printer a static line left out of the picture", got.Uses)
+	by := map[string]Neighbor{}
+	for _, n := range m.Overview.Neighbors {
+		by[n.Name] = n
+	}
+	if got := names(by["ripgrep"].Uses); !slices.Contains(got, "grep-printer") || !slices.Contains(got, "grep") {
+		t.Errorf("ripgrep uses %v, want grep and the grep-printer a static line left out of the picture", got)
+	}
+	if got := names(by["grep-printer"].UsedBy); !slices.Contains(got, "ripgrep") {
+		t.Errorf("grep-printer is used by %v, want ripgrep", got)
 	}
 	pages, err := Pages(m)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if page := string(pages["index.html"]); !strings.Contains(page, "상자별 이웃") || !strings.Contains(page, "쓰는 상자:") {
-		t.Error("the overview page does not list the boxes' neighbors as text")
+	page := string(pages["index.html"])
+	for _, want := range []string{"상자별 이웃", "이 상자가 쓰는 상자:", "이 상자를 쓰는 상자:", "<details class=\"neighbors\" open>"} {
+		if !strings.Contains(page, want) {
+			t.Errorf("the overview page lacks %q", want)
+		}
 	}
 }
