@@ -22,6 +22,8 @@ type Dependent struct {
 	// Href is where the name links: the page of the unit's own, when it has
 	// one, otherwise its row in the list of units.
 	Href string `json:"-"`
+	// Carries are the symbols the phrases of its relations to the unit name.
+	Carries []Carry `json:",omitempty"`
 }
 
 // directDependents is, for each present unit, the units that depend on or
@@ -73,7 +75,7 @@ func (o *overview) dependentsOf(id model.ID) []Dependent {
 		if href == "" {
 			href = "#u-" + string(d)
 		}
-		out = append(out, Dependent{ID: string(d), Name: name, Href: href})
+		out = append(out, Dependent{ID: string(d), Name: name, Href: href, Carries: o.tree.carriesOf(d, id)})
 	}
 	return out
 }

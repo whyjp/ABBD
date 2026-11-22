@@ -254,6 +254,7 @@ func TestAPhraseNamesTheSymbolsThatCarryIt(t *testing.T) {
 	p.want(1, "give the phrase", append(edge, "--symbol", "Post")...)
 	p.want(0, "its symbols Post carry it", append(edge, "--phrase", "charge post", "--symbol", "Post")...)
 	contains(t, p.want(0, "", "explain", "MOD-0002"), `phrase "charge post", inferred, symbols Post`)
+	contains(t, p.want(0, "", "impact", "MOD-0001"), `phrase "charge post", inferred, symbols Post`)
 	if text := p.want(0, "", "lint"); strings.Contains(text, "lint: symbols:") {
 		t.Errorf("a phrase with a symbol is still advised on:\n%s", text)
 	}

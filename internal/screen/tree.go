@@ -18,6 +18,8 @@ type tree struct {
 	// it, by its key.
 	vias    map[string]model.Via
 	phrases map[string]phrase
+	// symbols are the names in the code that carry a phrase, by the same key.
+	symbols map[string][]string
 	// whens are the conditions relations hold under, by key, each with the
 	// origin of a lower claim that gives it.
 	whens map[string]phrase
@@ -43,7 +45,7 @@ func livePhrase(u model.Unit, kind model.RelationKind, to model.ID) (model.Phras
 }
 
 func newTree(units []model.Unit) tree {
-	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}, phrases: map[string]phrase{}, whens: map[string]phrase{}, stated: map[string]bool{}}
+	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}, phrases: map[string]phrase{}, symbols: map[string][]string{}, whens: map[string]phrase{}, stated: map[string]bool{}}
 	for _, u := range model.Present(units) {
 		t.units[u.ID] = u
 		for _, r := range u.Relations {
@@ -59,6 +61,9 @@ func newTree(units []model.Unit) tree {
 			}
 			if n, ok := livePhrase(u, r.Kind, r.To); ok {
 				t.phrases[key(u.ID, r.Kind, r.To)] = phrase{n.Text, n.Writer.Origin()}
+				if len(n.Symbols) > 0 {
+					t.symbols[key(u.ID, r.Kind, r.To)] = slices.Clone(n.Symbols)
+				}
 			}
 		}
 	}
