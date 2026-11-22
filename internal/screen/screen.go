@@ -483,8 +483,17 @@ func Build(in Input) Model {
 	m.Participants = tiedParticipants(ov.participants, m.Primary, in.Units)
 	m.Overview.Outside = outsideOf(m.Participants, m.Primary, in.Units)
 	rank(&m)
-	for _, d := range leads {
+	for i, d := range leads {
 		d.Matrix = d.matrix()
+		at, focus := atOverview, m.Focus
+		if i > 0 {
+			at, focus = atTop, m.Insides[i-1].Focus
+		}
+		href := map[string]string{}
+		for _, f := range focus {
+			href[f.Unit] = "#" + f.ID
+		}
+		d.Neighbors = d.neighbors(at, href)
 	}
 	m.nameGroups()
 	return m
