@@ -133,13 +133,24 @@ func scripting(t tree, o owners, l scriptLang, argv []string, init any) (found, 
 		return found{}, err
 	}
 	defer r.srv.Close()
+	server := filepath.Base(argv[0])
+	opening := startProgress(statusOut, server+": opening", "files", len(files))
 	for _, p := range files {
 		if err := r.srv.Open(r.abs(p), l.exts[strings.ToLower(path.Ext(p))]); err != nil {
+			opening.end()
 			return found{}, err
 		}
+		opening.tick()
 	}
+	opening.end()
 	symbols := make([][]scriptSymbol, len(files))
-	if err := parallel(len(files), func(i int) error { return r.symbols(ctx, files[i], &symbols[i]) }); err != nil {
+	listing := startProgress(statusOut, server+": listing declarations of", "files", len(files))
+	err = parallel(len(files), func(i int) error {
+		defer listing.tick()
+		return r.symbols(ctx, files[i], &symbols[i])
+	})
+	listing.end()
+	if err != nil {
 		return found{}, err
 	}
 	f := found{covered: map[string]bool{}}
@@ -152,7 +163,13 @@ func scripting(t tree, o owners, l scriptLang, argv []string, init any) (found, 
 		f.covered[u] = true
 	}
 	all := slices.Concat(symbols...)
-	if err := parallel(len(all), func(i int) error { return r.uses(ctx, all[i]) }); err != nil {
+	asking := startProgress(statusOut, server+": finding the uses of", "declarations", len(all))
+	err = parallel(len(all), func(i int) error {
+		defer asking.tick()
+		return r.uses(ctx, all[i])
+	})
+	asking.end()
+	if err != nil {
 		return found{}, err
 	}
 	provides := map[link]bool{}

@@ -428,9 +428,26 @@ func resolveParents(units []Unit) {
 	}
 }
 
+// ignoredSupplement says, for a unit whose supplement parent another writer's
+// claim outranks, which claim shows instead and what a reader does to move it.
+// The order of the writers is not changed; the supplement's claim only stays
+// stored beside the winner, so the reader is told it has no effect.
+func ignoredSupplement(u Unit, holds map[ID]bool) (string, bool) {
+	c, ok := u.Claim(Supplement)
+	if !ok || u.Parent == "" || u.ParentWriter == Supplement || u.Parent == c.To || StatusOf(c.Evidence) == Dead || !holds[c.To] || c.To == u.ID {
+		return "", false
+	}
+	if u.Masked("parent", c.Writer, ParentDigest(c)) {
+		return "", false
+	}
+	how := fmt.Sprintf("to move it, place it with abbd record parent %s %s --evidence ..., or change where the extraction script puts it", u.ID, c.To)
+	return fmt.Sprintf("parent ignored: %s %q is placed in %s by the %s, so the supplement's parent %s has no effect; %s", u.ID, u.Name.Value, u.Parent, u.ParentWriter, c.To, how), true
+}
+
 // ParentConflicts lists the units where a human's parent overrides the
 // script's and the script's parent changed since the human stated it to one
-// the human did not choose.
+// the human did not choose, and those where a supplement's parent is outranked
+// by another writer's, and so has no effect.
 func ParentConflicts(units []Unit) []string {
 	var out []string
 	for _, u := range Present(units) {
@@ -442,6 +459,17 @@ func ParentConflicts(units []Unit) []string {
 		if s.To != h.Over && s.To != h.To {
 			was := place(h.Over)
 			out = append(out, fmt.Sprintf("%s: a human placed it in %s (%s) over the script's %s, and the script now places it in %s", u.ID, h.To, h.Source, was, place(s.To)))
+		}
+	}
+	holds := map[ID]bool{}
+	for _, u := range Present(units) {
+		if u.Kind.Holds() {
+			holds[u.ID] = true
+		}
+	}
+	for _, u := range Present(units) {
+		if m, ok := ignoredSupplement(u, holds); ok {
+			out = append(out, m)
 		}
 	}
 	return out
