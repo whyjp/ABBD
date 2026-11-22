@@ -2,16 +2,16 @@
 question: What are the layers of the abbd CLI?
 format: 1
 layers:
-    - name: commands
-      role: turns one command line into one verb and runs it, rendering again after a write or a partial refusal
+    - name: 명령
+      role: 명령줄 하나를 동사 하나로 바꿔 실행하고, 쓰기나 일부 거부 뒤에 다시 그린다
       units:
         - MOD-0001
       evidence:
         - path: cmd/abbd/main.go
-          lines: "414"
+          lines: "416"
           quote: var commands = map[string]command{
         - path: cmd/abbd/main.go
-          lines: "553"
+          lines: "555"
           quote: if err := e.publish(); err != nil {
       writer: reader
       code:

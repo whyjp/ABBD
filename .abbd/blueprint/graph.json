@@ -41683,8 +41683,8 @@
         {
           "N": 1,
           "ID": "stack-cli.1",
-          "Name": "commands",
-          "Role": "turns one command line into one verb and runs it, rendering again after a write or a partial refusal",
+          "Name": "명령",
+          "Role": "명령줄 하나를 동사 하나로 바꿔 실행하고, 쓰기나 일부 거부 뒤에 다시 그린다",
           "Badge": "",
           "Source": "",
           "Units": [
