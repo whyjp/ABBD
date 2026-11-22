@@ -96,6 +96,8 @@ type InsideUnit struct {
 	// Rank is where the unit's box stands on its module's inside, for a
 	// unit the inside draws.
 	Rank *Rank `json:",omitempty"`
+	// Dependents are the units that depend directly on this one.
+	Dependents []Dependent `json:",omitempty"`
 }
 
 const (
@@ -797,6 +799,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		if f := sentence(u); f != nil {
 			iu.Sentence, iu.Guess = f.Value, f.Guess()
 		}
+		iu.Dependents = o.dependentsOf(u.ID)
 		ins.Units = append(ins.Units, iu)
 	}
 	for _, p := range paths {

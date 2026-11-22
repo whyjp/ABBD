@@ -171,5 +171,5 @@ func foundationText(n int) string {
 	if n == 0 {
 		return "기반"
 	}
-	return "기반 · " + usedByText(n)
+	return "기반 · " + usedByText(n) + "(상자 단위)"
 }

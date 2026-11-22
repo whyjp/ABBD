@@ -574,6 +574,9 @@ type overview struct {
 	bandUses map[model.ID][]model.ID
 	// aside are the boxes left out of the picture (aside.go).
 	aside map[model.ID]bool
+	// dependents are each unit's direct dependents (dependents.go), set by
+	// Build for the lists the pages write.
+	dependents map[model.ID][]model.ID
 	// common are the overview's common modules by unit (common.go), whose
 	// boxes say in their tooltips what kind they are.
 	common map[model.ID]CommonView
@@ -1390,6 +1393,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 					names = append(names, o.name(u))
 				}
 				b.Title += "\n쓰는 상자: " + strings.Join(names, ", ")
+			}
+			if tops := o.topUsed(m, 3); len(tops) > 0 {
+				b.Title += "\n상자 수로 센 값이라, 안쪽 단위별 사용 수와 다를 수 있습니다. 가장 많은 상자가 쓰는 안쪽 단위: " + strings.Join(tops, ", ")
 			}
 			d.Height = max(d.Height, r.Y+r.H+padY)
 			d.Width = max(d.Width, r.X+r.W+padX)
