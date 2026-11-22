@@ -7405,7 +7405,23 @@
                 "Code": true
               },
               {
-                "Text": "는 더해지고 빠진 실행 시점 관계를 따로 센다. 다만 ",
+                "Text": "는 더해지고 빠진 실행 시점 관계를 따로 센다. 상자 선은 그대로인 채 그 아래 저장된 관계만 더해지거나 빠진 변화는 ",
+                "Code": false
+              },
+              {
+                "Text": "상자 안 관계",
+                "Code": true
+              },
+              {
+                "Text": "로 따로 세고, ",
+                "Code": false
+              },
+              {
+                "Text": "review",
+                "Code": true
+              },
+              {
+                "Text": "는 그 두 끝을 영향의 씨앗으로 삼는다. 다만 ",
                 "Code": false
               },
               {
@@ -40803,6 +40819,54 @@
               },
               {
                 "Text": "는 via와 인용문 전부를 싣는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Inside",
+                "Code": true
+              },
+              {
+                "Text": "는 상자 선이 이미 있고 그림이 그대로인 채 그 아래 단위 사이에 더해지거나 빠진 저장된 관계로(",
+                "Code": false
+              },
+              {
+                "Text": "inside",
+                "Code": true
+              },
+              {
+                "Text": "), 두 최상위 상자와 인용문을 싣고 ",
+                "Code": false
+              },
+              {
+                "Text": "Lines",
+                "Code": true
+              },
+              {
+                "Text": "가 ",
+                "Code": false
+              },
+              {
+                "Text": "inside relation",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 찍으며 ",
+                "Code": false
+              },
+              {
+                "Text": "Within",
+                "Code": true
+              },
+              {
+                "Text": "은 어느 끝으로든 남기고 ",
+                "Code": false
+              },
+              {
+                "Text": "Boundary",
+                "Code": true
+              },
+              {
+                "Text": "는 켜지 않는다. ",
                 "Code": false
               },
               {
