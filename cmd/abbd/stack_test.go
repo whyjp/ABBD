@@ -329,7 +329,22 @@ func TestAStackMayComposeOneView(t *testing.T) {
 	p.want(1, "which takes two units or more", "stack", "core", p.file(t, "cycle.md", cycle))
 	hub := strings.Replace(strings.Replace(chargeStack, "layers:\n", "view: overview\nkind: core\nlayers:\n", 1), "    units: [MOD-0002]\n", "    as: hub\n    units: [MOD-0002]\n", 1)
 	hub = strings.Replace(hub, "  - name: billing\n", "  - name: billing\n    as: hub\n", 1)
-	p.want(1, "are used both ways with half the view's other boxes", "stack", "ledger", p.file(t, "hub.md", hub))
+	p.want(1, "is used both ways with half the view's other boxes", "stack", "ledger", p.file(t, "hub.md", hub))
 	p.want(1, "is as cycle, which a stack of kind layers does not hold", "stack", "bad", p.file(t, "bad.md", strings.Replace(composed, "    units: [MOD-0002]\n", "    as: cycle\n    units: [MOD-0002]\n", 1)))
 	p.want(1, "composes no view", "flow", "f", p.file(t, "flow.md", "---\nquestion: q\nview: overview\nsteps: []\n---\n"))
+}
+
+// A record whose claim the relations bear out reads current; when a relation
+// it rests on goes, the check fails on it and says why.
+func TestACompositionGoesStaleWhenItsRelationsGo(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "depends_on", "MOD-0002", "--via", "call", "--evidence", "billing/charge.go:4:func Charge() {}")
+	p.want(0, "INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post() {}")
+	hubs := strings.Replace(strings.Replace(chargeStack, "layers:\n", "view: overview\nkind: core\nlayers:\n", 1), "    units: [MOD-0002]\n", "    as: hub\n    units: [MOD-0002]\n", 1)
+	hubs = strings.Replace(hubs, "  - name: billing\n", "  - name: billing\n    as: hub\n", 1)
+	p.want(0, "stored stack hubs", "stack", "hubs", p.file(t, "hubs.md", hubs))
+	p.want(0, "stacks: 1 stack(s), 2 layer(s), 0 STALE", "status", "--check")
+	p.want(0, "retracted", "retract", "MOD-0001.depends_on.MOD-0002", "--reason", "a wrong reading")
+	p.want(1, "is used both ways with half the view's other boxes", "status", "--check")
 }

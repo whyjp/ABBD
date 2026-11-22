@@ -78,10 +78,19 @@ func (c Composition) AsOf(l Layer) string {
 	if l.As != "" {
 		return l.As
 	}
-	if as := groupAs[c.Kind]; c.Kind != KindCore && len(as) > 0 {
+	if as := groupAs[c.kind()]; c.kind() != KindCore && len(as) > 0 {
 		return as[0]
 	}
 	return ""
+}
+
+// kind is the record's kind, stages for the stack marked the primary flow
+// that names none.
+func (c Composition) kind() string {
+	if c.Kind == "" && c.Primary {
+		return KindStages
+	}
+	return c.Kind
 }
 
 // Validate checks the record on its own, before the state: the kind and the
@@ -100,8 +109,8 @@ func (c Composition) Validate(layers []Layer) error {
 		}
 	}
 	for i, l := range layers {
-		if l.As != "" && !slices.Contains(groupAs[c.Kind], l.As) {
-			return fmt.Errorf("layer %d is as %s, which a stack of kind %s does not hold; its groups are as %s", i+1, l.As, kindWord(c.Kind), strings.Join(groupAs[c.Kind], ", "))
+		if l.As != "" && !slices.Contains(groupAs[c.kind()], l.As) {
+			return fmt.Errorf("layer %d is as %s, which a stack of kind %s does not hold; its groups are as %s", i+1, l.As, kindWord(c.kind()), strings.Join(groupAs[c.kind()], ", "))
 		}
 		as := c.AsOf(l)
 		switch {
@@ -203,7 +212,7 @@ func (c Composition) Gaps(layers []Layer, units []Unit) []Gap {
 			case c.View == "":
 				add(n, "a hub is a box used with the view's boxes; say the view")
 			case !st.hubbed(l.Units[0], boxes, true):
-				add(n, "%s", st.notShown(l.Units, "are used both ways with half the view's other boxes", st.hubbed(l.Units[0], boxes, false)))
+				add(n, "%s", st.notShown(l.Units, "is used both ways with half the view's other boxes", st.hubbed(l.Units[0], boxes, false)))
 			}
 		case AsBoundary:
 			if c.View == "" || c.View == OverviewView {
@@ -342,7 +351,7 @@ func (st state) hubbed(hub ID, boxes []ID, viaOnly bool) bool {
 func (st state) reachesOutside(id, module ID) bool {
 	for from, u := range st {
 		for _, r := range u.Relations {
-			if r.Dead || r.Via == "" || !r.Kind.Uses() {
+			if _, present := st[r.To]; !present || r.Dead || r.Via == "" || !r.Kind.Uses() {
 				continue
 			}
 			if st.under(from, id) && !st.under(r.To, module) || st.under(r.To, id) && !st.under(from, module) {
@@ -379,7 +388,7 @@ func (st state) usedByAnother(contract ID, mine []ID, layers []Layer) bool {
 			continue
 		}
 		for _, r := range u.Relations {
-			if !r.Dead && r.Kind.Uses() && r.To == contract {
+			if !r.Dead && r.Kind.Uses() && r.Via != "" && r.To == contract {
 				return true
 			}
 		}
@@ -394,7 +403,7 @@ func (st state) tiedTo(id ID, contracts []ID) bool {
 			continue
 		}
 		for _, r := range u.Relations {
-			if !r.Dead && (r.Kind == Provides || r.Kind.Uses()) && slices.Contains(contracts, r.To) {
+			if !r.Dead && (r.Kind == Provides || r.Kind.Uses() && r.Via != "") && slices.Contains(contracts, r.To) {
 				return true
 			}
 		}
@@ -424,7 +433,7 @@ func (st state) notShown(ids []ID, claim string, withoutVia bool) string {
 	for i, id := range ids {
 		names[i] = string(id)
 	}
-	text := fmt.Sprintf("%s do not %s by relations that say how they arise", strings.Join(names, ", "), claim)
+	text := fmt.Sprintf("the relations that say how they arise do not show that %s %s", strings.Join(names, ", "), claim)
 	if withoutVia {
 		text += "; only relations with no via say so, and they may be static dependencies, so fill each via first or leave the boxes ungrouped"
 	}

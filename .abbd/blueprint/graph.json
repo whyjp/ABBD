@@ -8428,7 +8428,15 @@
                 "Code": true
               },
               {
-                "Text": ") 못 맞는 주장은 STALE로 본다. 평범한 stack의 저장과 status는 그대로다. ",
+                "Text": ") 못 맞는 주장은 STALE로 본다. 평범한 stack의 저장과 status는 그대로이고, ",
+                "Code": false
+              },
+              {
+                "Text": "TestACompositionGoesStaleWhenItsRelationsGo",
+                "Code": true
+              },
+              {
+                "Text": "가 관계가 사라지면 확인이 실패하는 것을 지킨다. ",
                 "Code": false
               },
               {
@@ -22893,7 +22901,7 @@
                 "Code": true
               },
               {
-                "Text": "가 없는 relation은 세지 않고, 관계가 바뀌어 깨지면 그 stack은 STALE이다. ",
+                "Text": "가 없는 use(consumes, depends_on)는 어느 주장에서도 세지 않고(provides는 저장된 그대로 센다), primary 표시가 있고 kind가 없는 stack은 stages로 읽으며, 관계가 바뀌어 깨지면 그 stack은 STALE이다. ",
                 "Code": false
               },
               {
@@ -36434,6 +36442,14 @@
               },
               {
                 "Text": "는 stack일 때 구성 기록의 주장도 저장된 관계로 다시 계산하며, ",
+                "Code": false
+              },
+              {
+                "Text": "Breaches",
+                "Code": true
+              },
+              {
+                "Text": "는 kind가 없거나 layers인 stack만 센다. ",
                 "Code": false
               },
               {

@@ -230,3 +230,24 @@ func TestAStackKeepsItsCompositionAndAGroupIsFoundByAddress(t *testing.T) {
 		t.Errorf("a plain stack's draft holds no composition field: %q %v", plain, err)
 	}
 }
+
+// Only a stack of kind layers, or of none, counts the relations that run up
+// it; a stack of any other kind, or the primary flow, counts none.
+func TestOnlyALayersStackCountsBreaches(t *testing.T) {
+	units := []model.Unit{
+		{ID: "MOD-0001", Kind: model.Module, Relations: []model.Relation{{To: "MOD-0002", Kind: model.DependsOn, Via: "call"}}},
+		{ID: "MOD-0002", Kind: model.Module},
+	}
+	parts := []Part[model.Layer]{
+		{Claim: model.Layer{Name: "top", Role: "r", Units: []model.ID{"MOD-0002"}}},
+		{Claim: model.Layer{Name: "bottom", Role: "r", Units: []model.ID{"MOD-0001"}}},
+	}
+	for kind, want := range map[string]int{"": 1, model.KindLayers: 1, model.KindStages: 0, model.KindFamily: 0, model.KindCore: 0} {
+		if got := len(Breaches(Stack{Kind: kind, Parts: parts}, units)); got != want {
+			t.Errorf("kind %q counts %d breaches, want %d", kind, got, want)
+		}
+	}
+	if got := len(Breaches(Stack{Primary: true, Parts: parts}, units)); got != 0 {
+		t.Errorf("the primary flow counts %d breaches", got)
+	}
+}

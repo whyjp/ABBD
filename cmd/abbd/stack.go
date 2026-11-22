@@ -70,7 +70,7 @@ func (e env) statusCompositions(units []model.Unit, stacks []store.Stack) {
 		if kind == "" {
 			kind = model.KindLayers
 		}
-		fmt.Fprintf(e.stdout, "composition: stack %s, kind %s, composes %s: %d of %d box(es) held by a group, the rest stand as lines; reported, not checked\n", s.Key, kind, c.View, in, len(boxes))
+		fmt.Fprintf(e.stdout, "composition: stack %s, kind %s, composes %s: %d of %d box(es) held by a group, the rest stand as lines; a claim its relations stop bearing out shows as STALE under stacks\n", s.Key, kind, c.View, in, len(boxes))
 	}
 }
 

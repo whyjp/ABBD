@@ -135,7 +135,7 @@ func TestPromisesAreProvidedByTheGroupAndUsedByAnother(t *testing.T) {
 	provider := group(AsLayer, "MOD-0101")
 	provider.Promises = []ID{"IF-0001"}
 	user := group(AsLayer, "MOD-0102")
-	rels := map[ID][]Relation{"MOD-0101": {{To: "IF-0001", Kind: Provides}}, "MOD-0102": {{To: "IF-0001", Kind: Consumes}}}
+	rels := map[ID][]Relation{"MOD-0101": {{To: "IF-0001", Kind: Provides}}, "MOD-0102": {{To: "IF-0001", Kind: Consumes, Via: "call"}}}
 	us := inside(rels)
 	if got := gapTexts(layers, []Layer{provider, user}, us); len(got) != 0 {
 		t.Errorf("a provided and used promise has gaps %q", got)
@@ -226,5 +226,53 @@ func TestAGroupAddressIsStackKeyDotN(t *testing.T) {
 	}
 	if !slices.Contains([]string{"stack-a.1"}, GroupAddress("a", 1)) {
 		t.Errorf("group address = %q", GroupAddress("a", 1))
+	}
+}
+
+// A use with no via bears out no claim: a promise used only by a via-less use
+// is not used, a sibling tied to its contract only by one is not tied, and a
+// box reaching only an absent unit is no boundary.
+func TestAUseWithNoViaBearsOutNoClaim(t *testing.T) {
+	layers := Composition{View: "MOD-0100", Kind: KindLayers}
+	provider := withPromise(group(AsLayer, "MOD-0101"), "IF-0001")
+	user := group(AsLayer, "MOD-0102")
+	rels := map[ID][]Relation{"MOD-0101": {{To: "IF-0001", Kind: Provides}}, "MOD-0102": {{To: "IF-0001", Kind: Consumes}}}
+	if got := gapTexts(layers, []Layer{provider, user}, inside(rels)); len(got) != 1 || !strings.Contains(got[0], "no unit of another layer uses IF-0001") {
+		t.Errorf("a promise used by a use with no via: %q", got)
+	}
+	rels["MOD-0102"][0].Via = "call"
+	if got := gapTexts(layers, []Layer{provider, user}, inside(rels)); len(got) != 0 {
+		t.Errorf("a promise used by a use that says its via: %q", got)
+	}
+	family := Composition{View: "MOD-0100", Kind: KindFamily}
+	sib := withPromise(group(AsMembers, "MOD-0101", "MOD-0102"), "IF-0001")
+	rels["MOD-0102"][0].Via = ""
+	if got := gapTexts(family, []Layer{sib}, inside(rels)); len(got) != 1 || !strings.Contains(got[0], "MOD-0102 neither provides nor uses") {
+		t.Errorf("a sibling tied by a use with no via: %q", got)
+	}
+	core := Composition{View: "MOD-0100", Kind: KindCore}
+	gone := map[ID][]Relation{"MOD-0101": {use("MOD-0999", "call")}}
+	if got := gapTexts(core, []Layer{group(AsBoundary, "MOD-0101")}, inside(gone)); len(got) != 1 {
+		t.Errorf("a box reaching an absent unit is a boundary: %q", got)
+	}
+}
+
+// A plain stack has no composition gap, the stack marked the primary flow
+// may say its stages without a kind, and a stored record the code cannot
+// read as a composition is a gap, never a panic.
+func TestAPlainStackHasNoCompositionGapAndABadRecordNoPanic(t *testing.T) {
+	us := inside(nil)
+	if got := (Composition{}).Gaps([]Layer{layer("a", "MOD-0101"), layer("b", "MOD-0102")}, us); got != nil {
+		t.Errorf("a plain stack has gaps %v", got)
+	}
+	stages := group(AsStage, "MOD-0101")
+	if got := gapTexts(Composition{Primary: true}, []Layer{stages}, us); len(got) != 0 {
+		t.Errorf("a primary stack's stage has gaps %q", got)
+	}
+	for _, c := range []Composition{{Kind: "tree"}, {Kind: KindCore}, {View: "nowhere"}, {Kind: KindFamily}} {
+		if got := c.Gaps([]Layer{layer("a", "MOD-0101")}, us); len(got) != 1 || !strings.Contains(got[0].Text, "no composition") {
+			t.Errorf("%+v: gaps %v, want one saying the record is no composition", c, got)
+		}
+		_ = c.AsOf(layer("a", "MOD-0101"))
 	}
 }
