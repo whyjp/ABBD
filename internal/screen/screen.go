@@ -200,7 +200,7 @@ type UnitRow struct {
 	// Rank is where the unit's box stands on the overview, for a unit the
 	// overview draws.
 	Rank *Rank `json:",omitempty"`
-	// UsedBy names the units that depend on an external library.
+	// UsedBy names the units that depend on the unit directly.
 	UsedBy []string `json:",omitempty"`
 }
 
@@ -293,6 +293,7 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	scope := scopeOf(in)
 	o := planScoped(in.Units, "", nil, tactic{}, ls, fs, nil, scope)
+	o.dependents = directDependents(in.Units)
 	o.hooks, o.stored = in.hooks, !in.Project.InferLead()
 	var c *cut
 	// A project that turned the cut off draws every line, record or not.
@@ -330,7 +331,7 @@ func Build(in Input) Model {
 	overview := func(c *cut) Drawing {
 		return choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
 			p := planScoped(in.Units, "", nil, t, ls, fs, c, scope)
-			p.hooks, p.stored, p.common = in.hooks, o.stored, common
+			p.hooks, p.stored, p.common, p.dependents = in.hooks, o.stored, common, o.dependents
 			if p.layout.idle {
 				return Drawing{}, false
 			}
@@ -640,6 +641,25 @@ func usedBy(rows []UnitRow, units []model.Unit) {
 	for i, r := range rows {
 		if r.Kind == string(model.External) {
 			at[r.ID] = i
+		}
+	}
+	// Every other unit names the units that depend on it directly, the
+	// reverse of its relations and the direct tier of abbd impact.
+	byID := map[model.ID]model.Unit{}
+	for _, u := range units {
+		byID[u.ID] = u
+	}
+	deps := directDependents(units)
+	for i, r := range rows {
+		if r.Kind == string(model.External) {
+			continue
+		}
+		for _, d := range deps[model.ID(r.ID)] {
+			name := byID[d].Name.Value
+			if name == "" {
+				name = string(d)
+			}
+			rows[i].UsedBy = append(rows[i].UsedBy, name)
 		}
 	}
 	if len(at) == 0 {
