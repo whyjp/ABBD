@@ -161,7 +161,10 @@ abbd stack KEY FILE|- [--source REF] [--root DIR]
                                      stamped with the lines around its quotes, so it goes STALE
                                      when that code changes; a reader's is INFERRED, a human's
                                      with --source USER_STATED; it says how many stored relations
-                                     run up the stack, from a lower layer to a higher one
+                                     run up the stack, from a lower layer to a higher one; a stack
+                                     may also compose one view (view: overview or a module ID,
+                                     kind: layers|stages|family|core, each layer's as and promises,
+                                     faces): abbd recomputes what the relations must bear out
 abbd stack KEY [--root DIR]          print the stored stack as a draft to edit and store again
 abbd table KEY FILE|- [--source REF] [--root DIR]
                                      store a table: a question, two to 8 columns, each a short

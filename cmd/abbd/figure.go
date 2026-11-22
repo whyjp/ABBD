@@ -113,6 +113,8 @@ func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit
 	switch {
 	case f.Question == "" || strings.ContainsAny(f.Question, "\r\n"):
 		return fmt.Errorf("a %s answers one question, on one line, in its question field", kind.Noun)
+	case !kind.Composes && (f.View != "" || f.Kind != "" || len(f.Faces) > 0):
+		return fmt.Errorf("a %s composes no view; drop the view, kind and faces fields, which a stack takes", kind.Noun)
 	case f.Primary && !kind.Primary:
 		return fmt.Errorf("a %s cannot be marked primary; mark the stack whose layers are the flow's stages", kind.Noun)
 	case kind.MaxColumns == 0 && len(f.Columns) > 0:
@@ -127,6 +129,9 @@ func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit
 		return fmt.Errorf("a %s has at most %d %s, and this one has %d; split the question in two", kind.Noun, kind.Max, kind.Parts, len(f.Parts))
 	}
 	if err := model.ValidateColumns(f.Columns); err != nil {
+		return err
+	}
+	if err := checkComposition(e, f); err != nil {
 		return err
 	}
 	if err := checkParts(e, f.Parts, units); err != nil {
@@ -426,4 +431,31 @@ func statusFigures[C model.Claim[C]](e env, units []model.Unit, figs []store.Fig
 		return ""
 	}
 	return fmt.Sprintf("%d %s %s(s) STALE, read the code each cites again and store the %s with abbd %s KEY FILE, or delete the file status names", stale, kind.Noun, kind.Part, kind.Noun, kind.Noun)
+}
+
+// checkComposition refuses a draft that says how a view is composed where its
+// kind of figure has no such record, a record that is no composition of the
+// groups it names, and a second record of one view. The relations the record
+// claims are read with the rest of the figure's gaps.
+func checkComposition[C model.Claim[C]](e env, f *store.Figure[C]) error {
+	layers, ok := any(f.Claims()).([]model.Layer)
+	if !ok {
+		return nil
+	}
+	if err := f.Composition().Validate(layers); err != nil {
+		return fmt.Errorf("composition: %w", err)
+	}
+	if f.View == "" {
+		return nil
+	}
+	stacks, err := store.LoadKind[model.Layer](e.st)
+	if err != nil {
+		return err
+	}
+	for _, o := range stacks {
+		if o.Known && o.Key != f.Key && o.View == f.View {
+			return fmt.Errorf("composition: stack %s already composes view %s; a view has one record, so store this one with the other's key, or drop its view field", o.Key, f.View)
+		}
+	}
+	return nil
 }

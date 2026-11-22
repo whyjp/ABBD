@@ -243,6 +243,7 @@ func (e env) statusLines() error {
 	}
 	statusCycles(e.stdout, screen.OverviewCycles(in))
 	e.statusBreaches(in.Units, fs.Stacks)
+	e.statusCompositions(in.Units, fs.Stacks)
 	e.statusCells(in.Units, fs.Tables)
 	if len(texts) > 0 {
 		readTexts(e.stdout, texts)

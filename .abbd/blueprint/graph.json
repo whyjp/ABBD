@@ -2118,6 +2118,7 @@
       "Anchors": [
         "internal/model",
         "internal/model/claims.go",
+        "internal/model/composition.go",
         "internal/model/entry.go",
         "internal/model/figure.go",
         "internal/model/flow.go",
@@ -8363,7 +8364,87 @@
                 "Code": true
               },
               {
-                "Text": ")을 덧붙인다. 노트는 한 번만 나오는 인용을 인용하고, flow, stack, table은 그림 작성기 하나를 나눠 쓴다. ",
+                "Text": ")을 덧붙인다. 노트는 한 번만 나오는 인용을 인용하고, flow, stack, table은 그림 작성기 하나를 나눠 쓴다. stack은 ",
+                "Code": false
+              },
+              {
+                "Text": "view",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "kind",
+                "Code": true
+              },
+              {
+                "Text": ", layer의 ",
+                "Code": false
+              },
+              {
+                "Text": "as",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "promises",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "faces",
+                "Code": true
+              },
+              {
+                "Text": "로 한 뷰의 구성 기록이 될 수도 있어 초안에서 어긋난 주장은 거부되고(",
+                "Code": false
+              },
+              {
+                "Text": "checkComposition",
+                "Code": true
+              },
+              {
+                "Text": "), 한 뷰에 기록은 하나이며, status는 뷰의 상자 가운데 묶음에 든 수를 ",
+                "Code": false
+              },
+              {
+                "Text": "composition:",
+                "Code": true
+              },
+              {
+                "Text": " 줄로 알리고(",
+                "Code": false
+              },
+              {
+                "Text": "statusCompositions",
+                "Code": true
+              },
+              {
+                "Text": ") 못 맞는 주장은 STALE로 본다. view와 kind와 faces는 stack이 아닌 그림이 말하면 ",
+                "Code": false
+              },
+              {
+                "Text": "checkFigure",
+                "Code": true
+              },
+              {
+                "Text": "가 먼저 거부하며, 평범한 stack의 저장과 status는 그대로이고, ",
+                "Code": false
+              },
+              {
+                "Text": "TestACompositionGoesStaleWhenItsRelationsGo",
+                "Code": true
+              },
+              {
+                "Text": "가 관계가 사라지면 확인이 실패하는 것을 지킨다. ",
                 "Code": false
               },
               {
@@ -22744,6 +22825,134 @@
                 "Code": false
               },
               {
+                "Text": "Layer",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "as",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "promises",
+                "Code": true
+              },
+              {
+                "Text": "를 더 가질 수 있고(",
+                "Code": false
+              },
+              {
+                "Text": "composition.go",
+                "Code": true
+              },
+              {
+                "Text": "), ",
+                "Code": false
+              },
+              {
+                "Text": "Composition",
+                "Code": true
+              },
+              {
+                "Text": "이 뷰의 ",
+                "Code": false
+              },
+              {
+                "Text": "kind",
+                "Code": true
+              },
+              {
+                "Text": "(layers, stages, family, core)와 ",
+                "Code": false
+              },
+              {
+                "Text": "view",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "faces",
+                "Code": true
+              },
+              {
+                "Text": "로 stack을 한 뷰의 구성 기록으로 읽는다. ",
+                "Code": false
+              },
+              {
+                "Text": "Validate",
+                "Code": true
+              },
+              {
+                "Text": "는 말의 모양을, ",
+                "Code": false
+              },
+              {
+                "Text": "Gaps",
+                "Code": true
+              },
+              {
+                "Text": "는 저장된 관계로 주장을 다시 계산해 cycle이 닫히는지, clique의 모든 쌍이 서로 쓰는지, hub가 뷰 상자의 절반과 서로 쓰는지, 경계 상자가 모듈 밖과 이어지는지, promise를 한 layer가 제공하고 다른 layer가 쓰는지, family의 형제가 계약에 묶이는지, face를 뷰 안의 unit이 제공하는지 본다. ",
+                "Code": false
+              },
+              {
+                "Text": "via",
+                "Code": true
+              },
+              {
+                "Text": "가 없는 use(consumes, depends_on)는 어느 주장에서도 세지 않고(provides는 저장된 그대로 센다), primary 표시가 있고 kind가 없는 stack은 stages로 읽으며, 관계가 바뀌어 깨지면 그 stack은 STALE이다. ",
+                "Code": false
+              },
+              {
+                "Text": "GroupAddress",
+                "Code": true
+              },
+              {
+                "Text": "와 ",
+                "Code": false
+              },
+              {
+                "Text": "ParseGroupAddress",
+                "Code": true
+              },
+              {
+                "Text": "는 묶음 주소 ",
+                "Code": false
+              },
+              {
+                "Text": "stack-KEY.N",
+                "Code": true
+              },
+              {
+                "Text": "을 정한다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestACliqueIsCompleteOnRelationsThatSayTheirVia",
+                "Code": true
+              },
+              {
+                "Text": " 외 ",
+                "Code": false
+              },
+              {
+                "Text": "composition_test.go",
+                "Code": true
+              },
+              {
+                "Text": "가 지킨다. ",
+                "Code": false
+              },
+              {
                 "Text": "Breaches",
                 "Code": true
               },
@@ -36225,6 +36434,70 @@
               },
               {
                 "Text": "은 파트 중 가장 약한 origin이다. ",
+                "Code": false
+              },
+              {
+                "Text": "Figure",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "View",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Kind",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Faces",
+                "Code": true
+              },
+              {
+                "Text": "는 stack이 한 뷰를 어떻게 구성하는지 말하며 비어 있으면 파일에 쓰이지 않아 평범한 stack의 바이트가 그대로이고, ",
+                "Code": false
+              },
+              {
+                "Text": "Figure.Gaps",
+                "Code": true
+              },
+              {
+                "Text": "는 stack일 때 구성 기록의 주장도 저장된 관계로 다시 계산하며, ",
+                "Code": false
+              },
+              {
+                "Text": "Breaches",
+                "Code": true
+              },
+              {
+                "Text": "는 kind가 없거나 layers인 stack만 센다. ",
+                "Code": false
+              },
+              {
+                "Text": "Store.Group",
+                "Code": true
+              },
+              {
+                "Text": "은 ",
+                "Code": false
+              },
+              {
+                "Text": "stack-KEY.N",
+                "Code": true
+              },
+              {
+                "Text": " 주소로 묶음을 찾는다. ",
                 "Code": false
               },
               {

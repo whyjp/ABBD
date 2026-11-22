@@ -35,7 +35,13 @@ type Figure[C model.Claim[C]] struct {
 	// MarkSaid says the frontmatter states primary at all, true or false.
 	// A draft that leaves the key out keeps the stored figure's mark, so
 	// only a draft that says false drops it.
-	MarkSaid       bool
+	MarkSaid bool
+	// View, Kind and Faces say how a stack composes one view: which view,
+	// what order its groups stand in, and the contracts it offers outside.
+	// Only a kind with FigureKind.Composes holds them, and a stack that
+	// leaves them out is the plain stack it always was.
+	View, Kind     string
+	Faces          []model.ID
 	Columns        []model.Column
 	Parts, Retired []Part[C]
 	Caption        string
@@ -108,10 +114,19 @@ func ClaimsOf[C model.Claim[C]](parts []Part[C]) []C {
 // Gaps are what keep the figure's claims, taken together with its head, from
 // being true of the state, each with the places of the parts it involves.
 func (f Figure[C]) Gaps(units []model.Unit) []model.Gap {
+	var gaps []model.Gap
 	if whole := model.KindOf[C]().Whole; whole != nil {
-		return whole(f.Columns, f.Claims(), units)
+		gaps = whole(f.Columns, f.Claims(), units)
 	}
-	return nil
+	if layers, ok := any(f.Claims()).([]model.Layer); ok {
+		gaps = append(gaps, f.Composition().Gaps(layers, units)...)
+	}
+	return gaps
+}
+
+// Composition is what the figure says beyond its parts, for a stack.
+func (f Figure[C]) Composition() model.Composition {
+	return model.Composition{View: f.View, Kind: f.Kind, Faces: f.Faces, Primary: f.Primary}
 }
 
 // figureFormat is the version of a figure file.
@@ -134,7 +149,7 @@ func ParseFigureDraft[C model.Claim[C]](b []byte) (Figure[C], error) {
 	if err != nil {
 		return Figure[C]{}, fmt.Errorf("the draft's frontmatter: %w", err)
 	}
-	out := Figure[C]{Question: strings.TrimSpace(f.Question), Primary: f.Primary, MarkSaid: f.MarkSaid, Columns: f.Columns, Caption: CleanText(string(body))}
+	out := Figure[C]{Question: strings.TrimSpace(f.Question), Primary: f.Primary, MarkSaid: f.MarkSaid, View: strings.TrimSpace(f.View), Kind: strings.TrimSpace(f.Kind), Faces: f.Faces, Columns: f.Columns, Caption: CleanText(string(body))}
 	for _, p := range f.Parts {
 		out.Parts = append(out.Parts, Part[C]{Claim: p.Claim})
 	}
@@ -249,6 +264,21 @@ func encodeFigure[C model.Claim[C]](f Figure[C], stored bool) ([]byte, error) {
 			return nil, err
 		}
 	}
+	for _, field := range []struct {
+		key string
+		v   string
+	}{{"view", f.View}, {"kind", f.Kind}} {
+		if field.v != "" {
+			if err := add(field.key, field.v); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if len(f.Faces) > 0 {
+		if err := add("faces", f.Faces); err != nil {
+			return nil, err
+		}
+	}
 	if len(f.Columns) > 0 {
 		if err := add("columns", f.Columns); err != nil {
 			return nil, err
@@ -282,7 +312,7 @@ func decodeFigure[C model.Claim[C]](front []byte) (Figure[C], error) {
 	for _, field := range []struct {
 		key string
 		v   any
-	}{{"question", &f.Question}, {"primary", &f.Primary}, {"columns", &f.Columns}, {model.KindOf[C]().Parts, &f.Parts}, {"retired", &f.Retired}} {
+	}{{"question", &f.Question}, {"primary", &f.Primary}, {"view", &f.View}, {"kind", &f.Kind}, {"faces", &f.Faces}, {"columns", &f.Columns}, {model.KindOf[C]().Parts, &f.Parts}, {"retired", &f.Retired}} {
 		if n, ok := m[field.key]; ok {
 			if err := n.Decode(field.v); err != nil {
 				return f, err
@@ -338,12 +368,13 @@ func Marked[C model.Claim[C]](figs []Figure[C]) []model.FigureKey {
 	return out
 }
 
-// Breaches are the relations that run up stack s (model.Breaches). The
-// stack marked the primary flow has none: its layers are stages read
+// Breaches are the relations that run up stack s (model.Breaches). A stack
+// whose kind is not layers has none, and neither has the stack marked the
+// primary flow: its layers are stages read
 // upstream to downstream, and a later stage using an earlier one, as every
 // stage uses the config, is how a flow runs, not debt.
 func Breaches(s Stack, units []model.Unit) []model.Breach {
-	if s.Primary {
+	if s.Primary || s.Kind != "" && s.Kind != model.KindLayers {
 		return nil
 	}
 	return model.Breaches(s.Claims(), units)
@@ -475,4 +506,24 @@ func splitFrontmatter(b []byte) (front, body []byte, err error) {
 		return nil, nil, fmt.Errorf("unterminated frontmatter")
 	}
 	return front, body, nil
+}
+
+// Group is the group a stack address names: stack-KEY.N, the Nth layer of
+// the stored stack KEY. It reads the address and finds the group, and says
+// why when either fails.
+func (s Store) Group(address string) (Stack, int, error) {
+	k, n, err := model.ParseGroupAddress(address)
+	if err != nil {
+		return Stack{}, 0, err
+	}
+	st, ok, err := LoadFigure[model.Layer](s, k)
+	switch {
+	case err != nil:
+		return Stack{}, 0, err
+	case !ok:
+		return Stack{}, 0, fmt.Errorf("%s: there is no stack %s", address, k)
+	case n > len(st.Parts):
+		return Stack{}, 0, fmt.Errorf("%s: stack %s has %d groups", address, k, len(st.Parts))
+	}
+	return st, n, nil
 }
