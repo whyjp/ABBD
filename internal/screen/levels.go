@@ -62,6 +62,9 @@ type Level struct {
 	// the same with or without it.
 	Tangles [][]string `json:"tangles,omitempty"`
 	Advice  []string   `json:"advice,omitempty"`
+	// Shape is what the view's structure says about the code. It is a
+	// finding like a cycle, never fails lint and moves no drawing.
+	Shape *Shape `json:"shape,omitempty"`
 	// Participants are findings about the overview record's participant marks.
 	// They are no advice about the level, so they never move a level's
 	// verdict, and never fail lint.
@@ -89,7 +92,15 @@ func Levels(m Model) []Level {
 	for _, u := range m.Units {
 		unit[u.ID] = u
 	}
-	out := []Level{level("overview", m.Overview, atOverview)}
+	rows := map[string]UnitRow{}
+	for _, u := range m.Units {
+		rows[u.ID] = u
+	}
+	shaped := func(l Level, d Drawing, at where) Level {
+		l.Shape = viewShape(d, partsOf(d, at), rows, m.Stacks, at != atOverview)
+		return l
+	}
+	out := []Level{shaped(level("overview", m.Overview, atOverview), m.Overview, atOverview)}
 	out[0].Participants = append(out[0].Participants, participantAdvice(m.Participants, namesOf(m.Units))...)
 	for _, ins := range m.Insides {
 		if unit[ins.ID].Kind != "MOD" {
@@ -99,9 +110,20 @@ func Levels(m Model) []Level {
 		if unit[ins.ID].Parent != "" {
 			at = atNested
 		}
-		out = append(out, level(ins.ID+" "+ins.Name, ins.Drawing, at))
+		out = append(out, shaped(level(ins.ID+" "+ins.Name, ins.Drawing, at), ins.Drawing, at))
 	}
 	return out
+}
+
+// partsOf are the view's boxes that count as parts.
+func partsOf(d Drawing, at where) map[string]bool {
+	part := map[string]bool{}
+	for _, b := range d.Boxes {
+		if at != atOverview || b.Class == "design" {
+			part[b.ID] = true
+		}
+	}
+	return part
 }
 
 func level(name string, d Drawing, at where) Level {
@@ -109,12 +131,7 @@ func level(name string, d Drawing, at where) Level {
 	// The parts are the view's boxes. A frame's chips stand for what lies
 	// outside the module, and a contract no drawn module provides stands
 	// loose on the overview, so neither is a part.
-	part := map[string]bool{}
-	for _, b := range d.Boxes {
-		if at != atOverview || b.Class == "design" {
-			part[b.ID] = true
-		}
-	}
+	part := partsOf(d, at)
 	l.Boxes = len(part)
 	// A line joins two parts once, whichever way it runs, and one between
 	// two parts that use each other is one line.

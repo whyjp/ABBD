@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -273,6 +274,12 @@ func printLint(e env, r lintReport) {
 		for _, t := range l.Tangles {
 			fmt.Fprintf(e.stdout, "tangle %s: %s\n", l.View, tangleLine(t))
 		}
+		if l.Shape != nil {
+			fmt.Fprintf(e.stdout, "shape %s: %s\n", l.View, shapeLine(l.Shape))
+			for _, n := range l.Shape.Notes {
+				fmt.Fprintf(e.stdout, "shape %s: %s\n", l.View, n)
+			}
+		}
 	}
 	for _, f := range r.Failures {
 		fmt.Fprintf(e.stdout, "lint: breaks the gate: %s\n", f)
@@ -349,6 +356,27 @@ func cycleLine(names []string) string {
 // the code, which only a change to the code ends, so it never fails lint.
 func tangleLine(names []string) string {
 	return fmt.Sprintf("%s, %d개 상자가 서로를 모두 쓰고 있어 코드가 얽혀 있다. 그림은 있는 그대로 그리며, 얽힘은 코드에서 서로 쓰는 관계를 줄여야 풀린다. lint는 이것으로 실패하지 않는다", strings.Join(names, ", "), len(names))
+}
+
+// shapeLine says a view's structure in numbers: a finding about the code
+// for a reader to describe the view by, never a verdict. It never fails
+// lint.
+func shapeLine(s *screen.Shape) string {
+	out := fmt.Sprintf("상자 %d개, 이어진 것 %d개, 쌍 %d개, 순환 위 %d개, 사슬 %d줄", s.Boxes, s.Joined, s.Pairs, s.Cyclic, s.Chain)
+	if len(s.Layers) > 0 {
+		var ns []string
+		for _, n := range s.Layers {
+			ns = append(ns, strconv.Itoa(n))
+		}
+		out += fmt.Sprintf(", 층 후보 %s(위에서 아래로 상자 수), 층 사이 %d줄, 같은 무리 안 %d줄", strings.Join(ns, "·"), s.Down, s.Same)
+	}
+	for _, st := range s.Stacks {
+		out += fmt.Sprintf(", stack %s: 상자 %d개를 담고, 위로 쓰는 줄 %d", st.Key, st.Held, st.Up)
+	}
+	if s.Contract+s.Direct+s.NoProvider > 0 {
+		out += fmt.Sprintf(", 경계는 계약 %d줄과 직접 %d줄, 제공자 없는 계약 %d개", s.Contract, s.Direct, s.NoProvider)
+	}
+	return out
 }
 
 // levelsOf is the levels of the full views lint checked.
