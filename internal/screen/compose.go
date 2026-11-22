@@ -130,3 +130,25 @@ func fitMark(mark string, width int) string {
 	}
 	return ""
 }
+
+// addressOf is the address a unit's view is known by: a folded group's
+// address after the tilde of its drawing ID (groupID), else the ID itself.
+func addressOf(id model.ID) string {
+	if _, address, ok := strings.Cut(string(id), "~"); ok {
+		return address
+	}
+	return string(id)
+}
+
+// nameGroups gives each folded group's view, and the group's line in the view
+// of the module it stands in, the group's address for an ID, as the page, its
+// anchor and graph.json name it. The drawings keep their drawing IDs.
+func (m *Model) nameGroups() {
+	for i := range m.Insides {
+		ins := &m.Insides[i]
+		ins.ID = addressOf(model.ID(ins.ID))
+		for j := range ins.Units {
+			ins.Units[j].ID = addressOf(model.ID(ins.Units[j].ID))
+		}
+	}
+}

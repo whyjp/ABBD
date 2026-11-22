@@ -483,6 +483,7 @@ func Build(in Input) Model {
 	for _, d := range leads {
 		d.Matrix = d.matrix()
 	}
+	m.nameGroups()
 	return m
 }
 

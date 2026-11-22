@@ -334,7 +334,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside, 
 		}
 		var last cost
 		last.judge(ins.Drawing)
-		f := o.focus(scope, "#m-"+string(scope), full.Name+" 내부", id, ins.Drawing)
+		f := o.focus(scope, "#m-"+addressOf(scope), full.Name+" 내부", id, ins.Drawing)
 		f.judged = last.gate
 		out = append(out, f)
 	}

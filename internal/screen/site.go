@@ -210,6 +210,12 @@ func navTree(m Model) ([]NavItem, map[string]string) {
 	for _, u := range m.Units {
 		parent[u.ID] = u.Parent
 	}
+	// A folded group is no stored unit: it stands in the module its view goes up to.
+	for _, ins := range m.Insides {
+		if _, stored := parent[ins.ID]; !stored {
+			parent[ins.ID] = strings.TrimPrefix(ins.Up, "#m-")
+		}
+	}
 	has := map[string]bool{}
 	for _, ins := range m.Insides {
 		has[ins.ID] = true
@@ -251,6 +257,9 @@ func navTree(m Model) ([]NavItem, map[string]string) {
 func nameOf(m Model, id string) string {
 	if i := slices.IndexFunc(m.Units, func(u UnitRow) bool { return u.ID == id }); i >= 0 {
 		return m.Units[i].Name
+	}
+	if i := slices.IndexFunc(m.Insides, func(ins Inside) bool { return ins.ID == id }); i >= 0 {
+		return m.Insides[i].Name
 	}
 	return id
 }

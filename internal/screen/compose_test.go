@@ -59,7 +59,7 @@ func boxIDs(d Drawing) []string {
 
 // A record of kind core whose clique the relations bear out folds its boxes
 // into one box of the module's view, which says at rest what its inside
-// holds and has no view of its own yet; a view with no record draws as before.
+// holds and opens a view of its own at stack-KEY.N; a view with no record draws as before.
 func TestACompositionRecordFoldsItsGroupIntoOneBox(t *testing.T) {
 	in := Input{Units: tangled()}
 	plain := Build(in)
@@ -86,11 +86,15 @@ func TestACompositionRecordFoldsItsGroupIntoOneBox(t *testing.T) {
 			folded = b
 		}
 	}
-	if folded.Href != "" || folded.Sub == nil || folded.Sub.S != "↻ 안에 순환 4상자" || !strings.Contains(folded.Title, "공통 엔진") {
+	if folded.Href != "#m-stack-core.1" || folded.Sub == nil || folded.Sub.S != "↻ 안에 순환 4상자" || !strings.Contains(folded.Title, "공통 엔진") {
 		t.Errorf("the folded box says at rest what is inside, and opens nothing yet: %+v", folded)
 	}
-	if _, ok := byID(m, "MOD-0101~stack-core.1"); ok {
-		t.Error("a folded group has no view of its own yet")
+	group, ok := byID(m, "stack-core.1")
+	if !ok {
+		t.Fatal("a folded group has a view of its own, at its address")
+	}
+	if got := boxIDs(group.Drawing); len(got) != 4 || group.Up != "#m-MOD-0100" || group.Name != "engine core" {
+		t.Errorf("the group's view draws its four boxes and goes up to its module: %v %q %q", got, group.Up, group.Name)
 	}
 	before, _ := byID(plain, "MOD-0100")
 	if len(before.Drawing.Boxes) != 6 {
@@ -189,5 +193,32 @@ func TestAMarkIsCutToTheRoomTheBoxHas(t *testing.T) {
 	}
 	if got := fitMark(mark, 4); got != "" {
 		t.Errorf("no room: %q", got)
+	}
+}
+
+// A folded group's page is stack-KEY.N.html, its box on the module's page
+// links to it, it goes up to that module, and the navigation lists it there.
+func TestAFoldedGroupHasAPageAtItsAddress(t *testing.T) {
+	in := Input{Units: tangled()}
+	in.Figures.Stacks = []store.Stack{record("MOD-0100", model.KindCore, clique())}
+	m := Build(in)
+	pages, err := Pages(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	group, ok := pages["stack-core.1.html"]
+	if !ok {
+		t.Fatalf("no page at the group's address; pages: %d", len(pages))
+	}
+	if !strings.Contains(string(group), `id="m-stack-core.1"`) || !strings.Contains(string(group), `href="MOD-0100.html"`) {
+		t.Errorf("the group's page is its own view and goes up to its module")
+	}
+	if !strings.Contains(string(pages["MOD-0100.html"]), `href="stack-core.1.html"`) {
+		t.Errorf("the module's page links to the group's page")
+	}
+	for file := range pages {
+		if strings.Contains(file, "~") {
+			t.Errorf("a page is named by a drawing ID: %s", file)
+		}
 	}
 }

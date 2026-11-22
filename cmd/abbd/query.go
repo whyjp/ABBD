@@ -84,6 +84,9 @@ func (e env) explain(s string) error {
 	if err != nil {
 		return err
 	}
+	if _, _, err := model.ParseGroupAddress(s); err == nil {
+		return e.explainGroup(units, s)
+	}
 	u, err := e.resolve(units, s)
 	if err != nil {
 		return err
@@ -96,6 +99,9 @@ func (e env) explain(s string) error {
 		fmt.Fprintf(w, "inside %s %s\n", u.Parent, name[u.Parent])
 	}
 	if err := e.explainOverview(units, u.ID); err != nil {
+		return err
+	}
+	if err := e.explainGroups(units, u.ID); err != nil {
 		return err
 	}
 	if as := u.Built(); len(as) > 0 {
