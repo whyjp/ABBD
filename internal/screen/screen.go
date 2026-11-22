@@ -461,9 +461,11 @@ func Build(in Input) Model {
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.
+	// Only the overview draws the zones of its record.
+	recorded := map[*Drawing][]recordZone{&m.Overview: recordZones(in)}
 	for _, d := range leads {
 		d.number()
-		d.zone(o.tree, ls)
+		d.zone(o.tree, ls, recorded[d])
 		d.pin()
 		d.name()
 		d.card()

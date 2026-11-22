@@ -110,12 +110,43 @@ type group struct {
 	title string
 	ids   []string
 	stage bool
+	// hue, when set, is the palette key the band takes, whatever boxes it
+	// holds: a recorded zone's pieces share the colour most of the whole
+	// zone's boxes wear.
+	hue string
 }
 
-// zone draws the bands of d.
-func (d *Drawing) zone(t tree, stacks []layering) {
+// recordZone is one zone of the stored overview record that stands: its
+// name and the units it holds.
+type recordZone struct {
+	name  string
+	units []model.ID
+}
+
+// recordZones are the zones of the stored overview that stand, those no
+// change of the code has made STALE, in the order they are stored. It is
+// empty when there is no overview abbd can read or it holds none.
+func recordZones(in Input) []recordZone {
+	if !in.Overview.Known {
+		return nil
+	}
+	var out []recordZone
+	for _, z := range in.Overview.Zones {
+		if len(z.Why(in.Units)) == 0 {
+			out = append(out, recordZone{name: z.Claim.Name, units: z.Claim.Units})
+		}
+	}
+	return out
+}
+
+// zone draws the bands of d. The overview's own zones, where the record
+// holds any that stand, come in place of the layers of a stack and the
+// folders (recorded), since a reader chose them from those candidates.
+func (d *Drawing) zone(t tree, stacks []layering, recorded []recordZone) {
 	var groups []group
-	if g := d.layered(t, stacks); len(g) > 0 {
+	if g := d.recorded(t, recorded); len(g) > 0 {
+		groups = g
+	} else if g := d.layered(t, stacks); len(g) > 0 {
 		groups = g
 	} else {
 		groups = d.folders(t)
@@ -145,6 +176,49 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 			d.Zones = append(d.Zones, z)
 		}
 	}
+}
+
+// recorded is the bands of the stored overview's zones. A zone whose boxes
+// sit together is one band. A zone whose boxes are apart is a band for each
+// run of them that sits together, largest first, a box alone included, and
+// every band of a zone bears its name and takes the colour most of the
+// zone's boxes wear, so the one name read in several places says the zone
+// runs across the picture. A box no zone names is in no band. Foundation
+// bands and boxes the picture does not draw belong to none.
+func (d *Drawing) recorded(t tree, zones []recordZone) []group {
+	shown := d.shown(t)
+	hue := map[string]string{}
+	ambient := map[string]bool{}
+	for _, b := range d.Boxes {
+		hue[b.ID], ambient[b.ID] = b.Hue, b.Ambient
+	}
+	var out []group
+	for _, z := range zones {
+		var ids []string
+		for _, u := range z.units {
+			if b := shown(u); b != "" && !ambient[b] && !slices.Contains(ids, b) {
+				ids = append(ids, b)
+			}
+		}
+		votes, key, most := map[string]int{}, "", 0
+		for _, id := range ids {
+			votes[hue[id]]++
+		}
+		for h, n := range votes {
+			if n > most || n == most && h < key {
+				key, most = h, n
+			}
+		}
+		for len(ids) > 0 {
+			run := d.together(ids)
+			if len(run) == 0 {
+				break
+			}
+			out = append(out, group{title: z.name, ids: run, hue: key})
+			ids = slices.DeleteFunc(ids, func(id string) bool { return slices.Contains(run, id) })
+		}
+	}
+	return out
 }
 
 // layered is the tiers of the stored stack that covers the most of d's
@@ -434,6 +508,9 @@ func (d *Drawing) band(g group) (Zone, bool) {
 		if k > n || k == n && h < best.Hue {
 			best.Hue, n = h, k
 		}
+	}
+	if g.hue != "" {
+		best.Hue = g.hue
 	}
 	if best.Hue == "" {
 		best.Hue = hueKey(-1)

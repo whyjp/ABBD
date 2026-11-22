@@ -4,6 +4,7 @@ import (
 	"math"
 	"path/filepath"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/store"
@@ -94,7 +95,7 @@ func TestAZoneTitleKeepsClearOfInk(t *testing.T) {
 				area := box{z.TX - 2, z.TY - 10, w + 4, 13 + (len(lines)-1)*zoneLine}
 				if !d.clearOfInk(grow(area, inkGap), nil) || d.crossed(grow(area, inkGap)) > 0 {
 					t.Logf("%s: band %q's title meets ink", name, z.Label())
-					if name != "repository" {
+					if !strings.HasPrefix(name, "repository") {
 						bad++
 					}
 				}
@@ -122,6 +123,11 @@ func clearModels(t *testing.T) map[string]*Model {
 	}
 	m := Build(in)
 	out["repository"] = &m
+	// The same state with its overview record's zones left out, so the
+	// bands drawn from the stored layers and the folders stay held.
+	in.Overview.Zones = nil
+	u := Build(in)
+	out["repository-unrecorded"] = &u
 	return out
 }
 
@@ -153,10 +159,17 @@ func TestALeadsNumbersStandApart(t *testing.T) {
 }
 
 // Every band holds two boxes at least, but the outside contracts' band,
-// which names a lone outside box as outside, and stored layers' bands are
-// numbered 1, 2, 3 in the order they are drawn. This repository's own
-// overview, whose layers each name boxes the layout sets apart, keeps two
-// numbered bands at least.
+// which names a lone outside box as outside, and a piece of a zone of the
+// overview record, and stored layers' bands are numbered 1, 2, 3 in the
+// order they are drawn. A recorded zone whose boxes sit apart is drawn as a
+// band for each run of them under one name, so a piece may hold a box alone:
+// the reader chose the zone, and a box left out of its band would read as no
+// part of the zone. That is the one rule this test changed with the
+// recorded zones; the two-box rule still holds for every band drawn from
+// layers, folders and libraries. This repository's own overview, with its
+// record's zones left out, whose layers each name boxes the layout sets
+// apart, keeps two numbered bands at least, and with them a recorded zone's
+// band is never numbered.
 func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 	t.Parallel()
 	for name, m := range clearModels(t) {
@@ -172,6 +185,12 @@ func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 				if z.Title == "외부 계약" {
 					continue
 				}
+				if d == &m.Overview && recordedZone(m, z) {
+					if z.N != 0 {
+						t.Errorf("%s: recorded zone %q is numbered %d, a number is a stage's", name, z.Title, z.N)
+					}
+					continue
+				}
 				held := 0
 				for _, b := range d.Boxes {
 					if b.X >= z.X && b.Y >= z.Y && b.X+b.W <= z.X+z.W && b.Y+b.H <= z.Y+z.H {
@@ -182,9 +201,20 @@ func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 					t.Errorf("%s: band %q holds %d box", name, z.Label(), held)
 				}
 			}
-			if name == "repository" && d == &m.Overview && n < 2 {
+			if name == "repository-unrecorded" && d == &m.Overview && n < 2 {
 				t.Errorf("this repository's overview numbers %d bands, want 2 at least", n)
 			}
 		}
 	}
+}
+
+// recordedZone says band z of the overview is a piece of a zone of the
+// overview record.
+func recordedZone(m *Model, z Zone) bool {
+	for _, r := range m.Zones {
+		if r.Name == z.Title {
+			return true
+		}
+	}
+	return false
 }
