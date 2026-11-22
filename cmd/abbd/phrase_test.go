@@ -279,3 +279,25 @@ func TestASupplementPhraseNamesItsSymbols(t *testing.T) {
 	p.setup(0, "synced", "--supplement", p.file(t, "good.json", rel("Post")))
 	contains(t, p.want(0, "", "explain", "MOD-0002"), `phrase "charge post", inferred, symbols Post`)
 }
+
+// Refreshing a phrase onto other quotes keeps the stored symbols those quotes
+// still hold, drops and says the rest, and takes the symbols a draft names.
+func TestRefreshingAPhraseFollowsItsSymbolsToTheNewQuotes(t *testing.T) {
+	t.Parallel()
+	p := semanticProject(t)
+	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1))
+	p.resync()
+	edge := []string{"record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()", "--phrase", "charge post", "--symbol", "Post"}
+	p.want(0, "its symbols Post carry it", edge...)
+	same := []string{"record", "evidence", "MOD-0002.depends_on.MOD-0001.phrase", "--evidence", "ledger/book.go:6:func Post()"}
+	p.want(0, "", same...)
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "symbols Post")
+	other := []string{"record", "evidence", "MOD-0002.depends_on.MOD-0001.phrase", "--evidence", "billing/charge.go:4:func Charge()"}
+	p.want(0, "dropped the symbols Post, which the new quotes do not hold", other...)
+	if out := p.want(0, "", "explain", "MOD-0002"); strings.Contains(out, "symbols") {
+		t.Errorf("a dropped symbol still shows:\n%s", out)
+	}
+	p.want(1, "stands in none of the quotes cited", append(other, "--symbol", "Post")...)
+	p.want(0, "", append(other, "--symbol", "Charge")...)
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "symbols Charge")
+}

@@ -652,7 +652,7 @@ func ValidateSymbols(symbols []string, text string, evidence []Evidence, cited b
 			return fmt.Errorf("symbol %q: one name as the code spells it, of letters, digits and _ $ . : # -, at most 48 characters", s)
 		case slices.Contains(symbols[:i], s):
 			return fmt.Errorf("symbol %q is named twice", s)
-		case cited && !slices.ContainsFunc(evidence, func(e Evidence) bool { return strings.Contains(e.Quote, s) }):
+		case cited && !slices.ContainsFunc(evidence, func(e Evidence) bool { return holdsSymbol(e.Quote, s) }):
 			return fmt.Errorf("symbol %q stands in none of the quotes cited; cite the line that holds it, or name the symbol the cited line holds", s)
 		}
 	}
@@ -1108,3 +1108,12 @@ func SortRelations(rs []Relation) []Relation {
 	})
 	return out
 }
+
+// HoldsSymbol reports whether the quote spells the symbol as a name of its own:
+// bounded on each side by something that is no part of a name, so Post is not
+// found in PostCharge.
+func HoldsSymbol(quote, symbol string) bool {
+	return regexp.MustCompile(`(^|[^A-Za-z0-9_$])` + regexp.QuoteMeta(symbol) + `($|[^A-Za-z0-9_$])`).MatchString(quote)
+}
+
+func holdsSymbol(quote, symbol string) bool { return HoldsSymbol(quote, symbol) }

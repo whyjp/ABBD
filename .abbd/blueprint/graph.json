@@ -7736,7 +7736,23 @@
                 "Code": true
               },
               {
-                "Text": "은 구절을 나르는 코드의 이름을 세 개까지 인용 안에서 받고, lint는 이름 없는 라이브 구절을 텍스트 보고의 ",
+                "Text": "은 구절을 나르는 코드의 이름을 세 개까지 인용 안에서 받고, ",
+                "Code": false
+              },
+              {
+                "Text": "record evidence",
+                "Code": true
+              },
+              {
+                "Text": "로 구절을 새로 고치면 이름은 새 인용이 아직 품은 것만 남고 나머지는 말하고 버리며 ",
+                "Code": false
+              },
+              {
+                "Text": "--symbol",
+                "Code": true
+              },
+              {
+                "Text": "을 주면 그것으로 바꾼다. lint는 이름 없는 라이브 구절을 텍스트 보고의 ",
                 "Code": false
               },
               {
@@ -11284,6 +11300,12 @@
                     "Badge": "extracted"
                   }
                 ]
+              },
+              {
+                "Key": "symbol",
+                "Name": "--symbol",
+                "Shape": "repeated",
+                "Need": ""
               }
             ],
             "Need": false,
@@ -16360,7 +16382,7 @@
                 "Code": true
               },
               {
-                "Text": "는 생산자와 소비자를 함께 인용하는 2개 이상의 항목이 없으면 거부된다. 이 검사는 스크립트와 supplement 모두에 걸린다. relation의 ",
+                "Text": "는 생산자와 소비자를 함께 인용하는 2개 이상의 항목이 없으면 거부된다. 이 검사는 스크립트와 supplement 모두에 걸린다. 한 edge의 두 줄이 같은 구절에 다른 이름을 주면 거부된다. relation의 ",
                 "Code": false
               },
               {
@@ -22030,7 +22052,15 @@
                 "Code": true
               },
               {
-                "Text": ": 철자, 중복, 말이 있어야 함, 판독의 것은 인용한 줄이 그 이름을 품어야 함) 이름은 말의 digest에 들지 않는다. ",
+                "Text": ": 철자, 중복, 말이 있어야 함, 판독의 것은 인용한 줄이 그 이름을 품어야 함) 이름은 말의 digest에 들지 않고 ",
+                "Code": false
+              },
+              {
+                "Text": "HoldsSymbol",
+                "Code": true
+              },
+              {
+                "Text": "이 이름을 더 긴 이름 속이 아니라 이름 그대로 품은 인용만 센다. ",
                 "Code": false
               },
               {

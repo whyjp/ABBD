@@ -98,10 +98,12 @@ abbd record fact ID.purpose|ID.responsibility|EXEC-ID.run --value TEXT --source 
                                      what a human stated, USER_STATED with where they said it
 abbd record fact ID.decisions.KEY --value TEXT --source REF [--root DIR]
                                      a human's reason for a decision a reader stored, USER_STATED
-abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--symbol NAME ...] [--root DIR]
                                      refresh a reader's claim with live evidence; TARGET is an ID,
                                      ID.parent, an edge FROM.KIND.TO or its phrase
-                                     FROM.KIND.TO.phrase; a supplement claim gets a reader's
+                                     FROM.KIND.TO.phrase, whose symbols follow the new quotes:
+                                     the --symbol names given, else the stored ones the quotes
+                                     still hold; a supplement claim gets a reader's
                                      claim above it
 abbd retract TARGET --reason TEXT [--source REF] [--root DIR]
                                      remove your own claim on TARGET (ID, ID.parent, ID.purpose,
@@ -418,7 +420,7 @@ var commands = map[string]command{
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
-	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
+	"record evidence": {flags: []string{"root", "evidence", "symbol"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
 	"understand":      {flags: []string{"root", "restamp", "evidence", "reread-by", "reader", "sentence"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},

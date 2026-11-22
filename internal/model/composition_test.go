@@ -314,6 +314,7 @@ func TestAPhrasesSymbolsAreNamesTheCodeHolds(t *testing.T) {
 		{"twice", []string{"a", "a"}, "x", false, "named twice"},
 		{"without words", []string{"a"}, "", false, "give the phrase"},
 		{"scoped name", []string{"Foo::bar", "a.b#c"}, "x", false, ""},
+		{"a name inside a longer one", []string{"uv_async"}, "x", true, "stands in none of the quotes"},
 	} {
 		err := ValidateSymbols(tc.symbols, tc.text, quote, tc.cited)
 		switch {
