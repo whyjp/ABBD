@@ -187,7 +187,10 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 				if err := model.ValidatePhrase(p.Text, got.Via); err != nil {
 					return base, f, fmt.Errorf("supplement relation %s -%s-> %s, on the edge the script reads: %w", r.From, r.Kind, r.To, err)
 				}
-				out.Phrases = append(out.Phrases, extract.Phrase{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Text: p.Text, Evidence: p.Evidence})
+				if err := model.ValidateSymbols(p.Symbols, p.Text, p.Evidence, true); err != nil {
+					return base, f, fmt.Errorf("supplement relation %s -%s-> %s, on the edge the script reads: %w", r.From, r.Kind, r.To, err)
+				}
+				out.Phrases = append(out.Phrases, extract.Phrase{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Text: p.Text, Evidence: p.Evidence, Symbols: p.Symbols})
 			}
 		}
 	}

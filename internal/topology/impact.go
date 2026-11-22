@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"maps"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -81,6 +82,9 @@ func (l Link) PhraseLabel() string {
 		return ""
 	}
 	s := fmt.Sprintf("phrase %q, %s", n.Text, origins[n.Writer.Origin()])
+	if len(n.Symbols) > 0 {
+		s += ", symbols " + strings.Join(n.Symbols, ", ")
+	}
 	if n.Status() == model.Drifted {
 		s += ", drifted"
 	}

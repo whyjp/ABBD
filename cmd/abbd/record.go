@@ -109,6 +109,10 @@ func (e env) recordRelation(pos []string) error {
 		return err
 	}
 	note.Evidence = slices.Clone(rel.Evidence)
+	note.Symbols = slices.Clone(e.symbol)
+	if err := model.ValidateSymbols(note.Symbols, note.Text, note.Evidence, w.Origin() == model.Inferred); err != nil {
+		return err
+	}
 	held := ""
 	for _, o := range u.Claims() {
 		if o.To != edge.To || o.Kind != edge.Kind {
@@ -154,6 +158,10 @@ func (e env) recordRelation(pos []string) error {
 	}
 	if phrased {
 		fmt.Fprintf(e.stdout, "recorded %s.phrase, %s: %q names what crosses it while its evidence is live and a claim shows on the edge\n", edge, w.Origin(), note.Text)
+		if len(note.Symbols) > 0 {
+			fmt.Fprintf(e.stdout, "its symbols %s carry it, each in a quote cited", strings.Join(note.Symbols, ", "))
+			fmt.Fprintln(e.stdout)
+		}
 		if w.Origin() == model.Inferred {
 			e.checkLanguage(edge.String()+".phrase", note.Text)
 		}
@@ -464,6 +472,27 @@ func (e env) refresh(s string) error {
 		}
 		n := *base
 		n.Writer, n.Evidence = model.Reader, es
+		// The symbols follow the new quotes: those the draft names, else the
+		// stored ones the new quotes still hold.
+		if len(e.symbol) > 0 {
+			n.Symbols = slices.Clone(e.symbol)
+			if err := model.ValidateSymbols(n.Symbols, n.Text, n.Evidence, true); err != nil {
+				return err
+			}
+		} else {
+			var kept, dropped []string
+			for _, sym := range n.Symbols {
+				if slices.ContainsFunc(es, func(ev model.Evidence) bool { return model.HoldsSymbol(ev.Quote, sym) }) {
+					kept = append(kept, sym)
+				} else {
+					dropped = append(dropped, sym)
+				}
+			}
+			n.Symbols = kept
+			if len(dropped) > 0 {
+				fmt.Fprintf(e.stdout, "dropped the symbols %s, which the new quotes do not hold; name them with --symbol%s", strings.Join(dropped, ", "), "\n")
+			}
+		}
 		u.PutNote(n)
 	case t.edge != nil:
 		var base *model.Relation

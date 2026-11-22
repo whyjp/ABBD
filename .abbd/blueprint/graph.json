@@ -678,7 +678,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "읽는 이가 찾은 결합과 단위를 그대로 옮긴 인용과 함께 기록하고, 결합마다 구절을 붙이며, 틀린 INFERRED 주장을 거둔다.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -1880,11 +1881,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/bootstrap",
@@ -1908,11 +1911,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader adds intent and couplings but never replaces what the script read from code",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/bootstrap/overlay.go Overlay"
@@ -2305,11 +2310,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity",
@@ -2361,11 +2368,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader-found unit a human spoke about is not marked absent when a new supplement stops reporting it",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Computes, to a fixed point, the semantic units that carry a USER_STATED fact or relation or are pointed at by a stated relation from a unit that stays, and keeps them present as Stated.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity/identity.go heldByHuman"
@@ -2383,11 +2392,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a rerun of the script or of setup never overwrites what a human stated",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "On a match the extraction replaces anchors, signature, digest and EXTRACTED names and relations; INFERRED guesses are replaced only by a setup (ReplaceGuesses); USER_STATED facts and relations always survive.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity/identity.go merge",
@@ -2946,11 +2957,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/topology",
@@ -5965,7 +5978,7 @@
             "plugins/abbd/skills/abbd/SKILL.md"
           ],
           "Understanding": {
-            "Reader": "abbd reader",
+            "Reader": "claude-sonnet-5.5",
             "Stale": false,
             "Blocks": [
               {
@@ -5997,7 +6010,15 @@
                     "Code": true
                   },
                   {
-                    "Text": "으로 남긴다. 결합마다 무엇이 건너가는지 구절을 붙이며, 구절 규칙은 읽기 에이전트의 \"Words on lines\"가 정한다. 저장된 INFERRED 주장이 틀렸으면 ",
+                    "Text": "으로 남긴다. 결합마다 무엇이 건너가는지 구절을 붙이며, 구절 규칙은 읽기 에이전트의 \"Words on lines\"가 정한다. 구절을 나르는 함수, 타입, 채널의 이름은 ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "--symbol",
+                    "Code": true
+                  },
+                  {
+                    "Text": "로 인용 안에서 함께 남긴다. 저장된 INFERRED 주장이 틀렸으면 ",
                     "Code": false
                   },
                   {
@@ -8184,7 +8205,55 @@
                 "Code": true
               },
               {
-                "Text": "). 사용법 글이 rust의 ",
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "record relation",
+                "Code": true
+              },
+              {
+                "Text": "의 ",
+                "Code": false
+              },
+              {
+                "Text": "--symbol",
+                "Code": true
+              },
+              {
+                "Text": "은 구절을 나르는 코드의 이름을 세 개까지 인용 안에서 받고, ",
+                "Code": false
+              },
+              {
+                "Text": "record evidence",
+                "Code": true
+              },
+              {
+                "Text": "로 구절을 새로 고치면 이름은 새 인용이 아직 품은 것만 남고 나머지는 말하고 버리며 ",
+                "Code": false
+              },
+              {
+                "Text": "--symbol",
+                "Code": true
+              },
+              {
+                "Text": "을 주면 그것으로 바꾼다. lint는 이름 없는 라이브 구절을 텍스트 보고의 ",
+                "Code": false
+              },
+              {
+                "Text": "lint: symbols:",
+                "Code": true
+              },
+              {
+                "Text": " 줄(",
+                "Code": false
+              },
+              {
+                "Text": "unsymboled",
+                "Code": true
+              },
+              {
+                "Text": ")로 권하되 JSON에는 싣지 않는다. 사용법 글이 rust의 ",
                 "Code": false
               },
               {
@@ -11393,6 +11462,12 @@
                 ]
               },
               {
+                "Key": "symbol",
+                "Name": "--symbol",
+                "Shape": "repeated",
+                "Need": ""
+              },
+              {
                 "Key": "evidence",
                 "Name": "--evidence",
                 "Shape": "repeated",
@@ -11710,6 +11785,12 @@
                     "Badge": "extracted"
                   }
                 ]
+              },
+              {
+                "Key": "symbol",
+                "Name": "--symbol",
+                "Shape": "repeated",
+                "Need": ""
               }
             ],
             "Need": false,
@@ -12679,11 +12760,13 @@
       "Name": "internal/bootstrap",
       "Purpose": {
         "Value": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -12740,7 +12823,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -13283,7 +13366,23 @@
                 "Code": true
               },
               {
-                "Text": "에 붙고, 주장이 아니라 주석일 뿐이다. 스크립트가 읽은 edge에서는 ",
+                "Text": "에 붙고, 주장이 아니라 주석일 뿐이다. supplement 구절의 ",
+                "Code": false
+              },
+              {
+                "Text": "symbols",
+                "Code": true
+              },
+              {
+                "Text": "는 ",
+                "Code": false
+              },
+              {
+                "Text": "model.ValidateSymbols",
+                "Code": true
+              },
+              {
+                "Text": "로 인용 안에 있는지 검사해 구절과 함께 실린다. 스크립트가 읽은 edge에서는 ",
                 "Code": false
               },
               {
@@ -16838,7 +16937,23 @@
                 "Code": true
               },
               {
-                "Text": "는 생산자와 소비자를 함께 인용하는 2개 이상의 항목이 없으면 거부된다. 이 검사는 스크립트와 supplement 모두에 걸린다. 구절은 relation과 따로 ",
+                "Text": "는 생산자와 소비자를 함께 인용하는 2개 이상의 항목이 없으면 거부된다. 이 검사는 스크립트와 supplement 모두에 걸린다. 한 edge의 두 줄이 같은 구절에 다른 이름을 주면 거부된다. relation의 ",
+                "Code": false
+              },
+              {
+                "Text": "symbols",
+                "Code": true
+              },
+              {
+                "Text": "는 구절을 나르는 코드의 이름으로 ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateSymbols",
+                "Code": true
+              },
+              {
+                "Text": "가 인용 안에 있는지 검사한다. 구절은 relation과 따로 ",
                 "Code": false
               },
               {
@@ -17648,6 +17763,12 @@
                 "Key": "relations-phrase",
                 "Name": "relations.phrase",
                 "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "relations-symbols",
+                "Name": "relations.symbols",
+                "Shape": "[]string",
                 "Need": "선택"
               },
               {
@@ -19253,11 +19374,13 @@
       "Name": "internal/identity",
       "Purpose": {
         "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 4,
@@ -19330,7 +19453,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -19988,7 +20111,15 @@
                 "Code": true
               },
               {
-                "Text": "는 추출의 구절 주석을 같은 방식으로 다루어, 그 writer가 가진 구절을 바꾼다. writer가 없는 relation은 스크립트의 것이고, 같은 끝, kind, writer로 주장을 되풀이하는 relation은 건너뛴다. 알리지 않은 unit의 relation은 그대로 남는다.",
+                "Text": "는 추출의 구절 주석을 같은 방식으로, 그 구절의 ",
+                "Code": false
+              },
+              {
+                "Text": "Symbols",
+                "Code": true
+              },
+              {
+                "Text": "와 함께 다루어, 그 writer가 가진 구절을 바꾼다. writer가 없는 relation은 스크립트의 것이고, 같은 끝, kind, writer로 주장을 되풀이하는 relation은 건너뛴다. 알리지 않은 unit의 relation은 그대로 남는다.",
                 "Code": false
               }
             ]
@@ -22567,6 +22698,38 @@
               },
               {
                 "Text": " 줄은 via를 되풀이하는 구절을 막는 표일 뿐, 실행 시점 바인딩이 아니다. ",
+                "Code": false
+              },
+              {
+                "Text": "PhraseNote",
+                "Code": true
+              },
+              {
+                "Text": "는 그 말을 나르는 코드의 이름을 ",
+                "Code": false
+              },
+              {
+                "Text": "Symbols",
+                "Code": true
+              },
+              {
+                "Text": "에 세 개까지 담을 수 있고(",
+                "Code": false
+              },
+              {
+                "Text": "ValidateSymbols",
+                "Code": true
+              },
+              {
+                "Text": ": 철자, 중복, 말이 있어야 함, 판독의 것은 인용한 줄이 그 이름을 품어야 함) 이름은 말의 digest에 들지 않고 ",
+                "Code": false
+              },
+              {
+                "Text": "HoldsSymbol",
+                "Code": true
+              },
+              {
+                "Text": "이 이름을 더 긴 이름 속이 아니라 이름 그대로 품은 인용만 센다. ",
                 "Code": false
               },
               {
@@ -38551,6 +38714,12 @@
                 "Need": "선택"
               },
               {
+                "Key": "phrases-symbols",
+                "Name": "phrases.symbols",
+                "Shape": "[]string",
+                "Need": "선택"
+              },
+              {
                 "Key": "masks",
                 "Name": "masks",
                 "Shape": "[]Mask",
@@ -38833,11 +39002,13 @@
       "Name": "internal/topology",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -39095,7 +39266,7 @@
         }
       ],
       "Understanding": {
-        "Reader": "pstack poteto-mode 0.15.36",
+        "Reader": "claude-sonnet-5.5",
         "Stale": false,
         "Blocks": [
           {
@@ -39701,7 +39872,23 @@
                 "Code": true
               },
               {
-                "Text": ", 그것이 쓰는 대상 entry ",
+                "Text": "(",
+                "Code": false
+              },
+              {
+                "Text": "PhraseLabel",
+                "Code": true
+              },
+              {
+                "Text": "이 그 구절을 나르는 ",
+                "Code": false
+              },
+              {
+                "Text": "Symbols",
+                "Code": true
+              },
+              {
+                "Text": "도 말한다), 그것이 쓰는 대상 entry ",
                 "Code": false
               },
               {
@@ -42445,8 +42632,8 @@
         {
           "N": 1,
           "ID": "stack-cli.1",
-          "Name": "commands",
-          "Role": "runs one command line's verb, and renders after a write or a partial refusal",
+          "Name": "명령",
+          "Role": "명령줄 하나를 동사 하나로 바꿔 실행하고, 쓰기나 일부 거부 뒤에 다시 그린다",
           "Badge": "",
           "Source": "",
           "Units": [

@@ -37,6 +37,10 @@ type lintReport struct {
 	Unphrased []string `json:"unphrased,omitempty"`
 	// Chosen says the overview record chose lines, so only those count.
 	Chosen bool `json:"unphrased_chosen,omitempty"`
+	// Unsymboled names the live phrases on edges that show which name no
+	// symbol that carries what they say. It advises in the text report only:
+	// the JSON stays as it was.
+	Unsymboled []string `json:"-"`
 	// Undescribed names the drawn boxes that say only their kind, since
 	// their units record neither a purpose nor a responsibility.
 	Undescribed []model.ID `json:"undescribed,omitempty"`
@@ -149,6 +153,7 @@ func (e env) lint(pos []string) error {
 		}
 		r.Unphrased, r.Chosen = unphrased(in.Units, m.Overview, chosen), len(chosen) > 0
 		r.Undescribed = undescribed(in.Units)
+		r.Unsymboled = unsymboled(in.Units)
 		r.Unscoped = unscoped(in.Units, in.Overview)
 		// Only a language project.yaml names gates the prose, so the
 		// gate does not move with the machine lint runs on.
@@ -229,6 +234,15 @@ func printLint(e env, r lintReport) {
 		}
 		if n > 10 {
 			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
+		}
+	}
+	if n := len(r.Unsymboled); n > 0 {
+		fmt.Fprintf(e.stdout, "lint: symbols: %s name what crosses a line and no symbol that carries it, so a reader of the line cannot tell which function, type or channel does the carrying; give each a --symbol NAME of up to 3 names the cited code holds (abbd record relation FROM KIND TO --phrase TEXT --symbol NAME --evidence ...); it never fails lint:\n", plural(n, "phrase"))
+		for _, p := range r.Unsymboled[:min(n, 10)] {
+			fmt.Fprintf(e.stdout, "  %s\n", p)
+		}
+		if n > 10 {
+			fmt.Fprintf(e.stdout, "  and %d more\n", n-10)
 		}
 	}
 	if n := len(r.Unscoped); n > 0 {

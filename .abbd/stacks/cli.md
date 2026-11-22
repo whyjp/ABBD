@@ -2,20 +2,20 @@
 question: What are the layers of the abbd CLI?
 format: 1
 layers:
-    - name: commands
-      role: runs one command line's verb, and renders after a write or a partial refusal
+    - name: 명령
+      role: 명령줄 하나를 동사 하나로 바꿔 실행하고, 쓰기나 일부 거부 뒤에 다시 그린다
       units:
         - MOD-0001
       evidence:
         - path: cmd/abbd/main.go
-          lines: "307"
+          lines: "416"
           quote: var commands = map[string]command{
         - path: cmd/abbd/main.go
-          lines: "399"
+          lines: "555"
           quote: if err := e.publish(); err != nil {
       writer: reader
       code:
-        cmd/abbd/main.go#quote-16c07118: 1684ffa51db59b44
+        cmd/abbd/main.go#quote-16c07118: e968d198adbc5015
         cmd/abbd/main.go#quote-e69b8656: f18ecffa6b9f3e6e
     - name: blueprint rendering
       role: derives the pages and graph.json a human reads, and never writes the topology
@@ -97,7 +97,7 @@ layers:
         - MOD-0030
       evidence:
         - path: internal/model/model.go
-          lines: "180"
+          lines: "193"
           quote: type Unit struct {
       writer: reader
       code:
@@ -156,6 +156,20 @@ retired:
         internal/extract/extract.go#quote-4b621c5c: ba7a321b50b9feb1
         internal/gitx/gitx.go#quote-57ce0d67: 2fb4c125587d4786
         internal/narrative/narrative.go#quote-ed17a1ca: 22c9ad30bb9a8168
+    - name: commands
+      role: runs one command line's verb, and renders after a write or a partial refusal
+      units:
+        - MOD-0001
+      evidence:
+        - path: cmd/abbd/main.go
+          lines: "307"
+          quote: var commands = map[string]command{
+        - path: cmd/abbd/main.go
+          lines: "399"
+          quote: if err := e.publish(); err != nil {
+      code:
+        cmd/abbd/main.go#quote-16c07118: 1684ffa51db59b44
+        cmd/abbd/main.go#quote-e69b8656: f18ecffa6b9f3e6e
 ---
 
 Each layer imports only the layers below it. The commands wire every layer together, and the vocabulary imports nothing of abbd's own.

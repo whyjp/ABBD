@@ -80,12 +80,14 @@ abbd install [--root DIR]            write or replace the abbd block in the proj
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
                                      IDs, write the state and render the blueprint; prints
                                      counts and what needs attention, --verbose every unit
-abbd record relation FROM KIND TO --via VIA [--phrase TEXT] --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+abbd record relation FROM KIND TO --via VIA [--phrase TEXT [--symbol NAME ...]] --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      a reader's coupling, INFERRED while its evidence is live;
                                      --phrase names in at most 4 words and 24 characters what
                                      crosses it, such as a route, a message or a query, and the
                                      blueprint draws it beside the line, as a note with its own
-                                     origin; on an edge that already shows, from any writer, the
+                                     origin; --symbol names, up to 3, the functions, types or
+                                     channels in the code that carry it (uv_async_send), each one
+                                     standing in a quote cited, kept with the note; on an edge that already shows, from any writer, the
                                      note is all it stores and every claim stays as it was;
                                      it never brings back a coupling a human retracted
 abbd record relation FROM KIND TO --source REF [--via VIA] [--phrase TEXT] [--evidence ...] [--root DIR]
@@ -96,10 +98,12 @@ abbd record fact ID.purpose|ID.responsibility|EXEC-ID.run --value TEXT --source 
                                      what a human stated, USER_STATED with where they said it
 abbd record fact ID.decisions.KEY --value TEXT --source REF [--root DIR]
                                      a human's reason for a decision a reader stored, USER_STATED
-abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--symbol NAME ...] [--root DIR]
                                      refresh a reader's claim with live evidence; TARGET is an ID,
                                      ID.parent, an edge FROM.KIND.TO or its phrase
-                                     FROM.KIND.TO.phrase; a supplement claim gets a reader's
+                                     FROM.KIND.TO.phrase, whose symbols follow the new quotes:
+                                     the --symbol names given, else the stored ones the quotes
+                                     still hold; a supplement claim gets a reader's
                                      claim above it
 abbd retract TARGET --reason TEXT [--source REF] [--root DIR]
                                      remove your own claim on TARGET (ID, ID.parent, ID.purpose,
@@ -313,6 +317,7 @@ type opts struct {
 	rereadBy         string
 	reader           string
 	evidence         listFlag
+	symbol           listFlag
 	keepLevel        listFlag
 	argv             []string
 }
@@ -327,6 +332,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"phrase": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.phrase, "phrase", "", "what crosses the coupling in a few words, such as a route, a message or a query")
+	},
+	"symbol": func(fs *flag.FlagSet, o *opts) {
+		fs.Var(&o.symbol, "symbol", "a name in the code that carries what --phrase says, such as a function or a channel, stood in a quoted line; repeat for up to 3")
 	},
 	"evidence": func(fs *flag.FlagSet, o *opts) {
 		fs.Var(&o.evidence, "evidence", "PATH:LINES:QUOTE, a verbatim excerpt of the code; repeat for more")
@@ -408,11 +416,11 @@ type command struct {
 var commands = map[string]command{
 	"setup":           {flags: []string{"root", "supplement"}, pos: []int{0}, dashArgv: true, writes: true, run: func(e env, _ []string) error { return e.setup() }},
 	"sync":            {flags: []string{"root", "verbose"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
-	"record relation": {flags: []string{"root", "via", "phrase", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
+	"record relation": {flags: []string{"root", "via", "phrase", "symbol", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
-	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
+	"record evidence": {flags: []string{"root", "evidence", "symbol"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
 	"understand":      {flags: []string{"root", "restamp", "evidence", "reread-by", "reader", "sentence"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
