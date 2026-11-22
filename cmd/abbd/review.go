@@ -157,6 +157,11 @@ func (e env) review() error {
 	// A relation counts at its top-level ends in the diff; the units it
 	// really joins seed the impact, so a module's whole inside does not.
 	seeds = append(seeds, topology.RelationEnds(now, d.RelationsAdded)...)
+	// A relation below the drawn grain joins two units of boxes already
+	// joined, so those two units are what it reaches.
+	for _, r := range d.InsideAdded {
+		seeds = append(seeds, r.From, r.To)
+	}
 	// A removed relation's end may be gone too; the nearest unit above
 	// it that is still there stands for it.
 	wasByID := map[model.ID]model.Unit{}

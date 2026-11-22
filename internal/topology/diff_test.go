@@ -81,3 +81,37 @@ func TestALongSignatureChangeNamesItsWords(t *testing.T) {
 		t.Errorf("a short signature reads %q", got)
 	}
 }
+
+// A relation added between units of two boxes that another relation already
+// joins changes no box line, and the diff still says so, under the line the
+// drawing holds; a relation that is the box's first one stays a box line
+// and is not said twice.
+func TestCompareNamesARelationBelowTheDrawnGrain(t *testing.T) {
+	joined := rel("MOD-0003", model.DependsOn, model.Extracted)
+	extra := rel("MOD-0004", model.DependsOn, model.Extracted)
+	base := []model.Unit{
+		unit("MOD-0001", ""), unit("MOD-0002", "MOD-0001", joined),
+		unit("MOD-0003", ""), unit("MOD-0004", "MOD-0003"),
+	}
+	now := slices.Clone(base)
+	now[1] = unit("MOD-0002", "MOD-0001", joined, extra)
+	d := Compare(base, now)
+	if len(d.RelationsAdded) != 0 || d.Boundary() {
+		t.Errorf("the box line is unchanged, yet the diff reads %+v, boundary %v", d.RelationsAdded, d.Boundary())
+	}
+	if len(d.InsideAdded) != 1 || d.InsideAdded[0].From != "MOD-0002" || d.InsideAdded[0].To != "MOD-0004" || d.InsideAdded[0].FromBox != "MOD-0001" || d.InsideAdded[0].ToBox != "MOD-0003" {
+		t.Fatalf("inside added %+v", d.InsideAdded)
+	}
+	if got := d.String(); !strings.Contains(got, "+ inside relation MOD-0002 depends_on MOD-0004") || !strings.Contains(got, "under the box line MOD-0001 depends_on MOD-0003") {
+		t.Errorf("lines %q", got)
+	}
+	back := Compare(now, base)
+	if len(back.InsideRemoved) != 1 || !strings.HasPrefix(back.String(), "- inside relation MOD-0002 depends_on MOD-0004") {
+		t.Errorf("removing it reads %q", back.String())
+	}
+	fresh := slices.Clone(base)
+	fresh[1] = unit("MOD-0002", "MOD-0001")
+	if d := Compare(fresh, base); len(d.InsideAdded) != 0 || len(d.RelationsAdded) != 1 {
+		t.Errorf("a box's first line is a box line: inside %+v, lines %+v", d.InsideAdded, d.RelationsAdded)
+	}
+}

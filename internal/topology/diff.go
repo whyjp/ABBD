@@ -89,6 +89,14 @@ type Coupling struct {
 	Quote string    `json:"quote,omitempty"`
 }
 
+// Inside is a relation between two units, with the top-level boxes they
+// stand in and the code it rests on, as the stored state holds it.
+type Inside struct {
+	Coupling
+	FromBox model.ID `json:"from_box"`
+	ToBox   model.ID `json:"to_box"`
+}
+
 // Diff is the topology difference between two states of the code, for a PR
 // description and a human's review.
 type Diff struct {
@@ -116,6 +124,13 @@ type Diff struct {
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
 	RelationsRemoved []Relation `json:"relations_removed"`
+	// InsideAdded and InsideRemoved are the relations between units below
+	// the drawn grain: the boxes they join were already joined, or still
+	// are, by another relation, so no box line changed (RelationsAdded and
+	// RelationsRemoved hold the ones that did). They are listed, and never
+	// count toward the boundary.
+	InsideAdded   []Inside `json:"relations_inside_added,omitempty"`
+	InsideRemoved []Inside `json:"relations_inside_removed,omitempty"`
 	// Conditions are the relations whose condition changed.
 	Conditions []Condition `json:"relation_conditions_changed"`
 	// RunsAdded and RunsRemoved are the live runs_on and posts_to
@@ -172,6 +187,7 @@ func Compare(base, now []model.Unit) Diff {
 			d.RelationsRemoved = append(d.RelationsRemoved, was[k])
 		}
 	}
+	d.InsideAdded, d.InsideRemoved = inside(b, n, was, is), inside(n, b, is, was)
 	wasRun, isRun := runs(b), runs(n)
 	for _, k := range keys(isRun) {
 		if _, ok := wasRun[k]; !ok {
@@ -430,6 +446,12 @@ func (d Diff) Lines() []string {
 	for _, r := range d.RelationsRemoved {
 		out = append(out, "- relation "+r.line())
 	}
+	for _, r := range d.InsideAdded {
+		out = append(out, insideLine("+", r))
+	}
+	for _, r := range d.InsideRemoved {
+		out = append(out, insideLine("-", r))
+	}
 	for _, c := range d.RunsAdded {
 		s := "+ run " + c.line() + viaOf(c.Via)
 		if c.Quote != "" {
@@ -479,6 +501,16 @@ func (d Diff) Lines() []string {
 		out = append(out, s)
 	}
 	return out
+}
+
+// insideLine says a relation below the drawn grain, and which box line it
+// sits under, so the reader sees that the picture did not change.
+func insideLine(sign string, r Inside) string {
+	s := sign + " inside relation " + r.line() + viaOf(r.Via) + ", under the box line " + string(r.FromBox) + " " + string(r.Kind) + " " + string(r.ToBox) + " that the drawing holds either way"
+	if r.Quote != "" {
+		s += ": " + r.Quote
+	}
+	return s
 }
 
 // unitWord names an execution context apart from the other units, since a
@@ -593,6 +625,43 @@ func between(units map[model.ID]model.Unit) map[string]Relation {
 	return out
 }
 
+// inside lists the counted relations between units of different boxes that
+// are in now and not in base, whose box line (the edge between their
+// top-level units) is in both: the line the drawing holds stands, and only
+// the stored relation under it is new. was and is are the box lines of base
+// and now.
+func inside(base, now map[model.ID]model.Unit, was, is map[string]Relation) []Inside {
+	have := map[string]bool{}
+	for _, u := range base {
+		for _, r := range u.Relations {
+			have[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = true
+		}
+	}
+	var out []Inside
+	for _, id := range ids(now) {
+		u := now[id]
+		for _, r := range u.Relations {
+			if _, ok := now[r.To]; !ok || !r.Counts() || r.Kind.RunTime() || have[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] {
+				continue
+			}
+			from, to := top(now, u.ID), top(now, r.To)
+			box := model.Edge{From: from, To: to, Kind: r.Kind}.String()
+			if from == to || was[box].From == "" || is[box].From == "" {
+				continue
+			}
+			var qs []string
+			for _, e := range r.Evidence {
+				qs = append(qs, e.String())
+			}
+			out = append(out, Inside{
+				Coupling: Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: now[r.To].Name.Value}, Via: r.Via, Quote: strings.Join(qs, ", ")},
+				FromBox:  from, ToBox: to,
+			})
+		}
+	}
+	return out
+}
+
 // runs lists the live runs_on and posts_to relations, keyed by edge, each
 // with every quote it rests on, so a posts_to shows its producer and its
 // consumer. A reader writes most of them, so they are listed whoever wrote
@@ -671,6 +740,8 @@ func (d Diff) Within(in func(model.ID) bool) Diff {
 		UsesNarrowed:     rels(d.UsesNarrowed),
 		RelationsAdded:   rels(d.RelationsAdded),
 		RelationsRemoved: rels(d.RelationsRemoved),
+		InsideAdded:      keep(d.InsideAdded, func(c Inside) bool { return in(c.From) || in(c.To) }),
+		InsideRemoved:    keep(d.InsideRemoved, func(c Inside) bool { return in(c.From) || in(c.To) }),
 		Conditions:       keep(d.Conditions, func(c Condition) bool { return in(c.From) || in(c.To) }),
 		RunsAdded:        keep(d.RunsAdded, func(c Coupling) bool { return in(c.From) || in(c.To) }),
 		RunsRemoved:      keep(d.RunsRemoved, func(c Coupling) bool { return in(c.From) || in(c.To) }),
