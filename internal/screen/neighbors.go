@@ -13,14 +13,19 @@ type Neighbor struct {
 	Uses, UsedBy []Near
 }
 
-// Near is a box by name, linked to its focus view where the view has one.
-type Near struct{ Name, Href string }
+// Near is a box by name, linked to its focus view where the view has one, and
+// where a relation between it and the box it is listed under has a phrase that
+// names the symbols carrying it, those (symbols.go).
+type Near struct {
+	Name, Href string
+	Carries    []Carry `json:",omitempty"`
+}
 
 // neighbors lists the view's boxes in the order it draws them, each with the
 // boxes it uses and those that use it in name order, and leaves out a box no
 // line touches. It reads parts the way the level does. href gives the focus
 // view of a box, by its ID, where there is one.
-func (d *Drawing) neighbors(at where, href map[string]string) []Neighbor {
+func (d *Drawing) neighbors(at where, href map[string]string, carries map[[2]string][]Carry) []Neighbor {
 	part := partsOf(*d, at)
 	ref := map[string]Near{}
 	for _, b := range d.Boxes {
@@ -48,10 +53,18 @@ func (d *Drawing) neighbors(at where, href map[string]string) []Neighbor {
 		add(uses, from, to)
 		add(usedBy, to, from)
 	}
-	list := func(ids map[string]bool) []Near {
+	// list is the boxes ids, each with the symbols of the relations between it
+	// and box at, the user first when users is true.
+	list := func(at string, ids map[string]bool, users bool) []Near {
 		out := make([]Near, 0, len(ids))
 		for id := range ids {
-			out = append(out, ref[id])
+			n := ref[id]
+			if users {
+				n.Carries = carries[[2]string{id, at}]
+			} else {
+				n.Carries = carries[[2]string{at, id}]
+			}
+			out = append(out, n)
 		}
 		slices.SortFunc(out, func(a, b Near) int {
 			if a.Name != b.Name {
@@ -66,7 +79,7 @@ func (d *Drawing) neighbors(at where, href map[string]string) []Neighbor {
 		if !part[b.ID] || len(uses[b.ID])+len(usedBy[b.ID]) == 0 {
 			continue
 		}
-		out = append(out, Neighbor{Near: ref[b.ID], Uses: list(uses[b.ID]), UsedBy: list(usedBy[b.ID])})
+		out = append(out, Neighbor{Near: ref[b.ID], Uses: list(b.ID, uses[b.ID], false), UsedBy: list(b.ID, usedBy[b.ID], true)})
 	}
 	return out
 }

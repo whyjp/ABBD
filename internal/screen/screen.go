@@ -493,7 +493,11 @@ func Build(in Input) Model {
 		for _, f := range focus {
 			href[f.Unit] = "#" + f.ID
 		}
-		d.Neighbors = d.neighbors(at, href)
+		boxes := map[string]bool{}
+		for _, b := range d.Boxes {
+			boxes[b.ID] = true
+		}
+		d.Neighbors = d.neighbors(at, href, o.carriesBetween(boxes))
 	}
 	m.nameGroups()
 	return m
