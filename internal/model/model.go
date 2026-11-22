@@ -241,6 +241,10 @@ type Unit struct {
 	ParentWriter Writer `yaml:"-"`
 	// Notes is the user-owned "## Notes" section, carried through untouched.
 	Notes string `yaml:"-"`
+	// Mark is what a composition group's box says of its inside, such as the
+	// boxes that use each other round a cycle. Only the screen sets it, on the
+	// group units it draws (screen/compose.go); no stored unit has one.
+	Mark string `yaml:"-"`
 }
 
 // Semantic reports whether only a reader vouches for the unit: the script

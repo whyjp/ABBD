@@ -280,6 +280,9 @@ func Build(in Input) Model {
 	m.Decisions = decisions(in)
 	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
 	m.Parts = parts(in.Units)
+	// A composition record the state bears out folds its groups into boxes
+	// of their own; the rows above list the stored units alone.
+	in.Units = composeGroups(in)
 	// The overview is drawn in the plain order of its rows only. Every
 	// module's page holds a focus view seated by it, so an overview that took
 	// another order after a small change would redraw every page. It may

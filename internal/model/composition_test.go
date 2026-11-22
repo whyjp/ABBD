@@ -276,3 +276,19 @@ func TestAPlainStackHasNoCompositionGapAndABadRecordNoPanic(t *testing.T) {
 		_ = c.AsOf(layer("a", "MOD-0101"))
 	}
 }
+
+// A group's facts are the largest cycle its boxes make among themselves and
+// how many of its boxes reach outside the module.
+func TestGroupFactsCountTheCycleAndTheBoxesThatReachOutside(t *testing.T) {
+	rels := mutual("MOD-0101", "MOD-0102", "MOD-0103")
+	rels["MOD-0101"] = append(rels["MOD-0101"], use("MOD-0200", "call"))
+	rels["MOD-0104"] = []Relation{use("MOD-0101", "call")}
+	us := inside(rels)
+	cycle, boundary := GroupFacts(us, []ID{"MOD-0101", "MOD-0102", "MOD-0103", "MOD-0104"}, "MOD-0100")
+	if cycle != 3 || boundary != 1 {
+		t.Errorf("cycle %d, boundary %d; want 3 and 1", cycle, boundary)
+	}
+	if cycle, _ := GroupFacts(us, []ID{"MOD-0104", "MOD-0105"}, "MOD-0100"); cycle != 0 {
+		t.Errorf("two boxes with no cycle between them: %d", cycle)
+	}
+}
