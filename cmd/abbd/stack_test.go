@@ -363,7 +363,9 @@ func TestAGroupAddressIsAskedLikeAUnit(t *testing.T) {
 			t.Errorf("explain of a group says %q:\n%s", want, out)
 		}
 	}
-	p.want(0, "group stack-ledger.1 books (layer)", "explain", "MOD-0002")
+	p.want(0, "group stack-ledger.1 books (layer), not drawn as a box", "explain", "MOD-0002")
+	p.want(0, "inside the overview", "explain", "stack-ledger.1")
+	p.want(0, "not drawn as a box: the overview's own record is not drawn yet", "explain", "stack-ledger.1")
 	if want, got := p.want(0, "", "impact", "MOD-0002"), p.want(0, "", "impact", "stack-ledger.1"); want != got {
 		t.Errorf("impact of a group of one box is that box's:\n%s\nvs\n%s", want, got)
 	}

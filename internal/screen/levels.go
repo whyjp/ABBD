@@ -103,11 +103,12 @@ func Levels(m Model) []Level {
 	out := []Level{shaped(level("overview", m.Overview, atOverview), m.Overview, atOverview)}
 	out[0].Participants = append(out[0].Participants, participantAdvice(m.Participants, namesOf(m.Units))...)
 	for _, ins := range m.Insides {
-		if unit[ins.ID].Kind != "MOD" {
+		_, _, grouped := model.ParseGroupAddress(ins.ID)
+		if unit[ins.ID].Kind != "MOD" && grouped != nil {
 			continue
 		}
 		at := atTop
-		if unit[ins.ID].Parent != "" {
+		if unit[ins.ID].Parent != "" || grouped == nil {
 			at = atNested
 		}
 		out = append(out, shaped(level(ins.ID+" "+ins.Name, ins.Drawing, at), ins.Drawing, at))

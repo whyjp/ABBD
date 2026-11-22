@@ -8478,7 +8478,7 @@
                 "Code": true
               },
               {
-                "Text": "). ",
+                "Text": "). explain은 묶음이 상자로 그려지는지와 아니면 왜인지도 말한다. ",
                 "Code": false
               },
               {
@@ -35396,6 +35396,38 @@
               },
               {
                 "Text": "가 지킨다. ",
+                "Code": false
+              },
+              {
+                "Text": "planGroups",
+                "Code": true
+              },
+              {
+                "Text": "는 접힌 묶음과 그 밖의 묶음이 왜 줄로 남는지(개요 기록, core가 아닌 종류, STALE, 먼저 접힌 다른 묶음의 상자)를 주소별로 내고 ",
+                "Code": false
+              },
+              {
+                "Text": "GroupDrawn",
+                "Code": true
+              },
+              {
+                "Text": "이 그것을 explain에 준다. 접힌 묶음의 뷰는 수준(",
+                "Code": false
+              },
+              {
+                "Text": "Levels",
+                "Code": true
+              },
+              {
+                "Text": ")으로도 읽는다. ",
+                "Code": false
+              },
+              {
+                "Text": "TestAGroupSaysWhetherAndWhyItIsDrawn",
+                "Code": true
+              },
+              {
+                "Text": "이 지킨다. ",
                 "Code": false
               },
               {
