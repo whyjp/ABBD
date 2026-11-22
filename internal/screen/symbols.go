@@ -48,12 +48,17 @@ func (o *overview) carriesBetween(boxes map[string]bool) map[[2]string][]Carry {
 		}
 		return ""
 	}
+	// A contract is provided by the units that provide it, and by the module
+	// that holds it, as the overview reads its providers.
 	providers := map[model.ID][]model.ID{}
 	for id, u := range t.units {
 		for _, r := range u.Relations {
 			if r.Kind == model.Provides && !r.Dead {
 				providers[r.To] = append(providers[r.To], id)
 			}
+		}
+		if u.Kind.IsContract() && u.Parent != "" {
+			providers[id] = append(providers[id], u.Parent)
 		}
 	}
 	out := map[[2]string][]Carry{}
@@ -67,8 +72,13 @@ func (o *overview) carriesBetween(boxes map[string]bool) map[[2]string][]Carry {
 		if t.units[e.To].Kind.IsContract() {
 			tos = providers[e.To]
 		}
+		// A box that provides a contract is no user of it.
+		provider := false
+		if t.units[e.To].Kind.IsContract() {
+			provider = slices.ContainsFunc(tos, func(p model.ID) bool { return boxOf(p) == from })
+		}
 		for _, to := range tos {
-			if b := boxOf(to); from != "" && b != "" && b != from {
+			if b := boxOf(to); from != "" && b != "" && b != from && !provider {
 				pair := [2]string{from, b}
 				out[pair] = append(out[pair], Carry{t.phrases[k].text, slices.Clone(symbols)})
 			}

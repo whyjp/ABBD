@@ -92,3 +92,39 @@ func TestADependentCarriesTheSymbolsOfItsRelation(t *testing.T) {
 		t.Errorf("the module's page does not list the dependent's symbols")
 	}
 }
+
+// A contract the module that holds it provides, with no provides line, takes
+// its users' symbols to that module; a box that provides the contract is no
+// user of it.
+func TestSymbolsReachTheModuleThatHoldsAContractAndNotItsOwnProvider(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0001", "user", rel("IF-0001", model.Consumes), rel("MOD-0002", model.DependsOn)),
+		called("MOD-0002", "owner"),
+		inside("IF-0001", "MOD-0002"),
+		called("MOD-0003", "other", rel("IF-0001", model.Provides), rel("IF-0001", model.Consumes), rel("MOD-0001", model.DependsOn)),
+	}
+	noted(&units[0], model.Consumes, "IF-0001", "질의 전달", "run_query")
+	noted(&units[3], model.Consumes, "IF-0001", "자기 계약", "own_call")
+	units = named(units)
+	m := build(units)
+	by := map[string]Neighbor{}
+	for _, n := range m.Overview.Neighbors {
+		by[n.Name] = n
+	}
+	var got []Carry
+	for _, r := range by["user"].Uses {
+		if r.Name == "owner" {
+			got = r.Carries
+		}
+	}
+	if len(got) != 1 || got[0].Symbols[0] != "run_query" {
+		t.Errorf("user uses owner with %v, want run_query", got)
+	}
+	for _, r := range by["other"].Uses {
+		for _, c := range r.Carries {
+			if slices.Contains(c.Symbols, "own_call") {
+				t.Errorf("a provider's use of its own contract is listed: %v", r)
+			}
+		}
+	}
+}
