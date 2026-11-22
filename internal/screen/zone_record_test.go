@@ -179,3 +179,42 @@ func TestABoxTwoZonesNameBelongsToTheFirst(t *testing.T) {
 		t.Errorf("a second zone draws a band round a box the first holds: %v", titles(&m.Overview))
 	}
 }
+
+func boxAt(id string, x, y int) Box { return Box{ID: id, X: x, Y: y, W: 100, H: 40} }
+
+// A zone whose boxes fit one rectangle is one piece, whatever order reading
+// meets them in: the box that stands between two others in reading order is
+// the zone's own and no foreign box to the band round them.
+func TestAZoneThatFitsOneRectangleIsOnePiece(t *testing.T) {
+	t.Parallel()
+	// A is tall, so X, which reading meets after A and B, stands inside the
+	// band round A and B.
+	tall := boxAt("A", 24, 100)
+	tall.H = 240
+	d := &Drawing{Width: 600, Height: 500, Boxes: []Box{
+		tall, boxAt("B", 260, 100), boxAt("X", 142, 200), boxAt("Far", 440, 400),
+	}}
+	ids := []string{"A", "B", "X"}
+	if got := d.pieces(ids); len(got) != 1 || len(got[0]) != 3 {
+		t.Errorf("pieces = %v, want one piece of the three", got)
+	}
+	if got := d.together(ids); len(got) == 3 {
+		t.Fatal("together holds the three too, so the case no longer tells the two apart")
+	}
+}
+
+// A box of another zone inside the rectangle splits the zone, and each piece
+// is the most boxes that sit clear, the largest first.
+func TestAForeignBoxSplitsAZoneIntoItsLargestPiecesFirst(t *testing.T) {
+	t.Parallel()
+	d := &Drawing{Width: 800, Height: 500, Boxes: []Box{
+		boxAt("A", 24, 100), boxAt("B", 160, 100), boxAt("Foreign", 296, 100), boxAt("C", 432, 100), boxAt("D", 568, 100),
+	}}
+	got := d.pieces([]string{"A", "B", "C", "D"})
+	if len(got) != 2 || len(got[0]) != 2 || len(got[1]) != 2 || got[0][0] != "A" || got[1][0] != "C" {
+		t.Errorf("pieces = %v, want [A B] then [C D]", got)
+	}
+	if d.pieces(nil) != nil {
+		t.Error("no box, no piece")
+	}
+}
